@@ -1,0 +1,47 @@
+name: Mise à jour du site et threads
+
+on:
+  schedule:
+    # heures UTC : 9 h et 21 h à l'heure de New York en hiver (10 h et 22 h en été, GitHub ignore l'heure d'été)
+    - cron: "0 14 * * *"
+    - cron: "0 2 * * *"
+  workflow_dispatch: # bouton « Run workflow » (aussi dans l'app GitHub) : passage à la demande, ex. avant un match
+
+concurrency: mise_a_jour # jamais deux passages en même temps
+
+permissions:
+  contents: write
+
+jobs:
+  passage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Photos et couvertures déjà faites (évite de tout refaire)
+        uses: actions/cache@v4
+        with:
+          path: |
+            site/photos
+            site/couvertures
+          key: images-${{ github.run_id }}
+          restore-keys: images-
+      - name: Collecte, rédaction, threads
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          PYTHONIOENCODING: utf-8
+        run: python generer_site.py
+      - name: Sauvegarde de la base dans le dépôt
+        if: always()
+        run: |
+          git config user.name "mise-a-jour"
+          git config user.email "actions@users.noreply.github.com"
+          git add articles.db photos.json
+          git diff --cached --quiet || (git commit -m "Passage du $(date -u +'%Y-%m-%d %H:%M') UTC" && git push)

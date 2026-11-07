@@ -1,0 +1,263 @@
+{
+  "flux": [
+    {
+      "nom": "Marca - Opinion",
+      "url": "https://e00-marca.uecdn.es/rss/opinion.xml",
+      "pays": "es",
+      "opinion": true
+    },
+    {
+      "nom": "AS - Opinion",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/opinion/portada/",
+      "pays": "es",
+      "opinion": true
+    },
+    {
+      "nom": "Mundo Deportivo - Opinion",
+      "url": "https://www.mundodeportivo.com/rss/opinion",
+      "pays": "es",
+      "opinion": true
+    },
+    {
+      "nom": "ABC - Real Madrid",
+      "url": "https://www.abc.es/rss/2.0/deportes/real-madrid/",
+      "pays": "es"
+    },
+    {
+      "nom": "The Guardian - Real Madrid",
+      "url": "https://www.theguardian.com/football/realmadrid/rss",
+      "pays": "gb"
+    },
+    {
+      "nom": "Marca - Real Madrid",
+      "url": "https://e00-marca.uecdn.es/rss/futbol/real-madrid.xml",
+      "pays": "es"
+    },
+    {
+      "nom": "AS - Futbol",
+      "url": "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/portada/",
+      "pays": "es"
+    },
+    {
+      "nom": "L'Equipe - Football",
+      "url": "https://dwh.lequipe.fr/api/edito/rss?path=/Football/",
+      "pays": "fr"
+    },
+    {
+      "nom": "Managing Madrid",
+      "url": "https://www.managingmadrid.com/rss/index.xml",
+      "pays": "us"
+    },
+    {
+      "nom": "Foot Mercato",
+      "url": "https://www.footmercato.net/flux-rss",
+      "pays": "fr"
+    },
+    {
+      "nom": "ge.globo - Futebol internacional",
+      "url": "https://ge.globo.com/rss/ge/futebol/futebol-internacional/",
+      "pays": "br"
+    },
+    {
+      "nom": "El Pais Uruguay - Ovacion",
+      "url": "https://www.elpais.com.uy/rss/ovacion",
+      "pays": "uy"
+    },
+    {
+      "nom": "HLN - Voetbal",
+      "url": "https://www.hln.be/sport/voetbal/rss.xml",
+      "pays": "be"
+    },
+    {
+      "nom": "Voetbal International",
+      "url": "https://www.vi.nl/rss",
+      "pays": "nl"
+    },
+    {
+      "nom": "Record",
+      "url": "https://www.record.pt/rss",
+      "pays": "pt"
+    },
+    {
+      "nom": "Turkish Football - Arda Guler",
+      "url": "https://turkish-football.com/?s=arda+guler&feed=rss2",
+      "pays": "tr"
+    },
+    {
+      "nom": "Fotomac",
+      "url": "https://www.fotomac.com.tr/rss/anasayfa",
+      "pays": "tr"
+    },
+    {
+      "nom": "The Guardian - Sid Lowe",
+      "url": "https://www.theguardian.com/profile/sidlowe/rss",
+      "pays": "gb",
+      "opinion": true
+    },
+    {
+      "nom": "The Guardian - Jonathan Wilson",
+      "url": "https://www.theguardian.com/profile/jonathanwilson/rss",
+      "pays": "gb",
+      "opinion": true
+    },
+    {
+      "nom": "CaughtOffside - Fabrizio Romano",
+      "url": "https://www.caughtoffside.com/author/fabrizio-romano/feed/",
+      "pays": "gb"
+    },
+    {
+      "nom": "Google News (ES)",
+      "url": "https://news.google.com/rss/search?q=Real+Madrid+when:1d&hl=es&gl=ES&ceid=ES:es"
+    },
+    {
+      "nom": "Google News (FR)",
+      "url": "https://news.google.com/rss/search?q=Real+Madrid+when:1d&hl=fr&gl=FR&ceid=FR:fr"
+    },
+    {
+      "nom": "Google News (EN)",
+      "url": "https://news.google.com/rss/search?q=Real+Madrid+when:1d&hl=en&gl=GB&ceid=GB:en"
+    },
+    {
+      "nom": "The Athletic (Google News)",
+      "url": "https://news.google.com/rss/search?q=Real+Madrid+site:nytimes.com/athletic+when:1d&hl=en&gl=GB&ceid=GB:en",
+      "pays": "gb"
+    }
+  ],
+  "mots_cles": [
+    "real madrid",
+    "bernabéu",
+    "bernabeu",
+    "florentino",
+    "mourinho",
+    "courtois",
+    "lunin",
+    "asencio",
+    "militão",
+    "militao",
+    "huijsen",
+    "alexander-arnold",
+    "trent",
+    "konaté",
+    "konate",
+    "cucurella",
+    "álvaro carreras",
+    "alvaro carreras",
+    "rüdiger",
+    "rudiger",
+    "ferland mendy",
+    "dumfries",
+    "bellingham",
+    "camavinga",
+    "valverde",
+    "tchouaméni",
+    "tchouameni",
+    "arda güler",
+    "arda guler",
+    "bernardo silva",
+    "pitarch",
+    "vinícius",
+    "vinicius",
+    "vini jr",
+    "endrick",
+    "mbappé",
+    "mbappe",
+    "rodrygo",
+    "brahim",
+    "diomande"
+  ],
+  "age_max_heures": 24,
+  "max_articles_par_lot": 25,
+  "langue_sortie": "arabe",
+  "delai_claude_secondes": 600,
+  "max_articles_site": 8,
+  "personnes": {
+    "courtois": "كورتوا",
+    "lunin": "لونين",
+    "asencio": "أسينسيو",
+    "militao": "ميليتاو",
+    "huijsen": "هاوسن",
+    "trent": "ترينت ألكسندر-أرنولد",
+    "konate": "كوناتي",
+    "cucurella": "كوكوريا",
+    "carreras": "ألفارو كاريراس",
+    "rudiger": "روديغر",
+    "mendy": "ميندي",
+    "dumfries": "دمفريز",
+    "bellingham": "بيلينغهام",
+    "camavinga": "كامافينغا",
+    "valverde": "فالفيردي",
+    "tchouameni": "تشواميني",
+    "guler": "أردا غولر",
+    "bernardo": "برناردو سيلفا",
+    "pitarch": "تياغو بيتارش",
+    "vinicius": "فينيسيوس",
+    "endrick": "إندريك",
+    "mbappe": "مبابي",
+    "rodrygo": "رودريغو",
+    "espi": "إسبي",
+    "brahim": "إبراهيم دياز",
+    "diomande": "يان ديوماندي",
+    "mourinho": "مورينيو",
+    "florentino": "فلورنتينو بيريز"
+  },
+  "age_max_heures_site": 168,
+  "max_lots_site": 5,
+  "max_threads": 10,
+  "wikipedia": {
+    "courtois": "Thibaut Courtois",
+    "lunin": "Andriy Lunin",
+    "asencio": "Raúl Asencio (footballer, born 2003)",
+    "militao": "Éder Militão",
+    "huijsen": "Dean Huijsen",
+    "trent": "Trent Alexander-Arnold",
+    "konate": "Ibrahima Konaté",
+    "cucurella": "Marc Cucurella",
+    "carreras": "Álvaro Carreras",
+    "rudiger": "Antonio Rüdiger",
+    "mendy": "Ferland Mendy",
+    "dumfries": "Denzel Dumfries",
+    "bellingham": "Jude Bellingham",
+    "camavinga": "Eduardo Camavinga",
+    "valverde": "Federico Valverde",
+    "tchouameni": "Aurélien Tchouaméni",
+    "guler": "Arda Güler",
+    "bernardo": "Bernardo Silva",
+    "pitarch": "Thiago Pitarch",
+    "vinicius": "Vinícius Júnior",
+    "endrick": "Endrick",
+    "mbappe": "Kylian Mbappé",
+    "rodrygo": "Rodrygo",
+    "diomande": "Yan Diomande",
+    "mourinho": "José Mourinho",
+    "florentino": "Florentino Pérez",
+    "brahim": "Brahim Díaz"
+  },
+  "photos_commons": {
+    "courtois": "File:FC RB Salzburg versus Real Madrid (Testspiel, 7. August 2019) 03.jpg",
+    "lunin": "File:Andriy Lunin, Real Madrid, 2022.jpg",
+    "asencio": "File:Raul-Asencio-Real-Madrid-2025.jpg",
+    "militao": "File:Eder Militao 2021.jpg",
+    "huijsen": "File:Dean Huijsen 2024.jpg",
+    "trent": "File:Trent Alexander Arnold 2022 (2) (cropped).jpg",
+    "konate": "File:Ibrahima Konate France v Senegal 16 June 2026-516 (cropped).jpg",
+    "cucurella": "File:Marc Cucurella Argentina v Spain 19 July 2026-064 (cropped).jpg",
+    "carreras": "File:ÁlvaroCarreras.jpg",
+    "rudiger": "File:2025 04 26 Final de la Copa del Rey - 54482387776 (Elenco do Real Madrid) (Antonio Rüdiger).jpg",
+    "mendy": "File:Ofrenda de la Liga y la Champions-49-L.Millán (52109311048) (Ferland Mendy).jpg",
+    "dumfries": "File:Edison ndreca inter egnati (cropped Denzel Dumfries).jpg",
+    "bellingham": "File:25th Laureus World Sports Awards - Red Carpet - Jude Bellingham - 240422 190551-2 (cropped).jpg",
+    "camavinga": "File:Ofrenda de la Liga y la Champions-13-L.Millán (52109790215) (cropped).jpg",
+    "valverde": "File:Federico Valverde 2021 (cropped).jpg",
+    "tchouameni": "File:2025 04 26 Final de la Copa del Rey - Aurélien Tchouaméni.jpg",
+    "guler": "File:Arda Güler 2025 (cropped).jpg",
+    "bernardo": "File:Bernardo Silva Croatia v Portugal 2 July 2026-238.jpg",
+    "vinicius": "File:Vinicius Jr 2021.jpg",
+    "endrick": "File:Team Brazil at 2026 FIFA World Cup by YantsImages (Endrick).jpg",
+    "mbappe": "File:Kylian Mbappé against Málaga, match valid for the third round of La Liga on August 30, 2026.png",
+    "rodrygo": "File:Rodrygo 2023 (cropped).jpg",
+    "brahim": "File:Brahim Diaz Morocco v Norway 7 June 2026-36 (cropped 3-4).jpg",
+    "diomande": "File:Yan Diomande Cote D'Ivoire v Ecuador 14 June 2026-17 (cropped).jpg",
+    "mourinho": "File:José Mourinho 20250206 (1).jpg",
+    "florentino": "File:25th Laureus World Sports Awards - Red Carpet - Florentino Pérez - 240422 194826 (cropped).jpg"
+  }
+}
