@@ -101,7 +101,7 @@ PROMPT = """Tu es le rédacteur d'un site arabophone qui fait découvrir au publ
 
 Pour chaque article ci-dessous :
 1. Décide de sa nature :
-   - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid.
+   - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (uno a uno, aprobados y suspensos).
    - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat final d'un match du Real Madrid (score et buteurs), composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
    - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents), n'en garde qu'un seul, le plus complet. Idem s'il est déjà dans la liste « DÉJÀ PUBLIÉ » plus bas.
@@ -163,7 +163,7 @@ def deja_publies(chemin=DB, jours=2):
 PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le Real Madrid (football masculin), d'après leur titre et leur chapeau.
 
 Garde :
-- opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid ;
+- opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (« uno a uno », « aprobados y suspensos », « player ratings », « notes ») ;
 - info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses ; compositions probables seulement si le journal est Marca ou AS.
 Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports, autres compositions probables.
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
@@ -957,7 +957,7 @@ def main():
     if not args.rendre and not args.photos and not args.threads:
         print("Collecte des flux...")
         # liens Google News = redirections : ni auteur ni texte lisible
-        items = [it for it in collecter(DB, CONFIG.get("age_max_heures_site", 168))
+        items = [it for it in collecter(DB, CONFIG.get("age_max_heures_site", 24))
                  if not it["lien"].startswith("https://news.google.com") and not est_direct(it) and not est_pratique(it)]
         for it in items:
             if "@" in it["auteur"]:  # "info@vi.nl (Voetbal International)" n'est pas un journaliste
@@ -971,7 +971,9 @@ def main():
             if tri:  # sinon (réponse illisible) : tout est rédigé comme avant
                 gardes, ecartes = tri
                 marquer_vus(ecartes, DB)
-                print(f"  {len(gardes)} gardé(s), {len(ecartes)} écarté(s).")
+                print(f"  {len(gardes)} gardé(s), {len(ecartes)} écarté(s) :")
+                for it in ecartes:  # pour contrôler la qualité du tri dans le journal du passage
+                    print(f"    - {journal(it)} | {it['titre'][:100]}")
                 items = gardes
         taille = CONFIG.get("max_articles_site", 8)
         lots = [items[i:i + taille] for i in range(0, len(items), taille)][:CONFIG.get("max_lots_site", 5)]

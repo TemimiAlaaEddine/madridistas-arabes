@@ -68,12 +68,12 @@ def connexion_threads(con):
     con.execute("CREATE TABLE IF NOT EXISTS threads (article_id INTEGER PRIMARY KEY, tweets TEXT, statut TEXT, date TEXT)")
 
 
-def decouper(con, jours=2):
+def decouper(con, heures=24):
     """Fait écrire par Claude les threads des articles récents qui n'en ont pas encore. Retourne le nombre créé."""
     connexion_threads(con)
     arts = con.execute("SELECT * FROM articles WHERE id NOT IN (SELECT article_id FROM threads)"
-                       " AND date >= date('now', ?) ORDER BY section = 'actus', date DESC LIMIT ?",
-                       (f"-{jours} days", CONFIG.get("max_threads", 10))).fetchall()
+                       " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?) ORDER BY section = 'actus', date DESC LIMIT ?",
+                       (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall()
     if not arts:
         return 0
     blocs = [f"[id {a['id']}] Section : {a['section']}\nAuteur : {a['auteur_ar'] or a['auteur'] or 'inconnu'}\n"

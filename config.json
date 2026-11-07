@@ -205,10 +205,10 @@
     "mourinho": "مورينيو",
     "florentino": "فلورنتينو بيريز"
   },
-  "age_max_heures_site": 168,
+  "age_max_heures_site": 24,
   "max_lots_site": 5,
   "max_threads": 10,
-  "modele_tri": "haiku",
+  "modele_tri": "sonnet",
   "modele_redaction": "sonnet",
   "wikipedia": {
     "courtois": "Thibaut Courtois",
