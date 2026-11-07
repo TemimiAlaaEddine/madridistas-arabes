@@ -1,10 +1,7 @@
 name: Mise à jour du site et threads
 
 on:
-  schedule:
-    # toutes les heures de 5 h à 22 h UTC, à la minute 17 (GitHub saute souvent les passages pile à l'heure) ;
-    # l'étape « Heure d'Espagne » ne garde que 7 h - 23 h à Madrid, été comme hiver
-    - cron: "17 5-22 * * *"
+  # déclenché chaque heure (7 h - 23 h, Europe/Madrid) par cron-job.org : la planification GitHub sautait des passages
   workflow_dispatch: # bouton « Run workflow » (aussi dans l'app GitHub) : passage à la demande, ex. avant un match
 
 concurrency: mise_a_jour # jamais deux passages en même temps
@@ -17,24 +14,13 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 60
     steps:
-      - name: Heure d'Espagne
-        if: github.event_name == 'schedule'
-        run: |
-          h=$(TZ=Europe/Madrid date +%-H)
-          echo "Madrid : ${h} h"
-          if [ "$h" -lt 7 ] || [ "$h" -gt 23 ]; then echo "HORS_HEURES=1" >> "$GITHUB_ENV"; fi
       - uses: actions/checkout@v4
-        if: env.HORS_HEURES != '1'
       - uses: actions/setup-python@v5
-        if: env.HORS_HEURES != '1'
         with:
           python-version: "3.14"
       - run: pip install feedparser
-        if: env.HORS_HEURES != '1'
       - run: npm install -g @anthropic-ai/claude-code
-        if: env.HORS_HEURES != '1'
       - name: Photos et couvertures déjà faites (évite de tout refaire)
-        if: env.HORS_HEURES != '1'
         uses: actions/cache@v4
         with:
           path: |
@@ -43,7 +29,6 @@ jobs:
           key: images-${{ github.run_id }}
           restore-keys: images-
       - name: Collecte, rédaction, threads
-        if: env.HORS_HEURES != '1'
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
@@ -51,7 +36,7 @@ jobs:
           PYTHONIOENCODING: utf-8
         run: python generer_site.py
       - name: Sauvegarde de la base dans le dépôt
-        if: always() && env.HORS_HEURES != '1'
+        if: always()
         run: |
           git config user.name "mise-a-jour"
           git config user.email "actions@users.noreply.github.com"
