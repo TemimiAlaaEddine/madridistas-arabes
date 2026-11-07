@@ -158,21 +158,29 @@ def construire_prompt(items):
 
 
 # ---------- Claude ----------
-def appeler_claude(prompt):
+def appeler_claude(prompt, modele=None, effort=None):
     exe = shutil.which("claude")
     if not exe:
         sys.exit(
             "Claude Code introuvable. Installe-le et connecte-toi à ton compte, "
             "ou utilise le mode manuel : python insider.py --manuel"
         )
+    # mode allégé : sans outils, plugins, MCP ni réglages, Claude Code n'ajoute ~1 000 tokens au lieu de ~50 000
+    cmd = [exe, "-p", "--output-format", "json", "--tools", "", "--strict-mcp-config", "--setting-sources", "",
+           "--no-session-persistence", "--system-prompt", "Tu es un rédacteur. Réponds strictement au format demandé."]
+    cmd += ["--model", modele] if modele else []
+    cmd += ["--effort", effort] if effort else []
     r = subprocess.run(
-        [exe, "-p", "--output-format", "text"],
-        input=prompt, capture_output=True, text=True, encoding="utf-8",
+        cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
         timeout=CONFIG.get("delai_claude_secondes", 600),
     )
     if r.returncode != 0:
         sys.exit(f"Erreur Claude (code {r.returncode}) :\n{r.stderr or r.stdout}")
-    return r.stdout
+    sortie = json.loads(r.stdout)
+    u = sortie.get("usage", {})
+    entree = u.get("input_tokens", 0) + u.get("cache_creation_input_tokens", 0) + u.get("cache_read_input_tokens", 0)
+    print(f"  (Claude {modele or 'défaut'} : {entree} tokens lus, {u.get('output_tokens', 0)} écrits)")
+    return sortie.get("result", "")
 
 
 def extraire_json(texte):

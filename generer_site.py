@@ -79,7 +79,8 @@ class Paragraphes(HTMLParser):
 
 
 def texte_complet(it):
-    """Texte de la page si elle est lisible, sinon celui du flux (le plus long des deux)."""
+    """Texte de la page si elle est lisible, sinon celui du flux (le plus long des deux), coupé selon le type :
+    une info tient dans son début ; une longue opinion garde son début (thèse) et sa fin (conclusion)."""
     page = ""
     try:
         req = urllib.request.Request(it["lien"], headers={"User-Agent": "Mozilla/5.0"})
@@ -89,7 +90,10 @@ def texte_complet(it):
         page = "\n".join(p.morceaux)
     except Exception as err:  # noqa: BLE001 - page bloquée (403, abonnement...) : on garde le flux
         print(f"  ! page illisible ({err}) : {it['lien'][:70]}")
-    return max(page, it.get("texte_flux", ""), key=len)[:15000]
+    texte = max(page, it.get("texte_flux", ""), key=len)
+    if it.get("type") == "info":
+        return texte[:2500]
+    return texte if len(texte) <= 8000 else texte[:6500] + "\n[…]\n" + texte[-1500:]
 
 
 # ---------- prompt ----------
@@ -99,11 +103,11 @@ Pour chaque article ci-dessous :
 1. Décide de sa nature :
    - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid.
    - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat final d'un match du Real Madrid (score et buteurs), composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
-   - À ignorer : pronostics et paris, horaires TV, compositions probables (mais garde la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports.
+   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents), n'en garde qu'un seul, le plus complet. Idem s'il est déjà dans la liste « DÉJÀ PUBLIÉ » plus bas.
 2. Classe-le dans une section : actus pour toute information ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, clair et soigné :
-   - Information (actus) : 60 à 120 mots, uniquement les faits, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots.
+   - Information (actus) : 60 à 120 mots, uniquement les faits, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
    - Opinion, selon le « Mode » indiqué :
      - Mode résumé : un article de 250 à 400 mots qui expose la thèse et les arguments de l'auteur avec tes propres mots, à la troisième personne (يرى الكاتب...). Au maximum 3 citations courtes traduites (moins de 25 mots chacune) entre guillemets «». Ne traduis pas l'article phrase par phrase.
      - Mode traduction : traduction intégrale et fidèle du texte fourni.
@@ -114,10 +118,12 @@ Pour chaque article ci-dessous :
    "sujet" : la clé de la personne dont l'article parle principalement, seulement si elle est dans cette liste ; sinon "" (ex. : article centré sur un joueur absent de la liste, ou sur le club en général).
 7. "citation" : la phrase la plus forte de ton texte arabe (idée centrale ou formule marquante), 8 à 20 mots, sans guillemets. Pour une information : le fait principal en une phrase.
 8. "chiffres" : seulement si l'article repose sur des chiffres marquants (statistiques, montants, records), jusqu'à 3 objets {{"valeur": "100", "libelle": "هدف بقميص ريال مدريد"}} : valeur courte (ex. "61,3%", "180 م€"), libellé arabe de 2 à 6 mots, tirés du texte. Sinon [].
+9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا العرب » :
+{regles_tweets}
 
 FORMAT DE RÉPONSE
 Réponds UNIQUEMENT avec un tableau JSON valide, sans texte avant ni après, sans bloc de code :
-[{{"id": 1, "section": "actus|tactique|mercato|club|debats", "titre": "...", "chapeau": "جملة أو جملتان", "texte": "paragraphes séparés par \\n\\n", "auteur": "...", "auteur_ar": "...", "via": "", "personnes": ["mbappe"], "sujet": "mbappe", "citation": "...", "chiffres": []}}]
+[{{"id": 1, "section": "actus|tactique|mercato|club|debats", "titre": "...", "chapeau": "جملة أو جملتان", "texte": "paragraphes séparés par \\n\\n", "auteur": "...", "auteur_ar": "...", "via": "", "personnes": ["mbappe"], "sujet": "mbappe", "citation": "...", "chiffres": [], "tweets": ["...", "..."]}}]
 Si aucun article ne convient, réponds [].
 
 DÉJÀ PUBLIÉ CES DERNIERS JOURS (informations et propos à ne pas reprendre, sauf fait vraiment nouveau)
@@ -140,17 +146,58 @@ def construire_prompt(items, deja=()):
                      f"Titre : {it['titre']}\nTexte :\n{it['texte']}")
     personnes = ", ".join(f"{k} ({v})" for k, v in PERSONNES.items())
     deja = "\n".join(f"- {t}" for t in deja) or "(aucune)"
-    return PROMPT.format(personnes=personnes, deja=deja, articles="\n\n".join(blocs))
+    return PROMPT.format(personnes=personnes, deja=deja, articles="\n\n".join(blocs), regles_tweets=threads.REGLES)
 
 
-def deja_publies(chemin=DB, jours=3):
-    """Titres (original / arabe) des articles récents de toutes sections, pour que Claude ne publie pas deux fois
-    la même information ni les mêmes propos (ex. une déclaration reprise par Marca et Foot Mercato)."""
+def deja_publies(chemin=DB, jours=2):
+    """Titres d'origine des articles récents de toutes sections, pour que Claude ne publie pas deux fois
+    la même information ni les mêmes propos (ex. une déclaration reprise par Marca et Foot Mercato).
+    Titres d'origine seulement : moins de tokens que l'arabe, et Claude rapproche les langues tout seul."""
     con = connexion(chemin)
-    lignes = con.execute("SELECT titre_original, titre FROM articles WHERE date >= date('now', ?)",
+    lignes = con.execute("SELECT titre_original FROM articles WHERE date >= date('now', ?)",
                          (f"-{jours} days",)).fetchall()
     con.close()
-    return [f"{o} / {t}" for o, t in lignes]
+    return [o for (o,) in lignes]
+
+
+PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le Real Madrid (football masculin), d'après leur titre et leur chapeau.
+
+Garde :
+- opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid ;
+- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses ; compositions probables seulement si le journal est Marca ou AS.
+Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports, autres compositions probables.
+Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
+En cas de doute, garde.
+
+Réponds UNIQUEMENT avec le tableau JSON des articles gardés, sans texte autour : [{{"id": 3, "type": "opinion"}}, {{"id": 7, "type": "info"}}]
+
+DÉJÀ PUBLIÉ
+{deja}
+
+ARTICLES
+{articles}
+"""
+
+
+def trier(items, deja=()):
+    """Tri sur titre + chapeau par un modèle léger : seuls les gardés seront lus en entier et rédigés.
+    Retourne (gardés, avec it["type"] = opinion|info ; écartés), ou None si la réponse est illisible."""
+    blocs = [f"[{i}] {journal(it)}{' (rubrique opinion)' if it.get('opinion') else ''} : {it['titre']}\n{it['resume'][:300]}"
+             for i, it in enumerate(items, 1)]
+    reponse = appeler_claude(PROMPT_TRI.format(deja="\n".join(f"- {t}" for t in deja) or "(aucun)",
+                                               articles="\n\n".join(blocs)), CONFIG.get("modele_tri", "haiku"), "low")
+    try:
+        choix = {r.get("id"): r.get("type") for r in extraire_json(reponse) if isinstance(r, dict)}
+    except (ValueError, json.JSONDecodeError):
+        return None
+    gardes, ecartes = [], []
+    for i, it in enumerate(items, 1):
+        if i in choix:
+            it["type"] = "opinion" if choix[i] == "opinion" else "info"
+            gardes.append(it)
+        else:
+            ecartes.append(it)
+    return gardes, ecartes
 
 
 # ---------- base ----------
@@ -207,6 +254,13 @@ def enregistrer(reponses, items, chemin=DB):
              str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False)),
         )
         n += cur.rowcount
+        tweets = cur.rowcount and threads.assembler(
+            {"auteur_ar": r.get("auteur_ar") or auteur, "auteur": auteur, "journal": journal(it), "lien": it["lien"]},
+            r.get("tweets") or [])
+        if tweets:  # sinon (absent ou trop long) : threads.decouper le réécrira
+            threads.connexion_threads(con)
+            con.execute("INSERT OR IGNORE INTO threads VALUES (?,?,?,?)",
+                        (cur.lastrowid, json.dumps(tweets, ensure_ascii=False), "a_envoyer", now))
     con.commit()
     con.close()
     return n
@@ -842,6 +896,16 @@ def est_direct(it):
     return bool(DIRECT.search(it["titre"] + " " + it["lien"]))
 
 
+# horaires TV et paris : écartés gratuitement avant Claude (les compositions probables, elles, passent)
+PRATIQUE = re.compile(r"a qu[ée] hora|d[óo]nde ver|ver-television|por televisi[óo]n|en qu[ée] canal|qu[ée] canal|"
+                      r"sur quelle cha[iî]ne|[àa] quelle heure|where to watch|what time is|tv channel|hangi kanal|"
+                      r"pron[óo]stico|apuestas|cuotas|pronostic|betting|onde assistir|que horas", re.I)
+
+
+def est_pratique(it):
+    return bool(PRATIQUE.search(it["titre"] + " " + it["lien"]))
+
+
 def alterner_pays(items):
     """Un article par pays à tour de rôle, pour que la presse étrangère ne passe pas toujours après l'espagnole."""
     groupes = defaultdict(list)
@@ -859,7 +923,7 @@ def traiter_lot(lot):
     """Lit les articles, fait rédiger Claude, enregistre. Retourne le nombre d'articles ajoutés (None si réponse illisible)."""
     for it in lot:
         it["texte"] = texte_complet(it)
-    reponse = appeler_claude(construire_prompt(lot, deja_publies()))
+    reponse = appeler_claude(construire_prompt(lot, deja_publies()), CONFIG.get("modele_redaction", "sonnet"))
     try:
         reponses = extraire_json(reponse)
     except (ValueError, json.JSONDecodeError) as err:
@@ -886,12 +950,21 @@ def main():
         print("Collecte des flux...")
         # liens Google News = redirections : ni auteur ni texte lisible
         items = [it for it in collecter(DB, CONFIG.get("age_max_heures_site", 168))
-                 if not it["lien"].startswith("https://news.google.com") and not est_direct(it)]
+                 if not it["lien"].startswith("https://news.google.com") and not est_direct(it) and not est_pratique(it)]
         for it in items:
             if "@" in it["auteur"]:  # "info@vi.nl (Voetbal International)" n'est pas un journaliste
                 it["auteur"] = ""
         items, doublons = dedoublonner(items)
         items = ordonner(items)
+        if items and not args.test:
+            candidats = items[:60]  # au-delà : triés au prochain passage
+            print(f"Tri de {len(candidats)} article(s) sur titre et chapeau...")
+            tri = trier(candidats, deja_publies())
+            if tri:  # sinon (réponse illisible) : tout est rédigé comme avant
+                gardes, ecartes = tri
+                marquer_vus(ecartes, DB)
+                print(f"  {len(gardes)} gardé(s), {len(ecartes)} écarté(s).")
+                items = gardes
         taille = CONFIG.get("max_articles_site", 8)
         lots = [items[i:i + taille] for i in range(0, len(items), taille)][:CONFIG.get("max_lots_site", 5)]
         reste = len(items) - sum(len(lot) for lot in lots)  # repris au prochain passage

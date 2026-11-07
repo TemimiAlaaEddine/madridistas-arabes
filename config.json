@@ -208,6 +208,8 @@
   "age_max_heures_site": 168,
   "max_lots_site": 5,
   "max_threads": 10,
+  "modele_tri": "haiku",
+  "modele_redaction": "sonnet",
   "wikipedia": {
     "courtois": "Thibaut Courtois",
     "lunin": "Andriy Lunin",

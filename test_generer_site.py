@@ -121,8 +121,8 @@ with tempfile.TemporaryDirectory() as tmp:
     g.enregistrer([{"id": 1, "section": "actus", "titre": "إصابة كورتوا", "texte": "ن"}],
                   [{"lien": "https://ex.com/c", "titre": "Courtois lesionado", "auteur": "", "source": "Marca", "pays": "es"}], db)
     deja = g.deja_publies(db)
-    assert deja == ["Courtois lesionado / إصابة كورتوا"]
-    assert "- Courtois lesionado / إصابة كورتوا" in g.construire_prompt([], deja)
+    assert deja == ["Courtois lesionado"]
+    assert "- Courtois lesionado" in g.construire_prompt([], deja)
     assert "(aucune)" in g.construire_prompt([])
     site.mkdir()
     (site / "a-99.html").write_text("vieux", encoding="utf-8")
@@ -178,7 +178,7 @@ with tempfile.TemporaryDirectory() as tmp:
     db = Path(tmp) / "a.db"
     g.enregistrer([{"id": 1, "section": "debats", "titre": "ليزارازو ينتقد مبابي", "texte": "ن"}],
                   [{"lien": "https://ex.com/l", "titre": "Lizarazu recadre Mbappé", "auteur": "", "source": "Foot Mercato", "pays": "fr"}], db)
-    assert g.deja_publies(db) == ["Lizarazu recadre Mbappé / ليزارازو ينتقد مبابي"]
+    assert g.deja_publies(db) == ["Lizarazu recadre Mbappé"]
 print("OK directs et doublons d'opinion")
 
 # threads X : longueur comptée comme X, crédit + numérotation, thread refusé si un tweet dépasse 280
@@ -195,7 +195,7 @@ with tempfile.TemporaryDirectory() as tmp:
                   [{"lien": "https://ex.com/t", "titre": "T", "auteur": "", "source": "Marca", "pays": "es"}], db)
     con = sqlite3.connect(db)
     con.row_factory = sqlite3.Row
-    t.appeler_claude = lambda prompt: '[{"id": 1, "tweets": ["فكرة"]}, {"id": 99, "tweets": ["x"]}]'
+    t.appeler_claude = lambda prompt, *a: '[{"id": 1, "tweets": ["فكرة"]}, {"id": 99, "tweets": ["x"]}]'
     assert t.decouper(con) == 1 and t.decouper(con) == 0  # id inconnu ignoré, pas de second thread
     envoyes = []
     t.CONFIG.update(telegram_token="x", telegram_chat_id="1")
@@ -203,3 +203,27 @@ with tempfile.TemporaryDirectory() as tmp:
     assert t.envoyer(con, {}, Path(tmp)) == 1 and len(envoyes) == 3 and t.envoyer(con, {}, Path(tmp)) == 0
     con.close()
 print("OK threads")
+
+# économies de Claude : filtre gratuit, tri sur titre, textes coupés, thread écrit avec l'article
+assert g.est_pratique({"titre": "Valencia vs Real Madrid: a qué hora juega y dónde ver", "lien": "https://x"})
+assert g.est_pratique({"titre": "Match", "lien": "https://www.abc.es/deportes/real-madrid/ver-television-online-real-madrid"})
+assert not g.est_pratique({"titre": "Alineación probable del Real Madrid ante el Valencia", "lien": "https://www.marca.com/a.html"})
+lot = [{"titre": f"T{i}", "resume": "r", "source": "Marca", "lien": f"https://m/{i}"} for i in range(3)]
+g.appeler_claude = lambda prompt, *a: '[{"id": 1, "type": "opinion"}, {"id": 3, "type": "info"}, {"id": 9, "type": "info"}]'
+gardes, ecartes = g.trier(lot)
+assert [it["titre"] for it in gardes] == ["T0", "T2"] and gardes[0]["type"] == "opinion" and ecartes == [lot[1]]
+g.appeler_claude = lambda prompt, *a: "désolé"
+assert g.trier(lot) is None
+long = {"lien": "http://localhost:1/x", "texte_flux": "د" * 6500 + "و" * 4000 + "ف" * 1500}
+assert len(g.texte_complet({**long, "type": "info"})) == 2500
+t_op = g.texte_complet({**long, "type": "opinion"})
+assert t_op.startswith("د" * 6500) and t_op.endswith("ف" * 1500) and "و" not in t_op
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "ع", "texte": "ن", "auteur_ar": "كاتب", "tweets": ["خبر"]}],
+                  [{"lien": "https://ex.com/w", "titre": "T", "auteur": "X", "source": "AS", "pays": "es"}], db)
+    con = sqlite3.connect(db)
+    (tw,) = con.execute("SELECT tweets FROM threads").fetchone()
+    assert "خبر" in tw and "https://ex.com/w" in tw and "كاتب | AS" in tw
+    con.close()
+print("OK économies Claude")

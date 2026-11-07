@@ -18,14 +18,17 @@ LIMITE = 280
 SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHub : variables d'environnement
 URL = re.compile(r"https?://\S+")
 
-PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا العرب », à partir d'articles déjà rédigés pour son site.
-
-Pour chaque article, écris le thread :
-- Tweet 1 : accroche forte qui donne l'idée principale et nomme l'auteur ou le média (ex. : يرى الصحفي ... في «ماركا» أن ...). Ajoute #ريال_مدريد à la fin.
+# règles communes : thread écrit avec l'article (generer_site) ou après coup (decouper)
+REGLES = """- Tweet 1 : accroche forte qui donne l'idée principale et nomme l'auteur ou le média (ex. : يرى الصحفي ... في «ماركا» أن ...). Ajoute #ريال_مدريد à la fin.
 - Tweets suivants : développement fidèle au texte, une idée par tweet, en gardant ses citations «» telles quelles.
 - Nombre de tweets : 1 ou 2 pour une information (section actus), 3 à 6 pour une opinion.
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag.
-- N'ajoute aucun fait ni avis absent du texte.
+- N'ajoute aucun fait ni avis absent du texte."""
+
+PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا العرب », à partir d'articles déjà rédigés pour son site.
+
+Pour chaque article, écris le thread :
+{regles}
 
 Réponds UNIQUEMENT avec un tableau JSON valide, sans texte avant ni après :
 [{{"id": 12, "tweets": ["...", "..."]}}]
@@ -76,7 +79,8 @@ def decouper(con, jours=2):
     blocs = [f"[id {a['id']}] Section : {a['section']}\nAuteur : {a['auteur_ar'] or a['auteur'] or 'inconnu'}\n"
              f"Média : {a['journal']}\nTitre : {a['titre']}\nTexte :\n{a['texte']}" for a in arts]
     try:
-        reponses = extraire_json(appeler_claude(PROMPT.format(articles="\n\n".join(blocs))))
+        reponses = extraire_json(appeler_claude(PROMPT.format(regles=REGLES, articles="\n\n".join(blocs)),
+                                                CONFIG.get("modele_redaction", "sonnet")))
     except (ValueError, json.JSONDecodeError) as err:
         print(f"  ! threads : réponse illisible ({err}), repris au prochain passage")
         return 0
