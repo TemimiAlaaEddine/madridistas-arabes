@@ -59,8 +59,13 @@
       "pays": "br"
     },
     {
-      "nom": "El Pais Uruguay - Ovacion",
-      "url": "https://www.elpais.com.uy/rss/ovacion",
+      "nom": "El Observador - Referi",
+      "url": "https://www.elobservador.com.uy/rss/pages/referi.xml",
+      "pays": "uy"
+    },
+    {
+      "nom": "Tenfield",
+      "url": "https://www.tenfield.com.uy/feed/",
       "pays": "uy"
     },
     {
