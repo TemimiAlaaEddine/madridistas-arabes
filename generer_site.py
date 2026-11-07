@@ -92,7 +92,9 @@ def texte_complet(it):
         print(f"  ! page illisible ({err}) : {it['lien'][:70]}")
     texte = max(page, it.get("texte_flux", ""), key=len)
     if it.get("type") == "info":
-        return texte[:2500]
+        return texte[:4000]
+    if it.get("type") == "conference":  # toutes les réponses de l'entraîneur, sans couper le milieu
+        return texte[:12000]
     return texte if len(texte) <= 8000 else texte[:6500] + "\n[…]\n" + texte[-1500:]
 
 
@@ -107,10 +109,11 @@ Pour chaque article ci-dessous :
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents), n'en garde qu'un seul, le plus complet. Idem s'il est déjà dans la liste « DÉJÀ PUBLIÉ » plus bas.
 2. Classe-le dans une section : actus pour toute information ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, clair et soigné :
-   - Information (actus) : 60 à 120 mots, uniquement les faits, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
+   - Information (actus) : 120 à 200 mots, uniquement les faits, avec le contexte utile tiré du texte, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
    - Opinion, selon le « Mode » indiqué :
-     - Mode résumé : un article de 250 à 400 mots qui expose la thèse et les arguments de l'auteur avec tes propres mots, à la troisième personne (يرى الكاتب...). Au maximum 3 citations courtes traduites (moins de 25 mots chacune) entre guillemets «». Ne traduis pas l'article phrase par phrase.
+     - Mode résumé : un article de 400 à 600 mots qui expose la thèse, chacun des arguments et la conclusion de l'auteur avec tes propres mots, à la troisième personne (يرى الكاتب...). Au maximum 4 citations courtes traduites (moins de 25 mots chacune) entre guillemets «». Ne traduis pas l'article phrase par phrase.
      - Mode traduction : traduction intégrale et fidèle du texte fourni.
+   - Mode conférence (conférence de presse d'un entraîneur, section actus) : traduis fidèlement et intégralement toutes les déclarations de l'entraîneur présentes dans le texte (la limite de 15 mots ne s'applique pas), sans reprendre les phrases du journaliste. Présente-les par sujet : chaque sujet commence par la question ou le thème résumé en une ligne, suivi de ses réponses entre guillemets «». Une phrase d'introduction : qui parle, quand, avant ou après quel match.
 4. N'ajoute aucun fait ni aucun avis absent du texte. L'avis est celui de l'auteur, jamais celui du site, du média ou du club.
 5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar").
    Si l'article rapporte surtout l'avis d'un commentateur (radio, télévision, podcast, entretien) plutôt que celui de son auteur, mets ce commentateur dans "auteur"/"auteur_ar", présente l'avis comme le sien, et indique en "via" le média où il s'est exprimé, en arabe (ex. : راديو ماركا). Sinon laisse "via" vide.
@@ -141,7 +144,7 @@ def journal(it):
 def construire_prompt(items, deja=()):
     blocs = []
     for i, it in enumerate(items, 1):
-        mode = "traduction" if it.get("autorise") else "résumé"
+        mode = "traduction" if it.get("autorise") else "conférence" if it.get("type") == "conference" else "résumé"
         blocs.append(f"[{i}] Journal : {journal(it)}\nAuteur : {it['auteur'] or 'inconnu'}\nMode : {mode}\n"
                      f"Titre : {it['titre']}\nTexte :\n{it['texte']}")
     personnes = ", ".join(f"{k} ({v})" for k, v in PERSONNES.items())
@@ -164,13 +167,14 @@ PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le R
 
 Garde :
 - opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (« uno a uno », « aprobados y suspensos », « player ratings », « notes ») ;
+- conference : conférence de presse d'un entraîneur du Real Madrid, ou d'un entraîneur adverse qui parle du Real Madrid (déclarations d'avant ou d'après-match) ;
 - info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses ; compositions probables seulement si le journal est Marca ou AS.
 Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports, autres compositions probables.
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
 Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
 
-Réponds UNIQUEMENT avec le tableau JSON des articles gardés, sans texte autour : [{{"id": 3, "type": "opinion"}}, {{"id": 7, "type": "info"}}]
+Réponds UNIQUEMENT avec le tableau JSON des articles gardés, sans texte autour : [{{"id": 3, "type": "opinion"}}, {{"id": 5, "type": "conference"}}, {{"id": 7, "type": "info"}}]
 
 DÉJÀ PUBLIÉ
 {deja}
@@ -185,7 +189,7 @@ PROBABLE = re.compile(r"alineaci[óo]n(es)? (probables?|posibles?)|posible (once
 
 def trier(items, deja=()):
     """Tri sur titre + chapeau par un modèle léger : seuls les gardés seront lus en entier et rédigés.
-    Retourne (gardés, avec it["type"] = opinion|info ; écartés), ou None si la réponse est illisible."""
+    Retourne (gardés, avec it["type"] = opinion|conference|info ; écartés), ou None si la réponse est illisible."""
     blocs = [f"[{i}] {journal(it)}{' (rubrique opinion)' if it.get('opinion') else ''} : {it['titre']}\n{it['resume'][:300]}"
              for i, it in enumerate(items, 1)]
     reponse = appeler_claude(PROMPT_TRI.format(deja="\n".join(f"- {t}" for t in deja) or "(aucun)",
@@ -201,7 +205,7 @@ def trier(items, deja=()):
         elif journal(it) in ("Marca", "AS") and PROBABLE.search(it["titre"]):
             choix[i] = "info"
         if i in choix:
-            it["type"] = "opinion" if choix[i] == "opinion" else "info"
+            it["type"] = choix[i] if choix[i] in ("opinion", "conference") else "info"
             gardes.append(it)
         else:
             ecartes.append(it)
@@ -257,7 +261,7 @@ def enregistrer(reponses, items, chemin=DB):
             " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             # date : celle de l'article d'origine, sinon celle du passage
             (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, r.get("auteur_ar") or auteur,
-             journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "resume",
+             journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference" else "resume",
              json.dumps(personnes), via, rapporteur, r.get("sujet") if r.get("sujet") in PERSONNES else "",
              str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False)),
         )
@@ -793,7 +797,8 @@ def page_article(a, arts):
     badge = "ترجمة كاملة" if traduction else "ملخص وتعليق"
     if a["section"] == "actus":
         badge = "خبر"
-        origine = f"ملخص خبر نشرته {e(a['journal'])}" + (f" بقلم {nom}" if a["auteur"] else "")
+        nature = "ترجمة تصريحات المؤتمر الصحفي كما نقلتها" if a["mode"] == "conference" else "ملخص خبر نشرته"
+        origine = f"{nature} {e(a['journal'])}" + (f" بقلم {nom}" if a["auteur"] else "")
     elif a["via"]:  # avis d'un commentateur rapporté par un journaliste
         par = f' بقلم <bdi class="latin">{e(a["rapporteur"])}</bdi>' if a["rapporteur"] else ""
         origine = f"ملخص لآراء {nom} عن {e(a['via'])}، كما نقلها مقال{par} في {e(a['journal'])}"

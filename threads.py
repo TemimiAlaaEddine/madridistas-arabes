@@ -21,7 +21,7 @@ URL = re.compile(r"https?://\S+")
 # règles communes : thread écrit avec l'article (generer_site) ou après coup (decouper)
 REGLES = """- Tweet 1 : accroche forte qui donne l'idée principale et nomme l'auteur ou le média (ex. : يرى الصحفي ... في «ماركا» أن ...). Ajoute #ريال_مدريد à la fin.
 - Tweets suivants : développement fidèle au texte, une idée par tweet, en gardant ses citations «» telles quelles.
-- Nombre de tweets : 1 ou 2 pour une information (section actus), 3 à 6 pour une opinion.
+- Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, 4 à 10 pour une conférence de presse (une déclaration forte par tweet).
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag.
 - N'ajoute aucun fait ni avis absent du texte."""
 

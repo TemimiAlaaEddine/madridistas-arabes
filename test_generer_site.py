@@ -215,7 +215,7 @@ assert [it["titre"] for it in gardes] == ["T0", "T2"] and gardes[0]["type"] == "
 g.appeler_claude = lambda prompt, *a: "désolé"
 assert g.trier(lot) is None
 long = {"lien": "http://localhost:1/x", "texte_flux": "د" * 6500 + "و" * 4000 + "ف" * 1500}
-assert len(g.texte_complet({**long, "type": "info"})) == 2500
+assert len(g.texte_complet({**long, "type": "info"})) == 4000
 t_op = g.texte_complet({**long, "type": "opinion"})
 assert t_op.startswith("د" * 6500) and t_op.endswith("ف" * 1500) and "و" not in t_op
 with tempfile.TemporaryDirectory() as tmp:
@@ -235,3 +235,15 @@ office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume
 gardes, ecartes = g.trier(office)
 assert [it["type"] for it in gardes] == ["info", "opinion"] and ecartes == [office[2]]
 print("OK gardés d'office")
+# conférences de presse : type gardé par le tri, texte lu en entier, mode « conférence » dans le prompt et la base
+g.appeler_claude = lambda prompt, *a: '[{"id": 1, "type": "conference"}]'
+conf = [{"titre": "Rueda de prensa de Mourinho", "resume": "", "source": "AS - Futbol", "lien": "https://as.com/c", "auteur": ""}]
+assert g.trier(conf)[0][0]["type"] == "conference"
+assert len(g.texte_complet({"lien": "http://localhost:1/x", "texte_flux": "م" * 13000, "type": "conference"})) == 12000
+conf[0]["texte"] = "ن"
+assert "Mode : conférence" in g.construire_prompt(conf)
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "مورينيو", "texte": "ن"}], conf, db)
+    assert sqlite3.connect(db).execute("SELECT mode FROM articles").fetchone() == ("conference",)
+print("OK conférences")
