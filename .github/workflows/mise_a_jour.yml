@@ -41,4 +41,4 @@ jobs:
           git config user.name "mise-a-jour"
           git config user.email "actions@users.noreply.github.com"
           git add articles.db photos.json
-          git diff --cached --quiet || (git commit -m "Passage du $(date -u +'%Y-%m-%d %H:%M') UTC" && git push)
+          git diff --cached --quiet || (git commit -m "Passage du $(date -u +'%Y-%m-%d %H:%M') UTC" && git pull --rebase && git push)
