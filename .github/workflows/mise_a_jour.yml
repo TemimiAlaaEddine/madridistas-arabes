@@ -2,9 +2,11 @@ name: Mise à jour du site et threads
 
 on:
   schedule:
-    # heures UTC : 9 h et 21 h à l'heure de New York en hiver (10 h et 22 h en été, GitHub ignore l'heure d'été)
-    - cron: "0 14 * * *"
-    - cron: "0 2 * * *"
+    # heures UTC : 7 h, 12 h, 17 h et 22 h à l'heure de New York en hiver (une heure plus tard en été, GitHub ignore l'heure d'été)
+    - cron: "0 12 * * *"
+    - cron: "0 17 * * *"
+    - cron: "0 22 * * *"
+    - cron: "0 3 * * *"
   workflow_dispatch: # bouton « Run workflow » (aussi dans l'app GitHub) : passage à la demande, ex. avant un match
 
 concurrency: mise_a_jour # jamais deux passages en même temps

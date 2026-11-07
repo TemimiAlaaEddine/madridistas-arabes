@@ -227,3 +227,11 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "خبر" in tw and "https://ex.com/w" in tw and "كاتب | AS" in tw
     con.close()
 print("OK économies Claude")
+# gardés d'office même si le tri les oublie : rubrique d'opinion, composition probable Marca/AS
+g.appeler_claude = lambda prompt, *a: "[]"
+office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},
+          {"titre": "Viejos rockeros", "resume": "", "source": "AS - Opinion", "lien": "b", "opinion": True},
+          {"titre": "Predicted lineups", "resume": "", "source": "Managing Madrid", "lien": "c"}]
+gardes, ecartes = g.trier(office)
+assert [it["type"] for it in gardes] == ["info", "opinion"] and ecartes == [office[2]]
+print("OK gardés d'office")

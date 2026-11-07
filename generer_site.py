@@ -167,6 +167,7 @@ Garde :
 - info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses ; compositions probables seulement si le journal est Marca ou AS.
 Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports, autres compositions probables.
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
+Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
 
 Réponds UNIQUEMENT avec le tableau JSON des articles gardés, sans texte autour : [{{"id": 3, "type": "opinion"}}, {{"id": 7, "type": "info"}}]
@@ -177,6 +178,9 @@ DÉJÀ PUBLIÉ
 ARTICLES
 {articles}
 """
+
+
+PROBABLE = re.compile(r"alineaci[óo]n(es)? (probables?|posibles?)|posible (once|alineaci[óo]n)", re.I)
 
 
 def trier(items, deja=()):
@@ -192,6 +196,10 @@ def trier(items, deja=()):
         return None
     gardes, ecartes = [], []
     for i, it in enumerate(items, 1):
+        if it.get("opinion"):  # rubriques d'opinion et compositions probables Marca/AS : gardées d'office
+            choix[i] = "opinion"
+        elif journal(it) in ("Marca", "AS") and PROBABLE.search(it["titre"]):
+            choix[i] = "info"
         if i in choix:
             it["type"] = "opinion" if choix[i] == "opinion" else "info"
             gardes.append(it)
