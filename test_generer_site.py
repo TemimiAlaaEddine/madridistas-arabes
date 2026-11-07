@@ -245,5 +245,7 @@ assert "Mode : conférence" in g.construire_prompt(conf)
 with tempfile.TemporaryDirectory() as tmp:
     db = Path(tmp) / "a.db"
     g.enregistrer([{"id": 1, "section": "actus", "titre": "مورينيو", "texte": "ن"}], conf, db)
-    assert sqlite3.connect(db).execute("SELECT mode FROM articles").fetchone() == ("conference",)
+    con = sqlite3.connect(db)
+    assert con.execute("SELECT mode FROM articles").fetchone() == ("conference",)
+    con.close()
 print("OK conférences")
