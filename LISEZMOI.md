@@ -95,3 +95,9 @@ Les threads arrivent sur Telegram : un en-tête, la couverture à joindre au 1er
 - Config : `telegram_token` (fourni par @BotFather) et `telegram_chat_id` (ta conversation avec le bot).
 - Seulement les threads : `python generer_site.py --threads`
 - Un envoi raté reprend au passage suivant.
+
+Sur le site (page de chaque article) :
+
+- **ثريد X** : les tweets un par un, avec un bouton « نسخ » (copier), le nombre de caractères et la couverture à télécharger pour le 1er tweet.
+- **نشر على فيسبوك** : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸, puis le lien de la source (Facebook affiche la carte de l'article). Les articles d'avant cet ajout n'ont que le lien.
+- La case « تم النشر » est mémorisée par le navigateur. Les cartes de l'accueil affichent alors « ✓ نُشر ».

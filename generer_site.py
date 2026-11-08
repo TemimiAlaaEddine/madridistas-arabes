@@ -123,10 +123,11 @@ Pour chaque article ci-dessous :
 8. "chiffres" : seulement si l'article repose sur des chiffres marquants (statistiques, montants, records), jusqu'à 3 objets {{"valeur": "100", "libelle": "هدف بقميص ريال مدريد"}} : valeur courte (ex. "61,3%", "180 م€"), libellé arabe de 2 à 6 mots, tirés du texte. Sinon [].
 9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا علاء » :
 {regles_tweets}
+10. "titres_fb" : ton titre arabe traduit pour un groupe Facebook de supporters à Montréal, une phrase courte et naturelle en français, en anglais et en espagnol, noms propres dans leur graphie latine usuelle.
 
 FORMAT DE RÉPONSE
 Réponds UNIQUEMENT avec un tableau JSON valide, sans texte avant ni après, sans bloc de code :
-[{{"id": 1, "section": "actus|tactique|mercato|club|debats", "titre": "...", "chapeau": "جملة أو جملتان", "texte": "paragraphes séparés par \\n\\n", "auteur": "...", "auteur_ar": "...", "via": "", "personnes": ["mbappe"], "sujet": "mbappe", "citation": "...", "chiffres": [], "tweets": ["...", "..."]}}]
+[{{"id": 1, "section": "actus|tactique|mercato|club|debats", "titre": "...", "chapeau": "جملة أو جملتان", "texte": "paragraphes séparés par \\n\\n", "auteur": "...", "auteur_ar": "...", "via": "", "personnes": ["mbappe"], "sujet": "mbappe", "citation": "...", "chiffres": [], "tweets": ["...", "..."], "titres_fb": {{"fr": "...", "en": "...", "es": "..."}}}}]
 Si aucun article ne convient, réponds [].
 
 DÉJÀ PUBLIÉ CES DERNIERS JOURS (informations et propos à ne pas reprendre, sauf fait vraiment nouveau)
@@ -219,8 +220,8 @@ def connexion(chemin=DB):
     con.execute("""CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY, date TEXT, section TEXT,
         titre TEXT, chapeau TEXT, texte TEXT, auteur TEXT, auteur_ar TEXT, journal TEXT, pays TEXT,
         lien TEXT UNIQUE, titre_original TEXT, mode TEXT, personnes TEXT, via TEXT, rapporteur TEXT, sujet TEXT,
-        citation TEXT, chiffres TEXT)""")
-    for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres"):  # bases créées avant l'ajout de ces colonnes
+        citation TEXT, chiffres TEXT, titres_fb TEXT)""")
+    for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres", "titres_fb"):  # bases créées avant l'ajout de ces colonnes
         try:
             con.execute(f"ALTER TABLE articles ADD COLUMN {colonne} TEXT")
         except sqlite3.OperationalError:
@@ -255,15 +256,18 @@ def enregistrer(reponses, items, chemin=DB):
             auteur, rapporteur = auteur_claude, it["auteur"]
         else:
             auteur, rapporteur, via = it["auteur"] or auteur_claude, "", ""
+        fb = r.get("titres_fb") if isinstance(r.get("titres_fb"), dict) else {}
+        titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
         cur = con.execute(
             "INSERT OR IGNORE INTO articles (date, section, titre, chapeau, texte, auteur, auteur_ar, journal, pays,"
-            " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             # date : celle de l'article d'origine, sinon celle du passage
             (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, r.get("auteur_ar") or auteur,
              journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference" else "resume",
              json.dumps(personnes), via, rapporteur, r.get("sujet") if r.get("sujet") in PERSONNES else "",
-             str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False)),
+             str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False),
+             json.dumps(titres_fb, ensure_ascii=False) if titres_fb else ""),
         )
         n += cur.rowcount
         tweets = cur.rowcount and threads.assembler(
@@ -535,6 +539,26 @@ def generer_couvertures(arts, dossier):
 # ---------- rendu ----------
 CREDITS_PHOTOS = {}  # chargé par rendre_site
 COUVERTURES = {}  # id d'article -> fichier PNG, chargé par rendre_site
+THREADS = {}  # id d'article -> tweets du thread X, chargé par rendre_site
+
+# boutons X / Facebook : copier, coches, et mémoire « publié » propre au navigateur (site local, pas de serveur)
+JS = """const lire=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
+const ecrire=(k,v)=>{try{v?localStorage.setItem(k,"1"):localStorage.removeItem(k)}catch(e){}};
+async function copier(t){try{await navigator.clipboard.writeText(t)}catch(e){const z=document.createElement("textarea");
+z.value=t;document.body.append(z);z.select();document.execCommand("copy");z.remove()}}
+function marquer(){
+document.querySelectorAll("[data-pub]").forEach(x=>x.checked=!!lire("pub-"+x.dataset.pub));
+document.querySelectorAll("[data-id]").forEach(x=>{x.querySelectorAll(".pub").forEach(p=>p.remove());
+const s=[["x","X"],["fb","فيسبوك"]].filter(([r])=>lire(`pub-${r}-${x.dataset.id}`)).map(([,n])=>n);
+if(s.length){const p=document.createElement("span");p.className="pub";p.textContent="✓ نُشر: "+s.join(" · ");
+(x.querySelector(".signature")||x).append(p)}})}
+document.addEventListener("click",async ev=>{
+const o=ev.target.closest("[data-ouvre]");if(o){document.getElementById(o.dataset.ouvre).showModal();return}
+const c=ev.target.closest(".copier");if(c){const b=c.closest(".copiable");await copier(b.querySelector(".a-copier").textContent);
+b.classList.add("copie");c.textContent="✓ تم النسخ"}});
+document.addEventListener("change",ev=>{const p=ev.target.dataset.pub;if(p){ecrire("pub-"+p,ev.target.checked);marquer()}});
+marquer();
+"""
 SLOGAN = "صحافة العالم عن ريال مدريد، بالعربية"
 A_PROPOS = ("نختار لكم أبرز مقالات الرأي عن ريال مدريد في الصحافة الإسبانية والأوروبية وصحافة بلدان لاعبيه، "
             "ونقدّمها بالعربية مع ذكر الكاتب والمصدر.")
@@ -667,6 +691,19 @@ h1,h2,h3{overflow-wrap:anywhere}
 .source p{margin:0 0 14px;font-size:15px}
 .bouton{display:inline-block;background:var(--marine);color:#fff;text-decoration:none;border-radius:10px;padding:10px 20px;font-weight:600}
 .bouton:hover{background:var(--bleu);color:#fff}
+.partage{display:flex;flex-wrap:wrap;gap:10px;margin:-14px 0 26px}
+.partage button,.copier,.fermer{font:600 14px var(--titres);border:1px solid var(--ligne);background:var(--surface);color:var(--encre);border-radius:999px;padding:6px 16px;cursor:pointer}
+.partage button:hover,.copier:hover,.fermer:hover{border-color:var(--or)}
+.fenetre{width:min(640px,calc(100% - 32px));max-height:85vh;border:none;border-radius:var(--r);padding:22px 24px;background:var(--surface);color:var(--encre)}
+.fenetre::backdrop{background:#0b1f3acc}
+.fenetre h2{margin:0 0 12px;font-size:20px}
+.tweets{list-style:none;margin:16px 0;padding:0;display:grid;gap:12px}
+.copiable{border:1px solid var(--ligne);border-radius:10px;padding:12px 14px}
+.copiable.copie{border-color:var(--actus);background:color-mix(in srgb,var(--actus) 8%,transparent)}
+.a-copier{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.8 var(--titres)}
+.outils{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;color:var(--doux)}
+.publie{display:flex;gap:8px;align-items:center;font-weight:600;margin:14px 0}
+.pub{background:var(--or-pale);border-radius:999px;padding:1px 10px;font-size:12.5px;color:var(--encre)}
 .proches h2{font-size:17px;margin:0 0 14px}
 .proches .carte{margin-bottom:16px}
 
@@ -760,7 +797,7 @@ def page(titre, corps, actif=None, image=""):
         '<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">'
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<title>{e(titre)} | {NOM_SITE}</title><meta name="description" content="{SLOGAN}">{partage}'
-        f'<meta name="color-scheme" content="light dark">{POLICES}<link rel="stylesheet" href="style.css"></head><body>'
+        f'<meta name="color-scheme" content="light dark">{POLICES}<link rel="stylesheet" href="style.css"><script src="site.js" defer></script></head><body>'
         '<a class="sauter" href="#contenu">انتقل إلى المحتوى</a>'
         f'<header class="entete"><div class="bande"><div class="cadre"><span class="slogan">{SLOGAN}</span>'
         f'<span>{date_ar(datetime.now().isoformat())}</span></div></div><div class="cadre marque">{logo()}</div></header>'
@@ -795,7 +832,7 @@ def signature(a):
 def carte(a, classe="", niveau="h3"):
     couv = COUVERTURES.get(a["id"])
     image = f'<img class="couv" src="couvertures/{couv}" alt="" loading="lazy">' if couv else ""
-    return (f'<article class="carte {classe} s-{a["section"]}">{image}<div class="contenu">{rubrique(a)}'
+    return (f'<article class="carte {classe} s-{a["section"]}" data-id="{a["id"]}">{image}<div class="contenu">{rubrique(a)}'
             f'<{niveau}><a class="titre" href="a-{a["id"]}.html">{e(a["titre"])}</a></{niveau}>'
             f'<p class="resume">{e(a["chapeau"])}</p>{signature(a)}</div></article>')
 
@@ -830,7 +867,7 @@ def liste(sur_titre, titre, arts, description="", actif=None, classe="", sous_ti
 def fil(arts):
     """Liste chronologique compacte (revue de presse, dernières nouvelles)."""
     return '<ol class="fil">' + "".join(
-        f'<li class="s-{a["section"]}">{rubrique(a)}<a class="titre" href="a-{a["id"]}.html">{e(a["titre"])}</a>'
+        f'<li class="s-{a["section"]}" data-id="{a["id"]}">{rubrique(a)}<a class="titre" href="a-{a["id"]}.html">{e(a["titre"])}</a>'
         f'<p>{e(a["chapeau"])}</p>{signature(a)}</li>' for a in arts) + "</ol>"
 
 
@@ -866,6 +903,33 @@ def page_accueil(arts):
     return page("الرئيسية", corps, "index")
 
 
+def copiable(texte, compteur=""):
+    return (f'<li class="copiable"><pre class="a-copier" dir="auto">{e(texte)}</pre><div class="outils">'
+            f'<small>{compteur}</small><button type="button" class="copier">نسخ</button></div></li>')
+
+
+def fenetre(id_, titre, contenu):
+    return (f'<dialog id="{id_}" class="fenetre"><h2>{titre}</h2>{contenu}'
+            f'<label class="publie"><input type="checkbox" data-pub="{id_}"> تم النشر</label>'
+            '<form method="dialog"><button class="fermer">إغلاق</button></form></dialog>')
+
+
+def partage(a):
+    """Boutons X (thread tweet par tweet) et Facebook (titres FR/EN/ES + lien de la source), à copier-coller."""
+    i, couv, tweets = a["id"], COUVERTURES.get(a["id"]), THREADS.get(a["id"], [])
+    fb = json.loads(a["titres_fb"]) if a["titres_fb"] else {}
+    post = "\n".join(f"{d} {fb[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if fb.get(k))
+    post = f"{post}\n\n{a['lien']}" if post else a["lien"]  # articles d'avant les titres traduits : le lien seul
+    boutons = f'<button type="button" data-ouvre="fb-{i}">نشر على فيسبوك</button>'
+    fenetres = fenetre(f"fb-{i}", "منشور فيسبوك", f'<ul class="tweets">{copiable(post)}</ul>')
+    if tweets:
+        image = f'<a class="bouton" href="couvertures/{couv}" download>تنزيل صورة التغريدة الأولى</a>' if couv else ""
+        liste_tw = "".join(copiable(t, f"{threads.longueur(t)}/{threads.LIMITE}") for t in tweets)
+        boutons = f'<button type="button" data-ouvre="x-{i}">ثريد X ({len(tweets)})</button>' + boutons
+        fenetres += fenetre(f"x-{i}", "ثريد X", f'{image}<ol class="tweets">{liste_tw}</ol>')
+    return f'<div class="partage">{boutons}</div>{fenetres}'
+
+
 def page_article(a, arts):
     paragraphes = "".join(f"<p>{e(p)}</p>" for p in a["texte"].split("\n\n") if p.strip())
     tags = "".join(f'<a href="p-{p}.html">{e(PERSONNES[p])}</a>' for p in json.loads(a["personnes"]) if p in PERSONNES)
@@ -899,7 +963,7 @@ def page_article(a, arts):
         f'<div class="haut">{rubrique(a)}<span class="nature">{badge}</span></div>'
         f'<h1>{e(a["titre"])}</h1><p class="chapeau">{e(a["chapeau"])}</p>'
         f'<div class="tete-auteur">{auteur}{infos}</div>'
-        f'{couverture}'
+        f'{partage(a)}{couverture}'
         f'<div class="texte">{paragraphes}</div>'
         f'{f"<div class=etiquettes><strong>في هذا المقال:</strong>{tags}</div>" if tags else ""}'
         f'<aside class="source"><h2>المقال الأصلي</h2><p class="titre-original"><bdi dir="auto">{e(a["titre_original"])}</bdi></p>'
@@ -942,11 +1006,14 @@ def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
         CREDITS_PHOTOS.update({k: c for k, c in json.loads(credits.read_text(encoding="utf-8")).items() if c})
     con = connexion(chemin)
     arts = con.execute("SELECT * FROM articles ORDER BY date DESC, id DESC").fetchall()
+    threads.connexion_threads(con)
+    THREADS.clear()
+    THREADS.update({i: json.loads(t) for i, t in con.execute("SELECT article_id, tweets FROM threads")})
     con.close()
     dossier.mkdir(exist_ok=True)
     COUVERTURES.clear()
     COUVERTURES.update(generer_couvertures(arts, dossier))
-    fichiers = {"style.css": CSS, "index.html": page_accueil(arts),
+    fichiers = {"style.css": CSS, "site.js": JS, "index.html": page_accueil(arts),
                 "revue.html": page_revue(arts), "presse.html": page_presse(arts)}
     for k, v in SECTIONS.items():
         fichiers[f"{k}.html"] = liste("قسم", v, [a for a in arts if a["section"] == k], DESCRIPTIONS[k], k, f"s-{k}")

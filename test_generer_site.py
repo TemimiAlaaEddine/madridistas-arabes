@@ -1,4 +1,5 @@
 """Vérification rapide : python test_generer_site.py"""
+import json
 import tempfile
 from pathlib import Path
 
@@ -251,3 +252,20 @@ with tempfile.TemporaryDirectory() as tmp:
     assert con.execute("SELECT mode FROM articles").fetchone() == ("conference",)
     con.close()
 print("OK conférences")
+# boutons X / Facebook : titres FR/EN/ES enregistrés, post Facebook et thread dans la page article
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "ع", "texte": "ن", "tweets": ["فكرة"],
+                    "titres_fb": {"fr": "Mbappé <brille>", "en": "Mbappé shines", "es": "Mbappé brilla", "it": "x"}}],
+                  [{"lien": "https://as.com/fb", "titre": "T", "auteur": "", "source": "AS", "pays": "es"}], db)
+    con = g.connexion(db)
+    a = con.execute("SELECT * FROM articles").fetchone()
+    con.close()
+    assert json.loads(a["titres_fb"]) == {"fr": "Mbappé <brille>", "en": "Mbappé shines", "es": "Mbappé brilla"}
+    g.THREADS.clear(); g.THREADS[a["id"]] = ["فكرة\n\n1/2", "📰 AS\n🔗 المصدر: https://as.com/fb\n\n2/2"]
+    p = g.page_article(a, [a])
+    assert "⚜️ Mbappé &lt;brille&gt;\n🇨🇦 Mbappé shines\n🇪🇸 Mbappé brilla\n\nhttps://as.com/fb" in p
+    assert 'data-ouvre="x-1"' in p and "ثريد X (2)" in p and p.count('class="copier"') == 3 and 'data-pub="fb-1"' in p
+    g.THREADS.clear()
+    assert 'data-ouvre="x-1"' not in g.page_article(a, [a])  # pas de thread : seulement Facebook
+print("OK boutons X et Facebook")
