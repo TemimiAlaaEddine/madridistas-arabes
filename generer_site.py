@@ -352,7 +352,7 @@ def mettre_a_jour_photos(dossier=SITE / "photos"):
 
 
 # ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
-# identité inspirée du Real Madrid (maquettes Canva) : fond blanc du maillot, or, bleu marine, sans écusson ni marque
+# identité inspirée du Real Madrid (maquettes Canva) : couleurs de l'écusson et des maillots, or, sans écusson ni marque
 # (compte de fan non officiel) ; chaque rubrique a sa signature : motif doré + élément de décor (.deco)
 SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>{}</svg>"
 MOTIFS = {
@@ -388,18 +388,25 @@ DECO = {  # signature de chaque rubrique (div.deco)
                 ".cadre{padding-right:112px}",
     "mercato": ".haut{border-bottom:2px solid #FEBE1080;padding-bottom:16px}.bas{padding-left:150px}",  # texte à droite du ruban
     "club": ".rubrique{position:relative}.rubrique::after{content:'';position:absolute;bottom:-4px;right:22%;left:22%;"
-            "height:5px;border-radius:3px;background:#3d195b}",
-    "debats": ".deco{position:absolute;inset:16px;border:3px solid #0b1f3a}",
+            "height:5px;border-radius:3px;background:#FEBE10}",
+    "debats": ".deco{position:absolute;inset:16px;border:2px solid #FEBE10}",
+}
+THEMES = {  # fond (dégradé), couleur pleine (encoche), texte, texte secondaire, or du logo, chiffres
+    "actus": ("#ffffff", "#ffffff", "#0b1f3a", "#33415c", "#d9a400", "#00529f"),  # maillot domicile
+    "tactique": ("radial-gradient(circle at 40% 45%,#132b4f,#0b1f3a 70%)", "#0b1f3a", "#ffffff", "#c8d3e6", "#FEBE10", "#FEBE10"),
+    "mercato": ("linear-gradient(135deg,#00529f,#003a75)", "#00478a", "#ffffff", "#d6e4f5", "#FEBE10", "#FEBE10"),  # bande de l'écusson
+    "club": ("linear-gradient(135deg,#3d195b,#24103a)", "#311549", "#ffffff", "#e0d4ec", "#FEBE10", "#FEBE10"),  # violet historique
+    "debats": ("linear-gradient(135deg,#1e1e1e,#121212)", "#181818", "#ffffff", "#cfcfcf", "#FEBE10", "#FEBE10"),  # noir et or
 }
 COUV_CSS = """
 *{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:#0b1f3a;background:#fff;
+body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:var(--texte);background:var(--fond);
 font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif}
 .motif{position:absolute;inset:0;background:url("data:image/svg+xml,MOTIF") no-repeat}
 .cadre{position:absolute;inset:0;padding:46px 64px 34px;display:flex;flex-direction:column}
 .haut{display:flex;justify-content:space-between;align-items:center;font-size:27px;font-weight:700}
-.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:4px 26px;background:#fff}
-.logo{font-size:32px}.logo span{color:#d9a400}
+.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:4px 26px}
+.logo{font-size:32px}.logo span{color:var(--or)}
 .centre{flex:1;display:flex;flex-direction:column;justify-content:center;padding-inline-end:30px}
 .citation{font-family:"Noto Naskh Arabic","Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:88px}
 .citation::before{content:"«";position:absolute;inset-inline-start:0;top:-30px;font-size:150px;line-height:1;color:#FEBE10}
@@ -407,13 +414,13 @@ font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif}
 .sur-chiffres{font-size:30px;font-weight:700;line-height:1.5;margin-bottom:28px}
 .chiffres{display:flex;gap:34px}
 .chiffre{flex:1;border-top:6px solid #FEBE10;padding-top:14px}
-.chiffre b{display:block;font-size:78px;line-height:1.15;color:#00529f;unicode-bidi:plaintext;text-align:right;white-space:nowrap}
-.chiffre span{display:block;font-size:27px;line-height:1.45;color:#33415c}
-.bas{position:relative;display:flex;align-items:center;gap:16px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:18px;color:#33415c}
-.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:#fff;
+.chiffre b{display:block;font-size:78px;line-height:1.15;color:var(--chiffre);unicode-bidi:plaintext;text-align:right;white-space:nowrap}
+.chiffre span{display:block;font-size:27px;line-height:1.45;color:var(--doux)}
+.bas{position:relative;display:flex;align-items:center;gap:16px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:18px;color:var(--doux)}
+.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:var(--plein);
 border-right:2.5px solid #FEBE10;border-bottom:2.5px solid #FEBE10;transform:rotate(45deg)}
-.bas strong{font-size:29px;color:#0b1f3a}
-.bas .pays{margin-inline-start:auto;color:#c08f00;font-weight:700}
+.bas strong{font-size:29px;color:var(--texte)}
+.bas .pays{margin-inline-start:auto;color:var(--or);font-weight:700}
 """
 
 
@@ -435,11 +442,13 @@ def couverture_html(a):
     via = f" · عن {e(a['via'])}" if a["via"] else ""
     auteur = f"<strong>{e(a['auteur_ar'])}</strong>{via} · " if a["auteur"] else ""
     premier, reste = NOM_SITE.split(" ", 1)
+    fond, plein, texte, doux, orr, chiffre = THEMES.get(a["section"], THEMES["actus"])
     return (
         f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">{POLICES}'
         f'<style>{COUV_CSS.replace("MOTIF", urllib.parse.quote(SVG.format(MOTIFS.get(a["section"], MOTIFS["actus"]))))}'
         f'{DECO.get(a["section"], "")}</style></head>'
-        f'<body><div class="motif"></div><div class="deco"></div><div class="cadre">'
+        f'<body style="--fond:{fond};--plein:{plein};--texte:{texte};--doux:{doux};--or:{orr};--chiffre:{chiffre}">'
+        f'<div class="motif"></div><div class="deco"></div><div class="cadre">'
         f'<div class="haut"><span class="rubrique">{SECTIONS.get(a["section"], "")}</span>'
         f'<span class="logo">{premier} <span>{reste}</span></span></div>'
         f'<div class="centre">{centre}</div>'
