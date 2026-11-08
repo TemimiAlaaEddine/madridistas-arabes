@@ -199,8 +199,10 @@ with tempfile.TemporaryDirectory() as tmp:
     assert t.decouper(con) == 1 and t.decouper(con) == 0  # id inconnu ignoré, pas de second thread
     envoyes = []
     t.CONFIG.update(telegram_token="x", telegram_chat_id="1")
-    t.telegram = lambda methode, champs, fichier=None: envoyes.append(champs["text"])
-    assert t.envoyer(con, {}, Path(tmp)) == 1 and len(envoyes) == 3 and t.envoyer(con, {}, Path(tmp)) == 0
+    t.telegram = lambda methode, champs, fichier=None: envoyes.append((methode, champs.get("text") or champs["caption"]))
+    assert t.envoyer(con, {1: "c.png"}, Path(tmp), {"debats": "نقاشات"}) == 1 and t.envoyer(con, {}, Path(tmp)) == 0
+    # couverture et en-tête fusionnés, avec le nom de la rubrique
+    assert len(envoyes) == 3 and envoyes[0][0] == "sendPhoto" and envoyes[0][1].startswith("🧵 نقاشات (2 تغريدات)")
     con.close()
 print("OK threads")
 

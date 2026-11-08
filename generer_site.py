@@ -1052,7 +1052,7 @@ def main():
     if not args.rendre and not args.photos:
         con = connexion()
         print(f"Threads X : {threads.decouper(con)} préparé(s), "
-              f"{threads.envoyer(con, COUVERTURES, SITE / 'couvertures')} envoyé(s) sur Telegram.")
+              f"{threads.envoyer(con, COUVERTURES, SITE / 'couvertures', SECTIONS)} envoyé(s) sur Telegram.")
         con.close()
     if hasattr(os, "startfile"):
         os.startfile(index)

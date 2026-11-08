@@ -113,22 +113,23 @@ def telegram(methode, champs, fichier=None):
         return json.load(rep)
 
 
-def envoyer(con, couvertures, dossier_couv):
-    """Envoie sur Telegram les threads pas encore envoyés : en-tête, couverture, puis un message par tweet."""
+def envoyer(con, couvertures, dossier_couv, sections=None):
+    """Envoie sur Telegram les threads pas encore envoyés : couverture avec en-tête (rubrique, titre), puis un message par tweet."""
     connexion_threads(con)
     chat = reglage("telegram_chat_id")
     if not reglage("telegram_token") or not chat:
         print("  ! threads : telegram_token ou telegram_chat_id manquant (secrets.json), envoi reporté")
         return 0
     n = 0
-    for t in con.execute("SELECT t.article_id, t.tweets, a.titre FROM threads t JOIN articles a ON a.id = t.article_id"
+    for t in con.execute("SELECT t.article_id, t.tweets, a.titre, a.section FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.statut = 'a_envoyer' ORDER BY t.article_id").fetchall():
         tweets = json.loads(t["tweets"])
         try:
-            telegram("sendMessage", {"chat_id": chat, "text": f"🧵 ثريد جديد ({len(tweets)} تغريدات)\n{t['titre']}"})
-            if t["article_id"] in couvertures:
-                telegram("sendPhoto", {"chat_id": chat, "caption": "صورة التغريدة الأولى"},
-                         dossier_couv / couvertures[t["article_id"]])
+            entete = f"🧵 {(sections or {}).get(t['section'], 'ثريد جديد')} ({len(tweets)} تغريدات)\n{t['titre']}"
+            if t["article_id"] in couvertures:  # couverture et en-tête en un seul message
+                telegram("sendPhoto", {"chat_id": chat, "caption": entete}, dossier_couv / couvertures[t["article_id"]])
+            else:
+                telegram("sendMessage", {"chat_id": chat, "text": entete})
             for tweet in tweets:
                 telegram("sendMessage", {"chat_id": chat, "text": tweet})
         except OSError as err:  # réseau coupé, token refusé... : renvoyé au prochain passage
