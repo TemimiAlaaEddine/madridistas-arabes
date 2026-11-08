@@ -312,3 +312,16 @@ with tempfile.TemporaryDirectory() as tmp:
     trouves = connaissance.chercher(["guler", "valencia"], chemin=db)
     assert [a["titre"] for a in trouves] == ["Güler et Valencia", "ع"]
 print("OK recherche /script")
+
+# sitemap Google News (site officiel du Real, sans flux RSS)
+import insider
+with tempfile.TemporaryDirectory() as d:
+    f = Path(d) / "s.xml"
+    f.write_text('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">'
+                 '<url><loc>https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/cronicas/x</loc><news:news>'
+                 '<news:publication_date>2026-11-08T08:13:01.631Z</news:publication_date><news:title>El Madrid golea</news:title>'
+                 '</news:news></url></urlset>', encoding="utf-8")
+    [e] = insider.lire_sitemap(f.as_uri())
+    assert e["title"] == "El Madrid golea" and e["link"].endswith("/cronicas/x")
+    assert e["published_parsed"][:5] == (2026, 11, 8, 8, 13), "date en UTC"
+print("OK sitemap")

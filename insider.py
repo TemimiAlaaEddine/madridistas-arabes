@@ -21,6 +21,8 @@ import sqlite3
 import subprocess
 import sys
 import time
+import urllib.request
+import xml.etree.ElementTree as ET
 from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
@@ -68,6 +70,19 @@ def normaliser_titre(t):
     return re.sub(r"[^\w\s]", "", t.lower()).strip()
 
 
+def lire_sitemap(url):
+    """Sitemap Google News (site sans flux RSS, ex. realmadrid.com) -> entrées au format de feedparser."""
+    ns = {"s": "http://www.sitemaps.org/schemas/sitemap/0.9", "n": "http://www.google.com/schemas/sitemap-news/0.9"}
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
+        racine = ET.fromstring(r.read())
+    entrees = []
+    for u in racine.findall("s:url", ns):
+        date = u.findtext("n:news/n:publication_date", "", ns)
+        entrees.append({"title": u.findtext("n:news/n:title", "", ns), "link": u.findtext("s:loc", "", ns),
+                        "published_parsed": datetime.fromisoformat(date.replace("Z", "+00:00")).utctimetuple() if date else None})
+    return entrees
+
+
 def collecter(chemin=DB_PATH, age_max_heures=None):
     mots = [m.lower() for m in CONFIG["mots_cles"]]
     age_max = (age_max_heures or CONFIG["age_max_heures"]) * 3600
@@ -75,15 +90,15 @@ def collecter(chemin=DB_PATH, age_max_heures=None):
     trouves = []
     for flux in CONFIG["flux"]:
         try:
-            d = feedparser.parse(flux["url"])
+            entrees = lire_sitemap(flux["url"]) if flux.get("sitemap") else feedparser.parse(flux["url"]).entries
         except Exception as e:  # noqa: BLE001
             print(f"  ! {flux['nom']} : erreur ({e})")
             continue
-        if not d.entries:
+        if not entrees:
             print(f"  ! {flux['nom']} : aucun article (flux indisponible ou URL à vérifier)")
             continue
         n = 0
-        for e in d.entries:
+        for e in entrees:
             titre = nettoyer(e.get("title", ""), 300)
             lien = e.get("link", "")
             if not titre or not lien:
@@ -92,7 +107,10 @@ def collecter(chemin=DB_PATH, age_max_heures=None):
             if pub and time.time() - calendar.timegm(pub) > age_max:  # pub est en UTC
                 continue
             resume = nettoyer(e.get("summary", ""))
-            if not any(m in (titre + " " + resume).lower() for m in mots):
+            if flux.get("filtre_lien"):  # site du club : tout parle du Real, on ne garde que les rubriques voulues
+                if not any(f in lien for f in flux["filtre_lien"]):
+                    continue
+            elif not any(m in (titre + " " + resume).lower() for m in mots):
                 continue
             cle = lien
             if deja_vu(con, cle):

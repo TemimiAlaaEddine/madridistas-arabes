@@ -126,6 +126,27 @@
       "nom": "The Athletic (Google News)",
       "url": "https://news.google.com/rss/search?q=Real+Madrid+site:nytimes.com/athletic+when:1d&hl=en&gl=GB&ceid=GB:en",
       "pays": "gb"
+    },
+    {
+      "nom": "ESPN",
+      "url": "https://www.espn.com/espn/rss/soccer/news",
+      "pays": "us"
+    },
+    {
+      "nom": "Trivela",
+      "url": "https://trivela.com.br/feed/",
+      "pays": "br"
+    },
+    {
+      "nom": "Real Madrid CF (site officiel)",
+      "url": "https://www.realmadrid.com/sitemap-latest-news-es-ES.xml",
+      "sitemap": true,
+      "filtre_lien": [
+        "/futbol/primer-equipo/cronicas/",
+        "/futbol/primer-equipo/ruedas-de-prensa/",
+        "/futbol/primer-equipo/actualidad/once-inicial",
+        "/futbol/primer-equipo/actualidad/mourinho-"
+      ]
     }
   ],
   "mots_cles": [
