@@ -692,8 +692,13 @@ h1,h2,h3{overflow-wrap:anywhere}
 .bouton{display:inline-block;background:var(--marine);color:#fff;text-decoration:none;border-radius:10px;padding:10px 20px;font-weight:600}
 .bouton:hover{background:var(--bleu);color:#fff}
 .partage{display:flex;flex-wrap:wrap;gap:10px;margin:-14px 0 26px}
-.partage button,.copier,.fermer{font:600 14px var(--titres);border:1px solid var(--ligne);background:var(--surface);color:var(--encre);border-radius:999px;padding:6px 16px;cursor:pointer}
-.partage button:hover,.copier:hover,.fermer:hover{border-color:var(--or)}
+.copier,.fermer{font:600 14px var(--titres);border:1px solid var(--ligne);background:var(--surface);color:var(--encre);border-radius:999px;padding:6px 16px;cursor:pointer}
+.copier:hover,.fermer:hover{border-color:var(--or)}
+.partage button{display:inline-flex;align-items:center;gap:10px;font:700 15px var(--titres);color:#fff;border:1px solid #ffffff26;border-radius:999px;padding:9px 20px;cursor:pointer;transition:transform .15s,box-shadow .15s}
+.partage button:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px #000a}
+.partage svg{width:18px;height:18px;fill:currentColor;flex:none}
+.b-x{background:#000}.b-fb{background:#1877f2}
+@media (prefers-reduced-motion:reduce){.partage button{transition:none}.partage button:hover{transform:none}}
 .fenetre{width:min(640px,calc(100% - 32px));max-height:85vh;border:none;border-radius:var(--r);padding:22px 24px;background:var(--surface);color:var(--encre)}
 .fenetre::backdrop{background:#0b1f3acc}
 .fenetre h2{margin:0 0 12px;font-size:20px}
@@ -914,18 +919,27 @@ def fenetre(id_, titre, contenu):
             '<form method="dialog"><button class="fermer">إغلاق</button></form></dialog>')
 
 
+LOGO_X = ('<svg viewBox="0 0 24 24" aria-label="X" role="img"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584'
+          '-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>')
+LOGO_FB = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.101 23.691v-7.98H6.627v-3.667h2.474v-1.58c0-4.085 1.848-5.978 '
+           '5.858-5.978.401 0 .955.042 1.468.103a8.68 8.68 0 0 1 1.141.195v3.325a8.623 8.623 0 0 0-.653-.036 26.805 26.805 0 0 0'
+           '-.733-.009c-.707 0-1.259.096-1.675.309a1.686 1.686 0 0 0-.679.622c-.258.42-.374.995-.374 1.752v1.297h3.919l-.386 2.103'
+           '-.287 1.564h-3.246v8.245C19.396 23.238 24 18.179 24 12.044c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.628 3.874 10.35 '
+           '9.101 11.647Z"/></svg>')
+
+
 def partage(a):
     """Boutons X (thread tweet par tweet) et Facebook (titres FR/EN/ES + lien de la source), à copier-coller."""
     i, couv, tweets = a["id"], COUVERTURES.get(a["id"]), THREADS.get(a["id"], [])
     fb = json.loads(a["titres_fb"]) if a["titres_fb"] else {}
     post = "\n".join(f"{d} {fb[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if fb.get(k))
     post = f"{post}\n\n{a['lien']}" if post else a["lien"]  # articles d'avant les titres traduits : le lien seul
-    boutons = f'<button type="button" data-ouvre="fb-{i}">نشر على فيسبوك</button>'
+    boutons = f'<button type="button" class="b-fb" data-ouvre="fb-{i}">{LOGO_FB}نشر على فيسبوك</button>'
     fenetres = fenetre(f"fb-{i}", "منشور فيسبوك", f'<ul class="tweets">{copiable(post)}</ul>')
     if tweets:
         image = f'<a class="bouton" href="couvertures/{couv}" download>تنزيل صورة التغريدة الأولى</a>' if couv else ""
         liste_tw = "".join(copiable(t, f"{threads.longueur(t)}/{threads.LIMITE}") for t in tweets)
-        boutons = f'<button type="button" data-ouvre="x-{i}">ثريد X ({len(tweets)})</button>' + boutons
+        boutons = f'<button type="button" class="b-x" data-ouvre="x-{i}">{LOGO_X}ثريد ({len(tweets)})</button>' + boutons
         fenetres += fenetre(f"x-{i}", "ثريد X", f'{image}<ol class="tweets">{liste_tw}</ol>')
     return f'<div class="partage">{boutons}</div>{fenetres}'
 
