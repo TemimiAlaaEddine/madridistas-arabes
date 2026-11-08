@@ -547,6 +547,8 @@ const ecrire=(k,v)=>{try{v?localStorage.setItem(k,"1"):localStorage.removeItem(k
 async function copier(t){try{await navigator.clipboard.writeText(t)}catch(e){const z=document.createElement("textarea");
 z.value=t;document.body.append(z);z.select();document.execCommand("copy");z.remove()}}
 function marquer(){
+document.querySelectorAll("[data-cle]").forEach(b=>{if(lire("cp-"+b.dataset.cle)){b.classList.add("copie");
+b.querySelector(".copier").textContent="✓ تم النسخ"}});
 document.querySelectorAll("[data-pub]").forEach(x=>x.checked=!!lire("pub-"+x.dataset.pub));
 document.querySelectorAll("[data-id]").forEach(x=>{x.querySelectorAll(".pub").forEach(p=>p.remove());
 const s=[["x","X"],["fb","فيسبوك"]].filter(([r])=>lire(`pub-${r}-${x.dataset.id}`)).map(([,n])=>n);
@@ -554,8 +556,8 @@ if(s.length){const p=document.createElement("span");p.className="pub";p.textCont
 (x.querySelector(".signature")||x).append(p)}})}
 document.addEventListener("click",async ev=>{
 const o=ev.target.closest("[data-ouvre]");if(o){document.getElementById(o.dataset.ouvre).showModal();return}
-const c=ev.target.closest(".copier");if(c){const b=c.closest(".copiable");await copier(b.querySelector(".a-copier").textContent);
-b.classList.add("copie");c.textContent="✓ تم النسخ"}});
+const c=ev.target.closest(".copier");if(c){const b=c.closest(".copiable");ecrire("cp-"+b.dataset.cle,1);
+b.classList.add("copie");c.textContent="✓ تم النسخ";await copier(b.querySelector(".a-copier").textContent)}});
 document.addEventListener("change",ev=>{const p=ev.target.dataset.pub;if(p){ecrire("pub-"+p,ev.target.checked);marquer()}});
 marquer();
 """
@@ -908,8 +910,8 @@ def page_accueil(arts):
     return page("الرئيسية", corps, "index")
 
 
-def copiable(texte, compteur=""):
-    return (f'<li class="copiable"><pre class="a-copier" dir="auto">{e(texte)}</pre><div class="outils">'
+def copiable(texte, cle, compteur=""):
+    return (f'<li class="copiable" data-cle="{cle}"><pre class="a-copier" dir="auto">{e(texte)}</pre><div class="outils">'
             f'<small>{compteur}</small><button type="button" class="copier">نسخ</button></div></li>')
 
 
@@ -935,10 +937,11 @@ def partage(a):
     post = "\n".join(f"{d} {fb[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if fb.get(k))
     post = f"{post}\n\n{a['lien']}" if post else a["lien"]  # articles d'avant les titres traduits : le lien seul
     boutons = f'<button type="button" class="b-fb" data-ouvre="fb-{i}">{LOGO_FB}نشر على فيسبوك</button>'
-    fenetres = fenetre(f"fb-{i}", "منشور فيسبوك", f'<ul class="tweets">{copiable(post)}</ul>')
+    fenetres = fenetre(f"fb-{i}", "منشور فيسبوك", f'<ul class="tweets">{copiable(post, f"fb-{i}")}</ul>')
     if tweets:
         image = f'<a class="bouton" href="couvertures/{couv}" download>تنزيل صورة التغريدة الأولى</a>' if couv else ""
-        liste_tw = "".join(copiable(t, f"{threads.longueur(t)}/{threads.LIMITE}") for t in tweets)
+        liste_tw = "".join(copiable(t, f"x-{i}-{n}", f"{threads.longueur(t)}/{threads.LIMITE}")
+                           for n, t in enumerate(tweets, 1))
         boutons = f'<button type="button" class="b-x" data-ouvre="x-{i}">{LOGO_X}ثريد ({len(tweets)})</button>' + boutons
         fenetres += fenetre(f"x-{i}", "ثريد X", f'{image}<ol class="tweets">{liste_tw}</ol>')
     return f'<div class="partage">{boutons}</div>{fenetres}'
