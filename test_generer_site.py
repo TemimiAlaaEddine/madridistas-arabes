@@ -270,3 +270,32 @@ with tempfile.TemporaryDirectory() as tmp:
     g.THREADS.clear()
     assert 'data-ouvre="x-1"' not in g.page_article(a, [a])  # pas de thread : seulement Facebook
 print("OK boutons X et Facebook")
+# Typefully : brouillon X avec couverture sur le 1er tweet, threads d'avant l'ajout ignorés, échec réseau repris
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "قديم", "texte": "ن", "tweets": ["قديم"]}],
+                  [{"lien": "https://as.com/1", "titre": "T", "auteur": "", "source": "AS", "pays": "es"}], db)
+    con = g.connexion(db)
+    con.execute("ALTER TABLE threads DROP COLUMN typefully")  # base d'avant l'ajout de Typefully
+    t.connexion_threads(con)  # ajoute la colonne : le thread existant est marqué « avant »
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "جديد", "texte": "ن", "tweets": ["فكرة"]}],
+                  [{"lien": "https://as.com/2", "titre": "T", "auteur": "", "source": "AS", "pays": "es"}], db)
+    (Path(tmp) / "c.png").write_bytes(b"png")
+    appels = []
+    t.typefully_image = lambda f: "m1"
+    t.typefully_api = lambda chemin, corps=None: appels.append((chemin, corps)) or {"id": 77}
+    t.reglage = lambda cle: "cle" if cle == "typefully_api_key" else None
+    t.CONFIG["typefully_social_set"] = 1
+    assert t.vers_typefully(con, {2: "c.png"}, Path(tmp)) == 1 and t.vers_typefully(con, {}, Path(tmp)) == 0
+    (chemin, corps), = appels
+    posts = corps["platforms"]["x"]["posts"]
+    assert chemin == "drafts" and corps["draft_title"] == "جديد" and posts[0]["media_ids"] == ["m1"] and len(posts) == 2
+    assert dict(con.execute("SELECT article_id, typefully FROM threads").fetchall()) == {1: "avant", 2: "77"}
+    con.execute("UPDATE threads SET typefully = NULL WHERE article_id = 2")
+    def coupe(*a, **k):
+        raise OSError("réseau coupé")
+    t.typefully_api = coupe
+    assert t.vers_typefully(con, {}, Path(tmp)) == 0
+    assert con.execute("SELECT typefully FROM threads WHERE article_id = 2").fetchone()[0] is None
+    con.close()
+print("OK Typefully")

@@ -95,6 +95,7 @@ Les threads arrivent sur Telegram : un en-tête, la couverture à joindre au 1er
 - Config : `telegram_token` (fourni par @BotFather) et `telegram_chat_id` (ta conversation avec le bot).
 - Seulement les threads : `python generer_site.py --threads`
 - Un envoi raté reprend au passage suivant.
+- Typefully : chaque nouveau thread est aussi déposé comme brouillon non programmé, couverture jointe au 1er tweet, sur le compte `typefully_social_set` de config.json. Clé dans le secret GitHub `TYPEFULLY_API_KEY`. Il se publie d'un clic depuis l'app Typefully.
 
 Sur le site (page de chaque article) :
 

@@ -6,7 +6,10 @@ Réglages : "telegram_token", "telegram_chat_id" dans secrets.json (ou TELEGRAM_
 """
 import json
 import os
+import http.client
 import re
+import sqlite3
+import time
 import urllib.parse
 import urllib.request
 import uuid
@@ -66,6 +69,12 @@ def assembler(a, tweets):
 
 def connexion_threads(con):
     con.execute("CREATE TABLE IF NOT EXISTS threads (article_id INTEGER PRIMARY KEY, tweets TEXT, statut TEXT, date TEXT)")
+    try:  # id du brouillon Typefully ; les threads d'avant l'ajout ne sont pas envoyés
+        con.execute("ALTER TABLE threads ADD COLUMN typefully TEXT")
+        con.execute("UPDATE threads SET typefully = 'avant'")
+        con.commit()
+    except sqlite3.OperationalError:
+        pass  # colonne déjà présente
 
 
 def decouper(con, heures=24):
@@ -90,7 +99,7 @@ def decouper(con, heures=24):
         a = par_id.get(r.get("id")) if isinstance(r, dict) else None
         tweets = assembler(a, r.get("tweets") or []) if a else None
         if tweets:  # sinon (tweet trop long) : réécrit au prochain passage
-            con.execute("INSERT OR IGNORE INTO threads VALUES (?,?,?,?)", (a["id"], json.dumps(tweets, ensure_ascii=False),
+            con.execute("INSERT OR IGNORE INTO threads (article_id, tweets, statut, date) VALUES (?,?,?,?)", (a["id"], json.dumps(tweets, ensure_ascii=False),
                         "a_envoyer", datetime.now().isoformat(timespec="seconds")))
             n += 1
     con.commit()
@@ -136,6 +145,58 @@ def envoyer(con, couvertures, dossier_couv, sections=None):
             print(f"  ! Telegram : envoi impossible ({err}), repris au prochain passage")
             break
         con.execute("UPDATE threads SET statut = 'envoye' WHERE article_id = ?", (t["article_id"],))
+        con.commit()
+        n += 1
+    return n
+
+
+TYPEFULLY = "https://api.typefully.com/v2/social-sets/{}/"
+
+
+def typefully_api(chemin, corps=None):
+    """Appelle l'API Typefully v2 (clé : TYPEFULLY_API_KEY, compte : "typefully_social_set" dans config.json)."""
+    req = urllib.request.Request(TYPEFULLY.format(CONFIG["typefully_social_set"]) + chemin,
+                                 json.dumps(corps).encode() if corps is not None else None,
+                                 {"Authorization": f"Bearer {reglage('typefully_api_key')}", "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=60) as rep:
+        return json.load(rep)
+
+
+def typefully_image(fichier):
+    """Envoie la couverture ; retourne son media_id, ou None si elle n'est pas prête à temps."""
+    m = typefully_api("media/upload", {"file_name": fichier.name})
+    url = urllib.parse.urlsplit(m["upload_url"])
+    # PUT nu : l'URL signée refuse tout en-tête ajouté (urllib ajouterait un Content-Type)
+    cnx = http.client.HTTPSConnection(url.netloc, timeout=60)
+    cnx.request("PUT", f"{url.path}?{url.query}", fichier.read_bytes())
+    if cnx.getresponse().status not in (200, 204):
+        return None
+    for _ in range(15):
+        if typefully_api(f"media/{m['media_id']}").get("status") == "ready":
+            return m["media_id"]
+        time.sleep(2)
+    return None
+
+
+def vers_typefully(con, couvertures, dossier_couv):
+    """Dépose les nouveaux threads dans Typefully en brouillons non programmés (publiés d'un clic depuis l'app)."""
+    connexion_threads(con)
+    if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
+        return 0
+    n = 0
+    for t in con.execute("SELECT t.article_id, t.tweets, a.titre FROM threads t JOIN articles a ON a.id = t.article_id"
+                         " WHERE t.typefully IS NULL ORDER BY t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
+        try:
+            couv = couvertures.get(t["article_id"])
+            media = typefully_image(dossier_couv / couv) if couv else None
+            posts = [{"text": tw} for tw in json.loads(t["tweets"])]
+            if media:
+                posts[0]["media_ids"] = [media]
+            d = typefully_api("drafts", {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}})
+        except (OSError, KeyError, ValueError) as err:  # réseau, clé refusée... : repris au prochain passage
+            print(f"  ! Typefully : envoi impossible ({err}), repris au prochain passage")
+            break
+        con.execute("UPDATE threads SET typefully = ? WHERE article_id = ?", (str(d["id"]), t["article_id"]))
         con.commit()
         n += 1
     return n

@@ -275,7 +275,7 @@ def enregistrer(reponses, items, chemin=DB):
             r.get("tweets") or [])
         if tweets:  # sinon (absent ou trop long) : threads.decouper le réécrira
             threads.connexion_threads(con)
-            con.execute("INSERT OR IGNORE INTO threads VALUES (?,?,?,?)",
+            con.execute("INSERT OR IGNORE INTO threads (article_id, tweets, statut, date) VALUES (?,?,?,?)",
                         (cur.lastrowid, json.dumps(tweets, ensure_ascii=False), "a_envoyer", now))
     con.commit()
     con.close()
@@ -1172,7 +1172,8 @@ def main():
     if not args.rendre and not args.photos:
         con = connexion()
         print(f"Threads X : {threads.decouper(con)} préparé(s), "
-              f"{threads.envoyer(con, COUVERTURES, SITE / 'couvertures', SECTIONS)} envoyé(s) sur Telegram.")
+              f"{threads.envoyer(con, COUVERTURES, SITE / 'couvertures', SECTIONS)} envoyé(s) sur Telegram, "
+              f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully.")
         con.close()
     if hasattr(os, "startfile"):
         os.startfile(index)
