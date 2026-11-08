@@ -301,3 +301,14 @@ with tempfile.TemporaryDirectory() as tmp:
     assert con.execute("SELECT typefully FROM threads WHERE article_id = 2").fetchone()[0] is None
     con.close()
 print("OK Typefully")
+# recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
+import connaissance
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    g.enregistrer([{"id": 1, "section": "tactique", "titre": "ع", "texte": "Güler brilla", "personnes": ["guler"]},
+                   {"id": 2, "section": "debats", "titre": "Güler et Valencia", "texte": "ن"},
+                   {"id": 3, "section": "actus", "titre": "ب", "texte": "Courtois"}],
+                  [{"lien": f"https://as.com/{i}", "titre": "T", "auteur": "", "source": "AS", "pays": "es"} for i in range(3)], db)
+    trouves = connaissance.chercher(["guler", "valencia"], chemin=db)
+    assert [a["titre"] for a in trouves] == ["Güler et Valencia", "ع"]
+print("OK recherche /script")
