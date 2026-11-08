@@ -353,38 +353,63 @@ def mettre_a_jour_photos(dossier=SITE / "photos"):
 
 # ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
 COULEURS_COUV = {"actus": "#0f7466", "tactique": "#00529f", "mercato": "#8a5d00", "club": "#5b2a86", "debats": "#b3261e"}
-# identité inspirée du Real Madrid (blanc, or, bleu royal), sans écusson ni marque : compte de fan non officiel
-ARCHES = urllib.parse.quote(  # arches de stade et courbes dorées, en filigrane
-    "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>"
-    "<g stroke-width='2' opacity='.45'>" + "".join(
-        f"<path d='M{-40 + i * 12} 640 C{-30 + i * 12} 420 {30 + i * 8} 260 {150 - i * 4} {150 + i * 5}'/>" for i in range(7))
-    + "</g><g stroke-width='2.5' opacity='.3'><path d='M200 500 Q600 430 1000 500'/><path d='M200 520 Q600 450 1000 520'/>"
-    + "".join(f"<path d='M{x} 520 V{478 - (400 - abs(600 - x)) // 14} q11 -15 22 0 V520'/>" for x in range(240, 980, 120))
-    + "</g></svg>")
+# identité inspirée du Real Madrid, sans écusson ni marque (compte de fan non officiel) :
+# une déclinaison par rubrique, comme les maillots (domicile blanc, bleu marine, bleu royal, violet historique, noir)
+SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>{}</svg>"
+MOTIFS = {
+    "actus": (  # courbes et arches de stade
+        "<g stroke-width='2' opacity='.45'>" + "".join(
+            f"<path d='M{-40 + i * 12} 640 C{-30 + i * 12} 420 {30 + i * 8} 260 {150 - i * 4} {150 + i * 5}'/>" for i in range(7))
+        + "</g><g stroke-width='2.5' opacity='.3'><path d='M200 500 Q600 430 1000 500'/><path d='M200 520 Q600 450 1000 520'/>"
+        + "".join(f"<path d='M{x} 520 V{478 - (400 - abs(600 - x)) // 14} q11 -15 22 0 V520'/>" for x in range(240, 980, 120))
+        + "</g>"),
+    "tactique": (  # tableau tactique : demi-terrain, cercle central, flèches en pointillé
+        "<g stroke-width='2.5' opacity='.16'><rect x='-20' y='110' width='420' height='420'/><circle cx='400' cy='320' r='90'/>"
+        "<rect x='-20' y='220' width='130' height='200'/><circle cx='75' cy='320' r='5' fill='#FEBE10'/></g>"
+        "<g stroke-width='3' opacity='.35' stroke-dasharray='10 10'><path d='M90 470 Q200 380 300 430'/><path d='M120 170 Q230 230 330 200'/></g>"
+        "<g opacity='.35' fill='#FEBE10' stroke='none'><circle cx='90' cy='470' r='9'/><circle cx='300' cy='430' r='9'/>"
+        "<circle cx='120' cy='170' r='9'/><circle cx='330' cy='200' r='9'/></g>"),
+    "mercato": (  # chevrons de transfert
+        "<g stroke-width='3' opacity='.25'>" + "".join(
+            f"<path d='M{-60 + i * 70} 140 l90 90 -90 90 M{-60 + i * 70} 330 l90 90 -90 90'/>" for i in range(5)) + "</g>"),
+    "club": (  # façade du stade : rangées d'arches
+        "<g stroke-width='2' opacity='.14'>" + "".join(
+            f"<path d='M{x} {y + 70} V{y + 22} a22 22 0 0 1 44 0 V{y + 70}'/>" for y in (140, 230, 320, 410) for x in range(-20, 330, 60))
+        + "<path d='M-20 500 H350'/></g>"),
+    "debats": (  # grands guillemets
+        "<g fill='#FEBE10' stroke='none' opacity='.12' font-family='serif' font-size='520' font-weight='700'>"
+        "<text x='-30' y='560'>«</text></g>"),
+}
+THEMES = {  # fond, texte, texte secondaire, or du logo, couleur des chiffres
+    "actus": ("#ffffff", "#0b1f3a", "#33415c", "#d9a400", "#00529f"),
+    "tactique": ("#0b1f3a", "#ffffff", "#c8d3e6", "#FEBE10", "#FEBE10"),
+    "mercato": ("#00529f", "#ffffff", "#d6e4f5", "#FEBE10", "#FEBE10"),
+    "club": ("#3d195b", "#ffffff", "#e0d4ec", "#FEBE10", "#FEBE10"),
+    "debats": ("#121212", "#ffffff", "#cfcfcf", "#FEBE10", "#FEBE10"),
+}
 COUV_CSS = """
 *{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:#0b1f3a;background:#fff;
+body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:var(--texte);background:var(--fond);
 font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif}
-.motif{position:absolute;inset:0;background:url("data:image/svg+xml,ARCHES") no-repeat;opacity:.9}
+.motif{position:absolute;inset:0;background:url("data:image/svg+xml,MOTIF") no-repeat}
 .cadre{position:absolute;inset:0;padding:46px 64px 34px;display:flex;flex-direction:column}
 .haut{display:flex;justify-content:space-between;align-items:center;font-size:27px;font-weight:700}
-.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:4px 26px;background:#fff;color:#0b1f3a}
-.rubrique::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);margin-inline-end:12px;vertical-align:middle}
-.logo{font-size:32px}.logo span{color:#d9a400}
+.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:4px 26px;background:var(--fond)}
+.logo{font-size:32px}.logo span{color:var(--or)}
 .centre{flex:1;display:flex;flex-direction:column;justify-content:center;padding-inline-end:30px}
-.citation{font-family:"Noto Naskh Arabic","Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:88px;color:#0b1f3a}
+.citation{font-family:"Noto Naskh Arabic","Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:88px}
 .citation::before{content:"«";position:absolute;inset-inline-start:0;top:-30px;font-size:150px;line-height:1;color:#FEBE10}
-.titre-actu{font-weight:700;color:#0b1f3a;border-inline-start:8px solid #FEBE10;padding-inline-start:28px}
+.titre-actu{font-weight:700;border-inline-start:8px solid #FEBE10;padding-inline-start:28px}
 .sur-chiffres{font-size:30px;font-weight:700;line-height:1.5;margin-bottom:28px}
 .chiffres{display:flex;gap:34px}
 .chiffre{flex:1;border-top:6px solid #FEBE10;padding-top:14px}
-.chiffre b{display:block;font-size:78px;line-height:1.15;color:#00529f;unicode-bidi:plaintext;text-align:right;white-space:nowrap}
-.chiffre span{display:block;font-size:27px;line-height:1.45;color:#33415c}
-.bas{position:relative;display:flex;align-items:center;gap:16px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:18px;color:#33415c}
-.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:#fff;
+.chiffre b{display:block;font-size:78px;line-height:1.15;color:var(--chiffre);unicode-bidi:plaintext;text-align:right;white-space:nowrap}
+.chiffre span{display:block;font-size:27px;line-height:1.45;color:var(--doux)}
+.bas{position:relative;display:flex;align-items:center;gap:16px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:18px;color:var(--doux)}
+.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:var(--fond);
 border-right:2.5px solid #FEBE10;border-bottom:2.5px solid #FEBE10;transform:rotate(45deg)}
-.bas strong{font-size:29px;color:#0b1f3a}
-.bas .pays{margin-inline-start:auto;color:#c08f00;font-weight:700}
+.bas strong{font-size:29px;color:var(--texte)}
+.bas .pays{margin-inline-start:auto;color:var(--or);font-weight:700}
 """
 
 
@@ -406,10 +431,12 @@ def couverture_html(a):
     via = f" · عن {e(a['via'])}" if a["via"] else ""
     auteur = f"<strong>{e(a['auteur_ar'])}</strong>{via} · " if a["auteur"] else ""
     premier, reste = NOM_SITE.split(" ", 1)
+    fond, texte, doux, orr, chiffre = THEMES.get(a["section"], THEMES["actus"])
     return (
         f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">{POLICES}'
-        f'<style>{COUV_CSS.replace("ARCHES", ARCHES)}</style></head>'
-        f'<body style="--c:{COULEURS_COUV.get(a["section"], "#00529f")}"><div class="motif"></div><div class="cadre">'
+        f'<style>{COUV_CSS.replace("MOTIF", urllib.parse.quote(SVG.format(MOTIFS.get(a["section"], MOTIFS["actus"]))))}</style></head>'
+        f'<body style="--fond:{fond};--texte:{texte};--doux:{doux};--or:{orr};--chiffre:{chiffre}">'
+        f'<div class="motif"></div><div class="cadre">'
         f'<div class="haut"><span class="rubrique">{SECTIONS.get(a["section"], "")}</span>'
         f'<span class="logo">{premier} <span>{reste}</span></span></div>'
         f'<div class="centre">{centre}</div>'
