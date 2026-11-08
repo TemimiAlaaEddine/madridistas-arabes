@@ -698,7 +698,9 @@ h1,h2,h3{overflow-wrap:anywhere}
 .copier:hover,.fermer:hover{border-color:var(--or)}
 .partage button{display:inline-flex;align-items:center;gap:10px;font:700 15px var(--titres);color:#fff;border:1px solid #ffffff26;border-radius:999px;padding:9px 20px;cursor:pointer;transition:transform .15s,box-shadow .15s}
 .partage button:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px #000a}
-.partage svg{width:18px;height:18px;fill:currentColor;flex:none}
+.partage svg,.fenetre svg{width:18px;height:18px;fill:currentColor;flex:none}
+.fenetre .bouton{display:inline-flex;align-items:center;gap:10px;margin:0 0 8px 8px}
+.fenetre .b-x{background:#000}
 .b-x{background:#000}.b-fb{background:#1877f2}
 @media (prefers-reduced-motion:reduce){.partage button{transition:none}.partage button:hover{transform:none}}
 .fenetre{width:min(640px,calc(100% - 32px));max-height:85vh;border:none;border-radius:var(--r);padding:22px 24px;background:var(--surface);color:var(--encre)}
@@ -940,6 +942,9 @@ def partage(a):
     fenetres = fenetre(f"fb-{i}", "منشور فيسبوك", f'<ul class="tweets">{copiable(post, f"fb-{i}")}</ul>')
     if tweets:
         image = f'<a class="bouton" href="couvertures/{couv}" download>تنزيل صورة التغريدة الأولى</a>' if couv else ""
+        # X pré-remplit seulement le 1er tweet (ni image ni suite du thread par lien)
+        image += (f'<a class="bouton b-x" href="https://x.com/intent/post?text={urllib.parse.quote(tweets[0])}" target="_blank"'
+                  f' rel="noopener">{LOGO_X}فتح X مع التغريدة الأولى</a>')
         liste_tw = "".join(copiable(t, f"x-{i}-{n}", f"{threads.longueur(t)}/{threads.LIMITE}")
                            for n, t in enumerate(tweets, 1))
         boutons = f'<button type="button" class="b-x" data-ouvre="x-{i}">{LOGO_X}ثريد ({len(tweets)})</button>' + boutons

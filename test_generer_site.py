@@ -266,6 +266,7 @@ with tempfile.TemporaryDirectory() as tmp:
     p = g.page_article(a, [a])
     assert "⚜️ Mbappé &lt;brille&gt;\n🇨🇦 Mbappé shines\n🇪🇸 Mbappé brilla\n\nhttps://as.com/fb" in p
     assert 'data-ouvre="x-1"' in p and "ثريد (2)" in p and p.count('class="copier"') == 3 and 'data-pub="fb-1"' in p
+    assert "https://x.com/intent/post?text=%D9%81%D9%83%D8%B1%D8%A9%0A%0A1/2" in p  # 1er tweet seulement
     g.THREADS.clear()
     assert 'data-ouvre="x-1"' not in g.page_article(a, [a])  # pas de thread : seulement Facebook
 print("OK boutons X et Facebook")
