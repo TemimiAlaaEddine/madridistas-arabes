@@ -182,6 +182,7 @@ def vers_typefully(con, couvertures, dossier_couv):
     """Dépose les nouveaux threads dans Typefully en brouillons non programmés (publiés d'un clic depuis l'app)."""
     connexion_threads(con)
     if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
+        print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
     n = 0
     for t in con.execute("SELECT t.article_id, t.tweets, a.titre FROM threads t JOIN articles a ON a.id = t.article_id"
