@@ -179,7 +179,8 @@ def typefully_image(fichier):
 
 
 def vers_typefully(con, couvertures, dossier_couv):
-    """Dépose les nouveaux threads dans Typefully en brouillons non programmés (publiés d'un clic depuis l'app)."""
+    """Dépose les nouveaux threads dans Typefully : au prochain créneau libre de sa file (publiés seuls, le plus ancien
+    d'abord) si "typefully_publish_at" vaut "next-free-slot" dans config.json, sinon en brouillons à publier à la main."""
     connexion_threads(con)
     if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
@@ -193,7 +194,10 @@ def vers_typefully(con, couvertures, dossier_couv):
             posts = [{"text": tw} for tw in json.loads(t["tweets"])]
             if media:
                 posts[0]["media_ids"] = [media]
-            d = typefully_api("drafts", {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}})
+            corps = {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
+            if CONFIG.get("typefully_publish_at"):
+                corps["publish_at"] = CONFIG["typefully_publish_at"]
+            d = typefully_api("drafts", corps)
         except (OSError, KeyError, ValueError) as err:  # réseau, clé refusée... : repris au prochain passage
             print(f"  ! Typefully : envoi impossible ({err}), repris au prochain passage")
             break

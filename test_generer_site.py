@@ -286,9 +286,11 @@ with tempfile.TemporaryDirectory() as tmp:
     t.typefully_api = lambda chemin, corps=None: appels.append((chemin, corps)) or {"id": 77}
     t.reglage = lambda cle: "cle" if cle == "typefully_api_key" else None
     t.CONFIG["typefully_social_set"] = 1
+    t.CONFIG["typefully_publish_at"] = "next-free-slot"
     assert t.vers_typefully(con, {2: "c.png"}, Path(tmp)) == 1 and t.vers_typefully(con, {}, Path(tmp)) == 0
     (chemin, corps), = appels
     posts = corps["platforms"]["x"]["posts"]
+    assert corps["publish_at"] == "next-free-slot"  # file d'attente : publié seul au prochain créneau
     assert chemin == "drafts" and corps["draft_title"] == "جديد" and posts[0]["media_ids"] == ["m1"] and len(posts) == 2
     assert dict(con.execute("SELECT article_id, typefully FROM threads").fetchall()) == {1: "avant", 2: "77"}
     con.execute("UPDATE threads SET typefully = NULL WHERE article_id = 2")

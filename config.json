@@ -209,6 +209,7 @@
   "max_lots_site": 5,
   "max_threads": 10,
   "typefully_social_set": 360421,
+  "typefully_publish_at": "next-free-slot",
   "modele_tri": "sonnet",
   "modele_redaction": "sonnet",
   "wikipedia": {
