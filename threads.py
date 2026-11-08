@@ -25,7 +25,7 @@ REGLES = """- Tweet 1 : accroche forte qui donne l'idée principale et nomme l'a
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag.
 - N'ajoute aucun fait ni avis absent du texte."""
 
-PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا العرب », à partir d'articles déjà rédigés pour son site.
+PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا علاء », à partir d'articles déjà rédigés pour son site.
 
 Pour chaque article, écris le thread :
 {regles}

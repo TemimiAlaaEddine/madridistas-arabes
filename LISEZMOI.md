@@ -43,7 +43,7 @@ Pour automatiser la publication, on ajoute un module `publier.py` (API X) sans t
 
 ---
 
-# Site (المدريديستا العرب)
+# Site (المدريديستا علاء)
 
 `lancer_site.bat` collecte les articles **signés**, lit leur texte complet, puis Claude
 rédige en arabe un **résumé commenté** (250-400 mots, 3 citations courtes maximum)

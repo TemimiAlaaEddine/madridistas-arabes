@@ -35,7 +35,7 @@ from insider import BASE, CONFIG, appeler_claude, collecter, dedoublonner, extra
 
 DB = BASE / "articles.db"
 SITE = BASE / "site"
-NOM_SITE = "المدريديستا العرب"
+NOM_SITE = "المدريديستا علاء"
 
 SECTIONS = {"actus": "أخبار", "tactique": "تحليلات تكتيكية", "mercato": "سوق الانتقالات", "club": "النادي والأعمال", "debats": "نقاشات"}
 PAYS = {
@@ -121,7 +121,7 @@ Pour chaque article ci-dessous :
    "sujet" : la clé de la personne dont l'article parle principalement, seulement si elle est dans cette liste ; sinon "" (ex. : article centré sur un joueur absent de la liste, ou sur le club en général).
 7. "citation" : la phrase la plus forte de ton texte arabe (idée centrale ou formule marquante), 8 à 20 mots, sans guillemets. Pour une information : le fait principal en une phrase.
 8. "chiffres" : seulement si l'article repose sur des chiffres marquants (statistiques, montants, records), jusqu'à 3 objets {{"valeur": "100", "libelle": "هدف بقميص ريال مدريد"}} : valeur courte (ex. "61,3%", "180 م€"), libellé arabe de 2 à 6 mots, tirés du texte. Sinon [].
-9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا العرب » :
+9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا علاء » :
 {regles_tweets}
 
 FORMAT DE RÉPONSE
@@ -353,31 +353,38 @@ def mettre_a_jour_photos(dossier=SITE / "photos"):
 
 # ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
 COULEURS_COUV = {"actus": "#0f7466", "tactique": "#00529f", "mercato": "#8a5d00", "club": "#5b2a86", "debats": "#b3261e"}
-ETOILE = urllib.parse.quote(  # étoile à huit branches, motif discret de fond
-    "<svg xmlns='http://www.w3.org/2000/svg' width='90' height='90'><g fill='none' stroke='white' stroke-width='1.4'>"
-    "<rect x='27' y='27' width='36' height='36'/><rect x='27' y='27' width='36' height='36' transform='rotate(45 45 45)'/>"
-    "</g></svg>")
+# identité inspirée du Real Madrid (blanc, or, bleu royal), sans écusson ni marque : compte de fan non officiel
+ARCHES = urllib.parse.quote(  # arches de stade et courbes dorées, en filigrane
+    "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>"
+    "<g stroke-width='2' opacity='.45'>" + "".join(
+        f"<path d='M{-40 + i * 12} 640 C{-30 + i * 12} 420 {30 + i * 8} 260 {150 - i * 4} {150 + i * 5}'/>" for i in range(7))
+    + "</g><g stroke-width='2.5' opacity='.3'><path d='M200 500 Q600 430 1000 500'/><path d='M200 520 Q600 450 1000 520'/>"
+    + "".join(f"<path d='M{x} 520 V{478 - (400 - abs(600 - x)) // 14} q11 -15 22 0 V520'/>" for x in range(240, 980, 120))
+    + "</g></svg>")
 COUV_CSS = """
 *{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:#fff;font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif;
-background:radial-gradient(circle at 8% 118%,#c9a22714 0 240px,transparent 241px),linear-gradient(135deg,var(--c) 0%,#0b1f3a 80%)}
-.motif{position:absolute;inset:0;background-image:url("data:image/svg+xml,ETOILE");opacity:.08}
-.cadre{position:absolute;inset:0;padding:52px 70px 44px;display:flex;flex-direction:column}
-.haut{display:flex;justify-content:space-between;align-items:center;font-size:26px;font-weight:700}
-.rubrique{border:2px solid #ffffff66;border-radius:999px;padding:2px 22px;background:#ffffff1a}
-.logo span{color:#c9a227}
-.centre{flex:1;display:flex;flex-direction:column;justify-content:center}
-.citation{font-family:"Noto Naskh Arabic","Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:78px}
-.citation::before{content:"«";position:absolute;inset-inline-start:0;top:-18px;font-size:130px;line-height:1;color:#c9a227}
-.titre-actu{font-weight:700}
-.sur-chiffres{font-size:30px;font-weight:600;line-height:1.5;margin-bottom:30px;opacity:.92}
-.chiffres{display:flex;gap:36px}
-.chiffre{flex:1;border-top:5px solid #c9a227;padding-top:16px}
-.chiffre b{display:block;font-size:80px;line-height:1.15;color:#c9a227;unicode-bidi:plaintext;text-align:right;white-space:nowrap}
-.chiffre span{display:block;font-size:27px;line-height:1.45}
-.bas{display:flex;align-items:center;gap:18px;font-size:25px;border-top:2px solid #ffffff33;padding-top:20px}
-.bas strong{font-size:29px}
-.bas .pays{margin-inline-start:auto;color:#c9a227;font-weight:600}
+body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:#0b1f3a;background:#fff;
+font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif}
+.motif{position:absolute;inset:0;background:url("data:image/svg+xml,ARCHES") no-repeat;opacity:.9}
+.cadre{position:absolute;inset:0;padding:46px 64px 34px;display:flex;flex-direction:column}
+.haut{display:flex;justify-content:space-between;align-items:center;font-size:27px;font-weight:700}
+.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:4px 26px;background:#fff;color:#0b1f3a}
+.rubrique::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--c);margin-inline-end:12px;vertical-align:middle}
+.logo{font-size:32px}.logo span{color:#d9a400}
+.centre{flex:1;display:flex;flex-direction:column;justify-content:center;padding-inline-end:30px}
+.citation{font-family:"Noto Naskh Arabic","Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:88px;color:#0b1f3a}
+.citation::before{content:"«";position:absolute;inset-inline-start:0;top:-30px;font-size:150px;line-height:1;color:#FEBE10}
+.titre-actu{font-weight:700;color:#0b1f3a;border-inline-start:8px solid #FEBE10;padding-inline-start:28px}
+.sur-chiffres{font-size:30px;font-weight:700;line-height:1.5;margin-bottom:28px}
+.chiffres{display:flex;gap:34px}
+.chiffre{flex:1;border-top:6px solid #FEBE10;padding-top:14px}
+.chiffre b{display:block;font-size:78px;line-height:1.15;color:#00529f;unicode-bidi:plaintext;text-align:right;white-space:nowrap}
+.chiffre span{display:block;font-size:27px;line-height:1.45;color:#33415c}
+.bas{position:relative;display:flex;align-items:center;gap:16px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:18px;color:#33415c}
+.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:#fff;
+border-right:2.5px solid #FEBE10;border-bottom:2.5px solid #FEBE10;transform:rotate(45deg)}
+.bas strong{font-size:29px;color:#0b1f3a}
+.bas .pays{margin-inline-start:auto;color:#c08f00;font-weight:700}
 """
 
 
@@ -401,7 +408,7 @@ def couverture_html(a):
     premier, reste = NOM_SITE.split(" ", 1)
     return (
         f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">{POLICES}'
-        f'<style>{COUV_CSS.replace("ETOILE", ETOILE)}</style></head>'
+        f'<style>{COUV_CSS.replace("ARCHES", ARCHES)}</style></head>'
         f'<body style="--c:{COULEURS_COUV.get(a["section"], "#00529f")}"><div class="motif"></div><div class="cadre">'
         f'<div class="haut"><span class="rubrique">{SECTIONS.get(a["section"], "")}</span>'
         f'<span class="logo">{premier} <span>{reste}</span></span></div>'
