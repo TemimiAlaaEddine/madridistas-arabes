@@ -352,7 +352,6 @@ def mettre_a_jour_photos(dossier=SITE / "photos"):
 
 
 # ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
-COULEURS_COUV = {"actus": "#0f7466", "tactique": "#00529f", "mercato": "#8a5d00", "club": "#5b2a86", "debats": "#b3261e"}
 # identité inspirée du Real Madrid, sans écusson ni marque (compte de fan non officiel) :
 # une déclinaison par rubrique, comme les maillots (domicile blanc, bleu marine, bleu royal, violet historique, noir)
 SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>{}</svg>"

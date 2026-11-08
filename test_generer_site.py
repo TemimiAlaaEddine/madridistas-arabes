@@ -157,7 +157,7 @@ with tempfile.TemporaryDirectory() as tmp:
     c1, c2, c3 = g.couverture_html(a1), g.couverture_html(a2), g.couverture_html(a3)
     assert 'class="citation"' in c1 and "جملة &lt;قوية&gt;" in c1 and "<strong>أ</strong>" in c1 and "الصحافة الإسبانية" in c1
     assert 'class="chiffres"' in c2 and "<b>100</b>" in c2 and "<b>0,67</b>" in c2 and 'class="citation"' not in c2
-    assert 'class="titre-actu"' in c3 and "خبر عاجل" in c3 and "#0f7466" in c3
+    assert 'class="titre-actu"' in c3 and "خبر عاجل" in c3 and "--fond:#ffffff" in c3
     g.generer_couvertures = lambda arts, dossier: {a["id"]: f"a-{a['id']}-test.png" for a in arts}  # simule Edge
     g.rendre_site(db, site)
     assert 'src="couvertures/a-2-test.png"' in (site / "index.html").read_text(encoding="utf-8")
