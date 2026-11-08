@@ -352,74 +352,105 @@ def mettre_a_jour_photos(dossier=SITE / "photos"):
 
 
 # ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
-# identité inspirée du Real Madrid (maquettes Canva) : couleurs de l'écusson et des maillots, or, sans écusson ni marque
-# (compte de fan non officiel) ; chaque rubrique a sa signature : motif doré + élément de décor (.deco)
+# identité inspirée du Real Madrid (maquettes Figma validées) : couleurs de l'écusson et des maillots, or,
+# sans écusson ni marque (compte de fan non officiel) ; chaque rubrique a son motif doré et sa signature (.deco)
 SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>{}</svg>"
+OR = "#FEBE10"
+
+
+def _ville():
+    """Club : le Bernabéu face aux Cuatro Torres (bâties sur l'ancien centre d'entraînement vendu en 2001), nuit étoilée."""
+    v = ("<g stroke-opacity='.45' stroke-width='2'><path d='M110 528 V478 Q110 446 146 442 H534 Q570 446 570 478 V528'/>"
+         "<path d='M130 442 Q340 414 550 442'/>")
+    v += "".join(f"<path d='M118 {y} C 230 {y - 8}, 340 {y + 8}, 450 {y - 4} S 540 {y + 4}, 562 {y}' stroke-width='1.2' stroke-opacity='.6'/>"
+                 for y in range(460, 525, 13))
+    for x, w, h, haut in ((800, 46, 140, "plat"), (872, 52, 165, "arche"), (950, 48, 155, "pointe"), (1024, 44, 135, "couronne")):
+        top = 528 - h
+        if haut == "arche":
+            v += (f"<path d='M{x} 528 V{top} H{x + w} V528'/>"
+                  f"<path d='M{x + 9} {top} V{top + 28} Q{x + w / 2} {top + 12} {x + w - 9} {top + 28} V{top}' stroke-width='1.5'/>")
+        elif haut == "pointe":
+            v += f"<path d='M{x} 528 V{top + 16} L{x + w / 2} {top} L{x + w} {top + 16} V528'/><path d='M{x + w / 2} {top} V{top - 22}' stroke-width='1.5'/>"
+        elif haut == "couronne":
+            v += f"<path d='M{x} 528 V{top} H{x + w} V528'/><path d='M{x - 4} {top} V{top - 12} H{x + w + 4} V{top}' stroke-width='1.5'/>"
+        else:
+            v += f"<rect x='{x}' y='{top}' width='{w}' height='{h}'/>"
+        v += "".join(f"<path d='M{x + 8} {y} H{x + w - 8}' stroke-width='.8' stroke-opacity='.45'/>" for y in range(top + 34, 520, 22))
+    v += "<path d='M40 528 H1160' stroke-width='1.5'/></g>"
+    etoiles = ((90, 160), (180, 110), (330, 175), (700, 120), (760, 190), (1120, 140), (620, 205), (260, 240), (980, 300), (870, 260))
+    return v + "".join(f"<circle cx='{x}' cy='{y}' r='{2.8 if i % 3 == 0 else 1.8}' fill='{OR}' fill-opacity='.55' stroke='none'/>"
+                       for i, (x, y) in enumerate(etoiles))
+
+
+def _trame():
+    """Débats : trame de points d'imprimerie (la presse) et deux bulles de dialogue qui se répondent."""
+    t = "".join(f"<circle cx='{x}' cy='{y}' r='{5.6 * (1 - d):.2f}' fill='{OR}' fill-opacity='.26' stroke='none'/>"
+                for y in range(8, 630, 16) for x in range(8, 1200, 16) if (d := ((x ** 2 + (630 - y) ** 2) ** .5) / 820) <= 1)
+    return t + ("<rect x='0' y='538' width='1200' height='92' fill='#141414' stroke='none'/>"  # pied lisible
+                "<g stroke-width='2.5' stroke-opacity='.6'><path d='M78 398 h230 a20 20 0 0 1 20 20 v62 a20 20 0 0 1 -20 20 h-160 l-36 30 v-30 h-34 a20 20 0 0 1 -20 -20 v-62 a20 20 0 0 1 20 -20z'/>"
+                "<path d='M262 440 h230 a20 20 0 0 1 20 20 v52 a20 20 0 0 1 -20 20 h-34 v6 l-30 -6 h-166 a20 20 0 0 1 -20 -20 v-52 a20 20 0 0 1 20 -20z' stroke-opacity='.4'/>"
+                "<path d='M100 432 h170 M100 460 h120' stroke-width='3' stroke-opacity='.4' stroke-linecap='round'/></g>")
+
+
+_J = ((90, 315), (240, 135), (240, 255), (240, 375), (240, 495), (440, 195), (440, 315), (440, 435), (650, 140), (690, 315), (650, 490))
+_LIENS = ((0, 2), (0, 3), (1, 2), (2, 3), (3, 4), (1, 5), (2, 6), (3, 6), (4, 7), (5, 6), (6, 7), (5, 8), (6, 9), (7, 10), (8, 9), (9, 10))
 MOTIFS = {
-    "actus": (  # courbes et arches de stade
-        "<g stroke-width='2' opacity='.45'>" + "".join(
-            f"<path d='M{-40 + i * 12} 640 C{-30 + i * 12} 420 {30 + i * 8} 260 {150 - i * 4} {150 + i * 5}'/>" for i in range(7))
-        + "</g><g stroke-width='2.5' opacity='.3'><path d='M200 500 Q600 430 1000 500'/><path d='M200 520 Q600 450 1000 520'/>"
-        + "".join(f"<path d='M{x} 520 V{478 - (400 - abs(600 - x)) // 14} q11 -15 22 0 V520'/>" for x in range(240, 980, 120))
-        + "</g>"),
-    "tactique": (  # tableau tactique : surface, arc, joueurs et flèches en pointillé
-        "<g stroke-width='2' opacity='.35'><rect x='30' y='125' width='150' height='400'/><path d='M180 260 a70 70 0 0 1 0 130'/>"
-        "<circle cx='70' cy='325' r='3' fill='#FEBE10'/></g>"
-        "<g stroke-width='2.5' opacity='.45' stroke-dasharray='8 10'><path d='M380 70 Q520 40 680 50'/><path d='M100 215 Q150 300 110 400'/>"
-        "<path d='M330 160 Q420 120 480 150'/></g>"
-        "<g stroke-width='2.5' opacity='.5'><circle cx='365' cy='72' r='11'/><circle cx='495' cy='38' r='11'/><circle cx='310' cy='160' r='11'/>"
-        "<circle cx='495' cy='152' r='11'/><circle cx='100' cy='200' r='11'/><circle cx='100' cy='520' r='11'/></g>"),
-    "mercato": (  # chevrons de transfert et ruban doré en diagonale
-        "<defs><linearGradient id='o' x1='0' y1='0' x2='1' y2='1'><stop offset='0' stop-color='#f8dc7a'/>"
-        "<stop offset='.5' stop-color='#d9a400'/><stop offset='1' stop-color='#a87b00'/></linearGradient></defs>"
-        "<g stroke-width='2' opacity='.22'>" + "".join(f"<path d='M{20 + i * 55} 150 l80 80 -80 80'/>" for i in range(5)) + "</g>"
-        "<path d='M0 430 L230 630 L160 630 L0 490Z' fill='url(#o)' stroke='none'/>"
-        "<path d='M0 405 L260 630' stroke-width='2' opacity='.6'/>"),
-    "club": (  # façade de stade : nervures en arc et toit courbe
-        "<g stroke-width='2' opacity='.32'><path d='M140 520 Q600 380 1060 520'/><path d='M140 545 Q600 405 1060 545'/>"
-        + "".join(f"<path d='M{x} 545 V{470 - (460 - abs(600 - x)) // 9} q14 -20 28 0 V545'/>" for x in range(170, 1040, 70))
-        + "".join(f"<path d='M{-60 + i * 14} 640 V{430 + i * 6} q60 -40 120 -40'/>" for i in range(6))
-        + "</g>"),
-    "debats": (  # grand guillemet
-        "<text x='120' y='520' fill='#FEBE10' stroke='none' opacity='.1' font-family='serif' font-size='560' font-weight='700'>«</text>"),
+    "actus": (  # vue aérienne du stade : anneaux des tribunes et pelouse
+        "".join(f"<ellipse cx='600' cy='300' rx='{190 + i * 62}' ry='{(190 + i * 62) // 2}' stroke-width='{1.2 if i % 2 else 2.2}' "
+                f"stroke-opacity='{.34 - i * .035:.3f}'/>" for i in range(7))
+        + "<g stroke-opacity='.3' stroke-width='2'><rect x='440' y='225' width='320' height='150' rx='6'/><path d='M600 225 V375'/>"
+        "<circle cx='600' cy='300' r='28'/><rect x='440' y='265' width='45' height='70'/><rect x='715' y='265' width='45' height='70'/></g>"
+        "<rect x='0' y='528' width='1200' height='102' fill='#fff' stroke='none'/>"),
+    "tactique": (  # pelouse tondue en bandes et 4-3-3 relié comme une constellation
+        "".join(f"<rect x='{i * 150}' y='0' width='150' height='630' fill='#fff' fill-opacity='.025' stroke='none'/>" for i in range(1, 8, 2))
+        + "<g opacity='.7'>" + "".join(f"<path d='M{_J[a][0]} {_J[a][1]} L{_J[b][0]} {_J[b][1]}' stroke-width='1.5' stroke-opacity='.18'/>" for a, b in _LIENS)
+        + "".join(f"<circle cx='{x}' cy='{y}' r='13' stroke-width='2.5' stroke-opacity='.4'/>"
+                  f"<circle cx='{x}' cy='{y}' r='4' fill='{OR}' fill-opacity='.5' stroke='none'/>" for x, y in _J) + "</g>"),
+    "mercato": (  # faisceaux de projecteur sur la recrue et éclats dorés
+        "".join(f"<path d='M-60 690 L{-40 + i * 95} -10' stroke-width='{1.2 if i % 3 else 2.2}' stroke-opacity='{.12 if i % 3 else .2}'/>" for i in range(12))
+        + "".join(f"<path d='M{x} {y - r} Q{x} {y} {x + r} {y} Q{x} {y} {x} {y + r} Q{x} {y} {x - r} {y} Q{x} {y} {x} {y - r}Z' "
+                  f"fill='{OR}' fill-opacity='{o}' stroke='none'/>" for x, y, r, o in ((150, 200, 18, .7), (230, 150, 10, .5), (110, 420, 12, .45)))),
+    "club": _ville(),
+    "debats": _trame(),
 }
 DECO = {  # signature de chaque rubrique (div.deco)
     "tactique": ".deco{position:absolute;top:0;bottom:0;right:0;width:58px;background:#00529f;border-left:7px solid #FEBE10}"
-                ".cadre{padding-right:112px}",
-    "mercato": ".haut{border-bottom:2px solid #FEBE1080;padding-bottom:16px}.bas{padding-left:150px}",  # texte à droite du ruban
+                ".cadre{padding-right:120px}",
+    "mercato": ".haut{border-bottom:2px solid #FEBE1080;padding-bottom:16px}",
     "club": ".rubrique{position:relative}.rubrique::after{content:'';position:absolute;bottom:-4px;right:22%;left:22%;"
-            "height:5px;border-radius:3px;background:#FEBE10}",
+            "height:5px;border-radius:3px;background:#FEBE10}.centre{padding-bottom:110px}",  # citation au-dessus de la ville
     "debats": ".deco{position:absolute;inset:16px;border:2px solid #FEBE10}",
 }
-THEMES = {  # fond (dégradé), couleur pleine (encoche), texte, texte secondaire, or du logo, chiffres
-    "actus": ("#ffffff", "#ffffff", "#0b1f3a", "#33415c", "#d9a400", "#00529f"),  # maillot domicile
-    "tactique": ("radial-gradient(circle at 40% 45%,#132b4f,#0b1f3a 70%)", "#0b1f3a", "#ffffff", "#c8d3e6", "#FEBE10", "#FEBE10"),
-    "mercato": ("linear-gradient(135deg,#00529f,#003a75)", "#00478a", "#ffffff", "#d6e4f5", "#FEBE10", "#FEBE10"),  # bande de l'écusson
-    "club": ("linear-gradient(135deg,#3d195b,#24103a)", "#311549", "#ffffff", "#e0d4ec", "#FEBE10", "#FEBE10"),  # violet historique
-    "debats": ("linear-gradient(135deg,#1e1e1e,#121212)", "#181818", "#ffffff", "#cfcfcf", "#FEBE10", "#FEBE10"),  # noir et or
+THEMES = {  # fond, texte, texte secondaire, or du logo, chiffres
+    "actus": ("#ffffff", "#0b1f3a", "#33415c", "#d9a400", "#00529f"),  # maillot domicile
+    "tactique": ("#0b1f3a", "#ffffff", "#c8d3e6", OR, OR),  # bleu marine du maillot extérieur
+    "mercato": ("#00529f", "#ffffff", "#d6e4f5", OR, OR),  # bleu royal de l'écusson
+    "club": ("#3d195b", "#ffffff", "#e0d4ec", OR, OR),  # violet historique
+    "debats": ("#141414", "#ffffff", "#cfcfcf", OR, OR),  # noir et or
 }
+COUV_POLICES = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700'
+                '&family=Amiri:wght@700&display=swap">')
 COUV_CSS = """
 *{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:var(--texte);background:var(--fond);
-font-family:"IBM Plex Sans Arabic",Tahoma,sans-serif}
+body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:var(--texte);background:var(--fond);font-family:Cairo,Tahoma,sans-serif}
 .motif{position:absolute;inset:0;background:url("data:image/svg+xml,MOTIF") no-repeat}
-.cadre{position:absolute;inset:0;padding:46px 64px 34px;display:flex;flex-direction:column}
-.haut{display:flex;justify-content:space-between;align-items:center;font-size:27px;font-weight:700}
-.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:4px 26px}
-.logo{font-size:32px}.logo span{color:var(--or)}
-.centre{flex:1;display:flex;flex-direction:column;justify-content:center;padding-inline-end:30px}
-.citation{font-family:"Noto Naskh Arabic","Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:88px}
-.citation::before{content:"«";position:absolute;inset-inline-start:0;top:-30px;font-size:150px;line-height:1;color:#FEBE10}
-.titre-actu{font-weight:700;border-inline-start:8px solid #FEBE10;padding-inline-start:28px}
-.sur-chiffres{font-size:30px;font-weight:700;line-height:1.5;margin-bottom:28px}
+.cadre{position:absolute;inset:0;padding:44px 64px 30px;display:flex;flex-direction:column}
+.haut{display:flex;justify-content:space-between;align-items:center;font-size:26px;font-weight:600}
+.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:2px 26px 6px}
+.logo{font-size:32px;font-weight:700}.logo span{color:var(--or)}
+.centre{flex:1;display:flex;flex-direction:column;justify-content:center}
+.citation{font-family:Amiri,"Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:100px}
+.citation::before{content:"«";position:absolute;inset-inline-start:0;top:-40px;font-size:150px;line-height:1;color:#FEBE10}
+.titre-actu{font-weight:700;border-inline-start:8px solid #FEBE10;padding-inline-start:32px}
+.sur-chiffres{font-size:32px;font-weight:700;line-height:1.5;margin-bottom:26px}
 .chiffres{display:flex;gap:34px}
-.chiffre{flex:1;border-top:6px solid #FEBE10;padding-top:14px}
-.chiffre b{display:block;font-size:78px;line-height:1.15;color:var(--chiffre);unicode-bidi:plaintext;text-align:right;white-space:nowrap}
-.chiffre span{display:block;font-size:27px;line-height:1.45;color:var(--doux)}
-.bas{position:relative;display:flex;align-items:center;gap:16px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:18px;color:var(--doux)}
-.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:var(--plein);
+.chiffre{flex:1;border-top:6px solid #FEBE10;padding-top:8px}
+.chiffre b{display:block;font-size:76px;line-height:1.3;color:var(--chiffre);unicode-bidi:plaintext;text-align:right;white-space:nowrap}
+.chiffre span{display:block;font-size:26px;line-height:1.45;color:var(--doux)}
+.bas{position:relative;display:flex;align-items:center;gap:14px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:16px;color:var(--doux)}
+.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:var(--fond);
 border-right:2.5px solid #FEBE10;border-bottom:2.5px solid #FEBE10;transform:rotate(45deg)}
-.bas strong{font-size:29px;color:var(--texte)}
+.bas strong{font-size:28px;color:var(--texte)}
 .bas .pays{margin-inline-start:auto;color:var(--or);font-weight:700}
 """
 
@@ -438,16 +469,16 @@ def couverture_html(a):
     elif a["section"] == "actus":
         centre = f'<p class="titre-actu" style="font-size:{taille}px;line-height:1.5">{e(texte)}</p>'
     else:
-        centre = f'<p class="citation" style="font-size:{taille}px;line-height:1.65">{e(texte)}</p>'
+        centre = f'<p class="citation" style="font-size:{taille - 4}px;line-height:1.55">{e(texte)}</p>'
     via = f" · عن {e(a['via'])}" if a["via"] else ""
     auteur = f"<strong>{e(a['auteur_ar'])}</strong>{via} · " if a["auteur"] else ""
     premier, reste = NOM_SITE.split(" ", 1)
-    fond, plein, texte, doux, orr, chiffre = THEMES.get(a["section"], THEMES["actus"])
+    fond, texte, doux, orr, chiffre = THEMES.get(a["section"], THEMES["actus"])
     return (
-        f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">{POLICES}'
+        f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">{COUV_POLICES}'
         f'<style>{COUV_CSS.replace("MOTIF", urllib.parse.quote(SVG.format(MOTIFS.get(a["section"], MOTIFS["actus"]))))}'
         f'{DECO.get(a["section"], "")}</style></head>'
-        f'<body style="--fond:{fond};--plein:{plein};--texte:{texte};--doux:{doux};--or:{orr};--chiffre:{chiffre}">'
+        f'<body style="--fond:{fond};--texte:{texte};--doux:{doux};--or:{orr};--chiffre:{chiffre}">'
         f'<div class="motif"></div><div class="deco"></div><div class="cadre">'
         f'<div class="haut"><span class="rubrique">{SECTIONS.get(a["section"], "")}</span>'
         f'<span class="logo">{premier} <span>{reste}</span></span></div>'
