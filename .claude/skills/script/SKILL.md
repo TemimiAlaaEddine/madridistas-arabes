@@ -15,7 +15,8 @@ La demande (sujet, langue, durée, ton) suit la commande, par exemple : `/script
 ## 2. Rassembler la matière
 1. Lis `connaissance.md` (faits validés et préférences de l'utilisateur pour les scripts).
 2. Cherche dans la base : `python connaissance.py <mots> --jours <n>`. Essaie plusieurs mots : noms latins (« valencia », « guler »), clés de joueurs de config.json (« mbappe »), noms arabes (« فالنسيا »). Élargis `--jours` si c'est trop maigre.
-3. Si la base ne suffit pas (moins de 2 articles utiles, ou fait trop récent), dis-le et propose une recherche web. N'invente jamais pour combler un manque.
+3. Pour un match, demande la page WhoScored enregistrée (Ctrl+S) dans le dossier du projet, puis lance `python whoscored.py "<fichier>.html"` : systèmes, notes et stats par joueur, à citer comme « WhoScored ».
+4. Si la base ne suffit pas (moins de 2 articles utiles, ou fait trop récent), dis-le et propose une recherche web. N'invente jamais pour combler un manque.
 
 ## 3. Écrire le script
 Rythme parlé : environ 2,3 mots par seconde en français, en anglais et en espagnol, et 2 en arabe, soit à peu près 140 mots en français et 120 en arabe pour 60 s.
