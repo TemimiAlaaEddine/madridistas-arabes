@@ -107,7 +107,7 @@ Pour chaque article ci-dessous :
      - Mode traduction : traduction intégrale et fidèle du texte fourni.
    - Mode conférence (conférence de presse d'un entraîneur, section actus) : traduis fidèlement et intégralement toutes les déclarations de l'entraîneur présentes dans le texte (la limite de 15 mots ne s'applique pas), sans reprendre les phrases du journaliste. Présente-les par sujet : chaque sujet commence par la question ou le thème résumé en une ligne, suivi de ses réponses entre guillemets «». Une phrase d'introduction : qui parle, quand, avant ou après quel match.
 4. N'ajoute aucun fait ni aucun avis absent du texte. L'avis est celui de l'auteur, jamais celui du site, du média ou du club.
-5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. L'auteur est toujours une personne : si l'article n'est signé que par le journal, une agence (EFE, Europa Press, AFP, Reuters) ou une mention comme « Redacción », laisse "auteur" et "auteur_ar" vides (le site citera seulement le journal). Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar").
+5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. L'auteur est toujours une personne : si l'article n'est signé que par le journal, une agence (EFE, Europa Press, AFP, Reuters) ou une mention comme « Redacción », laisse "auteur" et "auteur_ar" vides (le site citera seulement le journal). Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar") : si l'auteur est indiqué, recopie exactement ce nom dans "auteur" et translittère ce nom-là, jamais celui d'un autre article de la liste.
    Si l'article rapporte surtout l'avis d'un commentateur (radio, télévision, podcast, entretien) plutôt que celui de son auteur, mets ce commentateur dans "auteur"/"auteur_ar", présente l'avis comme le sien, et indique en "via" le média où il s'est exprimé, en arabe (ex. : راديو ماركا). Sinon laisse "via" vide.
 6. Liste les personnes dont parle l'article, la principale en premier, uniquement parmi ces clés : {personnes}
    "sujet" : la clé de la personne dont l'article parle principalement, seulement si elle est dans cette liste ; sinon "" (ex. : article centré sur un joueur absent de la liste, ou sur le club en général).
@@ -137,6 +137,12 @@ def journal(it):
 # signatures qui ne sont pas des personnes : le site affiche alors seulement le journal
 SIGNATURES_GENERIQUES = {"efe", "agencia-efe", "europa-press", "afp", "reuters", "ap", "dpa", "ansa", "lusa", "astv", "laliga",
                          "real-madrid", "staff", "sport", "deportes", "football", "futbol"}
+
+
+def meme_nom(a, b):
+    """Même personne, aux majuscules, accents et initiales près (« SERGIO RODRÍGUEZ C. » = « Sergio Rodríguez »)."""
+    a, b = slug(a or ""), slug(b or "")
+    return bool(a and b) and (a in b or b in a)
 
 
 def auteur_reel(nom, journal_nom):
@@ -263,6 +269,8 @@ def enregistrer(reponses, items, chemin=DB):
         else:
             auteur, rapporteur, via = auteur_flux or auteur_claude, "", ""
         auteur_ar = (r.get("auteur_ar") or auteur) if auteur else ""  # sans auteur : seulement le journal, partout
+        if auteur and auteur == auteur_flux and r.get("auteur") and not meme_nom(str(r["auteur"]), auteur_flux):
+            auteur_ar = auteur  # l'arabe de Claude peut être celui d'un autre article du lot : le nom latin plutôt qu'un faux nom
         fb = r.get("titres_fb") if isinstance(r.get("titres_fb"), dict) else {}
         titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
         cur = con.execute(

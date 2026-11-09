@@ -418,3 +418,17 @@ with tempfile.TemporaryDirectory() as d:
     g.rendre_site(db, site)
     assert "وكالات" not in (site / "a-1.html").read_text(encoding="utf-8") and not list(site.glob("j-*.html"))
 print("OK auteur = une personne, sinon le journal")
+
+# nom arabe : celui de l'auteur du flux ; si Claude a renvoyé un autre nom latin, son arabe n'est pas repris
+assert g.meme_nom("SERGIO RODRÍGUEZ C.", "Sergio Rodríguez") and not g.meme_nom("Sam Leveridge", "Lucas Navarrete")
+with tempfile.TemporaryDirectory() as d:
+    db = Path(d) / "a.db"
+    g.enregistrer([{"id": 1, "titre": "ع", "texte": "ن", "auteur": "Lucas Navarrete", "auteur_ar": "لوكاس نافاريتي"},
+                   {"id": 2, "titre": "ع", "texte": "ن", "auteur": "Joel del Río", "auteur_ar": "خويل ديل ريو"}],
+                  [{"lien": "https://mm.com/1", "titre": "T", "auteur": "Sam Leveridge", "source": "Managing Madrid", "pays": "us"},
+                   {"lien": "https://mm.com/2", "titre": "T", "auteur": "JOEL DEL RÍO", "source": "Marca", "pays": "es"}], db)
+    con = g.connexion(db)
+    assert [tuple(r) for r in con.execute("SELECT auteur, auteur_ar FROM articles ORDER BY id")] == [
+        ("Sam Leveridge", "Sam Leveridge"), ("JOEL DEL RÍO", "خويل ديل ريو")]
+    con.close()
+print("OK nom arabe de l'auteur du flux")
