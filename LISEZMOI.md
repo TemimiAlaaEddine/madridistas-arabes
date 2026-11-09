@@ -21,7 +21,8 @@ Réglages dans `config.json` :
 - `pays` de chaque flux (`es`, `gb`, `fr`, `br`, `ma`, `ci`...) : étiquette « presse de tel pays ».
 - `"autorisation": true` sur un flux **seulement si le journal ou l'auteur t'a donné son accord** :
   ses articles sont alors traduits intégralement.
-- `personnes` : clés et noms arabes des pages joueurs (à mettre à jour à chaque mercato).
+- `personnes` : une fiche par joueur ou entraîneur (à mettre à jour à chaque mercato), par exemple
+  `"mbappe": {"nom": "مبابي", "wikipedia": "Kylian Mbappé", "photo": "File:….jpg"}`.
 - `max_articles_site` : articles envoyés à Claude par passage.
 
 Les articles déjà traités sont dans `articles.db`. Dans git, elle est gardée en texte (`articles.sql`, seules les nouvelles lignes s'ajoutent à chaque passage) et reconstruite automatiquement après un `git pull`.
@@ -32,8 +33,8 @@ Pour publier : dépose le contenu de `site\` sur Netlify (glisser-déposer) ou G
 Photos des joueurs uniquement sous **licence libre** (Wikimedia Commons : CC BY, CC BY-SA, CC0,
 domaine public), avec le crédit obligatoire (auteur, licence, lien) affiché sous chaque photo.
 Jamais de photos d'articles de presse : elles appartiennent aux agences (Getty, EFE...).
-- `wikipedia` dans `config.json` : page Wikipédia anglaise de chaque personne (même clé que `personnes`).
-  Pour un nouveau joueur, ajoute-le dans les deux listes.
+- Dans la fiche de chaque personne : `wikipedia` (page Wikipédia anglaise, sa photo libre est prise par défaut)
+  et, si tu veux choisir la photo toi-même (ex. en maillot du Real), `photo` (nom du fichier sur Wikimedia Commons).
 - `photos.json` garde les crédits ; `null` = pas de photo libre. Supprime une ligne pour la rechercher à nouveau.
 - Si tu modifies une photo (recadrage, filtre), indique-le dans son crédit : les licences CC BY et CC BY-SA l'exigent.
 

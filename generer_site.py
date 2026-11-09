@@ -46,7 +46,8 @@ PAYS = {
     "be": "الصحافة البلجيكية", "br": "الصحافة البرازيلية", "uy": "الصحافة الأوروغويانية", "tr": "الصحافة التركية",
     "ma": "الصحافة المغربية", "ci": "الصحافة الإيفوارية",
 }
-PERSONNES = CONFIG.get("personnes", {})
+FICHES = CONFIG.get("personnes", {})  # une fiche par personne : {"nom": arabe, "wikipedia": page, "photo": fichier Commons}
+PERSONNES = {k: f["nom"] for k, f in FICHES.items()}
 CREDITS = BASE / "photos.json"  # photos libres déjà récupérées : {cle: {fichier, auteur, licence...} ou null}
 UA = {"User-Agent": "MadridistasArabes/1.0 (projet personnel)"}  # Wikimedia refuse les requêtes sans User-Agent
 
@@ -299,11 +300,12 @@ def api(url, **params):
 def mettre_a_jour_photos(dossier=SITE / "photos"):
     """Télécharge une fois la photo libre de chaque personne et note son crédit.
 
-    Photo choisie à la main dans config "photos_commons" (ex. en maillot du Real), sinon celle de sa page
-    Wikipédia (config "wikipedia"). Changer le choix dans config.json suffit pour la remplacer."""
+    Photo choisie à la main ("photo" de sa fiche dans config, ex. en maillot du Real), sinon celle de sa page
+    Wikipédia ("wikipedia"). Changer le choix dans config.json suffit pour la remplacer."""
     credits = json.loads(CREDITS.read_text(encoding="utf-8")) if CREDITS.exists() else {}
-    choisies = {k: f.removeprefix("File:").replace(" ", "_") for k, f in CONFIG.get("photos_commons", {}).items()}
-    a_faire = {k: t for k, t in CONFIG.get("wikipedia", {}).items()
+    choisies = {k: f["photo"].removeprefix("File:").replace(" ", "_") for k, f in FICHES.items() if f.get("photo")}
+    a_faire = {k: f.get("wikipedia") for k, f in FICHES.items() if f.get("wikipedia") or f.get("photo")}
+    a_faire = {k: t for k, t in a_faire.items()
                if k not in credits or (k in choisies and (credits[k] or {}).get("commons") != choisies[k])}
     if not a_faire:
         return
