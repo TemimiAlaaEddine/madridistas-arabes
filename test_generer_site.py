@@ -387,3 +387,14 @@ with tempfile.TemporaryDirectory() as d:
     assert accueil.index("رأي") < accueil.index("NFL في البرنابيو")  # la une (en haut) est l'opinion
     assert "Bernabéu" in g.PROMPT_TRI and "Bernabéu" in g.construire_prompt([])
 print("OK Bernabéu dans club")
+
+# API WordPress (La Galerna, flux RSS coupé) : entrées au format de feedparser, date en UTC
+with tempfile.TemporaryDirectory() as d:
+    f = Path(d) / "posts.json"
+    f.write_text(json.dumps([{"title": {"rendered": "Bloody Hell JJ Gabriel"}, "link": "https://www.lagalerna.com/jj/",
+                              "date_gmt": "2026-11-07T12:05:00", "excerpt": {"rendered": "<p>Resumen</p>"},
+                              "content": {"rendered": "<p>Texto completo</p>"}}]), encoding="utf-8")
+    [e] = commun.lire_wordpress(f.as_uri())
+    assert e["title"] == "Bloody Hell JJ Gabriel" and e["link"].endswith("/jj/") and e["content"][0]["value"] == "<p>Texto completo</p>"
+    assert e["published_parsed"][:5] == (2026, 11, 7, 12, 5), "date en UTC"
+print("OK WordPress")

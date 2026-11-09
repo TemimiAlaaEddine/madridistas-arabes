@@ -113,6 +113,16 @@ def lire_sitemap(url):
     return entrees
 
 
+def lire_wordpress(url):
+    """API REST WordPress (site au flux RSS coupé, ex. La Galerna) -> entrées au format de feedparser."""
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
+        posts = json.load(r)
+    return [{"title": p["title"]["rendered"], "link": p["link"],
+             "published_parsed": time.strptime(p["date_gmt"], "%Y-%m-%dT%H:%M:%S"),  # date_gmt : en UTC, comme feedparser
+             "summary": p.get("excerpt", {}).get("rendered", ""),
+             "content": [{"value": p.get("content", {}).get("rendered", "")}]} for p in posts]
+
+
 def collecter(chemin=DB_PATH, age_max_heures=24):
     mots = [m.lower() for m in CONFIG["mots_cles"]]
     age_max = age_max_heures * 3600
@@ -120,7 +130,8 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
     trouves = []
     for flux in CONFIG["flux"]:
         try:
-            entrees = lire_sitemap(flux["url"]) if flux.get("sitemap") else feedparser.parse(flux["url"]).entries
+            entrees = (lire_sitemap(flux["url"]) if flux.get("sitemap") else lire_wordpress(flux["url"]) if flux.get("wordpress")
+                       else feedparser.parse(flux["url"]).entries)
         except Exception as e:  # noqa: BLE001
             print(f"  ! {flux['nom']} : erreur ({e})")
             continue
@@ -140,7 +151,7 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
             if flux.get("filtre_lien"):  # site du club : tout parle du Real, on ne garde que les rubriques voulues
                 if not any(f in lien for f in flux["filtre_lien"]):
                     continue
-            elif not any(m in (titre + " " + resume).lower() for m in mots):
+            elif not flux.get("que_le_real") and not any(m in (titre + " " + resume).lower() for m in mots):  # titres imagés
                 continue
             cle = lien
             if deja_vu(con, cle):

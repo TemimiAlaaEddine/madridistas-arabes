@@ -165,6 +165,14 @@
       "nom": "Hespress - Brahim Diaz",
       "url": "https://fr.hespress.com/tag/brahim-diaz/feed",
       "pays": "ma"
+    },
+    {
+      "nom": "La Galerna",
+      "url": "https://www.lagalerna.com/wp-json/wp/v2/posts?per_page=20&_fields=title,link,date_gmt,excerpt,content",
+      "pays": "es",
+      "opinion": true,
+      "wordpress": true,
+      "que_le_real": true
     }
   ],
   "mots_cles": [
