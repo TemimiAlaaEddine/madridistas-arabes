@@ -111,23 +111,6 @@
       "pays": "gb"
     },
     {
-      "nom": "Google News (ES)",
-      "url": "https://news.google.com/rss/search?q=Real+Madrid+when:1d&hl=es&gl=ES&ceid=ES:es"
-    },
-    {
-      "nom": "Google News (FR)",
-      "url": "https://news.google.com/rss/search?q=Real+Madrid+when:1d&hl=fr&gl=FR&ceid=FR:fr"
-    },
-    {
-      "nom": "Google News (EN)",
-      "url": "https://news.google.com/rss/search?q=Real+Madrid+when:1d&hl=en&gl=GB&ceid=GB:en"
-    },
-    {
-      "nom": "The Athletic (Google News)",
-      "url": "https://news.google.com/rss/search?q=Real+Madrid+site:nytimes.com/athletic+when:1d&hl=en&gl=GB&ceid=GB:en",
-      "pays": "gb"
-    },
-    {
       "nom": "ESPN",
       "url": "https://www.espn.com/espn/rss/soccer/news",
       "pays": "us"
@@ -147,6 +130,41 @@
         "/futbol/primer-equipo/actualidad/once-inicial",
         "/futbol/primer-equipo/actualidad/mourinho-"
       ]
+    },
+    {
+      "nom": "El País - Deportes",
+      "url": "https://feeds.elpais.com/mrss-s/pages/ep/site/elpais.com/section/deportes/portada",
+      "pays": "es"
+    },
+    {
+      "nom": "El Mundo - Fútbol",
+      "url": "https://e00-elmundo.uecdn.es/elmundodeporte/rss/futbol.xml",
+      "pays": "es"
+    },
+    {
+      "nom": "El Confidencial - Fútbol",
+      "url": "https://rss.elconfidencial.com/deportes/futbol/",
+      "pays": "es"
+    },
+    {
+      "nom": "El Español - Real Madrid",
+      "url": "https://www.elespanol.com/rss/organismos/real_madrid/",
+      "pays": "es"
+    },
+    {
+      "nom": "Cadena SER - Deportes",
+      "url": "https://cadenaser.com/arc/outboundfeeds/rss/category/deportes/?outputType=xml",
+      "pays": "es"
+    },
+    {
+      "nom": "COPE - El Partidazo",
+      "url": "https://www.cope.es/api/es/programas/el-partidazo-de-cope/news/rss.xml",
+      "pays": "es"
+    },
+    {
+      "nom": "Hespress - Brahim Diaz",
+      "url": "https://fr.hespress.com/tag/brahim-diaz/feed",
+      "pays": "ma"
     }
   ],
   "mots_cles": [
