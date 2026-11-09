@@ -1,6 +1,6 @@
 ## Installation (une seule fois)
 
-1. Installe **Python 3.10+** depuis python.org (coche « Add Python to PATH »), puis `pip install feedparser`.
+1. Installe **Python 3.10+** depuis python.org (coche « Add Python to PATH »), puis `pip install feedparser pillow`.
 2. Installe **Claude Code** et lance `claude` une fois pour te connecter avec ton compte Claude.
 
 ## Organisation du code

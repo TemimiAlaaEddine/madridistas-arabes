@@ -162,7 +162,7 @@ with tempfile.TemporaryDirectory() as tmp:
     assert 'class="titre-actu"' in c3 and "خبر عاجل" in c3 and "#FEBE10" in c3
     g.generer_couvertures = lambda arts, dossier: {a["id"]: f"a-{a['id']}-test.png" for a in arts}  # simule Edge
     g.rendre_site(db, site)
-    assert 'src="couvertures/a-2-test.png"' in (site / "index.html").read_text(encoding="utf-8")
+    assert 'src="couvertures/a-2-test-v.webp"' in (site / "index.html").read_text(encoding="utf-8")  # cartes : vignette
     assert '<figure class="couverture"><img src="couvertures/a-1-test.png" alt="جملة &lt;قوية&gt;">' in \
         (site / "a-1.html").read_text(encoding="utf-8")
 print("OK couvertures")
@@ -432,3 +432,26 @@ with tempfile.TemporaryDirectory() as d:
         ("Sam Leveridge", "Sam Leveridge"), ("JOEL DEL RÍO", "خويل ديل ريو")]
     con.close()
 print("OK nom arabe de l'auteur du flux")
+
+# vignettes des cartes : WebP 720 px créé à côté du PNG, anciennes couvertures et vignettes supprimées
+import hashlib
+from PIL import Image
+with tempfile.TemporaryDirectory() as d:
+    db, site = Path(d) / "a.db", Path(d) / "site"
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "ع", "texte": "ن"}],
+                  [{"lien": "https://as.com/v", "titre": "T", "auteur": "", "source": "AS", "pays": "es"}], db)
+    con = g.connexion(db); a = con.execute("SELECT * FROM articles").fetchone(); con.close()
+    nom = f"a-1-{hashlib.sha1(couvertures.couverture_html(a).encode()).hexdigest()[:8]}.png"
+    (site / "couvertures").mkdir(parents=True)
+    Image.new("RGB", (1200, 630), "navy").save(site / "couvertures" / nom)  # comme si Edge l'avait rendue
+    for vieux in ("a-9-old.png", "a-9-old-v.webp"):
+        (site / "couvertures" / vieux).write_bytes(b"x")
+    couvertures.EDGE = "edge-factice"  # PNG déjà là : Edge n'est pas lancé
+    try:
+        assert couvertures.generer_couvertures([a], site) == {1: nom}
+    finally:
+        couvertures.EDGE = None
+    with Image.open(site / "couvertures" / couvertures.vignette(nom)) as v:
+        assert v.format == "WEBP" and v.size == (720, 378)
+    assert sorted(f.name for f in (site / "couvertures").iterdir()) == sorted([nom, couvertures.vignette(nom)])
+print("OK vignettes")

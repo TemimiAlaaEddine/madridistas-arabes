@@ -30,7 +30,7 @@ from html.parser import HTMLParser
 import threads
 from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, appeler_claude, collecter, dedoublonner, e,
                     extraire_json, marquer_vus, nettoyer, restaurer_base)
-from couvertures import generer_couvertures
+from couvertures import generer_couvertures, vignette
 
 DB = BASE / "articles.db"
 SITE = BASE / "site"
@@ -477,7 +477,7 @@ def signature(a):
 
 def carte(a, classe="", niveau="h3"):
     couv = COUVERTURES.get(a["id"])
-    image = f'<img class="couv" src="couvertures/{couv}" alt="" loading="lazy">' if couv else ""
+    image = f'<img class="couv" src="couvertures/{vignette(couv)}" alt="" loading="lazy" decoding="async">' if couv else ""
     return (f'<article class="carte {classe} s-{a["section"]}" data-id="{a["id"]}">{image}<div class="contenu">{rubrique(a)}'
             f'<{niveau}><a class="titre" href="a-{a["id"]}.html">{e(a["titre"])}</a></{niveau}>'
             f'<p class="resume">{e(a["chapeau"])}</p>{signature(a)}</div></article>')

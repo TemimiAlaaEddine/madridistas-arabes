@@ -18,7 +18,7 @@ jobs:
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
-      - run: pip install feedparser
+      - run: pip install feedparser pillow
       - name: Paquets npm déjà téléchargés (Claude Code s'installe sans tout retélécharger)
         uses: actions/cache@v6
         with:

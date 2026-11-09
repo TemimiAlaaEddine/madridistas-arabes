@@ -8,6 +8,8 @@ import subprocess
 import time
 import urllib.parse
 
+from PIL import Image
+
 from commun import BASE, GABARITS, NOM_SITE, PAYS, SECTIONS, e
 
 # ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
@@ -136,8 +138,13 @@ def trouver_edge():
 EDGE = trouver_edge()
 
 
+def vignette(nom):
+    """Version légère d'une couverture pour les cartes : WebP 720 px, ~17 Ko au lieu de ~85 Ko pour le PNG."""
+    return nom.removesuffix(".png") + "-v.webp"
+
+
 def generer_couvertures(arts, dossier):
-    """Rend chaque couverture en PNG avec Edge sans fenêtre ; refaite seulement si son contenu change."""
+    """Rend chaque couverture en PNG avec Edge sans fenêtre (+ sa vignette) ; refaite seulement si son contenu change."""
     if not EDGE:
         return {}
     sortie, sources = dossier / "couvertures", BASE / "sortie" / "couvertures"
@@ -163,7 +170,11 @@ def generer_couvertures(arts, dossier):
                 print(f"  ! couverture de l'article {a['id']} : Edge trop lent, réessayé au prochain passage")
         if (sortie / nom).exists():
             noms[a["id"]] = nom
-    for ancienne in sortie.glob("*.png"):  # couvertures d'articles supprimés ou modifiés
-        if ancienne.name not in noms.values():
+            if not (sortie / vignette(nom)).exists():
+                with Image.open(sortie / nom) as im:
+                    im.resize((720, round(im.height * 720 / im.width)), Image.LANCZOS).save(sortie / vignette(nom), "WEBP", quality=80, method=6)
+    gardes = set(noms.values()) | {vignette(n) for n in noms.values()}
+    for ancienne in sortie.glob("a-*"):  # couvertures et vignettes d'articles supprimés ou modifiés
+        if ancienne.name not in gardes:
             ancienne.unlink()
     return noms
