@@ -3,9 +3,10 @@ import json
 import tempfile
 from pathlib import Path
 
+import couvertures
 import generer_site as g
 
-g.EDGE = None  # pas de rendu d'images par Edge dans les tests (lent) ; le gabarit est testé à part
+couvertures.EDGE = None  # pas de rendu d'images par Edge dans les tests (lent) ; le gabarit est testé à part
 
 items = [
     {"lien": "https://ex.com/1", "titre": "Mourinho encuentra el equilibrio", "auteur": "Jesús Gallego",
@@ -155,7 +156,7 @@ with tempfile.TemporaryDirectory() as tmp:
     con = g.connexion(db)
     a1, a2, a3 = con.execute("SELECT * FROM articles ORDER BY id").fetchall()
     con.close()
-    c1, c2, c3 = g.couverture_html(a1), g.couverture_html(a2), g.couverture_html(a3)
+    c1, c2, c3 = couvertures.couverture_html(a1), couvertures.couverture_html(a2), couvertures.couverture_html(a3)
     assert 'class="citation"' in c1 and "جملة &lt;قوية&gt;" in c1 and "<strong>أ</strong>" in c1 and "الصحافة الإسبانية" in c1
     assert 'class="chiffres"' in c2 and "<b>100</b>" in c2 and "<b>0,67</b>" in c2 and 'class="citation"' not in c2
     assert 'class="titre-actu"' in c3 and "خبر عاجل" in c3 and "#FEBE10" in c3

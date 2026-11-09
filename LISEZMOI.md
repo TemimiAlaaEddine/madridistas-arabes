@@ -3,6 +3,18 @@
 1. Installe **Python 3.10+** depuis python.org (coche « Add Python to PATH »), puis `pip install feedparser`.
 2. Installe **Claude Code** et lance `claude` une fois pour te connecter avec ton compte Claude.
 
+## Organisation du code
+
+| Fichier | Rôle |
+|---|---|
+| `generer_site.py` | Passage complet : collecte, tri et rédaction par Claude, base, photos, pages HTML |
+| `couvertures.py` | Couvertures 1200×630 de chaque article (rendues par Edge) |
+| `threads.py` | Threads X : Telegram et Typefully |
+| `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
+| `connaissance.py`, `whoscored.py` | Outils de la commande /script |
+| `gabarits/` | `style.css` et `site.js` du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
+| `config.json` | Sources, personnes, réglages ; secrets dans `secrets.json` (hors git) |
+
 # Site (المدريديستا علاء)
 
 `lancer_site.bat` collecte les articles **signés**, lit leur texte complet, puis Claude

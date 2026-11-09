@@ -13,15 +13,10 @@ Usage :
   python generer_site.py --threads  # régénère les pages, puis prépare et envoie les threads X sur Telegram
 """
 import argparse
-import hashlib
-import html
 import json
 import os
 import re
-import shutil
 import sqlite3
-import subprocess
-import sys
 import time
 import unicodedata
 import urllib.parse
@@ -33,19 +28,12 @@ from datetime import datetime
 from html.parser import HTMLParser
 
 import threads
-from commun import BASE, CONFIG, appeler_claude, collecter, dedoublonner, extraire_json, marquer_vus, nettoyer, restaurer_base
+from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, appeler_claude, collecter, dedoublonner, e,
+                    extraire_json, marquer_vus, nettoyer, restaurer_base)
+from couvertures import generer_couvertures
 
 DB = BASE / "articles.db"
 SITE = BASE / "site"
-NOM_SITE = "المدريديستا علاء"
-
-SECTIONS = {"actus": "أخبار", "tactique": "تحليلات تكتيكية", "mercato": "سوق الانتقالات", "club": "النادي والأعمال", "debats": "نقاشات"}
-PAYS = {
-    "es": "الصحافة الإسبانية", "gb": "الصحافة الإنجليزية", "fr": "الصحافة الفرنسية", "us": "الصحافة الأمريكية",
-    "de": "الصحافة الألمانية", "it": "الصحافة الإيطالية", "pt": "الصحافة البرتغالية", "nl": "الصحافة الهولندية",
-    "be": "الصحافة البلجيكية", "br": "الصحافة البرازيلية", "uy": "الصحافة الأوروغويانية", "tr": "الصحافة التركية",
-    "ma": "الصحافة المغربية", "ci": "الصحافة الإيفوارية",
-}
 FICHES = CONFIG.get("personnes", {})  # une fiche par personne : {"nom": arabe, "wikipedia": page, "photo": fichier Commons}
 PERSONNES = {k: f["nom"] for k, f in FICHES.items()}
 CREDITS = BASE / "photos.json"  # photos libres déjà récupérées : {cle: {fichier, auteur, licence...} ou null}
@@ -359,212 +347,13 @@ def mettre_a_jour_photos(dossier=SITE / "photos"):
     print(f"  {sum(1 for c in credits.values() if c)} photo(s) libre(s) disponibles.")
 
 
-# ---------- couvertures (image 1200×630 de chaque article, aussi utilisée pour le partage) ----------
-# identité inspirée du Real Madrid (maquettes Figma validées) : couleurs de l'écusson et des maillots, or,
-# sans écusson ni marque (compte de fan non officiel) ; chaque rubrique a son motif doré et sa signature (.deco)
-SVG = "<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' fill='none' stroke='#FEBE10'>{}</svg>"
-OR = "#FEBE10"
-
-
-def _ville():
-    """Club : le Bernabéu face aux Cuatro Torres (bâties sur l'ancien centre d'entraînement vendu en 2001), nuit étoilée."""
-    v = ("<g stroke-opacity='.45' stroke-width='2'><path d='M110 528 V478 Q110 446 146 442 H534 Q570 446 570 478 V528'/>"
-         "<path d='M130 442 Q340 414 550 442'/>")
-    v += "".join(f"<path d='M118 {y} C 230 {y - 8}, 340 {y + 8}, 450 {y - 4} S 540 {y + 4}, 562 {y}' stroke-width='1.2' stroke-opacity='.6'/>"
-                 for y in range(460, 525, 13))
-    for x, w, h, haut in ((800, 46, 140, "plat"), (872, 52, 165, "arche"), (950, 48, 155, "pointe"), (1024, 44, 135, "couronne")):
-        top = 528 - h
-        if haut == "arche":
-            v += (f"<path d='M{x} 528 V{top} H{x + w} V528'/>"
-                  f"<path d='M{x + 9} {top} V{top + 28} Q{x + w / 2} {top + 12} {x + w - 9} {top + 28} V{top}' stroke-width='1.5'/>")
-        elif haut == "pointe":
-            v += f"<path d='M{x} 528 V{top + 16} L{x + w / 2} {top} L{x + w} {top + 16} V528'/><path d='M{x + w / 2} {top} V{top - 22}' stroke-width='1.5'/>"
-        elif haut == "couronne":
-            v += f"<path d='M{x} 528 V{top} H{x + w} V528'/><path d='M{x - 4} {top} V{top - 12} H{x + w + 4} V{top}' stroke-width='1.5'/>"
-        else:
-            v += f"<rect x='{x}' y='{top}' width='{w}' height='{h}'/>"
-        v += "".join(f"<path d='M{x + 8} {y} H{x + w - 8}' stroke-width='.8' stroke-opacity='.45'/>" for y in range(top + 34, 520, 22))
-    v += "<path d='M40 528 H1160' stroke-width='1.5'/></g>"
-    etoiles = ((90, 160), (180, 110), (330, 175), (700, 120), (760, 190), (1120, 140), (620, 205), (260, 240), (980, 300), (870, 260))
-    return v + "".join(f"<circle cx='{x}' cy='{y}' r='{2.8 if i % 3 == 0 else 1.8}' fill='{OR}' fill-opacity='.55' stroke='none'/>"
-                       for i, (x, y) in enumerate(etoiles))
-
-
-def _trame():
-    """Débats : trame de points d'imprimerie (la presse) et deux bulles de dialogue qui se répondent."""
-    t = "".join(f"<circle cx='{x}' cy='{y}' r='{5.6 * (1 - d):.2f}' fill='{OR}' fill-opacity='.26' stroke='none'/>"
-                for y in range(8, 630, 16) for x in range(8, 1200, 16) if (d := ((x ** 2 + (630 - y) ** 2) ** .5) / 820) <= 1)
-    return t + ("<rect x='0' y='538' width='1200' height='92' fill='#141414' stroke='none'/>"  # pied lisible
-                "<g stroke-width='2.5' stroke-opacity='.6'><path d='M78 398 h230 a20 20 0 0 1 20 20 v62 a20 20 0 0 1 -20 20 h-160 l-36 30 v-30 h-34 a20 20 0 0 1 -20 -20 v-62 a20 20 0 0 1 20 -20z'/>"
-                "<path d='M262 440 h230 a20 20 0 0 1 20 20 v52 a20 20 0 0 1 -20 20 h-34 v6 l-30 -6 h-166 a20 20 0 0 1 -20 -20 v-52 a20 20 0 0 1 20 -20z' stroke-opacity='.4'/>"
-                "<path d='M100 432 h170 M100 460 h120' stroke-width='3' stroke-opacity='.4' stroke-linecap='round'/></g>")
-
-
-_J = ((90, 315), (240, 135), (240, 255), (240, 375), (240, 495), (440, 195), (440, 315), (440, 435), (650, 140), (690, 315), (650, 490))
-_LIENS = ((0, 2), (0, 3), (1, 2), (2, 3), (3, 4), (1, 5), (2, 6), (3, 6), (4, 7), (5, 6), (6, 7), (5, 8), (6, 9), (7, 10), (8, 9), (9, 10))
-MOTIFS = {
-    "actus": (  # vue aérienne du stade : anneaux des tribunes et pelouse
-        "".join(f"<ellipse cx='600' cy='300' rx='{190 + i * 62}' ry='{(190 + i * 62) // 2}' stroke-width='{1.2 if i % 2 else 2.2}' "
-                f"stroke-opacity='{.34 - i * .035:.3f}'/>" for i in range(7))
-        + "<g stroke-opacity='.3' stroke-width='2'><rect x='440' y='225' width='320' height='150' rx='6'/><path d='M600 225 V375'/>"
-        "<circle cx='600' cy='300' r='28'/><rect x='440' y='265' width='45' height='70'/><rect x='715' y='265' width='45' height='70'/></g>"
-        "<rect x='0' y='528' width='1200' height='102' fill='#fff' stroke='none'/>"),
-    "tactique": (  # pelouse tondue en bandes et 4-3-3 relié comme une constellation
-        "".join(f"<rect x='{i * 150}' y='0' width='150' height='630' fill='#fff' fill-opacity='.025' stroke='none'/>" for i in range(1, 8, 2))
-        + "<g opacity='.7'>" + "".join(f"<path d='M{_J[a][0]} {_J[a][1]} L{_J[b][0]} {_J[b][1]}' stroke-width='1.5' stroke-opacity='.18'/>" for a, b in _LIENS)
-        + "".join(f"<circle cx='{x}' cy='{y}' r='13' stroke-width='2.5' stroke-opacity='.4'/>"
-                  f"<circle cx='{x}' cy='{y}' r='4' fill='{OR}' fill-opacity='.5' stroke='none'/>" for x, y in _J) + "</g>"),
-    "mercato": (  # faisceaux de projecteur sur la recrue et éclats dorés
-        "".join(f"<path d='M-60 690 L{-40 + i * 95} -10' stroke-width='{1.2 if i % 3 else 2.2}' stroke-opacity='{.12 if i % 3 else .2}'/>" for i in range(12))
-        + "".join(f"<path d='M{x} {y - r} Q{x} {y} {x + r} {y} Q{x} {y} {x} {y + r} Q{x} {y} {x - r} {y} Q{x} {y} {x} {y - r}Z' "
-                  f"fill='{OR}' fill-opacity='{o}' stroke='none'/>" for x, y, r, o in ((150, 200, 18, .7), (230, 150, 10, .5), (110, 420, 12, .45)))),
-    "club": _ville(),
-    "debats": _trame(),
-}
-DECO = {  # signature de chaque rubrique (div.deco)
-    "tactique": ".deco{position:absolute;top:0;bottom:0;right:0;width:58px;background:#00529f;border-left:7px solid #FEBE10}"
-                ".cadre{padding-right:120px}",
-    "mercato": ".haut{border-bottom:2px solid #FEBE1080;padding-bottom:16px}",
-    "club": ".rubrique{position:relative}.rubrique::after{content:'';position:absolute;bottom:-4px;right:22%;left:22%;"
-            "height:5px;border-radius:3px;background:#FEBE10}.centre{padding-bottom:110px}",  # citation au-dessus de la ville
-    "debats": ".deco{position:absolute;inset:16px;border:2px solid #FEBE10}",
-}
-THEMES = {  # fond, texte, texte secondaire, or du logo, chiffres
-    "actus": ("#ffffff", "#0b1f3a", "#33415c", "#d9a400", "#00529f"),  # maillot domicile
-    "tactique": ("#0b1f3a", "#ffffff", "#c8d3e6", OR, OR),  # bleu marine du maillot extérieur
-    "mercato": ("#00529f", "#ffffff", "#d6e4f5", OR, OR),  # bleu royal de l'écusson
-    "club": ("#3d195b", "#ffffff", "#e0d4ec", OR, OR),  # violet historique
-    "debats": ("#141414", "#ffffff", "#cfcfcf", OR, OR),  # noir et or
-}
-COUV_POLICES = ('<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700'
-                '&family=Amiri:wght@700&display=swap">')
-COUV_CSS = """
-*{box-sizing:border-box;margin:0}
-body{width:1200px;height:630px;overflow:hidden;direction:rtl;color:var(--texte);background:var(--fond);font-family:Cairo,Tahoma,sans-serif}
-.motif{position:absolute;inset:0;background:url("data:image/svg+xml,MOTIF") no-repeat}
-.cadre{position:absolute;inset:0;padding:44px 64px 30px;display:flex;flex-direction:column}
-.haut{display:flex;justify-content:space-between;align-items:center;font-size:26px;font-weight:600}
-.rubrique{border:2.5px solid #FEBE10;border-radius:999px;padding:2px 26px 6px}
-.logo{font-size:32px;font-weight:700}.logo span{color:var(--or)}
-.centre{flex:1;display:flex;flex-direction:column;justify-content:center}
-.citation{font-family:Amiri,"Traditional Arabic",serif;font-weight:700;position:relative;padding-inline-start:100px}
-.citation::before{content:"«";position:absolute;inset-inline-start:0;top:-40px;font-size:150px;line-height:1;color:#FEBE10}
-.titre-actu{font-weight:700;border-inline-start:8px solid #FEBE10;padding-inline-start:32px}
-.sur-chiffres{font-size:32px;font-weight:700;line-height:1.5;margin-bottom:26px}
-.chiffres{display:flex;gap:34px}
-.chiffre{flex:1;border-top:6px solid #FEBE10;padding-top:8px}
-.chiffre b{display:block;font-size:76px;line-height:1.3;color:var(--chiffre);unicode-bidi:plaintext;text-align:right;white-space:nowrap}
-.chiffre span{display:block;font-size:26px;line-height:1.45;color:var(--doux)}
-.bas{position:relative;display:flex;align-items:center;gap:14px;font-size:25px;border-top:2.5px solid #FEBE10;padding-top:16px;color:var(--doux)}
-.bas::before{content:"";position:absolute;top:-11px;right:50%;width:18px;height:18px;background:var(--fond);
-border-right:2.5px solid #FEBE10;border-bottom:2.5px solid #FEBE10;transform:rotate(45deg)}
-.bas strong{font-size:28px;color:var(--texte)}
-.bas .pays{margin-inline-start:auto;color:var(--or);font-weight:700}
-"""
-
-
-def couverture_html(a):
-    """Gabarit de la couverture : citation forte, chiffres clés (infographie) ou titre d'une information."""
-    chiffres = json.loads(a["chiffres"] or "[]")
-    texte = a["citation"] or a["titre"]
-    taille = 60 if len(texte) <= 60 else 50 if len(texte) <= 110 else 42
-    if chiffres:
-        cases = ""
-        for c in chiffres:
-            petite = ' style="font-size:56px"' if len(c["valeur"]) > 6 else ""  # « 18 مقابل 10 » tient sur une ligne
-            cases += f'<div class="chiffre"><b{petite}>{e(c["valeur"])}</b><span>{e(c["libelle"])}</span></div>'
-        centre = f'<p class="sur-chiffres">{e(a["titre"])}</p><div class="chiffres">{cases}</div>'
-    elif a["section"] == "actus":
-        centre = f'<p class="titre-actu" style="font-size:{taille}px;line-height:1.5">{e(texte)}</p>'
-    else:
-        centre = f'<p class="citation" style="font-size:{taille - 4}px;line-height:1.55">{e(texte)}</p>'
-    via = f" · عن {e(a['via'])}" if a["via"] else ""
-    auteur = f"<strong>{e(a['auteur_ar'])}</strong>{via} · " if a["auteur"] else ""
-    premier, reste = NOM_SITE.split(" ", 1)
-    fond, texte, doux, orr, chiffre = THEMES.get(a["section"], THEMES["actus"])
-    return (
-        f'<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">{COUV_POLICES}'
-        f'<style>{COUV_CSS.replace("MOTIF", urllib.parse.quote(SVG.format(MOTIFS.get(a["section"], MOTIFS["actus"]))))}'
-        f'{DECO.get(a["section"], "")}</style></head>'
-        f'<body style="--fond:{fond};--texte:{texte};--doux:{doux};--or:{orr};--chiffre:{chiffre}">'
-        f'<div class="motif"></div><div class="deco"></div><div class="cadre">'
-        f'<div class="haut"><span class="rubrique">{SECTIONS.get(a["section"], "")}</span>'
-        f'<span class="logo">{premier} <span>{reste}</span></span></div>'
-        f'<div class="centre">{centre}</div>'
-        f'<div class="bas">{auteur}<span>{e(a["journal"])}</span>'
-        f'<span class="pays">{PAYS.get(a["pays"], "") if a["pays"] else ""}</span></div></div></body></html>'
-    )
-
-
-def trouver_edge():
-    for chemin in (shutil.which("msedge"), shutil.which("google-chrome"), r"C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe",
-                   r"C:\Program Files\Microsoft\Edge\Application\msedge.exe"):
-        if chemin and os.path.exists(chemin):
-            return chemin
-    return None
-
-
-EDGE = trouver_edge()
-
-
-def generer_couvertures(arts, dossier):
-    """Rend chaque couverture en PNG avec Edge sans fenêtre ; refaite seulement si son contenu change."""
-    if not EDGE:
-        return {}
-    sortie, sources = dossier / "couvertures", BASE / "sortie" / "couvertures"
-    sortie.mkdir(parents=True, exist_ok=True)
-    sources.mkdir(parents=True, exist_ok=True)
-    noms = {}
-    for a in arts:
-        doc = couverture_html(a)
-        nom = f"a-{a['id']}-{hashlib.sha1(doc.encode()).hexdigest()[:8]}.png"
-        if not (sortie / nom).exists():
-            src = sources / f"a-{a['id']}.html"
-            src.write_text(doc, encoding="utf-8")
-            try:
-                subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--hide-scrollbars",
-                                f"--user-data-dir={sources / 'profil'}", "--virtual-time-budget=5000",
-                                "--window-size=1200,630", f"--screenshot={sortie / nom}", src.as_uri()],
-                               capture_output=True, timeout=90)
-                fin = time.time() + 60  # msedge.exe rend la main avant que son processus enfant ait écrit l'image
-                while not (sortie / nom).exists() and time.time() < fin:
-                    time.sleep(0.5)
-                time.sleep(0.5)  # laisse finir l'écriture du fichier
-            except subprocess.TimeoutExpired:
-                print(f"  ! couverture de l'article {a['id']} : Edge trop lent, réessayé au prochain passage")
-        if (sortie / nom).exists():
-            noms[a["id"]] = nom
-    for ancienne in sortie.glob("*.png"):  # couvertures d'articles supprimés ou modifiés
-        if ancienne.name not in noms.values():
-            ancienne.unlink()
-    return noms
-
-
 # ---------- rendu ----------
 CREDITS_PHOTOS = {}  # chargé par rendre_site
 COUVERTURES = {}  # id d'article -> fichier PNG, chargé par rendre_site
 THREADS = {}  # id d'article -> tweets du thread X, chargé par rendre_site
 
 # boutons X / Facebook : copier, coches, et mémoire « publié » propre au navigateur (site local, pas de serveur)
-JS = """const lire=k=>{try{return localStorage.getItem(k)}catch(e){return null}};
-const ecrire=(k,v)=>{try{v?localStorage.setItem(k,"1"):localStorage.removeItem(k)}catch(e){}};
-async function copier(t){try{await navigator.clipboard.writeText(t)}catch(e){const z=document.createElement("textarea");
-z.value=t;document.body.append(z);z.select();document.execCommand("copy");z.remove()}}
-function marquer(){
-document.querySelectorAll("[data-cle]").forEach(b=>{if(lire("cp-"+b.dataset.cle)){b.classList.add("copie");
-b.querySelector(".copier").textContent="✓ تم النسخ"}});
-document.querySelectorAll("[data-pub]").forEach(x=>x.checked=!!lire("pub-"+x.dataset.pub));
-document.querySelectorAll("[data-id]").forEach(x=>{x.querySelectorAll(".pub").forEach(p=>p.remove());
-const s=[["x","X"],["fb","فيسبوك"]].filter(([r])=>lire(`pub-${r}-${x.dataset.id}`)).map(([,n])=>n);
-if(s.length){const p=document.createElement("span");p.className="pub";p.textContent="✓ نُشر: "+s.join(" · ");
-(x.querySelector(".signature")||x).append(p)}})}
-document.addEventListener("click",async ev=>{
-const o=ev.target.closest("[data-ouvre]");if(o){document.getElementById(o.dataset.ouvre).showModal();return}
-const c=ev.target.closest(".copier");if(c){const b=c.closest(".copiable");ecrire("cp-"+b.dataset.cle,1);
-b.classList.add("copie");c.textContent="✓ تم النسخ";await copier(b.querySelector(".a-copier").textContent)}});
-document.addEventListener("change",ev=>{const p=ev.target.dataset.pub;if(p){ecrire("pub-"+p,ev.target.checked);marquer()}});
-marquer();
-"""
+JS = (GABARITS / "site.js").read_text(encoding="utf-8")
 SLOGAN = "صحافة العالم عن ريال مدريد، بالعربية"
 A_PROPOS = ("نختار لكم أبرز مقالات الرأي عن ريال مدريد في الصحافة الإسبانية والأوروبية وصحافة بلدان لاعبيه، "
             "ونقدّمها بالعربية مع ذكر الكاتب والمصدر.")
@@ -583,197 +372,13 @@ POLICES = (
 )
 VIDE = '<p class="vide">لا توجد مقالات بعد. عودوا قريبًا.</p>'
 
-CSS = """
-:root{--papier:#faf8f4;--surface:#fff;--encre:#16181d;--doux:#5f6672;--ligne:#e7e2d8;--marine:#0b1f3a;--bleu:#00529f;
---or:#c9a227;--or-pale:#f6eed6;--tactique:#00529f;--mercato:#8a5d00;--club:#5b2a86;--debats:#b3261e;--actus:#0f7466;--c:var(--bleu);
---titres:"IBM Plex Sans Arabic","Segoe UI",Tahoma,sans-serif;--lecture:"Noto Naskh Arabic","Traditional Arabic",serif;--r:14px}
-@media (prefers-color-scheme:dark){:root{--papier:#0e1117;--surface:#161b24;--encre:#ece8df;--doux:#a4abb6;--ligne:#283040;
---marine:#0a1628;--or-pale:#2c2612;--bleu:#6aa8ff;--tactique:#6aa8ff;--mercato:#e2b43f;--club:#c39af0;--debats:#ff8a80;--actus:#4fd1b8}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--papier);color:var(--encre);font:16px/1.75 var(--titres)}
-a{color:inherit}
-:focus-visible{outline:3px solid var(--or);outline-offset:2px;border-radius:4px}
-.cadre{max-width:1180px;margin-inline:auto;padding-inline:20px}
-.sauter{position:absolute;inset-inline-start:12px;top:-60px;background:var(--or);color:#111;padding:8px 14px;border-radius:8px;z-index:10}
-.sauter:focus{top:12px}
-
-/* entête */
-.entete{background:var(--marine);color:#fff}
-.bande{border-bottom:1px solid #ffffff1f;font-size:13px;color:#c9d3e3}
-.bande .cadre{display:flex;justify-content:space-between;gap:12px;padding-block:6px}
-.marque{padding-block:26px 20px;text-align:center}
-.logo{font:700 clamp(30px,5vw,46px)/1.2 var(--titres);color:#fff;text-decoration:none}
-.logo span{color:var(--or)}
-.menu{position:sticky;top:0;z-index:5;background:var(--marine);border-top:1px solid #ffffff1f;box-shadow:0 6px 18px -12px #000a}
-.menu .cadre{display:flex;justify-content:center;gap:2px;overflow-x:auto;scrollbar-width:none}
-.menu a{flex:none;color:#dfe6f1;text-decoration:none;padding:13px 14px 10px;font-weight:600;font-size:15px;border-bottom:3px solid transparent}
-.menu a:hover{color:#fff}
-.menu a[aria-current]{color:#fff;border-bottom-color:var(--or)}
-@media (max-width:760px){.menu .cadre{justify-content:flex-start}.bande .slogan{display:none}}
-main{padding-block:36px 64px}
-
-/* cartes */
-.s-tactique{--c:var(--tactique)}.s-mercato{--c:var(--mercato)}.s-club{--c:var(--club)}.s-debats{--c:var(--debats)}.s-actus{--c:var(--actus)}
-.carte{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--ligne);
-border-top:4px solid var(--c);border-radius:var(--r);overflow:hidden;transition:box-shadow .2s,transform .2s}
-.carte .contenu{flex:1;display:flex;flex-direction:column;gap:8px;padding:20px 22px}
-.couv{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;background:var(--c)}
-.couverture{margin:0 0 30px}
-.couverture img{display:block;width:100%;height:auto;border-radius:var(--r);box-shadow:0 12px 30px -18px #0b1f3a88}
-.carte:hover{box-shadow:0 14px 30px -16px #0b1f3a55;transform:translateY(-2px)}
-.carte h2,.carte h3{margin:0;font-weight:700;line-height:1.45}
-.carte h3{font-size:19px}
-.titre{text-decoration:none}
-.carte .titre::after{content:"";position:absolute;inset:0;border-radius:var(--r)}
-.carte .titre:hover{color:var(--c)}
-.rubrique,.signature a{position:relative;z-index:1}
-.rubrique{align-self:flex-start;color:var(--c);font-size:13px;font-weight:700;text-decoration:none}
-.rubrique::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--c);margin-inline-end:7px;vertical-align:middle}
-.resume{margin:0;color:var(--doux);font:16.5px/1.9 var(--lecture);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
-.signature{margin-top:auto;padding-top:10px;display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;font-size:13.5px;color:var(--doux)}
-.signature .auteur{color:var(--encre);font-weight:700;text-decoration:none}
-.signature .auteur:hover{color:var(--c)}
-.signature time{margin-inline-start:auto}
-.puce{background:var(--or-pale);color:var(--encre);border-radius:999px;padding:1px 10px;text-decoration:none;font-size:12.5px}
-.grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
-.grille>*,.a-la-une>*,.cote>*,.mise-en-page>*{min-width:0}
-h1,h2,h3{overflow-wrap:anywhere}
-@media (prefers-reduced-motion:reduce){.carte{transition:none}.carte:hover{transform:none}}
-
-/* accueil */
-.a-la-une{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start}
-.une{border-top-width:6px}
-.une .contenu{padding:28px 34px}
-.une h2{font-size:clamp(26px,3.4vw,38px);line-height:1.35}
-.une .resume{font-size:19px;-webkit-line-clamp:5;color:var(--encre)}
-.cote{display:grid;gap:20px;align-content:start}
-.compacte .resume{-webkit-line-clamp:2}
-@media (max-width:860px){.a-la-une{grid-template-columns:1fr}.une .contenu{padding:22px}}
-.bloc{margin-top:52px}
-.bloc-tete{display:flex;align-items:baseline;justify-content:space-between;gap:12px;border-bottom:2px solid var(--encre);margin-bottom:20px;padding-bottom:8px}
-.bloc-tete h2{margin:0;font-size:22px;display:flex;align-items:center;gap:10px}
-.bloc-tete h2::before{content:"";width:6px;height:22px;background:var(--c);border-radius:3px}
-.bloc-tete a{color:var(--c);font-weight:600;text-decoration:none;font-size:14px}
-.bloc-or{--c:var(--or)}
-.deux{display:grid;grid-template-columns:1fr 1fr;gap:0 40px}
-@media (max-width:760px){.deux{grid-template-columns:1fr}}
-.nuage{display:flex;flex-wrap:wrap;gap:10px}
-.nuage a{background:var(--surface);border:1px solid var(--ligne);border-radius:999px;padding:6px 16px;text-decoration:none;font-weight:600;font-size:14.5px}
-.nuage a:hover{border-color:var(--or)}
-.nuage small{color:var(--doux);font-weight:400;margin-inline-start:6px}
-
-/* pages de liste */
-.tete-liste{padding-bottom:26px;margin-bottom:30px;border-bottom:1px solid var(--ligne)}
-.sur-titre{color:var(--c);font-weight:700;font-size:14px}
-.tete-liste h1{margin:4px 0 6px;font-size:clamp(28px,4vw,42px);line-height:1.3}
-.tete-liste p{margin:0;color:var(--doux);font-size:17px;max-width:640px}
-.compte{display:inline-block;margin-top:14px;font-size:13px;color:var(--doux);background:var(--surface);border:1px solid var(--ligne);border-radius:999px;padding:2px 12px}
-.pages{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:36px;color:var(--doux);font-size:14.5px}
-.pages a{background:var(--surface);border:1px solid var(--ligne);border-radius:999px;padding:6px 18px;text-decoration:none;font-weight:600;color:var(--encre)}
-.pages a:hover{border-color:var(--or)}
-.vide{background:var(--surface);border:1px dashed var(--ligne);border-radius:var(--r);padding:44px;text-align:center;color:var(--doux)}
-
-/* article */
-.mise-en-page{display:grid;grid-template-columns:minmax(0,720px) 300px;gap:56px;justify-content:center}
-@media (max-width:1060px){.mise-en-page{grid-template-columns:minmax(0,720px)}}
-.haut{display:flex;align-items:center;gap:12px}
-.nature{font-size:12.5px;border:1px solid var(--ligne);border-radius:999px;padding:1px 10px;color:var(--doux)}
-.lecture h1{font-size:clamp(28px,4.2vw,44px);line-height:1.35;margin:12px 0 16px}
-.lecture .chapeau{font:600 21px/1.85 var(--lecture);margin:0 0 24px}
-.tete-auteur{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px 24px;padding:16px 0;border-block:1px solid var(--ligne);margin-bottom:30px}
-.auteur-bloc{display:flex;align-items:center;gap:12px}
-.avatar{width:46px;height:46px;flex:none;border-radius:50%;background:var(--c);color:#fff;display:grid;place-items:center;font-weight:700;font-size:20px}
-.auteur-bloc .auteur{display:block;font-weight:700;font-size:17px;text-decoration:none}
-.auteur-bloc .auteur:hover{color:var(--c)}
-.latin{font-size:13.5px;color:var(--doux)}
-.infos{display:flex;flex-wrap:wrap;align-items:center;gap:6px 14px;font-size:14px;color:var(--doux)}
-.texte{font:20px/2.05 var(--lecture)}
-.texte p{margin:0 0 1.15em}
-@media (max-width:600px){.texte{font-size:18.5px}.lecture .chapeau{font-size:19px}}
-.etiquettes{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin:30px 0}
-.etiquettes strong{font-size:14px;margin-inline-end:4px}
-.etiquettes a{background:var(--surface);border:1px solid var(--ligne);border-radius:999px;padding:3px 14px;text-decoration:none;font-size:14px}
-.etiquettes a:hover{border-color:var(--c)}
-.source{background:var(--surface);border:1px solid var(--ligne);border-inline-start:4px solid var(--or);border-radius:var(--r);padding:20px 24px}
-.source h2{margin:0 0 6px;font-size:14px;color:var(--doux);font-weight:600}
-.titre-original{font-weight:700;font-size:17px;margin:0 0 6px}
-.source p{margin:0 0 14px;font-size:15px}
-.bouton{display:inline-block;background:var(--marine);color:#fff;text-decoration:none;border-radius:10px;padding:10px 20px;font-weight:600}
-.bouton:hover{background:var(--bleu);color:#fff}
-.partage{display:flex;flex-wrap:wrap;gap:10px;margin:-14px 0 26px}
-.copier,.fermer{font:600 14px var(--titres);border:1px solid var(--ligne);background:var(--surface);color:var(--encre);border-radius:999px;padding:6px 16px;cursor:pointer}
-.copier:hover,.fermer:hover{border-color:var(--or)}
-.partage button{display:inline-flex;align-items:center;gap:10px;font:700 15px var(--titres);color:#fff;border:1px solid #ffffff26;border-radius:999px;padding:9px 20px;cursor:pointer;transition:transform .15s,box-shadow .15s}
-.partage button:hover{transform:translateY(-1px);box-shadow:0 8px 18px -10px #000a}
-.partage svg,.fenetre svg{width:18px;height:18px;fill:currentColor;flex:none}
-.fenetre .bouton{display:inline-flex;align-items:center;gap:10px;margin:0 0 8px 8px}
-.fenetre .b-x{background:#000}
-.b-x{background:#000}.b-fb{background:#1877f2}
-@media (prefers-reduced-motion:reduce){.partage button{transition:none}.partage button:hover{transform:none}}
-.fenetre{width:min(640px,calc(100% - 32px));max-height:85vh;border:none;border-radius:var(--r);padding:22px 24px;background:var(--surface);color:var(--encre)}
-.fenetre::backdrop{background:#0b1f3acc}
-.fenetre h2{margin:0 0 12px;font-size:20px}
-.tweets{list-style:none;margin:16px 0;padding:0;display:grid;gap:12px}
-.copiable{border:1px solid var(--ligne);border-radius:10px;padding:12px 14px}
-.copiable.copie{border-color:var(--actus);background:color-mix(in srgb,var(--actus) 8%,transparent)}
-.a-copier{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font:16px/1.8 var(--titres)}
-.outils{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-top:8px;color:var(--doux)}
-.publie{display:flex;gap:8px;align-items:center;font-weight:600;margin:14px 0}
-.pub{background:var(--or-pale);border-radius:999px;padding:1px 10px;font-size:12.5px;color:var(--encre)}
-.proches h2{font-size:17px;margin:0 0 14px}
-.proches .carte{margin-bottom:16px}
-
-/* revue de presse */
-.jour{margin-bottom:44px}
-.jour h2{display:flex;align-items:baseline;gap:12px;font-size:21px;margin:0 0 16px}
-.jour h2 span{font-size:13px;color:var(--doux);font-weight:400}
-.fil{list-style:none;margin:0;padding:0;border-inline-start:2px solid var(--ligne);max-width:820px}
-.fil li{position:relative;padding:0 26px 26px}
-.fil li::before{content:"";position:absolute;inset-inline-start:-7px;top:9px;width:12px;height:12px;border-radius:50%;background:var(--c);box-shadow:0 0 0 4px var(--papier)}
-.fil .titre{display:block;font-weight:700;font-size:18px;margin:2px 0 4px}
-.fil .titre:hover{color:var(--c)}
-.fil p{margin:0 0 4px;color:var(--doux);font-family:var(--lecture)}
-.fil .signature{padding-top:2px}
-.fil .signature time{margin-inline-start:0}
-
-/* presse */
-.tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
-.tuile{display:block;background:var(--surface);border:1px solid var(--ligne);border-radius:var(--r);padding:22px;text-decoration:none}
-.tuile:hover{border-color:var(--or)}
-.tuile strong{display:block;font-size:19px}
-.tuile .nb{display:block;font-size:36px;font-weight:700;color:var(--bleu);line-height:1.3}
-.tuile small{color:var(--doux)}
-
-/* photos */
-.photo{margin:0 0 30px}
-.photo img{display:block;width:100%;max-height:420px;object-fit:cover;object-position:center 20%;border-radius:var(--r);background:var(--ligne)}
-.photo figcaption,.portrait figcaption{font-size:12px;line-height:1.6;color:var(--doux);margin-top:6px}
-.photo figcaption a,.portrait figcaption a{color:inherit}
-.tete-liste{display:flex;align-items:center;gap:28px}
-.portrait{flex:none;width:170px;margin:0}
-.portrait img{display:block;width:170px;height:170px;border-radius:50%;object-fit:cover;object-position:center 15%;border:4px solid var(--or)}
-.portrait figcaption{text-align:center}
-@media (max-width:600px){.tete-liste{flex-direction:column;align-items:flex-start}}
-
-/* pied */
-.pied{background:var(--marine);color:#c9d3e3;padding:48px 0 22px;font-size:14.5px}
-.grille-pied{display:grid;grid-template-columns:2fr 1fr 1.4fr;gap:36px}
-@media (max-width:760px){.grille-pied{grid-template-columns:1fr}}
-.pied .logo{font-size:28px}
-.pied h2{color:#fff;margin:0 0 10px;font-size:15px}
-.pied a{display:block;color:#c9d3e3;text-decoration:none;padding:3px 0}
-.pied a:hover{color:#fff}
-.pied .copyright{border-top:1px solid #ffffff1f;margin-top:30px;padding-top:16px;font-size:13px;color:#8fa0b8}
-"""
+CSS = (GABARITS / "style.css").read_text(encoding="utf-8")
 
 
 def slug(texte):
     s = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode().lower()
     return re.sub(r"[^a-z0-9]+", "-", s).strip("-") or "auteur"
 
-
-def e(t):
-    return html.escape(t or "")
 
 
 def date_ar(iso):

@@ -1,5 +1,6 @@
 """Fonctions communes : collecte RSS, déduplication, base des articles déjà vus, appel à Claude (abonnement,
-via Claude Code en mode `claude -p`), copie texte de la base pour git. Utilisé par generer_site.py et threads.py."""
+via Claude Code en mode `claude -p`), copie texte de la base pour git, identité du site (nom, rubriques, pays).
+Utilisé par generer_site.py, couvertures.py, threads.py et connaissance.py."""
 import calendar
 import html
 import json
@@ -26,6 +27,23 @@ DB_PATH = BASE / "articles.db"
 DUMP = BASE / "articles.sql"  # copie texte de articles.db, versionnée dans git : un passage n'y ajoute que ses lignes
 OUT = BASE / "sortie"
 OUT.mkdir(exist_ok=True)
+GABARITS = BASE / "gabarits"  # CSS et JS du site et des couvertures
+
+# identité du site, partagée par les pages (generer_site) et les couvertures
+NOM_SITE = "المدريديستا علاء"
+
+SECTIONS = {"actus": "أخبار", "tactique": "تحليلات تكتيكية", "mercato": "سوق الانتقالات", "club": "النادي والأعمال", "debats": "نقاشات"}
+PAYS = {
+    "es": "الصحافة الإسبانية", "gb": "الصحافة الإنجليزية", "fr": "الصحافة الفرنسية", "us": "الصحافة الأمريكية",
+    "de": "الصحافة الألمانية", "it": "الصحافة الإيطالية", "pt": "الصحافة البرتغالية", "nl": "الصحافة الهولندية",
+    "be": "الصحافة البلجيكية", "br": "الصحافة البرازيلية", "uy": "الصحافة الأوروغويانية", "tr": "الصحافة التركية",
+    "ma": "الصحافة المغربية", "ci": "الصحافة الإيفوارية",
+}
+
+
+def e(t):
+    return html.escape(t or "")
+
 
 
 # ---------- base de données (articles déjà traités) ----------
