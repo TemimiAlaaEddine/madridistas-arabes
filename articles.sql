@@ -2347,4 +2347,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Kylian-mbap
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/federico-valverde-hace-historia-real-madrid-supero-luka-modric-209-partidos-menos-n6063242','Federico Valverde hace historia en Real Madrid: superó a Luka Modric con 209 partidos menos','2026-11-09T18:01:56');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8661778440900059299-equipe-de-france-konate-juge-la-candidature-de-teddy-riner-a-lelection-presidentielle','Équipe de France : Konaté juge la candidature de Teddy Riner à l’élection présidentielle','2026-11-09T19:01:26');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1799643905802990488-equipe-de-france-les-belles-frappes-de-cherki-et-mbappe-a-lentrainement-des-bleus','Équipe de France : les belles frappes de Cherki et Mbappé à l’entraînement des Bleus','2026-11-09T19:01:26');
+INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/la-sub-17-cuenta-con-enzo-alves-de-momento-f202611-n/','La Sub-17 cuenta con Enzo Alves... de momento','2026-11-09T20:01:33');
 COMMIT;
