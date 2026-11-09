@@ -30,12 +30,12 @@ main{padding-block:36px 64px}
 /* cartes */
 .s-tactique{--c:var(--tactique)}.s-mercato{--c:var(--mercato)}.s-club{--c:var(--club)}.s-debats{--c:var(--debats)}.s-actus{--c:var(--actus)}
 .carte{position:relative;display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--ligne);
-border-top:4px solid var(--c);border-radius:var(--r);overflow:hidden;transition:box-shadow .2s,transform .2s}
+border-top:4px solid var(--c);border-radius:var(--r);overflow:hidden}
 .carte .contenu{flex:1;display:flex;flex-direction:column;gap:8px;padding:20px 22px}
 .couv{display:block;width:100%;aspect-ratio:1200/630;object-fit:cover;background:var(--c)}
 .couverture{margin:0 0 30px}
 .couverture img{display:block;width:100%;height:auto;border-radius:var(--r);box-shadow:0 12px 30px -18px #0b1f3a88}
-.carte:hover{box-shadow:0 14px 30px -16px #0b1f3a55;transform:translateY(-2px)}
+/* pas de soulèvement au survol : recalculé pour chaque carte passant sous la souris, il saccadait le défilement */
 .carte h2,.carte h3{margin:0;font-weight:700;line-height:1.45}
 .carte h3{font-size:19px}
 .titre{text-decoration:none}
@@ -53,7 +53,6 @@ border-top:4px solid var(--c);border-radius:var(--r);overflow:hidden;transition:
 .grille{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(300px,100%),1fr));gap:20px}
 .grille>*,.a-la-une>*,.cote>*,.mise-en-page>*{min-width:0}
 h1,h2,h3{overflow-wrap:anywhere}
-@media (prefers-reduced-motion:reduce){.carte{transition:none}.carte:hover{transform:none}}
 
 /* accueil */
 .a-la-une{display:grid;grid-template-columns:2fr 1fr;gap:20px;align-items:start}
