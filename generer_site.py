@@ -96,8 +96,8 @@ Pour chaque article ci-dessous :
 1. Décide de sa nature :
    - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (uno a uno, aprobados y suspensos).
    - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat final d'un match du Real Madrid (score et buteurs), composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
-   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (sauf au Bernabéu, voir ci-dessous).
-   - Information sur le Bernabéu : travaux, recettes, et tous les événements qui s'y tiennent (concerts, NFL et autres sports), à garder.
+   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).
+   - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents), n'en garde qu'un seul, le plus complet. Idem s'il est déjà dans la liste « DÉJÀ PUBLIÉ » plus bas.
 2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, clair et soigné :
@@ -161,8 +161,8 @@ PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le R
 Garde :
 - opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (« uno a uno », « aprobados y suspensos », « player ratings », « notes ») ;
 - conference : conférence de presse d'un entraîneur du Real Madrid, ou d'un entraîneur adverse qui parle du Real Madrid (déclarations d'avant ou d'après-match) ;
-- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, concerts, NFL et autres événements au stade) ; compositions probables seulement si le journal est Marca ou AS.
-Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (sauf au Bernabéu), autres compositions probables.
+- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, événements organisés dans le stade comme le match de NFL ou un concert) ; compositions probables seulement si le journal est Marca ou AS.
+Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (dont le basket du Real Madrid et la NFL hors du Bernabéu), autres compositions probables.
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
 Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
