@@ -96,11 +96,12 @@ Pour chaque article ci-dessous :
 1. Décide de sa nature :
    - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (uno a uno, aprobados y suspensos).
    - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat final d'un match du Real Madrid (score et buteurs), composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
-   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports.
+   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (sauf au Bernabéu, voir ci-dessous).
+   - Information sur le Bernabéu : travaux, recettes, et tous les événements qui s'y tiennent (concerts, NFL et autres sports), à garder.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents), n'en garde qu'un seul, le plus complet. Idem s'il est déjà dans la liste « DÉJÀ PUBLIÉ » plus bas.
-2. Classe-le dans une section : actus pour toute information ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
+2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, clair et soigné :
-   - Information (actus) : 120 à 200 mots, uniquement les faits, avec le contexte utile tiré du texte, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
+   - Information (actus, ou club pour le Bernabéu) : 120 à 200 mots, uniquement les faits, avec le contexte utile tiré du texte, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
    - Opinion, selon le « Mode » indiqué :
      - Mode résumé : un article de 400 à 600 mots qui expose la thèse, chacun des arguments et la conclusion de l'auteur avec tes propres mots, à la troisième personne (يرى الكاتب...). Au maximum 4 citations courtes traduites (moins de 25 mots chacune) entre guillemets «». Ne traduis pas l'article phrase par phrase.
      - Mode traduction : traduction intégrale et fidèle du texte fourni.
@@ -160,8 +161,8 @@ PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le R
 Garde :
 - opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (« uno a uno », « aprobados y suspensos », « player ratings », « notes ») ;
 - conference : conférence de presse d'un entraîneur du Real Madrid, ou d'un entraîneur adverse qui parle du Real Madrid (déclarations d'avant ou d'après-match) ;
-- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses ; compositions probables seulement si le journal est Marca ou AS.
-Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports, autres compositions probables.
+- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, concerts, NFL et autres événements au stade) ; compositions probables seulement si le journal est Marca ou AS.
+Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (sauf au Bernabéu), autres compositions probables.
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
 Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
@@ -255,7 +256,8 @@ def enregistrer(reponses, items, chemin=DB):
             " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             # date : celle de l'article d'origine, sinon celle du passage
             (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, r.get("auteur_ar") or auteur,
-             journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference" else "resume",
+             journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference"
+             else "info" if it.get("type") == "info" else "resume",
              json.dumps(personnes), via, rapporteur, r.get("sujet") if r.get("sujet") in PERSONNES else "",
              str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False),
              json.dumps(titres_fb, ensure_ascii=False) if titres_fb else ""),
@@ -511,8 +513,8 @@ def fil(arts):
 def page_accueil(arts):
     if not arts:
         return page("الرئيسية", VIDE, "index")
-    avis = [a for a in arts if a["section"] != "actus"] or arts  # la une reste aux articles d'opinion
-    nouvelles = [a for a in arts if a["section"] == "actus"]
+    avis = [a for a in arts if a["section"] != "actus" and a["mode"] != "info"] or arts  # la une reste aux articles d'opinion
+    nouvelles = [a for a in arts if a["section"] == "actus" or a["mode"] == "info"]  # avec les infos du Bernabéu (club)
     une, cote, suite = avis[0], avis[1:3], avis[3:12]
     corps = (f'<section class="a-la-une" aria-label="أبرز المقالات">{carte(une, "une", "h2")}'
              f'<div class="cote">{"".join(carte(a, "compacte") for a in cote)}</div></section>')
@@ -586,7 +588,7 @@ def page_article(a, arts):
     nom = f'{e(a["auteur_ar"])} (<bdi class="latin">{e(a["auteur"])}</bdi>)'
     traduction = a["mode"] == "traduction"
     badge = "ترجمة كاملة" if traduction else "ملخص وتعليق"
-    if a["section"] == "actus":
+    if a["section"] == "actus" or a["mode"] == "info":  # une information sur le Bernabéu est rangée dans club
         badge = "خبر"
         nature = "ترجمة تصريحات المؤتمر الصحفي كما نقلتها" if a["mode"] == "conference" else "ملخص خبر نشرته"
         origine = f"{nature} {e(a['journal'])}" + (f" بقلم {nom}" if a["auteur"] else "")

@@ -371,3 +371,19 @@ with tempfile.TemporaryDirectory() as d:
     assert (site / "j-ana--3.html").exists() and not (site / "debats--4.html").exists() and not (site / "debats--9.html").exists()
     assert 'class="pages"' not in (site / "tactique.html").read_text(encoding="utf-8")  # une seule page : pas de navigation
 print("OK pagination")
+
+# Bernabéu : une information rangée dans club reste présentée comme un خبر et ne fait pas la une
+with tempfile.TemporaryDirectory() as d:
+    db, site = Path(d) / "a.db", Path(d) / "site"
+    g.enregistrer([{"id": 1, "section": "club", "titre": "NFL في البرنابيو", "texte": "ن"},
+                   {"id": 2, "section": "tactique", "titre": "رأي", "texte": "ن"}],
+                  [{"lien": "https://ser.com/nfl", "titre": "NFL", "auteur": "", "source": "Cadena SER", "pays": "es", "type": "info"},
+                   {"lien": "https://ser.com/op", "titre": "Op", "auteur": "", "source": "Cadena SER", "pays": "es", "type": "opinion"}], db)
+    g.rendre_site(db, site)
+    nfl = (site / "a-1.html").read_text(encoding="utf-8")
+    assert 'class="nature">خبر<' in nfl and "ملخص خبر نشرته" in nfl and "مقال رأي" not in nfl
+    assert 'href="club.html"' in nfl  # rubrique club
+    accueil = (site / "index.html").read_text(encoding="utf-8")
+    assert accueil.index("رأي") < accueil.index("NFL في البرنابيو")  # la une (en haut) est l'opinion
+    assert "Bernabéu" in g.PROMPT_TRI and "Bernabéu" in g.construire_prompt([])
+print("OK Bernabéu dans club")
