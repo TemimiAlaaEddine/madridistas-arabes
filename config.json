@@ -191,9 +191,6 @@
     "brahim",
     "diomande"
   ],
-  "age_max_heures": 24,
-  "max_articles_par_lot": 25,
-  "langue_sortie": "arabe",
   "delai_claude_secondes": 600,
   "max_articles_site": 8,
   "personnes": {

@@ -314,14 +314,14 @@ with tempfile.TemporaryDirectory() as tmp:
 print("OK recherche /script")
 
 # sitemap Google News (site officiel du Real, sans flux RSS)
-import insider
+import commun
 with tempfile.TemporaryDirectory() as d:
     f = Path(d) / "s.xml"
     f.write_text('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9">'
                  '<url><loc>https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/cronicas/x</loc><news:news>'
                  '<news:publication_date>2026-11-08T08:13:01.631Z</news:publication_date><news:title>El Madrid golea</news:title>'
                  '</news:news></url></urlset>', encoding="utf-8")
-    [e] = insider.lire_sitemap(f.as_uri())
+    [e] = commun.lire_sitemap(f.as_uri())
     assert e["title"] == "El Madrid golea" and e["link"].endswith("/cronicas/x")
     assert e["published_parsed"][:5] == (2026, 11, 8, 8, 13), "date en UTC"
 print("OK sitemap")
@@ -339,15 +339,15 @@ def lignes(db):
 with tempfile.TemporaryDirectory() as d:
     db, dump = Path(d) / "a.db", Path(d) / "a.sql"
     g.enregistrer(reponses, items, db)
-    assert not insider.sauvegarder_base(Path(d) / "absente.db", dump) and not dump.exists()
-    assert insider.sauvegarder_base(db, dump)
+    assert not commun.sauvegarder_base(Path(d) / "absente.db", dump) and not dump.exists()
+    assert commun.sauvegarder_base(db, dump)
     avant = lignes(db)
-    assert not insider.restaurer_base(db, dump)  # base plus récente que la copie : gardée
+    assert not commun.restaurer_base(db, dump)  # base plus récente que la copie : gardée
     os.utime(db, (0, 0))  # copie plus récente (git pull) : base reconstruite
-    assert insider.restaurer_base(db, dump)
+    assert commun.restaurer_base(db, dump)
     assert lignes(db) == avant
     db.unlink()  # dépôt fraîchement cloné (GitHub)
-    assert insider.restaurer_base(db, dump) and db.exists()
+    assert commun.restaurer_base(db, dump) and db.exists()
 print("OK sauvegarde de la base")
 
 # pagination des listes : 5 articles, 2 par page -> 3 pages reliées, anciennes pages en trop supprimées

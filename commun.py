@@ -22,7 +22,7 @@ except ImportError:
 
 BASE = Path(__file__).resolve().parent
 CONFIG = json.loads((BASE / "config.json").read_text(encoding="utf-8"))
-DB_PATH = BASE / "vus.db"
+DB_PATH = BASE / "articles.db"
 DUMP = BASE / "articles.sql"  # copie texte de articles.db, versionnée dans git : un passage n'y ajoute que ses lignes
 OUT = BASE / "sortie"
 OUT.mkdir(exist_ok=True)
@@ -95,9 +95,9 @@ def lire_sitemap(url):
     return entrees
 
 
-def collecter(chemin=DB_PATH, age_max_heures=None):
+def collecter(chemin=DB_PATH, age_max_heures=24):
     mots = [m.lower() for m in CONFIG["mots_cles"]]
-    age_max = (age_max_heures or CONFIG["age_max_heures"]) * 3600
+    age_max = age_max_heures * 3600
     con = db(chemin)
     trouves = []
     for flux in CONFIG["flux"]:

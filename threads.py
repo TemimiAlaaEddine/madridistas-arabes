@@ -15,7 +15,7 @@ import urllib.request
 import uuid
 from datetime import datetime
 
-from insider import BASE, CONFIG, appeler_claude, extraire_json
+from commun import BASE, CONFIG, appeler_claude, extraire_json
 
 LIMITE = 280
 SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHub : variables d'environnement

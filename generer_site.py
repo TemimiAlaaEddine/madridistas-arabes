@@ -33,7 +33,7 @@ from datetime import datetime
 from html.parser import HTMLParser
 
 import threads
-from insider import BASE, CONFIG, appeler_claude, collecter, dedoublonner, extraire_json, marquer_vus, nettoyer, restaurer_base
+from commun import BASE, CONFIG, appeler_claude, collecter, dedoublonner, extraire_json, marquer_vus, nettoyer, restaurer_base
 
 DB = BASE / "articles.db"
 SITE = BASE / "site"
