@@ -4,6 +4,7 @@
 Collecte (flux de config.json) -> articles (hors Google News) -> lecture du texte complet ->
 Claude rédige un résumé commenté (ou une traduction si la source a donné son
 autorisation : "autorisation": true dans config.json) -> articles.db -> pages HTML dans site/.
+Dans git, la base est gardée en texte (articles.sql) : reconstruite au démarrage si elle est plus récente.
 
 Usage :
   python generer_site.py            # collecte + rédaction + régénère le site
@@ -26,12 +27,13 @@ import unicodedata
 import urllib.parse
 import urllib.request
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
 from datetime import datetime
 from html.parser import HTMLParser
 
 import threads
-from insider import BASE, CONFIG, appeler_claude, collecter, dedoublonner, extraire_json, marquer_vus, nettoyer
+from insider import BASE, CONFIG, appeler_claude, collecter, dedoublonner, extraire_json, marquer_vus, nettoyer, restaurer_base
 
 DB = BASE / "articles.db"
 SITE = BASE / "site"
@@ -1100,8 +1102,9 @@ def ordonner(items):
 
 def traiter_lot(lot):
     """Lit les articles, fait rédiger Claude, enregistre. Retourne le nombre d'articles ajoutés (None si réponse illisible)."""
-    for it in lot:
-        it["texte"] = texte_complet(it)
+    with ThreadPoolExecutor(8) as ex:  # pages lues en même temps : un site lent ne bloque plus tout le lot
+        for it, texte in zip(lot, ex.map(texte_complet, lot)):
+            it["texte"] = texte
     reponse = appeler_claude(construire_prompt(lot, deja_publies()), CONFIG.get("modele_redaction", "sonnet"))
     try:
         reponses = extraire_json(reponse)
@@ -1123,6 +1126,8 @@ def main():
     ap.add_argument("--threads", action="store_true", help="prépare et envoie seulement les threads X sur Telegram")
     args = ap.parse_args()
 
+    if restaurer_base(DB):
+        print("Base reconstruite depuis articles.sql.")
     if not args.rendre and not args.test and not args.threads:
         mettre_a_jour_photos()
     if not args.rendre and not args.photos and not args.threads:

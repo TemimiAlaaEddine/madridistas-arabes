@@ -325,3 +325,27 @@ with tempfile.TemporaryDirectory() as d:
     assert e["title"] == "El Madrid golea" and e["link"].endswith("/cronicas/x")
     assert e["published_parsed"][:5] == (2026, 11, 8, 8, 13), "date en UTC"
 print("OK sitemap")
+
+# base gardée en texte dans git : copie puis reconstruction à l'identique, et jamais d'écrasement par une base absente
+import os
+from contextlib import closing
+
+
+def lignes(db):
+    with closing(sqlite3.connect(db)) as con:
+        return sorted(con.execute("SELECT * FROM articles").fetchall())
+
+
+with tempfile.TemporaryDirectory() as d:
+    db, dump = Path(d) / "a.db", Path(d) / "a.sql"
+    g.enregistrer(reponses, items, db)
+    assert not insider.sauvegarder_base(Path(d) / "absente.db", dump) and not dump.exists()
+    assert insider.sauvegarder_base(db, dump)
+    avant = lignes(db)
+    assert not insider.restaurer_base(db, dump)  # base plus récente que la copie : gardée
+    os.utime(db, (0, 0))  # copie plus récente (git pull) : base reconstruite
+    assert insider.restaurer_base(db, dump)
+    assert lignes(db) == avant
+    db.unlink()  # dépôt fraîchement cloné (GitHub)
+    assert insider.restaurer_base(db, dump) and db.exists()
+print("OK sauvegarde de la base")

@@ -50,6 +50,8 @@ if __name__ == "__main__":
     ap.add_argument("--jours", type=int, default=30)
     ap.add_argument("--max", type=int, default=15)
     args = ap.parse_args()
+    from insider import restaurer_base  # base à jour après un git pull (gardée en texte dans git)
+    restaurer_base(BASE / "articles.db")
     trouves = chercher(args.mots, args.jours, args.max)
     print(f"{len(trouves)} article(s) trouvé(s) sur {args.jours} jours pour : {' '.join(args.mots)}\n")
     print("\n".join(afficher(a) for a in trouves))
