@@ -1,11 +1,20 @@
 ---
 name: script
-description: Écrit un script de vidéo courte (TikTok, Reels, Shorts ; 45 à 90 secondes) qui analyse un match, un joueur ou un sujet du Real Madrid, à partir de la base d'articles du site et de connaissance.md. À utiliser pour « /script ... », « fais-moi un script sur ... ».
+description: Écrit un script de vidéo courte (TikTok, Reels, Shorts ; 45 à 90 secondes) qui analyse un match, un joueur ou un sujet du Real Madrid, à partir de la base d'articles du site et de connaissance.md. À utiliser pour « /script ... », « fais-moi un script sur ... », et sans sujet pour qu'il en propose 3 tirés des articles récents.
 ---
 
 # Script de vidéo courte sur le Real Madrid
 
 La demande (sujet, langue, durée, ton) suit la commande, par exemple : `/script analyse Valence 0-3 en arabe, 60 s`.
+
+## 0. Sans sujet : proposer
+Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
+1. Liste les titres des 3 derniers jours :
+   `python -c "import sqlite3,sys; sys.stdout.reconfigure(encoding='utf-8'); [print(*r, sep=' | ') for r in sqlite3.connect('articles.db').execute(\"SELECT date(date), journal, titre_original, personnes FROM articles WHERE date >= date('now','-3 days') ORDER BY date DESC\")]"`
+   Si c'est maigre, passe à `-7 days`.
+2. Regroupe par sujet et écarte ceux déjà traités dans `scripts/` (regarde les noms de fichiers).
+3. Propose **3 sujets**, chacun avec : un titre court, l'angle d'analyse ou de débat en une phrase, et le nombre d'articles disponibles (au moins 2, sinon ne le propose pas). Privilégie ce qui fait réagir : un débat, une décision de l'entraîneur, un joueur en forme ou en crise.
+4. Attends le choix de l'utilisateur, puis continue à l'étape 1.
 
 ## 1. Comprendre la demande
 - Sujet : un match, un joueur, un aspect (pressing, mercato...) ou un débat.
