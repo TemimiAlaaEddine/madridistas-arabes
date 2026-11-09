@@ -398,3 +398,23 @@ with tempfile.TemporaryDirectory() as d:
     assert e["title"] == "Bloody Hell JJ Gabriel" and e["link"].endswith("/jj/") and e["content"][0]["value"] == "<p>Texto completo</p>"
     assert e["published_parsed"][:5] == (2026, 11, 7, 12, 5), "date en UTC"
 print("OK WordPress")
+
+# auteur : toujours une personne ; sinon le site cite seulement le journal (page, carte, couverture, thread)
+for nom, jr in [("Redacción", "AS"), ("Agencias", "Cadena SER"), ("EFE", "Marca"), ("Cadena SER", "Cadena SER"),
+                ("Managing Madrid", "Managing Madrid"), ("info@vi.nl (VI)", "VI"), ("LALIGA", "AS"), ("", "AS")]:
+    assert g.auteur_reel(nom, jr) == "", nom
+for nom in ("Tomás Roncero", "Sid Lowe", "JUAN IGNACIO GARCÍA-OCHOA"):
+    assert g.auteur_reel(nom, "Marca") == nom
+with tempfile.TemporaryDirectory() as d:
+    db, site = Path(d) / "a.db", Path(d) / "site"
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "خبر", "texte": "ن", "auteur": "Agencias", "auteur_ar": "وكالات",
+                    "tweets": ["تغريدة"]}],
+                  [{"lien": "https://ser.com/x", "titre": "T", "auteur": "Redacción", "source": "Cadena SER", "pays": "es"}], db)
+    con = g.connexion(db)
+    assert tuple(con.execute("SELECT auteur, auteur_ar FROM articles").fetchone()) == ("", "")
+    tweets = json.loads(con.execute("SELECT tweets FROM threads").fetchone()[0])
+    con.close()
+    assert "📰 Cadena SER" in tweets[-1] and "وكالات" not in tweets[-1]
+    g.rendre_site(db, site)
+    assert "وكالات" not in (site / "a-1.html").read_text(encoding="utf-8") and not list(site.glob("j-*.html"))
+print("OK auteur = une personne, sinon le journal")

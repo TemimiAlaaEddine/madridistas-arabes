@@ -107,7 +107,7 @@ Pour chaque article ci-dessous :
      - Mode traduction : traduction intégrale et fidèle du texte fourni.
    - Mode conférence (conférence de presse d'un entraîneur, section actus) : traduis fidèlement et intégralement toutes les déclarations de l'entraîneur présentes dans le texte (la limite de 15 mots ne s'applique pas), sans reprendre les phrases du journaliste. Présente-les par sujet : chaque sujet commence par la question ou le thème résumé en une ligne, suivi de ses réponses entre guillemets «». Une phrase d'introduction : qui parle, quand, avant ou après quel match.
 4. N'ajoute aucun fait ni aucun avis absent du texte. L'avis est celui de l'auteur, jamais celui du site, du média ou du club.
-5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar").
+5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. L'auteur est toujours une personne : si l'article n'est signé que par le journal, une agence (EFE, Europa Press, AFP, Reuters) ou une mention comme « Redacción », laisse "auteur" et "auteur_ar" vides (le site citera seulement le journal). Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar").
    Si l'article rapporte surtout l'avis d'un commentateur (radio, télévision, podcast, entretien) plutôt que celui de son auteur, mets ce commentateur dans "auteur"/"auteur_ar", présente l'avis comme le sien, et indique en "via" le média où il s'est exprimé, en arabe (ex. : راديو ماركا). Sinon laisse "via" vide.
 6. Liste les personnes dont parle l'article, la principale en premier, uniquement parmi ces clés : {personnes}
    "sujet" : la clé de la personne dont l'article parle principalement, seulement si elle est dans cette liste ; sinon "" (ex. : article centré sur un joueur absent de la liste, ou sur le club en général).
@@ -132,6 +132,19 @@ ARTICLES
 
 def journal(it):
     return it["source"].split(" - ")[0]  # "Marca - Opinion" -> "Marca"
+
+
+# signatures qui ne sont pas des personnes : le site affiche alors seulement le journal
+SIGNATURES_GENERIQUES = {"efe", "agencia-efe", "europa-press", "afp", "reuters", "ap", "dpa", "ansa", "lusa", "astv", "laliga",
+                         "real-madrid", "staff", "sport", "deportes", "football", "futbol"}
+
+
+def auteur_reel(nom, journal_nom):
+    """Le nom s'il désigne une personne ; "" pour le journal lui-même, une agence, « Redacción »... ou une adresse e-mail."""
+    s = slug(nom or "")
+    if not nom or "@" in nom or s in SIGNATURES_GENERIQUES or s == slug(journal_nom) or any(m in s for m in ("redac", "agenc", "redaz")):
+        return ""
+    return nom
 
 
 def construire_prompt(items, deja=()):
@@ -243,11 +256,13 @@ def enregistrer(reponses, items, chemin=DB):
         section = r.get("section") if r.get("section") in SECTIONS else "debats"
         personnes = [p for p in r.get("personnes", []) if p in PERSONNES]
         via = str(r.get("via") or "")[:60]
-        auteur_claude = str(r.get("auteur") or "")[:80]
+        auteur_claude = auteur_reel(str(r.get("auteur") or "")[:80], journal(it))
+        auteur_flux = auteur_reel(it["auteur"], journal(it))
         if via and auteur_claude:  # avis d'un commentateur : il devient l'auteur, le journaliste devient rapporteur
-            auteur, rapporteur = auteur_claude, it["auteur"]
+            auteur, rapporteur = auteur_claude, auteur_flux
         else:
-            auteur, rapporteur, via = it["auteur"] or auteur_claude, "", ""
+            auteur, rapporteur, via = auteur_flux or auteur_claude, "", ""
+        auteur_ar = (r.get("auteur_ar") or auteur) if auteur else ""  # sans auteur : seulement le journal, partout
         fb = r.get("titres_fb") if isinstance(r.get("titres_fb"), dict) else {}
         titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
         cur = con.execute(
@@ -255,7 +270,7 @@ def enregistrer(reponses, items, chemin=DB):
             " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb)"
             " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             # date : celle de l'article d'origine, sinon celle du passage
-            (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, r.get("auteur_ar") or auteur,
+            (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, auteur_ar,
              journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference"
              else "info" if it.get("type") == "info" else "resume",
              json.dumps(personnes), via, rapporteur, r.get("sujet") if r.get("sujet") in PERSONNES else "",
@@ -264,7 +279,7 @@ def enregistrer(reponses, items, chemin=DB):
         )
         n += cur.rowcount
         tweets = cur.rowcount and threads.assembler(
-            {"auteur_ar": r.get("auteur_ar") or auteur, "auteur": auteur, "journal": journal(it), "lien": it["lien"]},
+            {"auteur_ar": auteur_ar, "auteur": auteur, "journal": journal(it), "lien": it["lien"]},
             r.get("tweets") or [])
         if tweets:  # sinon (absent ou trop long) : threads.decouper le réécrira
             threads.connexion_threads(con)
@@ -767,8 +782,7 @@ def main():
         items = [it for it in collecter(DB, CONFIG.get("age_max_heures_site", 24))
                  if not it["lien"].startswith("https://news.google.com") and not est_direct(it) and not est_pratique(it)]
         for it in items:
-            if "@" in it["auteur"]:  # "info@vi.nl (Voetbal International)" n'est pas un journaliste
-                it["auteur"] = ""
+            it["auteur"] = auteur_reel(it["auteur"], journal(it))  # ni "info@vi.nl", ni "Redacción", ni le journal
         items, doublons = dedoublonner(items)
         items = ordonner(items)
         if items and not args.test:
