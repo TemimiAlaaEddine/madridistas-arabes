@@ -24,6 +24,7 @@ Réglages dans `config.json` :
 - `personnes` : une fiche par joueur ou entraîneur (à mettre à jour à chaque mercato), par exemple
   `"mbappe": {"nom": "مبابي", "wikipedia": "Kylian Mbappé", "photo": "File:….jpg"}`.
 - `max_articles_site` : articles envoyés à Claude par passage.
+- `articles_par_page` (30 par défaut) : articles par page de rubrique, de journaliste, de joueur ou de pays ; au-delà, pages suivantes `actus--2.html`...
 
 Les articles déjà traités sont dans `articles.db`. Dans git, elle est gardée en texte (`articles.sql`, seules les nouvelles lignes s'ajoutent à chaque passage) et reconstruite automatiquement après un `git pull`.
 Pour publier : dépose le contenu de `site\` sur Netlify (glisser-déposer) ou GitHub Pages.

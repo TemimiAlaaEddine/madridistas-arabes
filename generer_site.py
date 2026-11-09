@@ -668,6 +668,9 @@ h1,h2,h3{overflow-wrap:anywhere}
 .tete-liste h1{margin:4px 0 6px;font-size:clamp(28px,4vw,42px);line-height:1.3}
 .tete-liste p{margin:0;color:var(--doux);font-size:17px;max-width:640px}
 .compte{display:inline-block;margin-top:14px;font-size:13px;color:var(--doux);background:var(--surface);border:1px solid var(--ligne);border-radius:999px;padding:2px 12px}
+.pages{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:36px;color:var(--doux);font-size:14.5px}
+.pages a{background:var(--surface);border:1px solid var(--ligne);border-radius:999px;padding:6px 18px;text-decoration:none;font-weight:600;color:var(--encre)}
+.pages a:hover{border-color:var(--or)}
 .vide{background:var(--surface);border:1px dashed var(--ligne);border-radius:var(--r);padding:44px;text-align:center;color:var(--doux)}
 
 /* article */
@@ -871,10 +874,26 @@ def photo(cle, classe="photo"):
             f'<a href="{e(c["source"])}" target="_blank" rel="noopener">ويكيميديا كومنز</a></figcaption></figure>')
 
 
-def liste(sur_titre, titre, arts, description="", actif=None, classe="", sous_titre="", visuel=""):
+PAR_PAGE = CONFIG.get("articles_par_page", 30)
+
+
+def liste(nom, sur_titre, titre, arts, description="", actif=None, classe="", sous_titre="", visuel=""):
+    """Pages d'une liste, PAR_PAGE articles chacune : nom.html, puis nom--2.html... ({fichier: html}).
+    « -- » n'apparaît jamais dans un slug : pas de collision avec la page d'un autre journaliste."""
     tete = (f'<header class="tete-liste {classe}">{visuel}<div><span class="sur-titre">{sur_titre}</span><h1>{e(titre)}</h1>'
             f'{sous_titre}{f"<p>{description}</p>" if description else ""}<span class="compte">{compte(len(arts))}</span></div></header>')
-    return page(titre, tete + (grille(arts) if arts else VIDE), actif)
+    tranches = [arts[i:i + PAR_PAGE] for i in range(0, len(arts), PAR_PAGE)] or [[]]
+    fichier = lambda n: f"{nom}.html" if n == 1 else f"{nom}--{n}.html"  # noqa: E731
+    pages = {}
+    for n, tranche in enumerate(tranches, 1):
+        nav = ""
+        if len(tranches) > 1:
+            prec = f'<a href="{fichier(n - 1)}" rel="prev">→ الصفحة السابقة</a>' if n > 1 else "<span></span>"
+            suiv = f'<a href="{fichier(n + 1)}" rel="next">الصفحة التالية ←</a>' if n < len(tranches) else "<span></span>"
+            nav = f'<nav class="pages" aria-label="الصفحات">{prec}<span>صفحة {n} من {len(tranches)}</span>{suiv}</nav>'
+        pages[fichier(n)] = page(titre if n == 1 else f"{titre} · صفحة {n}",
+                                 tete + (grille(tranche) if tranche else VIDE) + nav, actif)
+    return pages
 
 
 def fil(arts):
@@ -1041,8 +1060,11 @@ def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
     COUVERTURES.update(generer_couvertures(arts, dossier))
     fichiers = {"style.css": CSS, "site.js": JS, "index.html": page_accueil(arts),
                 "revue.html": page_revue(arts), "presse.html": page_presse(arts)}
+    par_section = defaultdict(list)
+    for a in arts:
+        par_section[a["section"]].append(a)
     for k, v in SECTIONS.items():
-        fichiers[f"{k}.html"] = liste("قسم", v, [a for a in arts if a["section"] == k], DESCRIPTIONS[k], k, f"s-{k}")
+        fichiers.update(liste(k, "قسم", v, par_section[k], DESCRIPTIONS[k], k, f"s-{k}"))
     groupes, entetes = defaultdict(list), {}  # pages d'étiquettes : journaliste, personne, pays
 
     def ajouter(nom, a, *entete):
@@ -1050,19 +1072,19 @@ def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
         entetes.setdefault(nom, entete)  # le plus récent donne le titre (ex. nom arabe du journaliste)
 
     for a in arts:
-        fichiers[f"a-{a['id']}.html"] = page_article(a, arts)
+        fichiers[f"a-{a['id']}.html"] = page_article(a, par_section[a["section"]])  # proches : sa rubrique seulement
         if a["auteur"]:
-            ajouter(f"j-{slug(a['auteur'])}.html", a, "معلّق" if a["via"] else "كاتب رأي", a["auteur_ar"],
+            ajouter(f"j-{slug(a['auteur'])}", a, "معلّق" if a["via"] else "كاتب رأي", a["auteur_ar"],
                     f'<bdi class="latin" dir="ltr">{e(a["auteur"])}</bdi>', None)
         for p in json.loads(a["personnes"]):
             if p in PERSONNES:
-                ajouter(f"p-{p}.html", a, "ملف", PERSONNES[p], "", None, photo(p, "portrait"))
+                ajouter(f"p-{p}", a, "ملف", PERSONNES[p], "", None, photo(p, "portrait"))
         if a["pays"]:
-            ajouter(f"pays-{a['pays']}.html", a, "الصحافة العالمية", PAYS.get(a["pays"], a["pays"]), "", "presse")
+            ajouter(f"pays-{a['pays']}", a, "الصحافة العالمية", PAYS.get(a["pays"], a["pays"]), "", "presse")
     for nom, liste_arts in groupes.items():
         sur_titre, titre, sous, actif, *visuel = entetes[nom]
-        fichiers[nom] = liste(sur_titre, titre, liste_arts, actif=actif, classe="bloc-or", sous_titre=sous,
-                              visuel="".join(visuel))
+        fichiers.update(liste(nom, sur_titre, titre, liste_arts, actif=actif, classe="bloc-or", sous_titre=sous,
+                              visuel="".join(visuel)))
     for ancien in dossier.glob("*.html"):  # pages devenues inutiles (article supprimé, auteur renommé)
         if ancien.name not in fichiers:
             ancien.unlink()

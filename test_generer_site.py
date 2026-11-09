@@ -349,3 +349,23 @@ with tempfile.TemporaryDirectory() as d:
     db.unlink()  # dépôt fraîchement cloné (GitHub)
     assert insider.restaurer_base(db, dump) and db.exists()
 print("OK sauvegarde de la base")
+
+# pagination des listes : 5 articles, 2 par page -> 3 pages reliées, anciennes pages en trop supprimées
+with tempfile.TemporaryDirectory() as d:
+    db, site = Path(d) / "a.db", Path(d) / "site"
+    g.enregistrer([{"id": i, "section": "debats", "titre": f"ت{i}", "texte": "ن", "auteur_ar": "ك"} for i in range(1, 6)],
+                  [{"lien": f"https://as.com/p{i}", "titre": "T", "auteur": "Ana", "source": "AS", "pays": "es"} for i in range(5)], db)
+    g.PAR_PAGE, avant = 2, g.PAR_PAGE
+    try:
+        site.mkdir()
+        (site / "debats--9.html").write_text("ancienne", encoding="utf-8")
+        g.rendre_site(db, site)
+    finally:
+        g.PAR_PAGE = avant
+    p1, p2, p3 = [(site / f).read_text(encoding="utf-8") for f in ("debats.html", "debats--2.html", "debats--3.html")]
+    assert 'href="debats--2.html" rel="next"' in p1 and 'rel="prev"' not in p1 and "صفحة 1 من 3" in p1
+    assert 'href="debats.html" rel="prev"' in p2 and 'href="debats--3.html" rel="next"' in p2
+    assert 'rel="next"' not in p3 and p3.count('class="carte') == 1
+    assert (site / "j-ana--3.html").exists() and not (site / "debats--4.html").exists() and not (site / "debats--9.html").exists()
+    assert 'class="pages"' not in (site / "tactique.html").read_text(encoding="utf-8")  # une seule page : pas de navigation
+print("OK pagination")
