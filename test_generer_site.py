@@ -343,6 +343,7 @@ with tempfile.TemporaryDirectory() as d:
     assert not commun.sauvegarder_base(Path(d) / "absente.db", dump) and not dump.exists()
     assert commun.sauvegarder_base(db, dump)
     avant = lignes(db)
+    os.utime(dump, (1, 1))  # dates fixées : deux écritures de suite peuvent tomber sur le même tic d'horloge
     assert not commun.restaurer_base(db, dump)  # base plus récente que la copie : gardée
     os.utime(db, (0, 0))  # copie plus récente (git pull) : base reconstruite
     assert commun.restaurer_base(db, dump)
