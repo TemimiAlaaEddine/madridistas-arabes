@@ -2839,4 +2839,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/endrick-precisa-se-arri
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/cucurella-vini-jr-arsenal-brasileiro-confira-resumo-dia/','Cucurella defende Vini Jr., Arsenal mira brasileiro e mais: confira o resumo do dia','2026-11-10T23:01:45');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1613361123204613573-equipe-de-france-nouvelles-revelations-sur-le-malaise-mbappe','Équipe de France : nouvelles révélations sur le malaise Mbappé','2026-11-10T23:02:18');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/10/carlos-espi-admite-el-interes-de-la-premier-y-se-rinde-a-mourinho-y-mbappe-intento-nutrirme-de-todo-lo-que-me-dice-cadena-ser/','Carlos Espí admite el interés de la Premier y se rinde a Mourinho y Mbappé: "Intento nutrirme de todo lo que me dice"','2026-11-10T23:02:18');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a9113722882094776119-equipe-de-france-rothen-attaque-violemment-zidane-sur-kumbedi','Équipe de France : Rothen attaque violemment Zidane sur Kumbedi','2026-11-11T00:01:34');
 COMMIT;
