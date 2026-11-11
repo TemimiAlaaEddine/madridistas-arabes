@@ -2873,4 +2873,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a9113722882094776119-equip
 INSERT INTO "vus" VALUES('https://as.com/opinion/endrick-si-te-quedas-acertaras-f202611-n/','Endrick, si te quedas acertarás','2026-11-11T01:02:03');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50446771/france-thuram-tchouameni-leave-squad-injuries','France woes mount as Tchouaméni, Thuram leave squad due to injuries','2026-11-11T02:01:27');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/managing-madrid-editorials/115297/real-madrid-valencia-tactical-analysis-review-mestalla-valencia','How Real Madrid’s Off-Ball Movements Secured the Win Over Valencia at Mestalla','2026-11-11T03:02:21');
+INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-11/raul-gonzalez-real-oviedo-madrid-florentino-perez-oposicion-movistar_4462140/','El salto sin red de Raúl: oposición a Florentino, paso exprés por Movistar y su oportunidad con el Oviedo','2026-11-11T04:01:34');
 COMMIT;
