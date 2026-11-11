@@ -2853,4 +2853,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a1613361123204613573-equip
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/10/carlos-espi-admite-el-interes-de-la-premier-y-se-rinde-a-mourinho-y-mbappe-intento-nutrirme-de-todo-lo-que-me-dice-cadena-ser/','Carlos Espí admite el interés de la Premier y se rinde a Mourinho y Mbappé: "Intento nutrirme de todo lo que me dice"','2026-11-10T23:02:18');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a9113722882094776119-equipe-de-france-rothen-attaque-violemment-zidane-sur-kumbedi','Équipe de France : Rothen attaque violemment Zidane sur Kumbedi','2026-11-11T00:01:34');
 INSERT INTO "vus" VALUES('https://as.com/opinion/endrick-si-te-quedas-acertaras-f202611-n/','Endrick, si te quedas acertarás','2026-11-11T01:02:03');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50446771/france-thuram-tchouameni-leave-squad-injuries','France woes mount as Tchouaméni, Thuram leave squad due to injuries','2026-11-11T02:01:27');
 COMMIT;
