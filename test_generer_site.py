@@ -596,3 +596,26 @@ finally:
 from datetime import timezone
 assert abs((commun.maintenant() - datetime.now(timezone.utc).replace(tzinfo=None)).total_seconds()) < 5
 print("OK nouvel essai des pages refusées")
+
+# jeton permanent de la Page Facebook : échange du jeton court, choix de la bonne Page, refus d'un jeton qui expire
+import threads as th
+reponses = {"oauth/access_token": {"access_token": "LONG"},
+            "me/accounts": {"data": [{"id": "1", "name": "Autre", "access_token": "A"}, {"id": "42", "name": "Peña", "access_token": "PAGE"}]},
+            "debug_token": {"data": {"expires_at": 0, "scopes": ["pages_manage_posts", "pages_read_engagement"]}}}
+appels = []
+vrai_lire, th.graph_lire = th.graph_lire, lambda chemin, **p: appels.append((chemin, p)) or reponses[chemin]
+try:
+    assert th.jeton_permanent("app", "secret", "COURT", 42) == ("PAGE", "Peña")
+    assert appels[0][1]["fb_exchange_token"] == "COURT" and appels[1][1]["access_token"] == "LONG" and appels[2][1]["input_token"] == "PAGE"
+    for cas in ({"me/accounts": {"data": []}}, {"debug_token": {"data": {"expires_at": 1799999999, "scopes": ["pages_manage_posts"]}}},
+                {"debug_token": {"data": {"expires_at": 0, "scopes": ["pages_show_list"]}}}):
+        reponses_ok, reponses = reponses, {**reponses, **cas}
+        try:
+            th.jeton_permanent("app", "secret", "COURT", 42)
+            raise AssertionError("refus attendu")
+        except ValueError:
+            pass
+        reponses = reponses_ok
+finally:
+    th.graph_lire = vrai_lire
+print("OK jeton Facebook permanent")

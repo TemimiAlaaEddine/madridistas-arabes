@@ -10,6 +10,7 @@ import http.client
 import re
 import sqlite3
 import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -139,7 +140,9 @@ def vers_page(con, heures=24):
             with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/feed", corps), timeout=60) as rep:
                 json.load(rep)
         except OSError as err:  # réseau coupé, jeton refusé (HTTPError est un OSError) : repris au prochain passage
-            print(f"  ! Page Facebook : publication impossible ({err}), reprise au prochain passage")
+            # Facebook explique son refus dans le corps de la réponse (jeton expiré, permission manquante...)
+            detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
+            print(f"  ! Page Facebook : publication impossible ({err}) {detail}, reprise au prochain passage")
             break
         con.execute("INSERT INTO page_facebook VALUES (?, ?)", (a["id"], maintenant().isoformat(timespec="seconds")))
         con.commit()
@@ -227,3 +230,44 @@ def vers_typefully(con, couvertures, dossier_couv):
         con.commit()
         n += 1
     return n
+
+
+def graph_lire(chemin, **params):
+    with urllib.request.urlopen(GRAPH + chemin + "?" + urllib.parse.urlencode(params), timeout=60) as rep:
+        return json.load(rep)
+
+
+def jeton_permanent(app_id, app_secret, jeton_court, page):
+    """Jeton de Page qui n'expire pas, à partir d'un jeton utilisateur de courte durée (celui de l'Explorateur de l'API
+    Graph, valable 1 à 2 heures) : il est échangé contre un jeton utilisateur de 60 jours, dont les jetons de Page
+    sont permanents. Vérifie qu'il n'expire pas et qu'il a le droit de publier."""
+    long = graph_lire("oauth/access_token", grant_type="fb_exchange_token", client_id=app_id, client_secret=app_secret,
+                      fb_exchange_token=jeton_court)["access_token"]
+    pages = {str(p["id"]): p for p in graph_lire("me/accounts", fields="id,name,access_token", limit=100, access_token=long)["data"]}
+    if str(page) not in pages:
+        raise ValueError(f"la Page {page} n'est pas gérée par ce compte (Pages trouvées : {', '.join(pages) or 'aucune'})")
+    jeton = pages[str(page)]["access_token"]
+    infos = graph_lire("debug_token", input_token=jeton, access_token=f"{app_id}|{app_secret}")["data"]
+    if infos.get("expires_at") or "pages_manage_posts" not in infos.get("scopes", []):
+        raise ValueError(f"jeton inutilisable : expire le {infos.get('expires_at')}, permissions {infos.get('scopes')}")
+    return jeton, pages[str(page)]["name"]
+
+
+if __name__ == "__main__":  # python threads.py : renouvelle le jeton de la Page Facebook (voir LISEZMOI.md)
+    import sys
+    sys.stdout.reconfigure(encoding="utf-8")
+    local = json.loads(SECRETS.read_text(encoding="utf-8")) if SECRETS.exists() else {}
+    manque = [k for k in ("facebook_app_id", "facebook_app_secret", "facebook_user_token", "facebook_page_id") if not local.get(k)]
+    if manque:
+        sys.exit(f"À ajouter dans secrets.json : {', '.join(manque)}")
+    try:
+        jeton, nom = jeton_permanent(local["facebook_app_id"], local["facebook_app_secret"], local["facebook_user_token"],
+                                     local["facebook_page_id"])
+    except urllib.error.HTTPError as err:
+        sys.exit(f"Facebook a refusé : {err.read().decode('utf-8', 'replace')[:400]}")
+    except (OSError, KeyError, ValueError) as err:
+        sys.exit(f"Échec : {err}")
+    local["facebook_page_token"] = jeton
+    del local["facebook_user_token"]  # jeton de courte durée : il ne sert plus
+    SECRETS.write_text(json.dumps(local, ensure_ascii=False, indent=2), encoding="utf-8")
+    print(f"Jeton permanent de la Page « {nom} » enregistré dans secrets.json.")
