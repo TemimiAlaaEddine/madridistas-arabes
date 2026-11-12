@@ -3838,4 +3838,5 @@ INSERT INTO "vus" VALUES('https://as.com/opinion/mahomes-en-el-bernabeu-f202611-
 INSERT INTO "vus" VALUES('https://as.com/futbol/mundial/cumbre-rfef-fifa-con-la-final-del-mundial-sobre-la-mesa-f202611-n/','Cumbre RFEF-FIFA con la final del Mundial sobre la mesa','2026-11-12T21:01:38');
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-minder-nieuws-voor-rode-duivels-frattesi-trapt-italie-op-voorsprong~a60bce4f/','LIVE. Minder nieuws voor Rode Duivels: Frattesi trapt Italië op voorsprong','2026-11-12T21:10:52');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/ya-es-navidad-para-diomande-f202611-n/','Ya es Navidad para Diomande','2026-11-12T21:11:33');
+INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-minder-nieuws-voor-rode-duivels-pio-esposito-maakt-tweede-van-de-avond~a60bce4f/','LIVE. Minder nieuws voor Rode Duivels: Pio Esposito maakt tweede van de avond','2026-11-12T21:31:06');
 COMMIT;
