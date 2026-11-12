@@ -3700,4 +3700,8 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3245913399126139493-equip
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5860001160775318754-equipe-de-france-2-journalistes-madrilenes-taillent-mbappe','Équipe de France : 2 journalistes madrilènes taillent Mbappé','2026-11-12T15:01:44');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Premier-league-manchester-united-mourinho-ten-hag-amorim-solskjaer-carrick-rejoint-la-longue-liste-des-entraineurs-remercies-par-manchester-united/20245398#at_medium=RSS_feeds','Mourinho, Ten Hag… ces entraîneurs qui ont échoué chez les Red Devils','2026-11-12T16:01:13');
 INSERT INTO "vus" VALUES('https://cadenaser.com/comunitat-valenciana/2026/11/12/dos-partidos-de-sancion-para-braulio-por-lo-sucedido-en-el-descanso-del-valencia-real-madrid-radio-valencia/','Dos partidos de sanción para Braulio por lo sucedido en el descanso del Valencia - Real Madrid','2026-11-12T16:01:32');
+INSERT INTO "vus" VALUES('https://as.com/futbol/la-busqueda-del-unicornio-f202611-n/','La búsqueda del unicornio','2026-11-12T17:01:13');
+INSERT INTO "vus" VALUES('https://trivela.com.br/inglaterra/scholes-haaland-pinta-jogador-real-madrid-vai-para-barcelona/','Scholes: ‘Haaland tem pinta de jogador do Real Madrid, mas vai para o Barcelona’','2026-11-12T17:01:13');
+INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/el-bernabeu-bajo-la-mirada-de-la-fifa-f202611-f/','El Bernabéu, bajo la mirada de la FIFA','2026-11-12T17:01:13');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-28-mai-2016-la-nuit-ou-tout-a-bascule-pour-zinedine-zidane/1742983#at_medium=RSS_feeds','Le 28 mai 2016, la nuit milanaise où tout a basculé pour Zidane l''entraîneur','2026-11-12T17:01:20');
 COMMIT;
