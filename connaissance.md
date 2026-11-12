@@ -63,6 +63,9 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 
 ## Sujets récurrents (débats, mercato, club)
 - Le milieu de terrain, question ouverte depuis l'échec du dossier Rodri (été 2026). Source : The Hard Tackle.
+- Juin 2026, élections : Florentino Pérez réélu avec 65 % des voix face à Enrique Riquelme (37 ans, 620 M€ de fortune selon Forbes, groupe Cox), dont la campagne visait la « vente du club ». Sources : Marca (Sergio Rodríguez C., Enrique Corbella).
+- 2026-11-04 : Rafa Nadal proposé au conseil d'administration (socio d'honneur n° 67778) ; ratification à l'assemblée extraordinaire du 21 novembre, seul point de son ordre du jour. Rôle de conseiller, non exécutif, au départ. Sources : ABC, Managing Madrid (Lucas Navarrete), Foot Mercato (d'après DAZN).
+- Statuts, article 40 : 20 ans d'ancienneté de socio pour se présenter à la présidence (15 pour vice-président, 10 pour le conseil), et une garantie bancaire d'au moins 15 % du budget de dépenses. Nadal est socio d'honneur depuis 2011, donc éligible en 2031 si l'ancienneté compte depuis cette date. Si la présidence devient vacante, le conseil choisit l'un de ses membres et l'assemblée le ratifie. Source : Marca (Juan Ignacio García-Ochoa).
 
 ## Préférences pour les scripts
 - 2026-11-08 : utiliser les stats WhoScored (notes, passes clés, dribbles, système de jeu) pour l'analyse des matchs, en citant WhoScored comme source.
