@@ -160,13 +160,27 @@ def typefully_api(chemin, corps=None):
         return json.load(rep)
 
 
-def typefully_image(fichier):
-    """Envoie la couverture ; retourne son media_id, ou None si elle n'est pas prête à temps."""
-    m = typefully_api("media/upload", {"file_name": fichier.name})
+TYPES_IMAGE = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif"}
+
+
+def telecharger_image(url, article_id):
+    """Image principale de l'article source -> (nom de fichier, octets) ; ValueError si ce n'est pas une image de 5 Mo au plus
+    (limite de X)."""
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=30) as r:
+        ext = TYPES_IMAGE.get(r.headers.get_content_type())
+        contenu = r.read(5_000_001)
+    if not ext or len(contenu) > 5_000_000:
+        raise ValueError(f"image inutilisable ({url[:60]})")
+    return f"article-{article_id}.{ext}", contenu
+
+
+def typefully_image(nom, contenu):
+    """Envoie une image ; retourne son media_id, ou None si elle n'est pas prête à temps."""
+    m = typefully_api("media/upload", {"file_name": nom})
     url = urllib.parse.urlsplit(m["upload_url"])
     # PUT nu : l'URL signée refuse tout en-tête ajouté (urllib ajouterait un Content-Type)
     cnx = http.client.HTTPSConnection(url.netloc, timeout=60)
-    cnx.request("PUT", f"{url.path}?{url.query}", fichier.read_bytes())
+    cnx.request("PUT", f"{url.path}?{url.query}", contenu)
     if cnx.getresponse().status not in (200, 204):
         return None
     for _ in range(15):
@@ -177,18 +191,26 @@ def typefully_image(fichier):
 
 
 def vers_typefully(con, couvertures, dossier_couv):
-    """Dépose les nouveaux threads dans Typefully : au prochain créneau libre de sa file (publiés seuls, le plus ancien
-    d'abord) si "typefully_publish_at" vaut "next-free-slot" dans config.json, sinon en brouillons à publier à la main."""
+    """Dépose les nouveaux threads dans Typefully, la photo de l'article source sur le 1er tweet (sinon la couverture) :
+    au prochain créneau libre de sa file (publiés seuls, le plus ancien d'abord) si "typefully_publish_at" vaut
+    "next-free-slot" dans config.json, sinon en brouillons à publier à la main."""
     connexion_threads(con)
     if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
     n = 0
-    for t in con.execute("SELECT t.article_id, t.tweets, a.titre FROM threads t JOIN articles a ON a.id = t.article_id"
+    for t in con.execute("SELECT t.article_id, t.tweets, a.titre, a.image FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         try:
+            media = None
+            if t["image"]:  # photo de l'article source, à remplacer dans Typefully avant la publication
+                try:
+                    media = typefully_image(*telecharger_image(t["image"], t["article_id"]))
+                except (OSError, ValueError) as err:
+                    print(f"  ! Typefully : image de l'article refusée ({err}), couverture à la place")
             couv = couvertures.get(t["article_id"])
-            media = typefully_image(dossier_couv / couv) if couv else None
+            if not media and couv:
+                media = typefully_image(couv, (dossier_couv / couv).read_bytes())
             posts = [{"text": tw} for tw in json.loads(t["tweets"])]
             if media:
                 posts[0]["media_ids"] = [media]

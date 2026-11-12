@@ -58,7 +58,7 @@ Chaque article a une couverture 1200×630 générée automatiquement (dossier `s
 phrase forte de l'article, ou **infographie** (2-3 chiffres clés) pour les articles chiffrés, ou titre pour une actualité.
 Elles sont rendues par Microsoft Edge (sans fenêtre) et refaites seulement si l'article change.
 Les articles n'affichent plus de photo de joueur ; les photos restent sur les pages joueurs.
-- Le site est à usage personnel, en local. Chaque article y affiche l'image principale de l'article source (balise `og:image` de sa page, sinon l'image de son flux RSS), chargée depuis le journal. Sans image, ou si elle ne charge pas, c'est la couverture générée qui s'affiche. Les couvertures restent l'image jointe aux threads X, publics.
+- Le site est à usage personnel, en local. Chaque article y affiche l'image principale de l'article source (balise `og:image` de sa page, sinon l'image de son flux RSS), chargée depuis le journal. Sans image, ou si elle ne charge pas, c'est la couverture générée qui s'affiche. Les threads X reçoivent la même image (voir Typefully plus bas).
 - `url_site` dans `config.json` (ex. `https://madridistas-arabes.netlify.app`) : à renseigner une fois le site en ligne,
   pour que la couverture s'affiche quand on partage un lien sur X, WhatsApp ou Facebook.
 
@@ -71,7 +71,7 @@ Chaque nouvel article des dernières 24 h est publié sur la Page Facebook (au p
 - Config : secrets GitHub `FACEBOOK_PAGE_ID` et `FACEBOOK_PAGE_TOKEN` (jeton de la Page, permissions `pages_manage_posts` et `pages_read_engagement`), ou `facebook_page_id` / `facebook_page_token` dans `secrets.json` sur le PC. Sans eux, rien n'est publié.
 - Seulement threads et publications : `python generer_site.py --threads`
 - Une publication ratée reprend au passage suivant.
-- Typefully : chaque nouveau thread est aussi déposé comme brouillon non programmé, couverture jointe au 1er tweet, sur le compte `typefully_social_set` de config.json. Clé dans le secret GitHub `TYPEFULLY_API_KEY`. Avec `"typefully_publish_at": "next-free-slot"` (réglage actuel), il entre dans la file d'attente de Typefully et part seul au prochain créneau libre : un toutes les 15 minutes, de 7 h à 23 h 45 heure d'Espagne, le plus ancien d'abord. Tant qu'il n'est pas publié, on peut le modifier ou le supprimer dans l'app. Mettre `null` pour revenir aux brouillons publiés à la main.
+- Typefully : chaque nouveau thread est déposé avec la photo de l'article source jointe au 1er tweet (la couverture générée si la photo manque ou est refusée). Cette photo appartient au journal : remplace-la dans Typefully avant la publication. Le thread est déposé sur le compte `typefully_social_set` de config.json. Clé dans le secret GitHub `TYPEFULLY_API_KEY`. Avec `"typefully_publish_at": "next-free-slot"` (réglage actuel), il entre dans la file d'attente de Typefully et part seul au prochain créneau libre : un toutes les 15 minutes, de 7 h à 23 h 45 heure d'Espagne, le plus ancien d'abord. Tant qu'il n'est pas publié, on peut le modifier ou le supprimer dans l'app. Mettre `null` pour revenir aux brouillons publiés à la main.
 
 Sur le site (page de chaque article) :
 
