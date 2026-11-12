@@ -3840,4 +3840,7 @@ INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-minder-nieuws-voor-rod
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/ya-es-navidad-para-diomande-f202611-n/','Ya es Navidad para Diomande','2026-11-12T21:11:33');
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-minder-nieuws-voor-rode-duivels-pio-esposito-maakt-tweede-van-de-avond~a60bce4f/','LIVE. Minder nieuws voor Rode Duivels: Pio Esposito maakt tweede van de avond','2026-11-12T21:31:06');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7993308481398219843-ligue-des-nations-premiere-defaite-des-bleus-de-zinedine-zidane-face-a-une-italie-renversante','Ligue des Nations : première défaite des Bleus de Zinédine Zidane face à une Italie renversante','2026-11-12T21:40:39');
+INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/lio-gordo-sin-mbappe-f202611-n/','Lío gordo sin Mbappé','2026-11-12T21:50:47');
+INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/kijk-de-heerlijke-vrije-trap-van-arda-guler-leverde-niks-op-de-hoogtepunten-uit-turkije-belgie~ad6514fa/','KIJK. De héérlijke vrije trap van Arda Güler leverde niks op: de hoogtepunten uit Turkije-België','2026-11-12T21:50:47');
+INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-12/italia-francia-nations-league-mancini-zidane_4464050/','Francia se estrella en Italia sin Kylian Mbappé (3-1)','2026-11-12T21:50:47');
 COMMIT;
