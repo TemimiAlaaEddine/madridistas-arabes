@@ -33,6 +33,10 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "Jesús Gallego" in a1 and "AS" in a1 and "https://ex.com/1" in a1
     assert 'href="p-mourinho.html"' in a1 and "inconnu" not in a1
     assert "ت" in (site / "debats.html").read_text(encoding="utf-8")
+    assert 'href="recherche.html"' in a1 and 'id="q"' in (site / "recherche.html").read_text(encoding="utf-8")
+    index = (site / "articles.js").read_text(encoding="utf-8")  # index de la recherche : titre arabe, auteur latin, personnes
+    assert "مورينيو <يجد> التوازن" in index and "Jesús Gallego" in index and "Mourinho encuentra" in index and "</" not in index
+    assert (site / "recherche.js").exists()
     for f in ["index.html", "revue.html", "presse.html", "tactique.html", "j-jesus-gallego.html",
               "p-mourinho.html", "pays-es.html", "style.css", "a-2.html"]:
         assert (site / f).exists(), f

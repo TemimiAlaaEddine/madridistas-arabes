@@ -461,6 +461,7 @@ THREADS = {}  # id d'article -> tweets du thread X, chargé par rendre_site
 
 # boutons X / Facebook : copier, coches, et mémoire « publié » propre au navigateur (site local, pas de serveur)
 JS = (GABARITS / "site.js").read_text(encoding="utf-8")
+JS_RECHERCHE = (GABARITS / "recherche.js").read_text(encoding="utf-8")
 SLOGAN = "صحافة العالم عن ريال مدريد، بالعربية"
 A_PROPOS = ("نختار لكم أبرز مقالات الرأي عن ريال مدريد في الصحافة الإسبانية والأوروبية وصحافة بلدان لاعبيه، "
             "ونقدّمها بالعربية مع ذكر الكاتب والمصدر.")
@@ -517,7 +518,8 @@ def page(titre, corps, actif=None, image=""):
     url = CONFIG.get("url_site", "").rstrip("/")  # les réseaux sociaux exigent une adresse d'image complète
     partage = (f'<meta property="og:title" content="{e(titre)}"><meta property="og:image" content="{url}/{image}">'
                '<meta name="twitter:card" content="summary_large_image">') if url and image else ""
-    liens = [("index", "الرئيسية"), *SECTIONS.items(), ("revue", "مراجعة الصحافة"), ("presse", "الصحافة العالمية")]
+    liens = [("index", "الرئيسية"), *SECTIONS.items(), ("revue", "مراجعة الصحافة"), ("presse", "الصحافة العالمية"),
+             ("recherche", "بحث")]
     courant = ' aria-current="page"'
     nav = "".join(f'<a href="{k}.html"{courant if k == actif else ""}>{v}</a>' for k, v in liens)
     pied_sections = "".join(f'<a href="{k}.html">{v}</a>' for k, v in SECTIONS.items())
@@ -780,6 +782,29 @@ def page_presse(arts):
     return page("الصحافة العالمية", corps + (f'<div class="tuiles">{tuiles}</div>' if tuiles else VIDE), "presse")
 
 
+def page_recherche():
+    corps = ('<header class="tete-liste bloc-or"><div><span class="sur-titre">الأرشيف</span><h1>بحث</h1>'
+             "<p>ابحث في العناوين والمقدّمات، وبأسماء الكتّاب والصحف واللاعبين.</p></div></header>"
+             '<form class="recherche" role="search" onsubmit="return false"><label for="q">كلمات البحث</label>'
+             '<input id="q" type="search" autocomplete="off" placeholder="مثال: فينيسيوس ماركا"></form>'
+             '<p id="nb" class="nb-resultats" role="status" aria-live="polite"></p><ol id="resultats" class="fil"></ol>'
+             '<noscript><p class="vide">البحث يحتاج إلى تفعيل جافاسكربت.</p></noscript>'
+             '<script src="articles.js"></script><script src="recherche.js"></script>')
+    return page("بحث", corps, "recherche")
+
+
+def donnees_recherche(arts):
+    """Index de la recherche (articles.js) : ce qui s'affiche dans un résultat, plus « x », cherché sans être affiché
+    (nom latin de l'auteur, titre d'origine, personnes citées). Sans le corps des articles : le fichier reste léger."""
+    index = [{"i": a["id"], "t": a["titre"], "c": a["chapeau"], "s": a["section"], "a": a["auteur_ar"] if a["auteur"] else "",
+              "j": a["journal"], "d": date_ar(a["date"]),
+              "x": " ".join([a["auteur"] or "", a["titre_original"] or "",
+                             *(PERSONNES[p] for p in json.loads(a["personnes"]) if p in PERSONNES)])} for a in arts]
+    # « </ » échappé : un titre contenant </script> ne peut pas fermer la balise si le fichier est un jour mis dans la page
+    return (f"const RUBRIQUES={json.dumps(SECTIONS, ensure_ascii=False)};\n"
+            f"const ARTICLES={json.dumps(index, ensure_ascii=False)};\n").replace("</", "<\\/")
+
+
 def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
     CREDITS_PHOTOS.clear()
     if credits.exists():
@@ -795,7 +820,8 @@ def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
     # couverture seulement pour les articles sans image source (celle du journal sert au site et aux threads)
     COUVERTURES.update(generer_couvertures([a for a in arts if not a["image"]], dossier))
     fichiers = {"style.css": CSS, "site.js": JS, "index.html": page_accueil(arts),
-                "revue.html": page_revue(arts), "presse.html": page_presse(arts)}
+                "revue.html": page_revue(arts), "presse.html": page_presse(arts),
+                "recherche.html": page_recherche(), "recherche.js": JS_RECHERCHE, "articles.js": donnees_recherche(arts)}
     par_section = defaultdict(list)
     for a in arts:
         par_section[a["section"]].append(a)

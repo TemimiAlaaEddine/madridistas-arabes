@@ -12,7 +12,7 @@
 | `threads.py` | Threads X (Typefully) et publications sur la Page Facebook |
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
-| `gabarits/` | `style.css` et `site.js` du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
+| `gabarits/` | `style.css`, `site.js` et `recherche.js` (page « بحث ») du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
 | `config.json` | Sources, personnes, réglages ; secrets dans `secrets.json` (hors git) |
 
 # Site (المدريديستا علاء)
@@ -48,6 +48,7 @@ Réglages dans `config.json` :
 - `articles_par_page` (30 par défaut) : articles par page de rubrique, de journaliste, de joueur ou de pays ; au-delà, pages suivantes `actus--2.html`...
 
 Les articles déjà traités sont dans `articles.db`. Dans git, elle est gardée en texte (`articles.sql`, seules les nouvelles lignes s'ajoutent à chaque passage) et reconstruite automatiquement après un `git pull`.
+Recherche : la page « بحث » du menu cherche dans les titres, les chapeaux, les auteurs (nom arabe ou latin), les journaux, les titres d'origine et les joueurs cités. Tous les mots tapés doivent être présents ; un mot de une ou deux lettres (« آس ») doit être un mot entier. Elle ne cherche pas dans le corps des articles.
 Pour publier : dépose le contenu de `site\` sur Netlify (glisser-déposer) ou GitHub Pages.
 
 ## Photos

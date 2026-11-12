@@ -153,6 +153,13 @@ h1,h2,h3{overflow-wrap:anywhere}
 .fil .signature{padding-top:2px}
 .fil .signature time{margin-inline-start:0}
 
+/* recherche */
+.recherche{display:grid;gap:6px;max-width:820px;margin-bottom:18px}
+.recherche label{font-weight:700;font-size:14px}
+.recherche input{font:18px/1.6 var(--titres);padding:10px 16px;border:2px solid var(--ligne);border-radius:var(--r);background:var(--surface);color:var(--encre)}
+.recherche input:focus{border-color:var(--or);outline:none}
+.nb-resultats{min-height:1.75em;margin:0 0 18px;color:var(--doux);font-size:14.5px}
+
 /* presse */
 .tuiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:18px}
 .tuile{display:block;background:var(--surface);border:1px solid var(--ligne);border-radius:var(--r);padding:22px;text-decoration:none}
