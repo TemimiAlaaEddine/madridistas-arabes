@@ -3222,4 +3222,7 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/euskadi/2026/11/11/nueva-derrota
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/los-otros-jj-gabriel-f202611-n/','Los otros JJ Gabriel','2026-11-11T22:02:41');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2189488159193665111-equipe-de-france-cyril-hanouna-revele-une-grosse-information-sur-kylian-mbappe-et-zinedine-zidane','Équipe de France : Cyril Hanouna révèle une grosse information sur Kylian Mbappé et Zinedine Zidane','2026-11-11T22:02:41');
 INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/posible-alineacion-de-espana-contra-chequia-en-la-nations-league-varias-certezas-y-una-gran-duda-f202611-n/','Alineación posible alineación de España contra República Checa en la Nations League: varias certezas y una gran duda','2026-11-12T00:01:24');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115353/espi-refused-offers-from-the-premier-league-to-join-real-madrid','Espí refused offers from the Premier League to join Real Madrid','2026-11-12T02:01:26');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115350/mbappe-out-against-italy-zidane-confirmed','Mbappé out against Italy—Zidane confirmed','2026-11-12T02:01:26');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50452835/kylian-mbappe-hamstring-miss-france-clash-italy','Kylian Mbappé (hamstring) to miss France clash with Italy','2026-11-12T02:01:26');
 COMMIT;
