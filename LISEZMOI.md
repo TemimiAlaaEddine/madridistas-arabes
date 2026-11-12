@@ -58,6 +58,7 @@ Chaque article a une couverture 1200×630 générée automatiquement (dossier `s
 phrase forte de l'article, ou **infographie** (2-3 chiffres clés) pour les articles chiffrés, ou titre pour une actualité.
 Elles sont rendues par Microsoft Edge (sans fenêtre) et refaites seulement si l'article change.
 Les articles n'affichent plus de photo de joueur ; les photos restent sur les pages joueurs.
+- Le site est à usage personnel, en local. Chaque article y affiche l'image principale de l'article source (balise `og:image` de sa page, sinon l'image de son flux RSS), chargée depuis le journal. Sans image, ou si elle ne charge pas, c'est la couverture générée qui s'affiche. Les couvertures restent l'image jointe aux threads X, publics.
 - `url_site` dans `config.json` (ex. `https://madridistas-arabes.netlify.app`) : à renseigner une fois le site en ligne,
   pour que la couverture s'affiche quand on partage un lien sur X, WhatsApp ou Facebook.
 

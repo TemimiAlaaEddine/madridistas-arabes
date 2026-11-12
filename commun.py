@@ -160,8 +160,12 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
             auteur = nettoyer(e.get("author", ""), 80)
             contenu = (e.get("content") or [{}])[0].get("value", "")
             texte_flux = nettoyer(max(e.get("summary", ""), contenu, key=len), 20000)
+            # image du flux : repli quand la page de l'article refuse d'être lue (AS, HLN...)
+            image = ((e.get("media_content") or e.get("media_thumbnail") or [{}])[0].get("url")
+                     or next((l.get("href") for l in e.get("links", []) if str(l.get("type", "")).startswith("image")), "") or "")
             trouves.append({"cle": cle, "titre": titre, "resume": resume, "source": source, "lien": lien, "auteur": auteur,
-                            "texte_flux": texte_flux, "pays": flux.get("pays"), "autorise": flux.get("autorisation", False),
+                            "texte_flux": texte_flux, "image": image if image.startswith(("http://", "https://")) else "",
+                            "pays": flux.get("pays"), "autorise": flux.get("autorisation", False),
                             "opinion": flux.get("opinion", False),
                             "publie": datetime.fromtimestamp(calendar.timegm(pub)).isoformat(timespec="seconds") if pub else None})
             n += 1

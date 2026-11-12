@@ -165,7 +165,7 @@ with tempfile.TemporaryDirectory() as tmp:
     g.generer_couvertures = lambda arts, dossier: {a["id"]: f"a-{a['id']}-test.png" for a in arts}  # simule Edge
     g.rendre_site(db, site)
     assert 'src="couvertures/a-2-test-v.webp"' in (site / "index.html").read_text(encoding="utf-8")  # cartes : vignette
-    assert '<figure class="couverture"><img src="couvertures/a-1-test.png" alt="جملة &lt;قوية&gt;">' in \
+    assert '<figure class="couverture"><img src="couvertures/a-1-test.png" alt="جملة &lt;قوية&gt;"' in \
         (site / "a-1.html").read_text(encoding="utf-8")
 print("OK couvertures")
 assert g.chiffres_valides([{"valeur": "30 مليون دولار سنويًا", "libelle": "x"}, {"valeur": "1", "libelle": "y"}]) == []  # pas de valeur coupée
@@ -265,6 +265,14 @@ with tempfile.TemporaryDirectory() as tmp:
     assert [f for (f,) in con.execute("SELECT fait FROM faits ORDER BY id")] == [fait, "Mbappé absent trois semaines (ischio-jambiers)"]
     con.close()
 print("OK faits durables")
+# image principale de l'article source (og:image), affichée sur le site local, repli sur la couverture
+p = g.Paragraphes()
+p.feed('<head><meta property="og:image" content="/img/une.jpg"><meta name="twitter:image" content="/autre.jpg"></head><p>x</p>')
+assert p.image == "/img/une.jpg"
+img = g.image_article({"image": "https://ex.com/img/une.jpg"}, "couv", "c.png")
+assert 'src="https://ex.com/img/une.jpg"' in img and "couvertures/c.png" in img and 'referrerpolicy="no-referrer"' in img
+assert 'src="couvertures/c.png"' in g.image_article({"image": ""}, "couv", "c.png") and g.image_article({}, "couv", None) == ""
+print("OK image principale")
 # gardés d'office même si le tri les oublie : rubrique d'opinion, composition probable Marca/AS
 g.appeler_claude = lambda prompt, *a: "[]"
 office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},

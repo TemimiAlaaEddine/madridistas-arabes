@@ -43,14 +43,19 @@ UA = {"User-Agent": "MadridistasArabes/1.0 (projet personnel)"}  # Wikimedia ref
 
 # ---------- texte complet de l'article ----------
 class Paragraphes(HTMLParser):
-    """Récupère le texte des balises <p> d'une page, hors scripts et styles."""
+    """Récupère le texte des balises <p> d'une page, hors scripts et styles, et son image principale (og:image)."""
 
     def __init__(self):
         super().__init__()
         self.dans_p = self.ignore = 0
         self.courant, self.morceaux = [], []
+        self.image = ""
 
     def handle_starttag(self, tag, attrs):
+        if tag == "meta" and not self.image:
+            d = dict(attrs)
+            if (d.get("property") or d.get("name") or "").lower() in ("og:image", "twitter:image"):
+                self.image = (d.get("content") or "").strip()
         if tag in ("script", "style"):
             self.ignore += 1
         elif tag == "p":
@@ -80,6 +85,9 @@ def texte_complet(it):
             p = Paragraphes()
             p.feed(r.read().decode("utf-8", "replace"))
         page = "\n".join(p.morceaux)
+        image = urllib.parse.urljoin(it["lien"], p.image) if p.image else ""
+        if image.startswith(("http://", "https://")):  # celle de la page, plus grande, sinon on garde celle du flux
+            it["image"] = image
     except Exception as err:  # noqa: BLE001 - page bloquée (403, abonnement...) : on garde le flux
         print(f"  ! page illisible ({err}) : {it['lien'][:70]}")
     texte = max(page, it.get("texte_flux", ""), key=len)
@@ -233,10 +241,10 @@ def connexion(chemin=DB):
     con.execute("""CREATE TABLE IF NOT EXISTS articles (id INTEGER PRIMARY KEY, date TEXT, section TEXT,
         titre TEXT, chapeau TEXT, texte TEXT, auteur TEXT, auteur_ar TEXT, journal TEXT, pays TEXT,
         lien TEXT UNIQUE, titre_original TEXT, mode TEXT, personnes TEXT, via TEXT, rapporteur TEXT, sujet TEXT,
-        citation TEXT, chiffres TEXT, titres_fb TEXT)""")
+        citation TEXT, chiffres TEXT, titres_fb TEXT, image TEXT)""")
     # faits durables notés par Claude à la rédaction, relus et validés par /script vers connaissance.md
     con.execute("CREATE TABLE IF NOT EXISTS faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT)")
-    for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres", "titres_fb"):  # bases créées avant l'ajout de ces colonnes
+    for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres", "titres_fb", "image"):  # bases créées avant l'ajout de ces colonnes
         try:
             con.execute(f"ALTER TABLE articles ADD COLUMN {colonne} TEXT")
         except sqlite3.OperationalError:
@@ -302,15 +310,15 @@ def enregistrer(reponses, items, chemin=DB):
         titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
         cur = con.execute(
             "INSERT OR IGNORE INTO articles (date, section, titre, chapeau, texte, auteur, auteur_ar, journal, pays,"
-            " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb, image)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             # date : celle de l'article d'origine, sinon celle du passage
             (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, auteur_ar,
              journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference"
              else "info" if it.get("type") == "info" else "resume",
              json.dumps(personnes), via, rapporteur, r.get("sujet") if r.get("sujet") in PERSONNES else "",
              str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False),
-             json.dumps(titres_fb, ensure_ascii=False) if titres_fb else ""),
+             json.dumps(titres_fb, ensure_ascii=False) if titres_fb else "", str(it.get("image") or "")[:500]),
         )
         n += cur.rowcount
         if cur.rowcount:
@@ -504,9 +512,20 @@ def signature(a):
             f'<time datetime="{a["date"][:10]}">{date_ar(a["date"])}</time></div>')
 
 
+def image_article(a, classe, couv, alt=""):
+    """Image principale de l'article source (site local seulement), sinon la couverture générée ; repli sur elle si l'image
+    distante ne charge pas. Sans referrer : certains journaux bloquent leurs images affichées ailleurs."""
+    source, cl = (a["image"] if "image" in a.keys() else ""), (f'class="{classe}" ' if classe else "")
+    if not source:
+        return f'<img {cl}src="couvertures/{couv}" alt="{alt}" loading="lazy" decoding="async">' if couv else ""
+    repli = f" onerror=\"this.onerror=null;this.src='couvertures/{couv}'\"" if couv else ' onerror="this.remove()"'
+    return (f'<img {cl}src="{e(source)}" alt="{alt}" loading="lazy" decoding="async"'
+            f' referrerpolicy="no-referrer"{repli}>')
+
+
 def carte(a, classe="", niveau="h3"):
     couv = COUVERTURES.get(a["id"])
-    image = f'<img class="couv" src="couvertures/{vignette(couv)}" alt="" loading="lazy" decoding="async">' if couv else ""
+    image = image_article(a, "couv", vignette(couv) if couv else None)
     return (f'<article class="carte {classe} s-{a["section"]}" data-id="{a["id"]}">{image}<div class="contenu">{rubrique(a)}'
             f'<{niveau}><a class="titre" href="a-{a["id"]}.html">{e(a["titre"])}</a></{niveau}>'
             f'<p class="resume">{e(a["chapeau"])}</p>{signature(a)}</div></article>')
@@ -655,8 +674,8 @@ def page_article(a, arts):
     infos = (f'<div class="infos">{via}<span>{e(a["journal"])}</span>{puce_pays(a)}'
              f'<time datetime="{a["date"][:10]}">{date_ar(a["date"])}</time><span>{duree(a["texte"])}</span></div>')
     couv = COUVERTURES.get(a["id"])
-    couverture = (f'<figure class="couverture"><img src="couvertures/{couv}" alt="{e(a["citation"] or a["titre"])}">'
-                  "</figure>") if couv else ""
+    img = image_article(a, "", couv, e(a["citation"] or a["titre"]))
+    couverture = f'<figure class="couverture">{img}</figure>' if img else ""
     proches = [x for x in arts if x["section"] == a["section"] and x["id"] != a["id"]][:3]
     cote = (f'<aside class="proches"><h2>من القسم نفسه</h2>{"".join(carte(x, "compacte") for x in proches)}</aside>'
             if proches else "")
