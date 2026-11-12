@@ -10,7 +10,7 @@ Usage :
   python generer_site.py            # collecte + rédaction + régénère le site
   python generer_site.py --test     # montre les articles retenus, sans Claude
   python generer_site.py --rendre   # régénère seulement les pages (après une retouche du CSS...)
-  python generer_site.py --threads  # régénère les pages, puis prépare et envoie les threads X sur Telegram
+  python generer_site.py --threads  # régénère les pages, puis threads X (Typefully) et publications sur la Page Facebook
 """
 import argparse
 import json
@@ -25,11 +25,12 @@ from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
 from datetime import datetime
+from difflib import SequenceMatcher
 from html.parser import HTMLParser
 
 import threads
 from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, appeler_claude, collecter, dedoublonner, e,
-                    extraire_json, marquer_vus, nettoyer, restaurer_base)
+                    extraire_json, marquer_vus, nettoyer, normaliser_titre, restaurer_base)
 from couvertures import generer_couvertures, vignette
 
 DB = BASE / "articles.db"
@@ -98,7 +99,7 @@ Pour chaque article ci-dessous :
    - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat final d'un match du Real Madrid (score et buteurs), composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
    - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).
    - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
-   - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents), n'en garde qu'un seul, le plus complet. Idem s'il est déjà dans la liste « DÉJÀ PUBLIÉ » plus bas.
+   - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents, et même si leurs titres mettent en avant des angles différents, ex. deux articles sur la même conférence de presse), fusionne-les en un seul article : réponds avec l'id du plus complet, et complète son texte avec les éléments nouveaux des autres en citant leur média. Si ce fait ou ces propos sont déjà dans la liste « DÉJÀ PUBLIÉ » plus bas, ignore-les.
 2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, clair et soigné :
    - Information (actus, ou club pour le Bernabéu) : 120 à 200 mots, uniquement les faits, avec le contexte utile tiré du texte, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
@@ -106,7 +107,7 @@ Pour chaque article ci-dessous :
      - Mode résumé : un article de 400 à 600 mots qui expose la thèse, chacun des arguments et la conclusion de l'auteur avec tes propres mots, à la troisième personne (يرى الكاتب...). Au maximum 4 citations courtes traduites (moins de 25 mots chacune) entre guillemets «». Ne traduis pas l'article phrase par phrase.
      - Mode traduction : traduction intégrale et fidèle du texte fourni.
    - Mode conférence (conférence de presse d'un entraîneur, section actus) : traduis fidèlement et intégralement toutes les déclarations de l'entraîneur présentes dans le texte (la limite de 15 mots ne s'applique pas), sans reprendre les phrases du journaliste. Présente-les par sujet : chaque sujet commence par la question ou le thème résumé en une ligne, suivi de ses réponses entre guillemets «». Une phrase d'introduction : qui parle, quand, avant ou après quel match.
-4. N'ajoute aucun fait ni aucun avis absent du texte. L'avis est celui de l'auteur, jamais celui du site, du média ou du club.
+4. N'ajoute aucun fait ni aucun avis absent des textes fournis. L'avis est celui de l'auteur, jamais celui du site, du média ou du club.
 5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. L'auteur est toujours une personne : si l'article n'est signé que par le journal, une agence (EFE, Europa Press, AFP, Reuters) ou une mention comme « Redacción », laisse "auteur" et "auteur_ar" vides (le site citera seulement le journal). Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar") : si l'auteur est indiqué, recopie exactement ce nom dans "auteur" et translittère ce nom-là, jamais celui d'un autre article de la liste.
    Si l'article rapporte surtout l'avis d'un commentateur (radio, télévision, podcast, entretien) plutôt que celui de son auteur, mets ce commentateur dans "auteur"/"auteur_ar", présente l'avis comme le sien, et indique en "via" le média où il s'est exprimé, en arabe (ex. : راديو ماركا). Sinon laisse "via" vide.
 6. Liste les personnes dont parle l'article, la principale en premier, uniquement parmi ces clés : {personnes}
@@ -249,15 +250,26 @@ def chiffres_valides(chiffres):
     return ok[:3] if len(ok) >= 2 else []  # un chiffre isolé ne fait pas une infographie
 
 
+SEUIL_DOUBLON = 0.8  # vrais doublons mesurés à 0,88 et 0,91 ; titres différents les plus proches à 0,69 (nov. 2026)
+
+
 def enregistrer(reponses, items, chemin=DB):
     """Valide la réponse de Claude et l'enregistre. Retourne le nombre d'articles ajoutés."""
     con = connexion(chemin)
     now = datetime.now().isoformat(timespec="seconds")
+    # titres arabes des 2 derniers jours : la même info venue de sources en langues différentes a un titre arabe très proche
+    recents = [normaliser_titre(t) for (t,) in con.execute("SELECT titre FROM articles WHERE date >= date('now', '-2 days')")]
     n = 0
     for r in reponses:
         i = r.get("id")
         if not isinstance(i, int) or not 1 <= i <= len(items) or not r.get("titre") or not r.get("texte"):
             continue
+        nt = normaliser_titre(str(r["titre"]))
+        # titres de moins de 4 mots : ressemblance sans valeur
+        if len(nt.split()) >= 4 and any(SequenceMatcher(None, nt, t).ratio() >= SEUIL_DOUBLON for t in recents):
+            print(f"  doublon écarté : {r['titre']}")
+            continue
+        recents.append(nt)
         it = items[i - 1]
         section = r.get("section") if r.get("section") in SECTIONS else "debats"
         personnes = [p for p in r.get("personnes", []) if p in PERSONNES]
@@ -588,9 +600,7 @@ LOGO_FB = ('<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9.101 23.691v-
 def partage(a):
     """Boutons X (thread tweet par tweet) et Facebook (titres FR/EN/ES + lien de la source), à copier-coller."""
     i, couv, tweets = a["id"], COUVERTURES.get(a["id"]), THREADS.get(a["id"], [])
-    fb = json.loads(a["titres_fb"]) if a["titres_fb"] else {}
-    post = "\n".join(f"{d} {fb[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if fb.get(k))
-    post = f"{post}\n\n{a['lien']}" if post else a["lien"]  # articles d'avant les titres traduits : le lien seul
+    post = threads.post_facebook(a)
     boutons = f'<button type="button" class="b-fb" data-ouvre="fb-{i}">{LOGO_FB}نشر على فيسبوك</button>'
     fenetres = fenetre(f"fb-{i}", "منشور فيسبوك", f'<ul class="tweets">{copiable(post, f"fb-{i}")}</ul>')
     if tweets:
@@ -777,7 +787,7 @@ def main():
     ap.add_argument("--test", action="store_true", help="montre les lots prévus, sans Claude")
     ap.add_argument("--rendre", action="store_true", help="régénère seulement les pages")
     ap.add_argument("--photos", action="store_true", help="récupère seulement les photos manquantes, puis régénère")
-    ap.add_argument("--threads", action="store_true", help="prépare et envoie seulement les threads X sur Telegram")
+    ap.add_argument("--threads", action="store_true", help="seulement les threads X (Typefully) et les publications sur la Page Facebook")
     args = ap.parse_args()
 
     if restaurer_base(DB):
@@ -830,8 +840,8 @@ def main():
     if not args.rendre and not args.photos:
         con = connexion()
         print(f"Threads X : {threads.decouper(con)} préparé(s), "
-              f"{threads.envoyer(con, COUVERTURES, SITE / 'couvertures', SECTIONS)} envoyé(s) sur Telegram, "
-              f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully.")
+              f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully. "
+              f"Page Facebook : {threads.vers_page(con)} publication(s).")
         con.close()
     if hasattr(os, "startfile"):
         os.startfile(index)

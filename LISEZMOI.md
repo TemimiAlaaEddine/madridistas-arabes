@@ -9,7 +9,7 @@
 |---|---|
 | `generer_site.py` | Passage complet : collecte, tri et rédaction par Claude, base, photos, pages HTML |
 | `couvertures.py` | Couvertures 1200×630 de chaque article (rendues par Edge) |
-| `threads.py` | Threads X : Telegram et Typefully |
+| `threads.py` | Threads X (Typefully) et publications sur la Page Facebook |
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
 | `gabarits/` | `style.css` et `site.js` du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
@@ -61,15 +61,15 @@ Les articles n'affichent plus de photo de joueur ; les photos restent sur les pa
 - `url_site` dans `config.json` (ex. `https://madridistas-arabes.netlify.app`) : à renseigner une fois le site en ligne,
   pour que la couverture s'affiche quand on partage un lien sur X, WhatsApp ou Facebook.
 
-## Threads X sur Telegram
+## Threads X et publications Facebook
 
 À chaque passage, `threads.py` découpe les articles des 2 derniers jours en threads X. Au plus `max_threads` par passage, opinions d'abord. Un tweet fait au plus 280 caractères comptés comme X. Le dernier tweet crédite le journaliste et le journal, avec le lien de la source.
 
-Les threads arrivent sur Telegram : un en-tête, la couverture à joindre au 1er tweet, puis un message par tweet. Il suffit de les copier-coller dans l'éditeur de thread de l'app X.
+Chaque nouvel article des dernières 24 h est publié sur la Page Facebook (au plus `max_threads` par passage) : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸 en message, et le lien de la source en carte. Les articles sans titres traduits ne sont pas publiés. Au tout premier passage, les articles déjà en base sont considérés comme publiés.
 
-- Config : `telegram_token` (fourni par @BotFather) et `telegram_chat_id` (ta conversation avec le bot).
-- Seulement les threads : `python generer_site.py --threads`
-- Un envoi raté reprend au passage suivant.
+- Config : secrets GitHub `FACEBOOK_PAGE_ID` et `FACEBOOK_PAGE_TOKEN` (jeton de la Page, permissions `pages_manage_posts` et `pages_read_engagement`), ou `facebook_page_id` / `facebook_page_token` dans `secrets.json` sur le PC. Sans eux, rien n'est publié.
+- Seulement threads et publications : `python generer_site.py --threads`
+- Une publication ratée reprend au passage suivant.
 - Typefully : chaque nouveau thread est aussi déposé comme brouillon non programmé, couverture jointe au 1er tweet, sur le compte `typefully_social_set` de config.json. Clé dans le secret GitHub `TYPEFULLY_API_KEY`. Avec `"typefully_publish_at": "next-free-slot"` (réglage actuel), il entre dans la file d'attente de Typefully et part seul au prochain créneau libre : un toutes les 15 minutes, de 7 h à 23 h 45 heure d'Espagne, le plus ancien d'abord. Tant qu'il n'est pas publié, on peut le modifier ou le supprimer dans l'app. Mettre `null` pour revenir aux brouillons publiés à la main.
 
 Sur le site (page de chaque article) :

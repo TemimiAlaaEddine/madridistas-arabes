@@ -1,6 +1,8 @@
 """Vérification rapide : python test_generer_site.py"""
+import io
 import json
 import tempfile
+import urllib.parse
 from pathlib import Path
 
 import couvertures
@@ -199,12 +201,25 @@ with tempfile.TemporaryDirectory() as tmp:
     con.row_factory = sqlite3.Row
     t.appeler_claude = lambda prompt, *a: '[{"id": 1, "tweets": ["فكرة"]}, {"id": 99, "tweets": ["x"]}]'
     assert t.decouper(con) == 1 and t.decouper(con) == 0  # id inconnu ignoré, pas de second thread
-    envoyes = []
-    t.CONFIG.update(telegram_token="x", telegram_chat_id="1")
-    t.telegram = lambda methode, champs, fichier=None: envoyes.append((methode, champs.get("text") or champs["caption"]))
-    assert t.envoyer(con, {1: "c.png"}, Path(tmp), {"debats": "نقاشات"}) == 1 and t.envoyer(con, {}, Path(tmp)) == 0
-    # couverture et en-tête fusionnés, avec le nom de la rubrique
-    assert len(envoyes) == 3 and envoyes[0][0] == "sendPhoto" and envoyes[0][1].startswith("🧵 نقاشات (2 تغريدات)")
+    # Page Facebook : titres en message, lien à part (carte), une seule fois ; articles déjà là au 1er passage ignorés
+    t.SECRETS = Path(tmp) / "aucun.json"  # ignore le secrets.json local (vrais jetons)
+    assert t.vers_page(con) == 0  # inactive sans jeton
+    appels = []
+    t.CONFIG.update(facebook_page_token="j", facebook_page_id="42")
+    vrai_urlopen, t.urllib.request.urlopen = t.urllib.request.urlopen, (
+        lambda req, timeout=None: (appels.append((req.full_url, req.data.decode())), io.BytesIO(b"{}"))[1])
+    try:
+        con.execute("UPDATE articles SET titres_fb = ?", ('{"fr": "Vieux", "en": "Old", "es": "Viejo"}',))
+        con.commit()
+        assert t.vers_page(con) == 0
+        g.enregistrer([{"id": 1, "section": "actus", "titre": "خ", "texte": "ن",
+                        "titres_fb": {"fr": "Titre", "en": "Title", "es": "Título"}}],
+                      [{"lien": "https://ex.com/fb", "titre": "T2", "auteur": "", "source": "AS", "pays": "es"}], db)
+        assert t.vers_page(con) == 1 and t.vers_page(con) == 0
+    finally:
+        t.urllib.request.urlopen = vrai_urlopen
+        t.CONFIG.pop("facebook_page_token")
+    assert appels[0][0].endswith("/42/feed") and "link=https%3A%2F%2Fex.com%2Ffb" in appels[0][1] and "Titre" in urllib.parse.unquote_plus(appels[0][1])
     con.close()
 print("OK threads")
 
@@ -231,6 +246,14 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "خبر" in tw and "https://ex.com/w" in tw and "كاتب | AS" in tw
     con.close()
 print("OK économies Claude")
+# même info, sources en langues différentes : titre arabe quasi identique -> écarté (cas réel : fils de Casillas, 0,91)
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    src = [{"lien": f"https://ex.com/{k}", "titre": "T", "auteur": "", "source": "AS", "pays": "es"} for k in "abc"]
+    assert g.enregistrer([{"id": 1, "titre": "ابنا إيكر كاسياس يغادران ريال مدريد إلى ليغانيس", "texte": "ن"},
+                          {"id": 2, "titre": "ابنا إيكر كاسياس يغادران أكاديمية ريال مدريد إلى ليغانيس", "texte": "ن"}], src, db) == 1
+    assert g.enregistrer([{"id": 3, "titre": "ريال مدريد يجدد عقد المدافع الشاب أليخاندرو كاستانيو حتى 2030", "texte": "ن"}], src, db) == 1
+print("OK doublons par titre arabe")
 # gardés d'office même si le tri les oublie : rubrique d'opinion, composition probable Marca/AS
 g.appeler_claude = lambda prompt, *a: "[]"
 office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},

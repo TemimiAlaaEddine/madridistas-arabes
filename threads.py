@@ -1,8 +1,8 @@
-"""Threads X : découpe les nouveaux articles du site en threads et les envoie sur Telegram, prêts à copier-coller.
+"""Threads X (déposés dans Typefully) et publications sur la Page Facebook.
 
 Le texte vient de l'article du site (déjà un résumé commenté), le dernier tweet crédite le journaliste et le
 journal avec le lien de la source (X affiche alors la carte de l'article, avec sa photo principale).
-Réglages : "telegram_token", "telegram_chat_id" dans secrets.json (ou TELEGRAM_TOKEN, TELEGRAM_CHAT_ID), "max_threads" dans config.json (threads envoyés au plus par passage).
+Réglages : clés dans secrets.json sur le PC (variables d'environnement sur GitHub), "max_threads" dans config.json (threads et publications au plus par passage).
 """
 import json
 import os
@@ -12,7 +12,6 @@ import sqlite3
 import time
 import urllib.parse
 import urllib.request
-import uuid
 from datetime import datetime
 
 from commun import BASE, CONFIG, appeler_claude, extraire_json
@@ -106,45 +105,44 @@ def decouper(con, heures=24):
     return n
 
 
-def telegram(methode, champs, fichier=None):
-    """Appelle l'API Bot de Telegram (formulaire multipart si une photo est jointe)."""
-    url = f"https://api.telegram.org/bot{reglage('telegram_token')}/{methode}"
-    if fichier:
-        limite = uuid.uuid4().hex
-        corps = b"".join(f'--{limite}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
-                         for k, v in champs.items())
-        corps += (f'--{limite}\r\nContent-Disposition: form-data; name="photo"; filename="{fichier.name}"\r\n'
-                  f"Content-Type: image/png\r\n\r\n").encode() + fichier.read_bytes() + f"\r\n--{limite}--\r\n".encode()
-        req = urllib.request.Request(url, corps, {"Content-Type": f"multipart/form-data; boundary={limite}"})
-    else:
-        req = urllib.request.Request(url, urllib.parse.urlencode(champs).encode())
-    with urllib.request.urlopen(req, timeout=60) as rep:
-        return json.load(rep)
+def titres_facebook(a):
+    """Titres FR/EN/ES de la publication Facebook ("" pour les articles d'avant les titres traduits)."""
+    fb = json.loads(a["titres_fb"]) if a["titres_fb"] else {}
+    return "\n".join(f"{d} {fb[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if fb.get(k))
 
 
-def envoyer(con, couvertures, dossier_couv, sections=None):
-    """Envoie sur Telegram les threads pas encore envoyés : couverture avec en-tête (rubrique, titre), puis un message par tweet."""
-    connexion_threads(con)
-    chat = reglage("telegram_chat_id")
-    if not reglage("telegram_token") or not chat:
-        print("  ! threads : telegram_token ou telegram_chat_id manquant (secrets.json), envoi reporté")
-        return 0
+def post_facebook(a):
+    """Publication Facebook à copier-coller (bouton du site) : titres FR/EN/ES, puis le lien de la source."""
+    titres = titres_facebook(a)
+    return f"{titres}\n\n{a['lien']}" if titres else a["lien"]
+
+
+GRAPH = "https://graph.facebook.com/v23.0/"  # version de l'API Graph : Meta retire chaque version environ 2 ans après sa sortie
+
+
+def vers_page(con, heures=24):
+    """Publie sur la Page Facebook les articles récents avec titres traduits : titres FR/EN/ES en message, lien de la
+    source en carte. Au plus max_threads par passage. Réglages : FACEBOOK_PAGE_TOKEN (jeton de la Page, permission
+    pages_manage_posts) et FACEBOOK_PAGE_ID."""
+    jeton, page = reglage("facebook_page_token"), reglage("facebook_page_id")
+    if not jeton or not page:
+        return 0  # pas encore configuré
+    if not con.execute("SELECT 1 FROM sqlite_master WHERE name = 'page_facebook'").fetchone():
+        con.execute("CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT)")
+        con.execute("INSERT INTO page_facebook SELECT id, 'avant' FROM articles")  # 1er passage : seuls les articles à venir partent
+        con.commit()
     n = 0
-    for t in con.execute("SELECT t.article_id, t.tweets, a.titre, a.section FROM threads t JOIN articles a ON a.id = t.article_id"
-                         " WHERE t.statut = 'a_envoyer' ORDER BY t.article_id").fetchall():
-        tweets = json.loads(t["tweets"])
+    for a in con.execute("SELECT * FROM articles WHERE titres_fb != '' AND id NOT IN (SELECT article_id FROM page_facebook)"
+                         " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?) ORDER BY id LIMIT ?",
+                         (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall():
+        corps = urllib.parse.urlencode({"message": titres_facebook(a), "link": a["lien"], "access_token": jeton}).encode()
         try:
-            entete = f"🧵 {(sections or {}).get(t['section'], 'ثريد جديد')} ({len(tweets)} تغريدات)\n{t['titre']}"
-            if t["article_id"] in couvertures:  # couverture et en-tête en un seul message
-                telegram("sendPhoto", {"chat_id": chat, "caption": entete}, dossier_couv / couvertures[t["article_id"]])
-            else:
-                telegram("sendMessage", {"chat_id": chat, "text": entete})
-            for tweet in tweets:
-                telegram("sendMessage", {"chat_id": chat, "text": tweet})
-        except OSError as err:  # réseau coupé, token refusé... : renvoyé au prochain passage
-            print(f"  ! Telegram : envoi impossible ({err}), repris au prochain passage")
+            with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/feed", corps), timeout=60) as rep:
+                json.load(rep)
+        except OSError as err:  # réseau coupé, jeton refusé (HTTPError est un OSError) : repris au prochain passage
+            print(f"  ! Page Facebook : publication impossible ({err}), reprise au prochain passage")
             break
-        con.execute("UPDATE threads SET statut = 'envoye' WHERE article_id = ?", (t["article_id"],))
+        con.execute("INSERT INTO page_facebook VALUES (?, ?)", (a["id"], datetime.now().isoformat(timespec="seconds")))
         con.commit()
         n += 1
     return n

@@ -37,9 +37,9 @@ jobs:
       - name: Collecte, rédaction, threads
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
-          TELEGRAM_TOKEN: ${{ secrets.TELEGRAM_TOKEN }}
-          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
           TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
           PYTHONIOENCODING: utf-8
         run: python generer_site.py
       - name: Sauvegarde de la base dans le dépôt
