@@ -248,7 +248,7 @@ ARTICLES
 """
 
 
-PROBABLE = re.compile(r"alineaci[óo]n(es)? (probables?|posibles?)|posible (once|alineaci[óo]n)", re.I)
+PROBABLE = threads.PROBABLE
 
 
 def trier(items, deja=()):

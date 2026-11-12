@@ -117,11 +117,12 @@ def post_facebook(a):
     return f"{titres}\n\n{a['lien']}" if titres else a["lien"]
 
 
+PROBABLE = re.compile(r"alineaci[óo]n(es)? (probables?|posibles?)|posible (once|alineaci[óo]n)", re.I)  # composition probable
 GRAPH = "https://graph.facebook.com/v23.0/"  # version de l'API Graph : Meta retire chaque version environ 2 ans après sa sortie
 
 
 def vers_page(con, heures=24):
-    """Publie sur la Page Facebook les articles récents avec titres traduits : titres FR/EN/ES en message, lien de la
+    """Publie sur la Page Facebook les nouvelles récentes (pas les opinions) avec titres traduits : titres FR/EN/ES en message, lien de la
     source en carte. Au plus max_threads par passage. Réglages : FACEBOOK_PAGE_TOKEN (jeton de la Page, permission
     pages_manage_posts) et FACEBOOK_PAGE_ID."""
     jeton, page = reglage("facebook_page_token"), reglage("facebook_page_id")
@@ -132,9 +133,13 @@ def vers_page(con, heures=24):
         con.execute("INSERT INTO page_facebook SELECT id, 'avant' FROM articles")  # 1er passage : seuls les articles à venir partent
         con.commit()
     n = 0
+    # la Page ne reçoit que les nouvelles : communiqués, actualités, compositions officielles (ni opinions, ni compositions probables)
     for a in con.execute("SELECT * FROM articles WHERE titres_fb != '' AND id NOT IN (SELECT article_id FROM page_facebook)"
+                         " AND (section = 'actus' OR mode = 'info')"
                          " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?) ORDER BY id LIMIT ?",
                          (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall():
+        if PROBABLE.search(a["titre_original"] or ""):
+            continue
         corps = urllib.parse.urlencode({"message": titres_facebook(a), "link": a["lien"], "access_token": jeton}).encode()
         try:
             with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/feed", corps), timeout=60) as rep:
