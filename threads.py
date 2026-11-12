@@ -133,9 +133,10 @@ def vers_page(con, heures=24):
         con.execute("INSERT INTO page_facebook SELECT id, 'avant' FROM articles")  # 1er passage : seuls les articles à venir partent
         con.commit()
     n = 0
-    # la Page ne reçoit que les nouvelles : communiqués, actualités, compositions officielles (ni opinions, ni compositions probables)
+    # la Page ne reçoit que les nouvelles : communiqués, actualités, compositions officielles et tout le mercato, chroniques
+    # comprises (ni les autres opinions, ni les compositions probables)
     for a in con.execute("SELECT * FROM articles WHERE titres_fb != '' AND id NOT IN (SELECT article_id FROM page_facebook)"
-                         " AND (section = 'actus' OR mode = 'info')"
+                         " AND (section IN ('actus', 'mercato') OR mode = 'info')"
                          " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?) ORDER BY id LIMIT ?",
                          (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall():
         if PROBABLE.search(a["titre_original"] or ""):

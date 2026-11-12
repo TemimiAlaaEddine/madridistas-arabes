@@ -224,11 +224,14 @@ with tempfile.TemporaryDirectory() as tmp:
         fb = {"fr": "Avis", "en": "Opinion", "es": "Opinión"}
         g.enregistrer([{"id": 1, "section": "debats", "titre": "رأي جديد في النقاش", "texte": "ن", "titres_fb": fb},
                        {"id": 2, "section": "actus", "titre": "التشكيلة المحتملة أمام سيلتا", "texte": "ن", "titres_fb": fb},
-                       {"id": 3, "section": "club", "titre": "حفل موسيقي في البرنابيو قريبًا", "texte": "ن", "titres_fb": fb}],
+                       {"id": 3, "section": "club", "titre": "حفل موسيقي في البرنابيو قريبًا", "texte": "ن", "titres_fb": fb},
+                       {"id": 4, "section": "mercato", "titre": "صفقة الشتاء التي يحتاجها الفريق", "texte": "ن", "titres_fb": fb}],
                       [{"lien": "https://ex.com/op", "titre": "Una opinión", "auteur": "", "source": "AS", "pays": "es", "type": "opinion"},
                        {"lien": "https://ex.com/xi", "titre": "Alineación probable del Madrid", "auteur": "", "source": "AS", "pays": "es", "type": "info"},
-                       {"lien": "https://ex.com/nfl", "titre": "Concierto en el Bernabéu", "auteur": "", "source": "AS", "pays": "es", "type": "info"}], db)
-        assert t.vers_page(con) == 1 and "ex.com%2Fnfl" in appels[-1][1] and t.vers_page(con) == 0
+                       {"lien": "https://ex.com/nfl", "titre": "Concierto en el Bernabéu", "auteur": "", "source": "AS", "pays": "es", "type": "info"},
+                       {"lien": "https://ex.com/fichaje", "titre": "El fichaje de invierno", "auteur": "", "source": "AS", "pays": "es", "type": "opinion"}], db)
+        assert t.vers_page(con) == 2 and "ex.com%2Fnfl" in appels[-2][1] and "ex.com%2Ffichaje" in appels[-1][1]  # mercato compris
+        assert t.vers_page(con) == 0 and not any("ex.com%2Fop" in c or "ex.com%2Fxi" in c for _, c in appels)
     finally:
         t.urllib.request.urlopen = vrai_urlopen
         t.CONFIG.pop("facebook_page_token")
