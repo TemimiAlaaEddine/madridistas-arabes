@@ -41,6 +41,7 @@ Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
 
 ## 3. Écrire
 Règles communes :
+- Applique les règles de style du site, les mêmes que pour les articles automatiques : `STYLE` dans `generer_site.py` (écriture, titres, attributions, mots à éviter) et, pour un thread, `REGLES` dans `threads.py` (1er tweet qui nomme sa source, chaque tweet compréhensible seul, une attribution par tweet). Seules différences : la limite de 270 caractères et le dernier tweet réservé aux sources (voir plus bas). Relis le texte contre ces règles avant de le montrer.
 - Seulement des faits présents dans la base, dans connaissance.md ou dans une recherche web validée. Attribue les opinions (« selon Marca », « pour Sid Lowe ») et présente l'avis de l'utilisateur comme le sien (« قراءتي », « رأيي », « à mon avis »).
 - Structure : une accroche qui donne envie de lire, le contexte, les points d'analyse (un fait ou un chiffre, puis ce qu'il veut dire), un avis tranché, et une question aux lecteurs pour lancer les commentaires.
 - Images : seulement des visuels libres de droits (schémas tactiques dessinés soi-même, photos de Wikimedia Commons). Jamais d'images de match ni de photos d'agence.
