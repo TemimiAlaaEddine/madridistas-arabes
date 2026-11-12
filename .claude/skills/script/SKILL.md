@@ -1,11 +1,11 @@
 ---
 name: script
-description: Écrit un script de vidéo courte (TikTok, Reels, Shorts ; 45 à 90 secondes) qui analyse un match, un joueur ou un sujet du Real Madrid, à partir de la base d'articles du site et de connaissance.md. À utiliser pour « /script ... », « fais-moi un script sur ... », et sans sujet pour qu'il en propose 3 tirés des articles récents.
+description: Rédige un article d'analyse ou d'opinion sur le Real Madrid (match, joueur, débat), au format choisi par l'utilisateur, thread X ou publication Facebook, à partir de la base d'articles du site et de connaissance.md. À utiliser pour « /script ... », « écris un thread sur ... », « fais un article Facebook sur ... », et sans sujet pour qu'il en propose 3 tirés des articles récents.
 ---
 
-# Script de vidéo courte sur le Real Madrid
+# Article sur le Real Madrid : thread X ou publication Facebook
 
-La demande (sujet, langue, durée, ton) suit la commande, par exemple : `/script analyse Valence 0-3 en arabe, 60 s`.
+La demande (sujet, format, langue, ton) suit la commande, par exemple : `/script thread sur Vinícius et son rôle défensif` ou `/script article Facebook sur Valence 0-3`.
 
 ## 0. Sans sujet : proposer
 Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
@@ -18,36 +18,43 @@ Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
 
 ## 1. Comprendre la demande
 - Sujet : un match, un joueur, un aspect (pressing, mercato...) ou un débat.
-- Langue : celle qui est demandée (arabe standard moderne, français, anglais, espagnol...). Si elle n'est pas précisée, demande-la en une ligne.
-- Durée : 60 secondes par défaut (de 45 à 90 s).
+- **Format, choisi par l'utilisateur** : thread X ou publication Facebook. S'il n'est pas précisé, demande-le en une ligne avant d'écrire.
+- Langue :
+  - thread X (compte @ElMadridistAlaa) : arabe standard moderne, sauf demande contraire ;
+  - publication Facebook (Page « Peña Madridista de Montréal ») : celle qui est demandée. Si elle n'est pas précisée, demande-la en une ligne (français, anglais, espagnol, ou les trois à la suite).
 
 ## 2. Rassembler la matière
-1. Lis `connaissance.md` (faits validés et préférences de l'utilisateur pour les scripts).
+1. Lis `connaissance.md` (faits validés et préférences de l'utilisateur, dont sa méthode d'analyse).
 2. Cherche dans la base : `python connaissance.py <mots> --jours <n>`. Essaie plusieurs mots : noms latins (« valencia », « guler »), clés de joueurs de config.json (« mbappe »), noms arabes (« فالنسيا »). Élargis `--jours` si c'est trop maigre.
 3. Pour un match, demande la page WhoScored enregistrée (Ctrl+S) dans le dossier du projet, puis lance `python whoscored.py "<fichier>.html"` : systèmes, notes et stats par joueur, à citer comme « WhoScored ».
-4. Si la base ne suffit pas (moins de 2 articles utiles, ou fait trop récent), dis-le et propose une recherche web. N'invente jamais pour combler un manque.
+4. Si la base ne suffit pas (moins de 2 articles utiles, fait trop récent ou antérieur au 25 octobre 2026, début de la base), dis-le et propose une recherche web. N'invente jamais pour combler un manque.
 
-## 3. Écrire le script
-Rythme parlé : environ 2,3 mots par seconde en français, en anglais et en espagnol, et 2 en arabe, soit à peu près 140 mots en français et 120 en arabe pour 60 s.
+## 3. Écrire
+Règles communes :
+- Seulement des faits présents dans la base, dans connaissance.md ou dans une recherche web validée. Attribue les opinions (« selon Marca », « pour Sid Lowe ») et présente l'avis de l'utilisateur comme le sien (« قراءتي », « رأيي », « à mon avis »).
+- Structure : une accroche qui donne envie de lire, le contexte, les points d'analyse (un fait ou un chiffre, puis ce qu'il veut dire), un avis tranché, et une question aux lecteurs pour lancer les commentaires.
+- Images : seulement des visuels libres de droits (schémas tactiques dessinés soi-même, photos de Wikimedia Commons). Jamais d'images de match ni de photos d'agence.
 
-Structure, avec le minutage :
-- **Accroche (0 à 3 s)** : une phrase choc ou une question qui donne envie de rester.
-- **Contexte (3 à 10 s)** : le match ou le sujet en une phrase.
-- **3 points d'analyse** : un fait ou un chiffre de la base, puis ce qu'il veut dire. Le meilleur en dernier.
-- **Chute (dernières 5 s)** : un avis tranché, attribué ou présenté comme le tien, et une question aux spectateurs pour lancer les commentaires.
+**Thread X**
+- Un tweet par bloc, séparés par `---`. Chaque tweet fait au plus 270 caractères comptés comme X (laisse la place à la numérotation « i/n », ajoutée à l'envoi). Vérifie avec `threads.longueur` de threads.py.
+- Le 1er tweet contient l'accroche, 🧵 et #ريال_مدريد. Le dernier liste les sources (journaux et auteurs).
+- De 8 tweets pour un sujet simple jusqu'à 30 pour une analyse longue, selon ce que demande l'utilisateur.
+- Propose 3 accroches de rechange et 5 hashtags.
 
-Pour chaque passage, donne :
-- le **texte à dire** ;
-- le **texte à l'écran** (5 mots au plus) ;
-- une **idée d'image**, prise uniquement parmi des visuels sans droits : couvertures du site, schémas tactiques dessinés soi-même, photos libres de Wikimedia Commons, toi face caméra. Jamais d'images de match ni de photos d'agence : elles appartiennent à la Liga, à l'UEFA et aux agences, et la vidéo peut être bloquée.
-
-Règles :
-- Seulement des faits présents dans la base ou dans connaissance.md. Attribue les opinions : « selon Marca », « pour Sid Lowe ».
-- Termine par les sources, avec le journal, l'auteur et le lien.
-- Propose 3 accroches de rechange et 5 hashtags dans la langue du script.
+**Publication Facebook**
+- Un texte d'un seul bloc, prêt à coller : une première ligne forte (c'est elle qu'on voit avant « Voir plus »), des paragraphes courts séparés par une ligne vide, de 250 à 600 mots selon le sujet.
+- Si les trois langues sont demandées : le texte complet en français ⚜️, puis en anglais 🇨🇦, puis en espagnol 🇪🇸, séparés par une ligne.
+- À la fin : les sources (journal, auteur, lien) et au plus 3 hashtags.
+- Propose 2 premières lignes de rechange.
 
 ## 4. Enregistrer
-Écris le script dans `scripts/AAAA-MM-JJ-sujet-court.md` (créer le dossier s'il manque), puis affiche-le dans ta réponse.
+Écris le texte dans `scripts/AAAA-MM-JJ-thread-sujet-court.md` ou `scripts/AAAA-MM-JJ-facebook-sujet-court.md`, avec les sources et leurs liens en bas, puis affiche-le dans ta réponse.
 
-## 5. Enrichir la connaissance
-À la fin, liste en 1 à 3 lignes les faits durables apparus en préparant le script, par exemple un score, un buteur, un changement de système ou une blessure longue. Propose de les ajouter à `connaissance.md`. N'ajoute que ce que l'utilisateur valide, avec la date et la source. Fais de même pour ses remarques sur le style (« plus d'humour », « accroches plus courtes ») : elles vont dans « Préférences pour les scripts ».
+## 5. Publier (seulement sur un « oui » explicite de l'utilisateur)
+- Thread X : propose de le déposer en brouillon dans Typefully (social set 360421), sans programmation. La numérotation « i/n » est ajoutée à chaque tweet à ce moment-là.
+- Publication Facebook : propose de la publier sur la Page. Montre d'abord le texte exact. Après accord, écris-le dans un fichier texte du dossier temporaire, puis :
+  `python -c "import sys,json,urllib.request,urllib.parse,threads as t; d=urllib.parse.urlencode({'message': open(sys.argv[1], encoding='utf-8').read(), 'access_token': t.reglage('facebook_page_token')}).encode(); print(json.load(urllib.request.urlopen(t.GRAPH + t.reglage('facebook_page_id') + '/feed', d)))" <fichier.txt>`
+  Une publication sur la Page est visible tout de suite par les abonnés : ne la lance jamais sans accord.
+
+## 6. Enrichir la connaissance
+À la fin, liste en 1 à 3 lignes les faits durables apparus en préparant le texte, par exemple un score, un buteur, un changement de système ou une blessure longue. Propose de les ajouter à `connaissance.md`. N'ajoute que ce que l'utilisateur valide, avec la date et la source. Fais de même pour ses remarques sur le style (« plus d'humour », « accroches plus courtes ») : elles vont dans « Préférences pour les scripts ».

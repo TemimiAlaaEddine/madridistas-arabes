@@ -78,11 +78,12 @@ Sur le site (page de chaque article) :
 - **نشر على فيسبوك** : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸, puis le lien de la source (Facebook affiche la carte de l'article). Les articles d'avant cet ajout n'ont que le lien.
 - La case « تم النشر » est mémorisée par le navigateur. Les cartes de l'accueil affichent alors « ✓ نُشر ».
 
-## Scripts de vidéos courtes (/script)
+## Articles d'analyse (/script)
 
-Dans Claude Code, ouvert dans ce dossier : `/script <sujet>, <langue>, <durée>`, par exemple `/script analyse Valence 0-3, arabe, 60 s`.
+Dans Claude Code, ouvert dans ce dossier : `/script <format> sur <sujet>`, par exemple `/script thread sur Vinícius` ou `/script article Facebook sur Valence 0-3`. Sans sujet, Claude en propose 3 tirés des articles récents.
 
+- Tu choisis le format : **thread X** (arabe standard par défaut) ou **publication Facebook** pour la Page (langue au choix : français, anglais, espagnol ou les trois). Si tu ne le précises pas, Claude te le demande.
 - Claude cherche dans la base d'articles avec `python connaissance.py <mots> --jours <n>` et lit `connaissance.md`.
-- Il écrit un script de 45 à 90 secondes : accroche, 3 points, chute. Pour chaque passage : le texte à dire, le texte à l'écran et une idée d'image libre de droits, puis les sources.
-- Le script est enregistré dans `scripts/`.
+- Le texte est enregistré dans `scripts/`, avec ses sources.
+- Sur ton accord seulement : le thread part en brouillon dans Typefully, la publication Facebook est postée sur la Page.
 - `connaissance.md` est notre mémoire commune : faits validés et préférences de style. Claude propose d'y ajouter ce qu'il apprend, et n'ajoute que ce que tu valides.
