@@ -343,7 +343,14 @@ with tempfile.TemporaryDirectory() as tmp:
     def refuse(url, i):
         raise ValueError("pas une image")
     t.telecharger_image, appels[:] = refuse, []
-    assert t.vers_typefully(con, {2: "c.png"}, Path(tmp)) == 1 and appels[0][1]["platforms"]["x"]["posts"][0]["media_ids"] == ["c.png"]
+    faites = []  # article avec image : pas de couverture d'avance, elle est faite à la demande, sans ménage
+    vrai_gen, couvertures.generer_couvertures = couvertures.generer_couvertures, (
+        lambda arts, dossier, menage=True: faites.append(menage) or {arts[0]["id"]: "c.png"})
+    try:
+        assert t.vers_typefully(con, {}, Path(tmp)) == 1 and appels[0][1]["platforms"]["x"]["posts"][0]["media_ids"] == ["c.png"]
+    finally:
+        couvertures.generer_couvertures = vrai_gen
+    assert faites == [False]
     con.execute("UPDATE threads SET typefully = NULL WHERE article_id = 2")
     def coupe(*a, **k):
         raise OSError("réseau coupé")

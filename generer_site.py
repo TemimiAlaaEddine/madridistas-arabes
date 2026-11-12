@@ -733,7 +733,8 @@ def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
     con.close()
     dossier.mkdir(exist_ok=True)
     COUVERTURES.clear()
-    COUVERTURES.update(generer_couvertures(arts, dossier))
+    # couverture seulement pour les articles sans image source (celle du journal sert au site et aux threads)
+    COUVERTURES.update(generer_couvertures([a for a in arts if not a["image"]], dossier))
     fichiers = {"style.css": CSS, "site.js": JS, "index.html": page_accueil(arts),
                 "revue.html": page_revue(arts), "presse.html": page_presse(arts)}
     par_section = defaultdict(list)

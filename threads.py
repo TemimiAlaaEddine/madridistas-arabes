@@ -199,7 +199,7 @@ def vers_typefully(con, couvertures, dossier_couv):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
     n = 0
-    for t in con.execute("SELECT t.article_id, t.tweets, a.titre, a.image FROM threads t JOIN articles a ON a.id = t.article_id"
+    for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         try:
             media = None
@@ -209,6 +209,9 @@ def vers_typefully(con, couvertures, dossier_couv):
                 except (OSError, ValueError) as err:
                     print(f"  ! Typefully : image de l'article refusée ({err}), couverture à la place")
             couv = couvertures.get(t["article_id"])
+            if not media and not couv:  # pas de couverture d'avance pour un article avec image : faite à la demande
+                from couvertures import generer_couvertures
+                couv = generer_couvertures([t], dossier_couv.parent, menage=False).get(t["article_id"])
             if not media and couv:
                 media = typefully_image(couv, (dossier_couv / couv).read_bytes())
             posts = [{"text": tw} for tw in json.loads(t["tweets"])]

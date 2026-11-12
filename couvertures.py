@@ -143,8 +143,9 @@ def vignette(nom):
     return nom.removesuffix(".png") + "-v.webp"
 
 
-def generer_couvertures(arts, dossier):
-    """Rend chaque couverture en PNG avec Edge sans fenêtre (+ sa vignette) ; refaite seulement si son contenu change."""
+def generer_couvertures(arts, dossier, menage=True):
+    """Rend chaque couverture en PNG avec Edge sans fenêtre (+ sa vignette) ; refaite seulement si son contenu change.
+    menage : supprime les couvertures des articles absents de `arts` (False pour en ajouter une seule, ex. Typefully)."""
     if not EDGE:
         return {}
     sortie, sources = dossier / "couvertures", BASE / "sortie" / "couvertures"
@@ -174,7 +175,7 @@ def generer_couvertures(arts, dossier):
                 with Image.open(sortie / nom) as im:
                     im.resize((720, round(im.height * 720 / im.width)), Image.LANCZOS).save(sortie / vignette(nom), "WEBP", quality=80, method=6)
     gardes = set(noms.values()) | {vignette(n) for n in noms.values()}
-    for ancienne in sortie.glob("a-*"):  # couvertures et vignettes d'articles supprimés ou modifiés
+    for ancienne in (sortie.glob("a-*") if menage else []):  # couvertures et vignettes d'articles supprimés ou modifiés
         if ancienne.name not in gardes:
             ancienne.unlink()
     return noms
