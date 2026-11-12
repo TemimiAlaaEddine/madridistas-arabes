@@ -377,6 +377,17 @@ with tempfile.TemporaryDirectory() as tmp:
     t.typefully_api = coupe
     assert t.vers_typefully(con, {}, Path(tmp)) == 0
     assert con.execute("SELECT typefully FROM threads WHERE article_id = 2").fetchone()[0] is None
+    # une nouvelle passe avant les opinions en attente et part tout de suite ; l'opinion garde la file
+    t.typefully_api, appels[:] = (lambda chemin, corps=None: appels.append(corps) or {"id": len(appels)}), []
+    t.CONFIG["typefully_publish_at_actus"] = "now"
+    con.commit()  # libère la base pour enregistrer
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "خبر عاجل", "texte": "ن", "tweets": ["خبر"]}],
+                  [{"lien": "https://as.com/3", "titre": "T3", "auteur": "", "source": "AS", "pays": "es", "type": "info"}], db)
+    try:
+        assert t.vers_typefully(con, {2: "c.png", 3: "c.png"}, Path(tmp)) == 2
+    finally:
+        t.CONFIG.pop("typefully_publish_at_actus")
+    assert [(c["draft_title"], c["publish_at"]) for c in appels] == [("خبر عاجل", "now"), ("جديد", "next-free-slot")]
     con.close()
 print("OK Typefully")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés

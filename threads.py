@@ -80,7 +80,7 @@ def decouper(con, heures=24):
     """Fait écrire par Claude les threads des articles récents qui n'en ont pas encore. Retourne le nombre créé."""
     connexion_threads(con)
     arts = con.execute("SELECT * FROM articles WHERE id NOT IN (SELECT article_id FROM threads)"
-                       " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?) ORDER BY section = 'actus', date DESC LIMIT ?",
+                       " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?) ORDER BY (section = 'actus' OR mode = 'info') DESC, date DESC LIMIT ?",
                        (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall()
     if not arts:
         return 0
@@ -208,7 +208,7 @@ def vers_typefully(con, couvertures, dossier_couv):
         return 0
     n = 0
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
-                         " WHERE t.typefully IS NULL ORDER BY t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
+                         " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         try:
             media = None
             if t["image"]:  # photo de l'article source, à remplacer dans Typefully avant la publication
@@ -226,8 +226,11 @@ def vers_typefully(con, couvertures, dossier_couv):
             if media:
                 posts[0]["media_ids"] = [media]
             corps = {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
-            if CONFIG.get("typefully_publish_at"):
-                corps["publish_at"] = CONFIG["typefully_publish_at"]
+            # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
+            nouvelle = t["section"] == "actus" or t["mode"] == "info"
+            quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
+            if quand or CONFIG.get("typefully_publish_at"):
+                corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)
         except (OSError, KeyError, ValueError) as err:  # réseau, clé refusée... : repris au prochain passage
             print(f"  ! Typefully : envoi impossible ({err}), repris au prochain passage")

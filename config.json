@@ -414,6 +414,7 @@
   "max_threads": 10,
   "typefully_social_set": 360421,
   "typefully_publish_at": "next-free-slot",
+  "typefully_publish_at_actus": "now",
   "modele_tri": "sonnet",
   "modele_redaction": "sonnet"
 }
