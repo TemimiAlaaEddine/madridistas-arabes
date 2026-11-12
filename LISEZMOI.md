@@ -12,6 +12,7 @@
 | `threads.py` | Threads X (Typefully) et publications sur la Page Facebook |
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
+| `sources.py` | Revue des sources : santé des flux, rendement, sources à ajouter ou retirer |
 | `gabarits/` | `style.css`, `site.js` et `recherche.js` (page « بحث ») du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
 | `config.json` | Sources, personnes, réglages ; secrets dans `secrets.json` (hors git) |
 
@@ -88,6 +89,16 @@ Sur le site (page de chaque article) :
 - **ثريد X** : les tweets un par un, avec un bouton « نسخ » (copier), le nombre de caractères et la couverture à télécharger pour le 1er tweet.
 - **نشر على فيسبوك** : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸, puis le lien de la source (Facebook affiche la carte de l'article). Les articles d'avant cet ajout n'ont que le lien.
 - La case « تم النشر » est mémorisée par le navigateur. Les cartes de l'accueil affichent alors « ✓ نُشر ».
+
+## Revue des sources
+
+Chaque lundi à 7 h (heure d'Espagne), le workflow « Revue des sources » ouvre une issue GitHub avec le bilan des flux de `config.json` :
+- **santé** de chaque flux, lu pour de vrai : en erreur, vide, muet depuis plus de 7 jours, ou sans rien sur le Real (et rien publié en 30 jours) ;
+- **rendement** : articles publiés sur le site en 30 jours, par journal ;
+- **médias cités** dans nos articles sans être suivis : ceux qu'on lit de seconde main ;
+- **avis de Claude** : flux à retirer et sources à ajouter. Chaque flux proposé est lu avant d'être recommandé (✅), sinon il est marqué « adresse à trouver » ou en échec.
+
+Rien n'est modifié automatiquement : tu décides, puis tu demandes à Claude Code d'appliquer la revue, ou tu modifies `config.json` à la main. Revue à la demande : bouton « Run workflow » du workflow, ou `python sources.py` sur le PC.
 
 ## Articles d'analyse (/script)
 

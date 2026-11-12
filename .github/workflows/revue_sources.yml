@@ -1,0 +1,31 @@
+name: Revue des sources
+
+on:
+  schedule:
+    - cron: "0 6 * * 1" # chaque lundi, 7 h heure d'Espagne : une issue avec le bilan des sources
+  workflow_dispatch: # bouton « Run workflow » : revue à la demande
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  revue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Rapport
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          PYTHONIOENCODING: utf-8
+        run: python sources.py > rapport.md
+      - name: Issue GitHub
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue create --title "Revue des sources du $(date -u +%Y-%m-%d)" --body-file rapport.md

@@ -140,6 +140,14 @@ def lire_flux(flux):
         return err
 
 
+def garde(flux, titre, resume, lien, mots):
+    """Article qui parle du Real : rubriques voulues d'un site (filtre_lien), tout pour un site consacré au Real
+    (que_le_real), sinon un mot-clé dans le titre ou le chapeau. Sert à la collecte et à la revue des sources."""
+    if flux.get("filtre_lien"):  # site du club : tout parle du Real, on ne garde que les rubriques voulues
+        return any(f in lien for f in flux["filtre_lien"])
+    return bool(flux.get("que_le_real") or any(m in (titre + " " + resume).lower() for m in mots))
+
+
 def collecter(chemin=DB_PATH, age_max_heures=24):
     mots = [m.lower() for m in CONFIG["mots_cles"]]
     age_max = age_max_heures * 3600
@@ -165,10 +173,7 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
             if pub and time.time() - calendar.timegm(pub) > age_max:  # pub est en UTC
                 continue
             resume = nettoyer(e.get("summary", ""))
-            if flux.get("filtre_lien"):  # site du club : tout parle du Real, on ne garde que les rubriques voulues
-                if not any(f in lien for f in flux["filtre_lien"]):
-                    continue
-            elif not flux.get("que_le_real") and not any(m in (titre + " " + resume).lower() for m in mots):  # titres imagés
+            if not garde(flux, titre, resume, lien, mots):
                 continue
             cle = lien
             if deja_vu(con, cle):

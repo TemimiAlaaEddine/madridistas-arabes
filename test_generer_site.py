@@ -642,3 +642,34 @@ try:
 finally:
     th.graph_lire = vrai_lire
 print("OK jeton Facebook permanent")
+
+# revue des sources : même filtre que la collecte, flux en panne en haut, proposition vérifiée avant d'être recommandée
+assert commun.garde({"filtre_lien": ["/cronicas/"]}, "x", "", "https://rm.com/cronicas/a", [])
+assert not commun.garde({"filtre_lien": ["/cronicas/"]}, "Real Madrid", "", "https://rm.com/basket/a", ["real madrid"])
+assert commun.garde({"que_le_real": True}, "x", "", "", []) and not commun.garde({}, "Barça gana", "", "", ["real madrid"])
+import sources
+import time
+recent_t = time.gmtime(time.time() - 3600)
+lus = {"https://ok.es/rss": [{"title": "El Real Madrid gana", "link": "https://ok.es/1", "published_parsed": recent_t}],
+       "https://mort.es/rss": OSError("404"),
+       "https://club.es/rss": [{"title": "Baloncesto", "link": "https://club.es/basket/1", "published_parsed": recent_t}],
+       "https://nouveau.es/rss": [{"title": "Mbappé marca", "link": "https://nouveau.es/1", "published_parsed": recent_t}]}
+vrais_s = sources.lire_flux, sources.appeler_claude, sources.CONFIG["flux"]
+sources.lire_flux = lambda f: lus.get(f["url"], [])
+sources.appeler_claude = lambda prompt, *a: json.dumps([{"retirer": [{"flux": "Mort - RSS", "raison": "en panne"}],
+    "ajouter": [{"nom": "Nouveau", "url": "https://nouveau.es/rss", "pays": "es", "raison": "cité souvent"},
+                {"nom": "Inventé", "url": "https://invente.es/rss", "pays": "es", "raison": "?"}], "remarques": "RAS"}])
+sources.CONFIG["flux"] = [{"nom": "Ok - RSS", "url": "https://ok.es/rss", "pays": "es"}, {"nom": "Mort - RSS", "url": "https://mort.es/rss", "pays": "es"},
+                          {"nom": "Club - Site", "url": "https://club.es/rss", "filtre_lien": ["/cronicas/"]}]
+try:
+    with tempfile.TemporaryDirectory() as d:
+        db = Path(d) / "a.db"
+        g.enregistrer([{"id": 1, "titre": "عنوان", "texte": "بحسب «ريليفو» و«ريليفو» و«ريليفو»"}],
+                      [{"lien": "https://ok.es/1", "titre": "T", "auteur": "", "source": "Ok - RSS", "pays": "es"}], db)
+        rapport = sources.revue(db)
+finally:
+    sources.lire_flux, sources.appeler_claude, sources.CONFIG["flux"] = vrais_s
+assert rapport.index("Mort - RSS | es | ❌ erreur") < rapport.index("Ok - RSS | es | ✅"), rapport
+assert "| Ok - RSS | es | ✅ | 1 | 1 | 1 |" in rapport and "| Club - Site | - | ✅ | 1 | 0 | 0 |" in rapport  # rubriques filtrées : pas une panne and "**Mort - RSS** : en panne" in rapport
+assert "→ ✅ 1 entrées, 1 sur le Real" in rapport and "invente.es/rss` → ❌ vide" in rapport and "ريليفو (3)" in rapport
+print("OK revue des sources")
