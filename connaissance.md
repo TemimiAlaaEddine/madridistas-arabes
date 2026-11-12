@@ -2,6 +2,9 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
+Dernier fait relu : 0
+(Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
+
 ## Effectif et staff
 - Saison 2025-26 : aucun titre, avec Xabi Alonso puis Álvaro Arbeloa. Ensuite : José Mourinho nommé entraîneur, Florentino Pérez réélu. Source : validé par l'utilisateur (2026-11-08).
 - Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ selon SI, environ 107 M£ selon TEAMtalk), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Source : Sports Illustrated.

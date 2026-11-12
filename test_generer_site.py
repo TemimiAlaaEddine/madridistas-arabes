@@ -254,6 +254,17 @@ with tempfile.TemporaryDirectory() as tmp:
                           {"id": 2, "titre": "ابنا إيكر كاسياس يغادران أكاديمية ريال مدريد إلى ليغانيس", "texte": "ن"}], src, db) == 1
     assert g.enregistrer([{"id": 3, "titre": "ريال مدريد يجدد عقد المدافع الشاب أليخاندرو كاستانيو حتى 2030", "texte": "ن"}], src, db) == 1
 print("OK doublons par titre arabe")
+# faits durables : 2 au plus par article, même fait venu d'un autre journal ignoré, trop court ignoré
+with tempfile.TemporaryDirectory() as tmp:
+    db = Path(tmp) / "a.db"
+    src = [{"lien": f"https://ex.com/f{k}", "titre": "T", "auteur": "", "source": "AS", "pays": "es"} for k in "ab"]
+    fait = "Celta 0-2 Real Madrid le 21 novembre 2026, buts de Mbappé et Güler"
+    g.enregistrer([{"id": 1, "titre": "ع", "texte": "ن", "faits": [fait, "Mbappé absent trois semaines (ischio-jambiers)", "Un troisième fait de trop ici"]},
+                   {"id": 2, "titre": "خ", "texte": "ن", "faits": [fait.replace("le 21", "ce 21"), "trop court"]}], src, db)
+    con = sqlite3.connect(db)
+    assert [f for (f,) in con.execute("SELECT fait FROM faits ORDER BY id")] == [fait, "Mbappé absent trois semaines (ischio-jambiers)"]
+    con.close()
+print("OK faits durables")
 # gardés d'office même si le tri les oublie : rubrique d'opinion, composition probable Marca/AS
 g.appeler_claude = lambda prompt, *a: "[]"
 office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},

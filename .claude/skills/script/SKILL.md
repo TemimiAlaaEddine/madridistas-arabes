@@ -7,6 +7,15 @@ description: Rédige un article d'analyse ou d'opinion sur le Real Madrid (match
 
 La demande (sujet, format, langue, ton) suit la commande, par exemple : `/script thread sur Vinícius et son rôle défensif` ou `/script article Facebook sur Valence 0-3`.
 
+## Avant tout : les faits en attente
+À chaque passage horaire, Claude note jusqu'à 2 faits durables par article (score et buteurs, blessure longue, transfert ou prolongation officiels, changement de système ou de poste, record). Ils attendent ta validation :
+1. Liste ceux dont le numéro dépasse « Dernier fait relu » dans `connaissance.md` :
+   `python -c "import re,sqlite3,sys,commun; commun.restaurer_base(commun.BASE/'articles.db'); sys.stdout.reconfigure(encoding='utf-8'); n=int(re.search(r'Dernier fait relu : (\d+)', open('connaissance.md', encoding='utf-8').read()).group(1)); [print(*r, sep=' | ') for r in sqlite3.connect('articles.db').execute('SELECT f.id, date(f.date), f.fait, a.journal, a.lien FROM faits f JOIN articles a ON a.id = f.article_id WHERE f.id > ? ORDER BY f.id', (n,))]"`
+2. S'il y en a, présente-les en une liste numérotée courte, regroupés par sujet, avec le journal, puis demande : « Je valide lesquels ? (tous, aucun, ou les numéros) ». Si l'utilisateur répond « plus tard », passe à la suite sans rien changer.
+3. Ajoute les faits validés dans la bonne section de `connaissance.md`, une ligne par fait, avec la date et la source. Corrige le tableau des matchs et le bilan si un score est validé. Fusionne avec une ligne existante plutôt que de dupliquer.
+4. Mets « Dernier fait relu » au plus grand numéro présenté, validé ou non : les faits écartés ne reviennent pas.
+5. Pendant l'écriture, un fait encore en attente peut servir, mais présente-le comme non confirmé et cite sa source.
+
 ## 0. Sans sujet : proposer
 Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
 1. Liste les titres des 3 derniers jours :

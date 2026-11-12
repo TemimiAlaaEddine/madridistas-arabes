@@ -86,4 +86,5 @@ Dans Claude Code, ouvert dans ce dossier : `/script <format> sur <sujet>`, par e
 - Claude cherche dans la base d'articles avec `python connaissance.py <mots> --jours <n>` et lit `connaissance.md`.
 - Le texte est enregistré dans `scripts/`, avec ses sources.
 - Sur ton accord seulement : le thread part en brouillon dans Typefully, la publication Facebook est postée sur la Page.
+- Mémoire automatique : à chaque passage, Claude note jusqu'à 2 faits durables par article (score et buteurs, blessure longue, transfert officiel, changement de système, record) dans la table `faits` de la base, sans appel supplémentaire. Au début de `/script`, il te présente ceux qui sont en attente ; ceux que tu valides vont dans `connaissance.md`. La ligne « Dernier fait relu » de ce fichier retient où tu en es.
 - `connaissance.md` est notre mémoire commune : faits validés et préférences de style. Claude propose d'y ajouter ce qu'il apprend, et n'ajoute que ce que tu valides.

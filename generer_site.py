@@ -117,10 +117,11 @@ Pour chaque article ci-dessous :
 9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا علاء » :
 {regles_tweets}
 10. "titres_fb" : ton titre arabe traduit pour un groupe Facebook de supporters à Montréal, une phrase courte et naturelle en français, en anglais et en espagnol, noms propres dans leur graphie latine usuelle.
+11. "faits" : au plus 2 faits durables établis par le texte, utiles à une mémoire de la saison, en français, une phrase courte chacun avec la date quand elle est connue. Seulement : score final et buteurs d'un match du Real Madrid, blessure ou absence de plus de deux semaines, transfert ou prolongation officiels, changement de système ou de poste d'un joueur, record ou distinction. Jamais de rumeur, d'avis ni de déclaration. Sinon [].
 
 FORMAT DE RÉPONSE
 Réponds UNIQUEMENT avec un tableau JSON valide, sans texte avant ni après, sans bloc de code :
-[{{"id": 1, "section": "actus|tactique|mercato|club|debats", "titre": "...", "chapeau": "جملة أو جملتان", "texte": "paragraphes séparés par \\n\\n", "auteur": "...", "auteur_ar": "...", "via": "", "personnes": ["mbappe"], "sujet": "mbappe", "citation": "...", "chiffres": [], "tweets": ["...", "..."], "titres_fb": {{"fr": "...", "en": "...", "es": "..."}}}}]
+[{{"id": 1, "section": "actus|tactique|mercato|club|debats", "titre": "...", "chapeau": "جملة أو جملتان", "texte": "paragraphes séparés par \\n\\n", "auteur": "...", "auteur_ar": "...", "via": "", "personnes": ["mbappe"], "sujet": "mbappe", "citation": "...", "chiffres": [], "tweets": ["...", "..."], "titres_fb": {{"fr": "...", "en": "...", "es": "..."}}, "faits": []}}]
 Si aucun article ne convient, réponds [].
 
 DÉJÀ PUBLIÉ CES DERNIERS JOURS (informations et propos à ne pas reprendre, sauf fait vraiment nouveau)
@@ -233,6 +234,8 @@ def connexion(chemin=DB):
         titre TEXT, chapeau TEXT, texte TEXT, auteur TEXT, auteur_ar TEXT, journal TEXT, pays TEXT,
         lien TEXT UNIQUE, titre_original TEXT, mode TEXT, personnes TEXT, via TEXT, rapporteur TEXT, sujet TEXT,
         citation TEXT, chiffres TEXT, titres_fb TEXT)""")
+    # faits durables notés par Claude à la rédaction, relus et validés par /script vers connaissance.md
+    con.execute("CREATE TABLE IF NOT EXISTS faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT)")
     for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres", "titres_fb"):  # bases créées avant l'ajout de ces colonnes
         try:
             con.execute(f"ALTER TABLE articles ADD COLUMN {colonne} TEXT")
@@ -248,6 +251,18 @@ def chiffres_valides(chiffres):
     ok = [{"valeur": str(c["valeur"]), "libelle": str(c["libelle"])[:60]} for c in chiffres  # valeur coupée = fausse
           if isinstance(c, dict) and c.get("valeur") and c.get("libelle") and len(str(c["valeur"])) <= 14]
     return ok[:3] if len(ok) >= 2 else []  # un chiffre isolé ne fait pas une infographie
+
+
+def noter_faits(con, article_id, faits, now):
+    """Garde au plus 2 faits par article, sans reprendre un fait déjà noté ces 14 derniers jours (même info, autre journal)."""
+    connus = [normaliser_titre(f) for (f,) in con.execute("SELECT fait FROM faits WHERE date >= date('now', '-14 days')")]
+    for f in (faits if isinstance(faits, list) else [])[:2]:
+        f = str(f).strip()[:200]
+        nf = normaliser_titre(f)
+        if len(nf.split()) < 4 or any(SequenceMatcher(None, nf, c).ratio() >= SEUIL_DOUBLON for c in connus):
+            continue
+        con.execute("INSERT INTO faits (article_id, date, fait) VALUES (?,?,?)", (article_id, now, f))
+        connus.append(nf)
 
 
 SEUIL_DOUBLON = 0.8  # vrais doublons mesurés à 0,88 et 0,91 ; titres différents les plus proches à 0,69 (nov. 2026)
@@ -298,6 +313,8 @@ def enregistrer(reponses, items, chemin=DB):
              json.dumps(titres_fb, ensure_ascii=False) if titres_fb else ""),
         )
         n += cur.rowcount
+        if cur.rowcount:
+            noter_faits(con, cur.lastrowid, r.get("faits"), now)
         tweets = cur.rowcount and threads.assembler(
             {"auteur_ar": auteur_ar, "auteur": auteur, "journal": journal(it), "lien": it["lien"]},
             r.get("tweets") or [])
