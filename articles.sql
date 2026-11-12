@@ -3221,4 +3221,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/11/zidane-confi
 INSERT INTO "vus" VALUES('https://cadenaser.com/euskadi/2026/11/11/nueva-derrota-como-visitante-en-euroliga-80-66-ser-vitoria/','Nueva derrota como visitante en Euroliga (80-66)','2026-11-11T22:01:39');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/los-otros-jj-gabriel-f202611-n/','Los otros JJ Gabriel','2026-11-11T22:02:41');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2189488159193665111-equipe-de-france-cyril-hanouna-revele-une-grosse-information-sur-kylian-mbappe-et-zinedine-zidane','Équipe de France : Cyril Hanouna révèle une grosse information sur Kylian Mbappé et Zinedine Zidane','2026-11-11T22:02:41');
+INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/posible-alineacion-de-espana-contra-chequia-en-la-nations-league-varias-certezas-y-una-gran-duda-f202611-n/','Alineación posible alineación de España contra República Checa en la Nations League: varias certezas y una gran duda','2026-11-12T00:01:24');
 COMMIT;
