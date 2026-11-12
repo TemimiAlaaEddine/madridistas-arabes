@@ -3781,4 +3781,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-aftrap-springt-italie-opnieuw-over-rode-duivels~a60bce4f/','LIVE. Aftrap! Springt Italië opnieuw over Rode Duivels?','2026-11-12T19:50:48');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1424362237517419547-liverpool-pourquoi-un-ancien-du-psg-imagine-mbappe-rejoindre-les-reds','Liverpool : pourquoi un ancien du PSG imagine Mbappé rejoindre les Reds','2026-11-12T20:01:19');
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-de-rode-duivels-zien-het-graag-gebeuren-olise-straft-fout-donnarumma-af~a60bce4f/','LIVE. De Rode Duivels zien het graag gebeuren: Olise straft fout Donnarumma af','2026-11-12T20:01:19');
+INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/seleccion/el-probable-equipo-titular-la-seleccion-uruguaya-diego-forlan-valverde-bentancur-y-arrascaeta-enfrentar-argentina-n6063649','El probable equipo titular de la selección uruguaya de Forlán con Valverde, Bentancur, De Arrascaeta, Maxi Araújo y Darwin Núñez, para enfrentar a Argentina','2026-11-12T20:10:50');
 COMMIT;
