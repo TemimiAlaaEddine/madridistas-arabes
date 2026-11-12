@@ -552,6 +552,14 @@ def photo(cle, classe="photo"):
             f'<a href="{e(c["source"])}" target="_blank" rel="noopener">ويكيميديا كومنز</a></figcaption></figure>')
 
 
+def liens_stats(cle):
+    """Fiche d'une personne : liens vers ses stats DataMB et celles du club (consultées à la main, citées « DataMB »)."""
+    club, joueur = CONFIG.get("datamb_club"), FICHES.get(cle, {}).get("datamb")
+    liens = [f'<a href="{e(u)}" target="_blank" rel="noopener">{t}</a>' for u, t in ((joueur, "إحصاءات اللاعب"),
+             (club, "إحصاءات ريال مدريد")) if u]
+    return f'<p class="stats-ext">DataMB: {" · ".join(liens)}</p>' if liens else ""
+
+
 PAR_PAGE = CONFIG.get("articles_par_page", 30)
 
 
@@ -755,7 +763,7 @@ def rendre_site(chemin=DB, dossier=SITE, credits=CREDITS):
                     f'<bdi class="latin" dir="ltr">{e(a["auteur"])}</bdi>', None)
         for p in json.loads(a["personnes"]):
             if p in PERSONNES:
-                ajouter(f"p-{p}", a, "ملف", PERSONNES[p], "", None, photo(p, "portrait"))
+                ajouter(f"p-{p}", a, "ملف", PERSONNES[p], liens_stats(p), None, photo(p, "portrait"))
         if a["pays"]:
             ajouter(f"pays-{a['pays']}", a, "الصحافة العالمية", PAYS.get(a["pays"], a["pays"]), "", "presse")
     for nom, liste_arts in groupes.items():

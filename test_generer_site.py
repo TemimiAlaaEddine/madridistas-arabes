@@ -273,6 +273,10 @@ img = g.image_article({"image": "https://ex.com/img/une.jpg"}, "couv", "c.png")
 assert 'src="https://ex.com/img/une.jpg"' in img and "couvertures/c.png" in img and 'referrerpolicy="no-referrer"' in img
 assert 'src="couvertures/c.png"' in g.image_article({"image": ""}, "couv", "c.png") and g.image_article({}, "couv", None) == ""
 print("OK image principale")
+# fiches joueurs : liens DataMB du joueur (s'il a une page) et du club
+assert "K_Mbappe_Striker_stats" in g.liens_stats("mbappe") and "Real_Madrid_Team_stats" in g.liens_stats("mbappe")
+assert "Real_Madrid_Team_stats" in g.liens_stats("lunin") and "إحصاءات اللاعب" not in g.liens_stats("lunin")
+print("OK liens DataMB")
 # gardés d'office même si le tri les oublie : rubrique d'opinion, composition probable Marca/AS
 g.appeler_claude = lambda prompt, *a: "[]"
 office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},

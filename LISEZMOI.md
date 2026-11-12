@@ -85,6 +85,7 @@ Dans Claude Code, ouvert dans ce dossier : `/script <format> sur <sujet>`, par e
 
 - Tu choisis le format : **thread X** (arabe standard par défaut) ou **publication Facebook** pour la Page (langue au choix : français, anglais, espagnol ou les trois). Si tu ne le précises pas, Claude te le demande.
 - Claude cherche dans la base d'articles avec `python connaissance.py <mots> --jours <n>` et lit `connaissance.md`.
+- Stats de saison : chaque fiche joueur du site a un lien vers ses stats [DataMB](https://datamb.football) (champ `datamb` dans `config.json`) et vers celles du club (`datamb_club`). Le site interdit la lecture automatique de ses données : tu ouvres le lien, tu donnes les chiffres à Claude, et il les cite « DataMB ».
 - Le texte est enregistré dans `scripts/`, avec ses sources.
 - Sur ton accord seulement : le thread part en brouillon dans Typefully, la publication Facebook est postée sur la Page.
 - Mémoire automatique : à chaque passage, Claude note jusqu'à 2 faits durables par article (score et buteurs, blessure longue, transfert officiel, changement de système, record) dans la table `faits` de la base, sans appel supplémentaire. Au début de `/script`, il te présente ceux qui sont en attente ; ceux que tu valides vont dans `connaissance.md`. La ligne « Dernier fait relu » de ce fichier retient où tu en es.
