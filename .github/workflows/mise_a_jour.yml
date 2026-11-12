@@ -1,7 +1,7 @@
 name: Mise à jour du site et threads
 
 on:
-  # déclenché chaque heure (7 h - 23 h, Europe/Madrid) par cron-job.org : la planification GitHub sautait des passages
+  # déclenché par cron-job.org (la planification GitHub sautait des passages) ; dépôt public : minutes illimitées
   workflow_dispatch: # bouton « Run workflow » (aussi dans l'app GitHub) : passage à la demande, ex. avant un match
 
 concurrency: mise_a_jour # jamais deux passages en même temps
@@ -41,6 +41,7 @@ jobs:
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
           FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
           PYTHONIOENCODING: utf-8
+          PYTHONUNBUFFERED: 1 # chaque ligne du journal a son heure réelle : on voit quelle étape est lente
         run: python generer_site.py
       - name: Sauvegarde de la base dans le dépôt
         if: always()
