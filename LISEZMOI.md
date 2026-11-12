@@ -18,8 +18,14 @@
 # Site (المدريديستا علاء)
 
 `lancer_site.bat` collecte les articles **signés**, lit leur texte complet, puis Claude
-rédige en arabe un **résumé commenté** (250-400 mots, 3 citations courtes maximum)
+rédige en arabe un **résumé commenté** (400-600 mots pour une opinion, 4 citations courtes maximum)
 avec le nom du journaliste, le journal et le lien vers l'original. Les pages sont dans `site\`.
+
+Le ton des textes se règle à un seul endroit : `STYLE` dans `generer_site.py` (articles, titres, chapeaux) et `REGLES`
+dans `threads.py` (threads X). Un article commence par son idée la plus forte, pas par « يرى الكاتب » ; les longs
+textes ont des intertitres (lignes « ## » dans le texte, affichées en sous-titres).
+Si Claude ne répond pas (quota, jeton expiré), le site est quand même régénéré, les threads prêts sont envoyés,
+et le passage se termine en erreur : rien n'est perdu, les articles sont repris au passage suivant.
 
 | Commande | Effet |
 |---|---|
@@ -36,7 +42,9 @@ Réglages dans `config.json` :
   ses articles sont alors traduits intégralement.
 - `personnes` : une fiche par joueur ou entraîneur (à mettre à jour à chaque mercato), par exemple
   `"mbappe": {"nom": "مبابي", "wikipedia": "Kylian Mbappé", "photo": "File:….jpg"}`.
+- `noms_ar` : graphie arabe de chaque média (`"Marca": "ماركا"`), reprise telle quelle dans tous les textes. Pour un journaliste, la graphie la plus fréquente en base est utilisée d'office ; ajoute son nom latin ici pour en imposer une autre.
 - `max_articles_site` : articles envoyés à Claude par passage.
+- `attente_page_heures` (6 par défaut) : quand un journal refuse la lecture d'une page (AS, L'Équipe, par moments) et que son flux est trop court, l'article est réessayé à chaque passage pendant ce délai, puis rédigé à partir du flux.
 - `articles_par_page` (30 par défaut) : articles par page de rubrique, de journaliste, de joueur ou de pays ; au-delà, pages suivantes `actus--2.html`...
 
 Les articles déjà traités sont dans `articles.db`. Dans git, elle est gardée en texte (`articles.sql`, seules les nouvelles lignes s'ajoutent à chaque passage) et reconstruite automatiquement après un `git pull`.

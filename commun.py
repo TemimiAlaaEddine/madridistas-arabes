@@ -6,13 +6,15 @@ import html
 import json
 import re
 import shutil
+import socket
 import sqlite3
 import subprocess
 import sys
 import time
 import urllib.request
 import xml.etree.ElementTree as ET
-from datetime import datetime
+from concurrent.futures import ThreadPoolExecutor
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from pathlib import Path
 
@@ -41,6 +43,12 @@ PAYS = {
 }
 
 
+def maintenant():
+    """Heure UTC, comme le « now » de SQLite auquel les dates de la base sont comparées (sur un PC, l'heure locale
+    décalait de plusieurs heures les fenêtres « dernières 24 h »)."""
+    return datetime.now(timezone.utc).replace(tzinfo=None)
+
+
 def e(t):
     return html.escape(t or "")
 
@@ -59,7 +67,7 @@ def deja_vu(con, cle):
 
 def marquer_vus(items, chemin=DB_PATH):
     con = db(chemin)
-    now = datetime.now().isoformat(timespec="seconds")
+    now = maintenant().isoformat(timespec="seconds")
     for it in items:
         con.execute("INSERT OR IGNORE INTO vus VALUES (?,?,?)", (it["cle"], it["titre"], now))
     con.commit()
@@ -123,17 +131,26 @@ def lire_wordpress(url):
              "content": [{"value": p.get("content", {}).get("rendered", "")}]} for p in posts]
 
 
+def lire_flux(flux):
+    """Entrées d'un flux (RSS, sitemap ou API WordPress), ou l'erreur rencontrée."""
+    try:
+        return (lire_sitemap(flux["url"]) if flux.get("sitemap") else lire_wordpress(flux["url"]) if flux.get("wordpress")
+                else feedparser.parse(flux["url"]).entries)
+    except Exception as err:  # noqa: BLE001 - un flux en panne ne bloque pas les autres
+        return err
+
+
 def collecter(chemin=DB_PATH, age_max_heures=24):
     mots = [m.lower() for m in CONFIG["mots_cles"]]
     age_max = age_max_heures * 3600
     con = db(chemin)
     trouves = []
-    for flux in CONFIG["flux"]:
-        try:
-            entrees = (lire_sitemap(flux["url"]) if flux.get("sitemap") else lire_wordpress(flux["url"]) if flux.get("wordpress")
-                       else feedparser.parse(flux["url"]).entries)
-        except Exception as e:  # noqa: BLE001
-            print(f"  ! {flux['nom']} : erreur ({e})")
+    socket.setdefaulttimeout(30)  # feedparser n'a pas de délai : un flux muet bloquait tout le passage
+    with ThreadPoolExecutor(8) as ex:  # flux lus en même temps, traités ensuite dans l'ordre de config.json
+        lus = list(ex.map(lire_flux, CONFIG["flux"]))
+    for flux, entrees in zip(CONFIG["flux"], lus):
+        if isinstance(entrees, Exception):
+            print(f"  ! {flux['nom']} : erreur ({entrees})")
             continue
         if not entrees:
             print(f"  ! {flux['nom']} : aucun article (flux indisponible ou URL à vérifier)")
@@ -167,7 +184,7 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
                             "texte_flux": texte_flux, "image": image if image.startswith(("http://", "https://")) else "",
                             "pays": flux.get("pays"), "autorise": flux.get("autorisation", False),
                             "opinion": flux.get("opinion", False),
-                            "publie": datetime.fromtimestamp(calendar.timegm(pub)).isoformat(timespec="seconds") if pub else None})
+                            "publie": datetime.fromtimestamp(calendar.timegm(pub), timezone.utc).replace(tzinfo=None).isoformat(timespec="seconds") if pub else None})
             n += 1
         print(f"  {flux['nom']} : {n} nouveau(x)")
     con.close()
@@ -187,6 +204,10 @@ def dedoublonner(items, seuil=0.72):
 
 
 # ---------- Claude ----------
+class ErreurClaude(RuntimeError):
+    """Claude n'a pas répondu (quota, jeton expiré, délai dépassé) : le passage continue sans rédaction."""
+
+
 def appeler_claude(prompt, modele=None, effort=None):
     exe = shutil.which("claude")
     if not exe:
@@ -196,13 +217,19 @@ def appeler_claude(prompt, modele=None, effort=None):
            "--no-session-persistence", "--system-prompt", "Tu es un rédacteur. Réponds strictement au format demandé."]
     cmd += ["--model", modele] if modele else []
     cmd += ["--effort", effort] if effort else []
-    r = subprocess.run(
-        cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
-        timeout=CONFIG.get("delai_claude_secondes", 600),
-    )
+    try:
+        r = subprocess.run(
+            cmd, input=prompt, capture_output=True, text=True, encoding="utf-8",
+            timeout=CONFIG.get("delai_claude_secondes", 600),
+        )
+    except subprocess.TimeoutExpired as err:
+        raise ErreurClaude(f"pas de réponse en {err.timeout:.0f} s") from err
     if r.returncode != 0:
-        sys.exit(f"Erreur Claude (code {r.returncode}) :\n{r.stderr or r.stdout}")
-    sortie = json.loads(r.stdout)
+        raise ErreurClaude(f"code {r.returncode} : {(r.stderr or r.stdout).strip()[:500]}")
+    try:
+        sortie = json.loads(r.stdout)
+    except json.JSONDecodeError as err:
+        raise ErreurClaude(f"sortie illisible : {r.stdout[:200]}") from err
     u = sortie.get("usage", {})
     entree = u.get("input_tokens", 0) + u.get("cache_creation_input_tokens", 0) + u.get("cache_read_input_tokens", 0)
     print(f"  (Claude {modele or 'défaut'} : {entree} tokens lus, {u.get('output_tokens', 0)} écrits)")

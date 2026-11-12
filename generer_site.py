@@ -21,7 +21,7 @@ import time
 import unicodedata
 import urllib.parse
 import urllib.request
-from collections import defaultdict
+from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
 from datetime import datetime
@@ -29,8 +29,8 @@ from difflib import SequenceMatcher
 from html.parser import HTMLParser
 
 import threads
-from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, appeler_claude, collecter, dedoublonner, e,
-                    extraire_json, marquer_vus, nettoyer, normaliser_titre, restaurer_base)
+from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClaude, appeler_claude, collecter, dedoublonner, e,
+                    extraire_json, maintenant, marquer_vus, nettoyer, normaliser_titre, restaurer_base)
 from couvertures import generer_couvertures, vignette
 
 DB = BASE / "articles.db"
@@ -43,13 +43,15 @@ UA = {"User-Agent": "MadridistasArabes/1.0 (projet personnel)"}  # Wikimedia ref
 
 # ---------- texte complet de l'article ----------
 class Paragraphes(HTMLParser):
-    """Récupère le texte des balises <p> d'une page, hors scripts et styles, et son image principale (og:image)."""
+    """Récupère le texte des balises <p> d'une page, hors scripts et styles, ses intertitres (<h2>, <h3>) et son image
+    principale (og:image). Les intertitres portent souvent le nom du joueur dont parle le passage (« Kubo », « Odegaard ») :
+    sans eux, le texte parle d'« un joueur venu de Tokyo » sans jamais le nommer."""
 
     def __init__(self):
         super().__init__()
-        self.dans_p = self.ignore = 0
+        self.dans_p, self.ignore = "", 0
         self.courant, self.morceaux = [], []
-        self.image = ""
+        self.image = self.intertitre = ""
 
     def handle_starttag(self, tag, attrs):
         if tag == "meta" and not self.image:
@@ -58,16 +60,21 @@ class Paragraphes(HTMLParser):
                 self.image = (d.get("content") or "").strip()
         if tag in ("script", "style"):
             self.ignore += 1
-        elif tag == "p":
-            self.dans_p, self.courant = 1, []
+        elif tag in ("p", "h2", "h3"):
+            self.dans_p, self.courant = tag, []
 
     def handle_endtag(self, tag):
         if tag in ("script", "style"):
             self.ignore = max(0, self.ignore - 1)
-        elif tag == "p" and self.dans_p:
-            self.dans_p = 0
+        elif tag == self.dans_p:
+            self.dans_p = ""
             t = " ".join("".join(self.courant).split())
-            if len(t) > 60:  # écarte légendes, boutons, mentions
+            if tag != "p":  # gardé seulement s'il précède un paragraphe : écarte menus et listes d'articles liés
+                self.intertitre = t if 3 <= len(t) <= 120 else ""
+            elif len(t) > 60:  # écarte légendes, boutons, mentions
+                if self.intertitre and self.morceaux:  # jamais avant le 1er paragraphe (titres de l'entête)
+                    self.morceaux.append(self.intertitre)
+                self.intertitre = ""
                 self.morceaux.append(t)
 
     def handle_data(self, data):
@@ -83,13 +90,14 @@ def texte_complet(it):
         req = urllib.request.Request(it["lien"], headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=20) as r:
             p = Paragraphes()
-            p.feed(r.read().decode("utf-8", "replace"))
+            p.feed(r.read().decode(r.headers.get_content_charset() or "utf-8", "replace"))  # ex. presse turque en windows-1254
         page = "\n".join(p.morceaux)
         image = urllib.parse.urljoin(it["lien"], p.image) if p.image else ""
         if image.startswith(("http://", "https://")):  # celle de la page, plus grande, sinon on garde celle du flux
             it["image"] = image
     except Exception as err:  # noqa: BLE001 - page bloquée (403, abonnement...) : on garde le flux
         print(f"  ! page illisible ({err}) : {it['lien'][:70]}")
+        it["illisible"] = True
     texte = max(page, it.get("texte_flux", ""), key=len)
     if it.get("type") == "info":
         return texte[:4000]
@@ -109,14 +117,21 @@ Pour chaque article ci-dessous :
    - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents, et même si leurs titres mettent en avant des angles différents, ex. deux articles sur la même conférence de presse), fusionne-les en un seul article : réponds avec l'id du plus complet, et complète son texte avec les éléments nouveaux des autres en citant leur média. Si ce fait ou ces propos sont déjà dans la liste « DÉJÀ PUBLIÉ » plus bas, ignore-les.
 2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
-3. Rédige en arabe standard moderne, clair et soigné :
-   - Information (actus, ou club pour le Bernabéu) : 120 à 200 mots, uniquement les faits, avec le contexte utile tiré du texte, en citant le média (وفقًا لصحيفة ماركا...). Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
+3. Rédige en arabe standard moderne, dans la langue vivante de la bonne presse sportive arabe : celle d'un journaliste qui raconte à des supporters, pas celle d'un compte rendu ni d'une traduction.
+{style}
+   - Information (actus, ou club pour le Bernabéu) : 120 à 200 mots, uniquement les faits. La première phrase donne le fait lui-même (qui, quoi, quand) ; le média est cité dans cette phrase ou la suivante (...بحسب «ماركا»، كما كشفت «آس»...), jamais en tête : ne commence pas par « وفقًا لـ ». Ensuite le contexte utile tiré du texte, du plus important au moins important. Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
    - Opinion, selon le « Mode » indiqué :
-     - Mode résumé : un article de 400 à 600 mots qui expose la thèse, chacun des arguments et la conclusion de l'auteur avec tes propres mots, à la troisième personne (يرى الكاتب...). Au maximum 4 citations courtes traduites (moins de 25 mots chacune) entre guillemets «». Ne traduis pas l'article phrase par phrase.
-     - Mode traduction : traduction intégrale et fidèle du texte fourni.
+     - Mode résumé : un article de 400 à 600 mots qui porte la thèse, chacun des arguments et la conclusion de l'auteur avec tes propres mots, construit comme un article et non comme un compte rendu. Ne traduis pas l'article phrase par phrase.
+       - Attaque : commence par ce que l'article a de plus fort (son constat, un chiffre, une scène, la question qu'il pose), jamais par « يرى الكاتب... » ni par le nom du journal. L'auteur et son journal sont nommés dans les deux premières phrases, à l'intérieur de la phrase, sous une forme qui change d'un article à l'autre.
+       - Développement : les arguments dans l'ordre le plus clair, une idée par paragraphe de 2 à 4 phrases. L'avis reste toujours visiblement celui de l'auteur, mais une seule attribution par paragraphe suffit, par son nom ou par une tournure variée (بحسبه، في نظره، يذهب أبعد من ذلك، يعترف، يحذّر، حجّته الثانية...). Ne commence pas deux paragraphes de suite par un verbe d'attribution (ويرى، ويضيف، ويوضح، ويذكّر).
+       - Intertitres : au-delà de 350 mots, 2 ou 3 intertitres de 2 à 5 mots, chacun seul sur sa ligne, précédé de « ## » et séparé du reste par une ligne vide.
+       - Chute : la conclusion de l'auteur ou sa phrase la plus marquante, sans « ويختم الكاتب بأن... » ni résumé de ce qui précède.
+       - Au maximum 4 citations courtes traduites (moins de 25 mots chacune) entre guillemets «».
+     - Mode traduction : traduction intégrale et fidèle du texte fourni, dans un arabe qui se lit comme un texte écrit en arabe.
    - Mode conférence (conférence de presse d'un entraîneur, section actus) : traduis fidèlement et intégralement toutes les déclarations de l'entraîneur présentes dans le texte (la limite de 15 mots ne s'applique pas), sans reprendre les phrases du journaliste. Présente-les par sujet : chaque sujet commence par la question ou le thème résumé en une ligne, suivi de ses réponses entre guillemets «». Une phrase d'introduction : qui parle, quand, avant ou après quel match.
-4. N'ajoute aucun fait ni aucun avis absent des textes fournis. L'avis est celui de l'auteur, jamais celui du site, du média ou du club.
+4. N'ajoute aucun fait ni aucun avis absent des textes fournis. L'avis est celui de l'auteur, jamais celui du site, du média ou du club. Le style vivant ne change rien à cette règle : il porte sur la manière de dire, jamais sur ce qui est dit. Ne devine pas un nom que le texte ne donne pas.
 5. Auteur : s'il est indiqué « inconnu », cherche la signature dans le texte ; si tu ne la trouves pas, laisse "auteur" vide. L'auteur est toujours une personne : si l'article n'est signé que par le journal, une agence (EFE, Europa Press, AFP, Reuters) ou une mention comme « Redacción », laisse "auteur" et "auteur_ar" vides (le site citera seulement le journal). Donne le nom tel qu'il est écrit ("auteur") et translittéré en arabe ("auteur_ar") : si l'auteur est indiqué, recopie exactement ce nom dans "auteur" et translittère ce nom-là, jamais celui d'un autre article de la liste.
+   Quand une graphie arabe est donnée entre parenthèses après le journal ou l'auteur (« en arabe : ... »), écris ce nom exactement ainsi partout : "auteur_ar", titre, chapeau, texte et tweets.
    Si l'article rapporte surtout l'avis d'un commentateur (radio, télévision, podcast, entretien) plutôt que celui de son auteur, mets ce commentateur dans "auteur"/"auteur_ar", présente l'avis comme le sien, et indique en "via" le média où il s'est exprimé, en arabe (ex. : راديو ماركا). Sinon laisse "via" vide.
 6. Liste les personnes dont parle l'article, la principale en premier, uniquement parmi ces clés : {personnes}
    "sujet" : la clé de la personne dont l'article parle principalement, seulement si elle est dans cette liste ; sinon "" (ex. : article centré sur un joueur absent de la liste, ou sur le club en général).
@@ -138,6 +153,19 @@ DÉJÀ PUBLIÉ CES DERNIERS JOURS (informations et propos à ne pas reprendre, s
 ARTICLES
 {articles}
 """
+
+
+# style commun à tous les textes du site. Mesuré le 12 nov. 2026 sur 327 articles : 72 % commençaient par « وفقًا » ou
+# « يرى », et un paragraphe sur quatre par « ويرى / ويضيف / ويختم الكاتب » : c'est ce ton de compte rendu qu'il corrige.
+STYLE = """   Style, pour tous les textes :
+   - Écris directement en arabe à partir des idées, sans calquer la phrase d'origine : ordre des mots arabe, phrases courtes à moyennes, verbes actifs, enchaînements variés (لكنّ، في المقابل، والنتيجة، بل...). Si une tournure sonne traduite, redis-la comme un journaliste arabe l'écrirait.
+   - Le vocabulaire du football tel que le public arabe le lit : noms arabes usuels des joueurs et des clubs, termes consacrés (الملكي، الميرينغي، دكة البدلاء، الهجمة المرتدة، الضغط العالي...). Ni mots rares, ni tournures administratives (قام بـ، تمّ + مصدر، بشكل ملحوظ، في هذا الصدد).
+   - Le concret avant l'abstrait : le chiffre, la scène, la phrase qui frappe plutôt que le commentaire général.
+   - Sobre : pas de formules creuses ni d'exagération (مفاجأة مدوية، زلزال، قنبلة), pas de point d'exclamation, pas de faux suspense. Le titre et le chapeau promettent seulement ce que le texte donne.
+   - Varie : deux articles du même lot ne commencent pas de la même façon et n'ont pas le même moule de titre.
+   - Relis chaque texte avant de répondre : aucune faute de frappe, aucun mot qui n'existe pas, et aucun dernier paragraphe qui commence par « ويختم » ou « وخلاصة ».
+   Titre : 6 à 12 mots, l'angle le plus fort de l'article (une idée tranchée, un chiffre, une courte citation entre «», une vraie question) plutôt que son simple sujet. Pas de « في ريال مدريد » ajouté par habitude en fin de titre.
+   Chapeau : une ou deux phrases qui donnent envie de lire (l'enjeu, ce qui surprend, ce qui divise), sans répéter le titre et sans commencer par le nom de l'auteur ou du journal."""
 
 
 def journal(it):
@@ -163,15 +191,29 @@ def auteur_reel(nom, journal_nom):
     return nom
 
 
-def construire_prompt(items, deja=()):
+def noms_arabes(con):
+    """Graphie arabe de référence d'un journaliste ou d'un média, par slug de son nom latin : celle de "noms_ar" dans
+    config.json, sinon la plus fréquente en base. Sans elle, le même nom changeait d'un article à l'autre
+    (Kiyan Sobhani : سبحاني، صوباني، سوبهاني)."""
+    votes = defaultdict(Counter)
+    for auteur, ar in con.execute("SELECT auteur, auteur_ar FROM articles WHERE auteur != '' ORDER BY id"):
+        if re.search(r"[؀-ۿ]", ar or ""):  # pas les noms restés en lettres latines
+            votes[slug(auteur)][ar] += 1
+    noms = {k: v.most_common(1)[0][0] for k, v in votes.items()}
+    noms.update({slug(k): v for k, v in CONFIG.get("noms_ar", {}).items()})
+    return noms
+
+
+def construire_prompt(items, deja=(), noms=None):
     blocs = []
     for i, it in enumerate(items, 1):
         mode = "traduction" if it.get("autorise") else "conférence" if it.get("type") == "conference" else "résumé"
-        blocs.append(f"[{i}] Journal : {journal(it)}\nAuteur : {it['auteur'] or 'inconnu'}\nMode : {mode}\n"
+        ar = lambda n: f" (en arabe : {noms[slug(n)]})" if n and noms and slug(n) in noms else ""  # noqa: E731
+        blocs.append(f"[{i}] Journal : {journal(it)}{ar(journal(it))}\nAuteur : {it['auteur'] or 'inconnu'}{ar(it['auteur'])}\nMode : {mode}\n"
                      f"Titre : {it['titre']}\nTexte :\n{it['texte']}")
     personnes = ", ".join(f"{k} ({v})" for k, v in PERSONNES.items())
     deja = "\n".join(f"- {t}" for t in deja) or "(aucune)"
-    return PROMPT.format(personnes=personnes, deja=deja, articles="\n\n".join(blocs), regles_tweets=threads.REGLES)
+    return PROMPT.format(personnes=personnes, deja=deja, articles="\n\n".join(blocs), regles_tweets=threads.REGLES, style=STYLE)
 
 
 def deja_publies(chemin=DB, jours=2):
@@ -279,9 +321,10 @@ SEUIL_DOUBLON = 0.8  # vrais doublons mesurés à 0,88 et 0,91 ; titres différe
 def enregistrer(reponses, items, chemin=DB):
     """Valide la réponse de Claude et l'enregistre. Retourne le nombre d'articles ajoutés."""
     con = connexion(chemin)
-    now = datetime.now().isoformat(timespec="seconds")
+    now = maintenant().isoformat(timespec="seconds")
     # titres arabes des 2 derniers jours : la même info venue de sources en langues différentes a un titre arabe très proche
     recents = [normaliser_titre(t) for (t,) in con.execute("SELECT titre FROM articles WHERE date >= date('now', '-2 days')")]
+    noms = noms_arabes(con)
     n = 0
     for r in reponses:
         i = r.get("id")
@@ -306,6 +349,8 @@ def enregistrer(reponses, items, chemin=DB):
         auteur_ar = (r.get("auteur_ar") or auteur) if auteur else ""  # sans auteur : seulement le journal, partout
         if auteur and auteur == auteur_flux and r.get("auteur") and not meme_nom(str(r["auteur"]), auteur_flux):
             auteur_ar = auteur  # l'arabe de Claude peut être celui d'un autre article du lot : le nom latin plutôt qu'un faux nom
+        if auteur:
+            auteur_ar = noms.get(slug(auteur), auteur_ar)  # graphie de référence, même si Claude en a écrit une autre
         fb = r.get("titres_fb") if isinstance(r.get("titres_fb"), dict) else {}
         titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
         cur = con.execute(
@@ -659,8 +704,14 @@ def partage(a):
     return f'<div class="partage">{boutons}</div>{fenetres}'
 
 
+def corps_html(texte):
+    """Paragraphes de l'article ; une ligne qui commence par « ## » est un intertitre."""
+    lignes = [l.strip() for bloc in texte.split("\n\n") for l in (bloc.split("\n") if "## " in bloc else [bloc])]
+    return "".join(f"<h2>{e(l[3:].strip())}</h2>" if l.startswith("## ") else f"<p>{e(l)}</p>" for l in lignes if l)
+
+
 def page_article(a, arts):
-    paragraphes = "".join(f"<p>{e(p)}</p>" for p in a["texte"].split("\n\n") if p.strip())
+    paragraphes = corps_html(a["texte"])
     tags = "".join(f'<a href="p-{p}.html">{e(PERSONNES[p])}</a>' for p in json.loads(a["personnes"]) if p in PERSONNES)
     nom = f'{e(a["auteur_ar"])} (<bdi class="latin">{e(a["auteur"])}</bdi>)'
     traduction = a["mode"] == "traduction"
@@ -809,12 +860,30 @@ def ordonner(items):
     return alterner_pays([it for it in items if it.get("opinion")]) + alterner_pays([it for it in items if not it.get("opinion")])
 
 
+def a_reessayer(it):
+    """Page refusée et flux trop court pour en tirer un article : on retente aux passages suivants tant que l'article est
+    récent, puis on se contente du flux. Le refus est passager (AS, L'Équipe : 5 refus chacun en 60 passages, nov. 2026)."""
+    if not it.get("illisible") or len(it["texte"]) >= 1500 or not it.get("publie"):
+        return False
+    age = (maintenant() - datetime.fromisoformat(it["publie"])).total_seconds() / 3600
+    return age < CONFIG.get("attente_page_heures", 6)
+
+
 def traiter_lot(lot):
     """Lit les articles, fait rédiger Claude, enregistre. Retourne le nombre d'articles ajoutés (None si réponse illisible)."""
     with ThreadPoolExecutor(8) as ex:  # pages lues en même temps : un site lent ne bloque plus tout le lot
         for it, texte in zip(lot, ex.map(texte_complet, lot)):
             it["texte"] = texte
-    reponse = appeler_claude(construire_prompt(lot, deja_publies()), CONFIG.get("modele_redaction", "sonnet"))
+    reportes = [it for it in lot if a_reessayer(it)]  # pas marqués comme vus : repris au prochain passage
+    for it in reportes:
+        print(f"  page refusée, nouvel essai au prochain passage : {journal(it)} | {it['titre'][:80]}")
+    lot = [it for it in lot if it not in reportes]
+    if not lot:
+        return 0
+    con = connexion()
+    noms = noms_arabes(con)
+    con.close()
+    reponse = appeler_claude(construire_prompt(lot, deja_publies(), noms), CONFIG.get("modele_redaction", "sonnet"))
     try:
         reponses = extraire_json(reponse)
     except (ValueError, json.JSONDecodeError) as err:
@@ -835,6 +904,7 @@ def main():
     ap.add_argument("--threads", action="store_true", help="seulement les threads X (Typefully) et les publications sur la Page Facebook")
     args = ap.parse_args()
 
+    panne = False  # Claude en panne : le site est quand même régénéré et les threads prêts envoyés, puis le passage échoue
     if restaurer_base(DB):
         print("Base reconstruite depuis articles.sql.")
     if not args.rendre and not args.test and not args.threads:
@@ -851,7 +921,11 @@ def main():
         if items and not args.test:
             candidats = items[:60]  # au-delà : triés au prochain passage
             print(f"Tri de {len(candidats)} article(s) sur titre et chapeau...")
-            tri = trier(candidats, deja_publies())
+            try:
+                tri = trier(candidats, deja_publies())
+            except ErreurClaude as err:  # rien n'est marqué comme vu : tout est repris au prochain passage
+                print(f"  ! Claude indisponible ({err}) : pas de rédaction cette fois")
+                panne, tri, items = True, None, []
             if tri:  # sinon (réponse illisible) : tout est rédigé comme avant
                 gardes, ecartes = tri
                 marquer_vus(ecartes, DB)
@@ -874,7 +948,12 @@ def main():
         total = 0
         for n, lot in enumerate(lots, 1):
             print(f"Lot {n}/{len(lots)} : lecture et rédaction par Claude (quelques minutes)...")
-            ajoutes = traiter_lot(lot)
+            try:
+                ajoutes = traiter_lot(lot)
+            except ErreurClaude as err:  # les lots déjà rédigés sont gardés, le reste est repris au prochain passage
+                print(f"  ! Claude indisponible ({err}) : lots restants reportés")
+                panne = True
+                break
             if ajoutes is not None:
                 total += ajoutes
                 print(f"  {ajoutes} article(s) d'opinion retenu(s) sur {len(lot)}.")
@@ -888,6 +967,8 @@ def main():
               f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully. "
               f"Page Facebook : {threads.vers_page(con)} publication(s).")
         con.close()
+    if panne:  # code d'erreur : le passage apparaît en rouge sur GitHub au lieu d'échouer en silence d'heure en heure
+        raise SystemExit("Passage incomplet : Claude n'a pas répondu (quota ou jeton à vérifier).")
     if hasattr(os, "startfile"):
         os.startfile(index)
 

@@ -12,20 +12,19 @@ import sqlite3
 import time
 import urllib.parse
 import urllib.request
-from datetime import datetime
 
-from commun import BASE, CONFIG, appeler_claude, extraire_json
+from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, maintenant
 
 LIMITE = 280
 SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHub : variables d'environnement
 URL = re.compile(r"https?://\S+")
 
 # règles communes : thread écrit avec l'article (generer_site) ou après coup (decouper)
-REGLES = """- Tweet 1 : accroche forte qui donne l'idée principale et nomme l'auteur ou le média (ex. : يرى الصحفي ... في «ماركا» أن ...). Ajoute #ريال_مدريد à la fin.
-- Tweets suivants : développement fidèle au texte, une idée par tweet, en gardant ses citations «» telles quelles.
+REGLES = """- Tweet 1, l'accroche : commence par ce qui arrête le lecteur dans son fil (le constat le plus fort, un chiffre, une courte citation, une vraie question), puis nomme l'auteur ou le média dans ce même tweet, à l'intérieur de la phrase. Ne commence jamais par « يرى الصحفي... » ni « وفقًا لـ... » ; pour une information, le fait d'abord, la source ensuite. Ajoute #ريال_مدريد à la fin.
+- Tweets suivants : fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. L'avis reste attribué à son auteur, sans répéter « الكاتب » à chaque tweet. Le dernier porte la conclusion ou la phrase la plus marquante.
 - Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, 4 à 10 pour une conférence de presse (une déclaration forte par tweet).
-- Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag.
-- N'ajoute aucun fait ni avis absent du texte."""
+- Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag, pas d'intertitre « ## ».
+- N'ajoute aucun fait ni avis absent du texte. Pas d'exagération ni de point d'exclamation."""
 
 PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا علاء », à partir d'articles déjà rédigés pour son site.
 
@@ -89,8 +88,8 @@ def decouper(con, heures=24):
     try:
         reponses = extraire_json(appeler_claude(PROMPT.format(regles=REGLES, articles="\n\n".join(blocs)),
                                                 CONFIG.get("modele_redaction", "sonnet")))
-    except (ValueError, json.JSONDecodeError) as err:
-        print(f"  ! threads : réponse illisible ({err}), repris au prochain passage")
+    except (ValueError, ErreurClaude) as err:  # JSONDecodeError est un ValueError
+        print(f"  ! threads : pas de réponse utilisable ({err}), repris au prochain passage")
         return 0
     par_id = {a["id"]: a for a in arts}
     n = 0
@@ -99,7 +98,7 @@ def decouper(con, heures=24):
         tweets = assembler(a, r.get("tweets") or []) if a else None
         if tweets:  # sinon (tweet trop long) : réécrit au prochain passage
             con.execute("INSERT OR IGNORE INTO threads (article_id, tweets, statut, date) VALUES (?,?,?,?)", (a["id"], json.dumps(tweets, ensure_ascii=False),
-                        "a_envoyer", datetime.now().isoformat(timespec="seconds")))
+                        "a_envoyer", maintenant().isoformat(timespec="seconds")))
             n += 1
     con.commit()
     return n
@@ -142,7 +141,7 @@ def vers_page(con, heures=24):
         except OSError as err:  # réseau coupé, jeton refusé (HTTPError est un OSError) : repris au prochain passage
             print(f"  ! Page Facebook : publication impossible ({err}), reprise au prochain passage")
             break
-        con.execute("INSERT INTO page_facebook VALUES (?, ?)", (a["id"], datetime.now().isoformat(timespec="seconds")))
+        con.execute("INSERT INTO page_facebook VALUES (?, ?)", (a["id"], maintenant().isoformat(timespec="seconds")))
         con.commit()
         n += 1
     return n

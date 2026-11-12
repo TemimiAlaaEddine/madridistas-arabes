@@ -516,3 +516,79 @@ with tempfile.TemporaryDirectory() as d:
         assert v.format == "WEBP" and v.size == (720, 378)
     assert sorted(f.name for f in (site / "couvertures").iterdir()) == sorted([nom, couvertures.vignette(nom)])
 print("OK vignettes")
+
+# intertitres de la page source : gardés seulement devant un paragraphe (ils nomment souvent le joueur dont on parle)
+long_p = "Llegó del FC Tokyo con 18 años y encadenó cesiones cada verano hasta su venta a la Real Sociedad."
+p = g.Paragraphes()
+p.feed(f"<h2>Menú</h2><p>{long_p}</p><h3>Kubo</h3><p>corto</p><p>{long_p}</p><h2>Lo más leído</h2><h3>Otro artículo</h3>")
+assert p.morceaux == [long_p, "Kubo", long_p], p.morceaux
+# intertitres « ## » du texte arabe : rendus en <h2>, échappés, même collés au paragraphe suivant
+assert g.corps_html("فقرة\n\n## عنوان <b>\nفقرة 2\n\nسطر\nثانٍ") == "<p>فقرة</p><h2>عنوان &lt;b&gt;</h2><p>فقرة 2</p><p>سطر\nثانٍ</p>"
+print("OK intertitres")
+
+# style : le guide est dans le prompt, et plus aucun exemple n'invite à commencer par « يرى الكاتب »
+pr = g.construire_prompt([])
+assert g.STYLE in pr and "{style}" not in pr and "jamais par « يرى الكاتب" in pr and "(يرى الكاتب...)" not in pr
+assert "Ne commence jamais par « يرى الصحفي" in g.threads.REGLES
+print("OK style")
+
+# Claude en panne : erreur rattrapable (plus de sys.exit au milieu d'un passage), threads repris plus tard
+import subprocess
+vrai_run, commun.subprocess.run = commun.subprocess.run, lambda *a, **k: subprocess.CompletedProcess(a, 1, "", "quota dépassé")
+vrai_which, commun.shutil.which = commun.shutil.which, lambda nom: "claude"
+try:
+    try:
+        commun.appeler_claude("x")
+        raise AssertionError("ErreurClaude attendue")
+    except commun.ErreurClaude as err:
+        assert "quota dépassé" in str(err)
+
+    def expire(*a, **k):
+        raise subprocess.TimeoutExpired("claude", 600)
+    commun.subprocess.run = expire
+    try:
+        commun.appeler_claude("x")
+        raise AssertionError("ErreurClaude attendue")
+    except commun.ErreurClaude:
+        pass
+finally:
+    commun.subprocess.run, commun.shutil.which = vrai_run, vrai_which
+print("OK panne de Claude")
+
+# graphie arabe de référence : la plus fréquente en base pour un journaliste, "noms_ar" de config.json pour un média
+with tempfile.TemporaryDirectory() as d:
+    db = Path(d) / "a.db"
+    src = [{"lien": f"https://mm.com/{i}", "titre": f"Titre numéro {i}", "auteur": "Kiyan Sobhani", "source": "Managing Madrid",
+            "pays": "us"} for i in range(4)]
+    g.enregistrer([{"id": i + 1, "titre": f"عنوان {i}", "texte": "ن", "auteur_ar": ar}
+                   for i, ar in enumerate(["كيان سبحاني", "كيان سبحاني", "كيان صوباني"])], src[:3], db)
+    con = g.connexion(db)
+    noms = g.noms_arabes(con)
+    assert noms["kiyan-sobhani"] == "كيان سبحاني" and noms["managing-madrid"] == "مانيجينغ مدريد"
+    pr = g.construire_prompt([{**src[3], "texte": "x"}], noms=noms)
+    assert "Journal : Managing Madrid (en arabe : مانيجينغ مدريد)" in pr and "Auteur : Kiyan Sobhani (en arabe : كيان سبحاني)" in pr
+    g.enregistrer([{"id": 1, "titre": "عنوان آخر", "texte": "ن", "auteur_ar": "كيان سوبهاني"}], src[3:], db)  # autre graphie de Claude
+    assert con.execute("SELECT auteur_ar FROM articles ORDER BY id DESC").fetchone()[0] == "كيان سبحاني"
+    con.close()
+print("OK noms arabes")
+
+# page refusée et flux trop court : l'article récent attend le passage suivant (ni rédigé, ni marqué comme vu)
+from datetime import datetime, timedelta
+recent, vieux = commun.maintenant().isoformat(timespec="seconds"), (commun.maintenant() - timedelta(hours=7)).isoformat(timespec="seconds")
+bloque = {"illisible": True, "texte": "x" * 700, "publie": recent}
+assert g.a_reessayer(bloque) and not g.a_reessayer({**bloque, "publie": vieux})  # 7 h plus tard : on se contente du flux
+assert not g.a_reessayer({**bloque, "texte": "x" * 1500}) and not g.a_reessayer({**bloque, "illisible": False})
+assert not g.a_reessayer({**bloque, "publie": None})
+appels, marques = [], []
+vrais = g.appeler_claude, g.marquer_vus, g.texte_complet
+g.appeler_claude, g.marquer_vus = (lambda *a: appels.append(1) or "[]"), (lambda items, db: marques.extend(items))
+g.texte_complet = lambda it: it.update(illisible=True) or "x" * 700
+try:
+    lot = [{"lien": "https://as.com/1", "titre": "Algo pasa", "auteur": "", "source": "AS - Opinion", "publie": recent}]
+    assert g.traiter_lot(lot) == 0 and not appels and not marques
+finally:
+    g.appeler_claude, g.marquer_vus, g.texte_complet = vrais
+# heure UTC partout : comparable au « now » de SQLite, sur le PC comme sur GitHub
+from datetime import timezone
+assert abs((commun.maintenant() - datetime.now(timezone.utc).replace(tzinfo=None)).total_seconds()) < 5
+print("OK nouvel essai des pages refusées")
