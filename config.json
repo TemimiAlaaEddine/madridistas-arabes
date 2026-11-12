@@ -56,42 +56,44 @@
     {
       "nom": "ge.globo - Futebol internacional",
       "url": "https://ge.globo.com/rss/ge/futebol/futebol-internacional/",
-      "pays": "br"
+      "pays": "br",
+      "veille": true
     },
     {
       "nom": "El Observador - Referi",
       "url": "https://www.elobservador.com.uy/rss/pages/referi.xml",
-      "pays": "uy"
+      "pays": "uy",
+      "veille": true
     },
     {
       "nom": "Tenfield",
       "url": "https://www.tenfield.com.uy/feed/",
-      "pays": "uy"
+      "pays": "uy",
+      "veille": true
     },
     {
       "nom": "HLN - Voetbal",
       "url": "https://www.hln.be/sport/voetbal/rss.xml",
-      "pays": "be"
+      "pays": "be",
+      "veille": true
     },
     {
       "nom": "Voetbal International",
       "url": "https://www.vi.nl/rss",
-      "pays": "nl"
+      "pays": "nl",
+      "veille": true
     },
     {
       "nom": "Record",
       "url": "https://www.record.pt/rss",
-      "pays": "pt"
+      "pays": "pt",
+      "veille": true
     },
     {
       "nom": "Turkish Football - Arda Guler",
       "url": "https://turkish-football.com/?s=arda+guler&feed=rss2",
-      "pays": "tr"
-    },
-    {
-      "nom": "Fotomac",
-      "url": "https://www.fotomac.com.tr/rss/anasayfa",
-      "pays": "tr"
+      "pays": "tr",
+      "veille": true
     },
     {
       "nom": "The Guardian - Sid Lowe",
@@ -106,11 +108,6 @@
       "opinion": true
     },
     {
-      "nom": "CaughtOffside - Fabrizio Romano",
-      "url": "https://www.caughtoffside.com/author/fabrizio-romano/feed/",
-      "pays": "gb"
-    },
-    {
       "nom": "ESPN",
       "url": "https://www.espn.com/espn/rss/soccer/news",
       "pays": "us"
@@ -118,7 +115,8 @@
     {
       "nom": "Trivela",
       "url": "https://trivela.com.br/feed/",
-      "pays": "br"
+      "pays": "br",
+      "veille": true
     },
     {
       "nom": "Real Madrid CF (site officiel)",
@@ -164,7 +162,8 @@
     {
       "nom": "Hespress - Brahim Diaz",
       "url": "https://fr.hespress.com/tag/brahim-diaz/feed",
-      "pays": "ma"
+      "pays": "ma",
+      "veille": true
     },
     {
       "nom": "La Galerna",
@@ -173,6 +172,11 @@
       "opinion": true,
       "wordpress": true,
       "que_le_real": true
+    },
+    {
+      "nom": "Relevo - Fútbol",
+      "url": "https://www.relevo.com/futbol/rss",
+      "pays": "es"
     }
   ],
   "mots_cles": [
@@ -398,7 +402,6 @@
     "Foot Mercato": "فوت ميركاتو",
     "Managing Madrid": "مانيجينغ مدريد",
     "ESPN": "إي إس بي إن",
-    "CaughtOffside": "كوت أوفسايد",
     "ge.globo": "غلوبو إسبورتي",
     "Trivela": "تريفيلا",
     "El Observador": "إل أوبسرفادور",
@@ -406,8 +409,8 @@
     "Record": "ريكورد",
     "Voetbal International": "فوتبول إنترناشونال",
     "Turkish Football": "تركيش فوتبول",
-    "Fotomac": "فوتوماتش",
-    "Hespress": "هسبريس"
+    "Hespress": "هسبريس",
+    "Relevo": "ريليفو"
   },
   "age_max_heures_site": 24,
   "max_lots_site": 5,

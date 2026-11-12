@@ -93,7 +93,7 @@ Sur le site (page de chaque article) :
 ## Revue des sources
 
 Chaque lundi à 7 h (heure d'Espagne), le workflow « Revue des sources » ouvre une issue GitHub avec le bilan des flux de `config.json` :
-- **santé** de chaque flux, lu pour de vrai : en erreur, vide, muet depuis plus de 7 jours, ou sans rien sur le Real (et rien publié en 30 jours) ;
+- **santé** de chaque flux, lu pour de vrai : en erreur, vide, muet depuis plus de 7 jours, ou sans rien sur le Real (et rien publié en 30 jours). Un flux marqué `"veille": true` (presse d'un pays qui suit son joueur du Real : Uruguay pour Valverde, Maroc pour Brahim...) n'est signalé que s'il est en panne ou muet depuis plus de 30 jours ;
 - **rendement** : articles publiés sur le site en 30 jours, par journal ;
 - **médias cités** dans nos articles sans être suivis : ceux qu'on lit de seconde main ;
 - **avis de Claude** : flux à retirer et sources à ajouter. Chaque flux proposé est lu avant d'être recommandé (✅), sinon il est marqué « adresse à trouver » ou en échec.

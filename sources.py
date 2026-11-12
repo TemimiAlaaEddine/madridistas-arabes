@@ -21,6 +21,7 @@ from commun import (CONFIG, DB_PATH, ErreurClaude, appeler_claude, extraire_json
 
 MOTS = [m.lower() for m in CONFIG["mots_cles"]]
 MUET_JOURS = 7  # plus rien depuis une semaine : flux mort, URL changée ou rubrique fermée
+MUET_VEILLE = 30  # flux de veille ("veille": true, presse d'un pays qui suit son joueur du Real) : creux de plusieurs semaines normaux
 
 
 def sante(flux):
@@ -34,7 +35,8 @@ def sante(flux):
     jours = (time.time() - max(dates)) / 86400 if dates else None
     real = sum(garde(flux, nettoyer(e.get("title", ""), 300), nettoyer(e.get("summary", "")), e.get("link", ""), MOTS)
                for e in entrees)
-    etat = f"⚠️ muet depuis {jours:.0f} j" if jours is not None and jours > MUET_JOURS else "⚠️ rien sur le Real" if not real else "✅"
+    muet = MUET_VEILLE if flux.get("veille") else MUET_JOURS
+    etat = f"⚠️ muet depuis {jours:.0f} j" if jours is not None and jours > muet else "⚠️ rien sur le Real" if not real else "✅"
     return {"etat": etat, "entrees": len(entrees), "real": real, "jours": jours}
 
 
@@ -51,7 +53,8 @@ def statistiques(chemin=DB_PATH, jours=30):
 
 PROMPT = """Tu conseilles un site arabophone qui résume en arabe la presse internationale sur le Real Madrid (football masculin) : surtout les articles d'opinion signés (chroniques, analyses tactiques, débats), puis les informations importantes. Il lit des flux RSS, des sitemaps Google News ou l'API WordPress d'un site (jamais Google News), et préfère : la presse espagnole d'abord, puis européenne, puis celle des pays des joueurs du Real ; des articles signés par des journalistes ; des pages lisibles sans abonnement.
 
-FLUX ACTUELS (nom | pays | état | entrées | dont sur le Real | articles publiés sur 30 jours par ce journal)
+FLUX ACTUELS (nom | pays | état | entrées | dont sur le Real | articles publiés sur 30 jours par ce journal | veille)
+Un flux marqué « veille » est la presse d'un pays qui suit son joueur du Real : un faible rendement y est normal, ne le retire que s'il est en panne.
 {flux}
 
 MÉDIAS CITÉS DANS NOS ARTICLES SANS ÊTRE SUIVIS (nom arabe : nombre de citations sur 30 jours ; ignore ce qui n'est pas un média)
@@ -87,9 +90,10 @@ def revue(chemin=DB_PATH):
     for f, s in zip(CONFIG["flux"], etats):
         j = f["nom"].split(" - ")[0]  # même règle que journal() de generer_site
         s["publies"] = publies.get(j, 0)
-        if s["etat"] == "⚠️ rien sur le Real" and (s["publies"] or f.get("filtre_lien")):
-            s["etat"] = "✅"  # il publie, ou ne garde que certaines rubriques : rien en ce moment n'est pas une panne
-        lignes.append(f"{f['nom']} | {f.get('pays') or '-'} | {s['etat']} | {s['entrees']} | {s['real']} | {s['publies']}")
+        if s["etat"] == "⚠️ rien sur le Real" and (s["publies"] or f.get("filtre_lien") or f.get("veille")):
+            s["etat"] = "✅"  # il publie, filtre ses rubriques ou attend son joueur : rien en ce moment n'est pas une panne
+        lignes.append(f"{f['nom']} | {f.get('pays') or '-'} | {s['etat']} | {s['entrees']} | {s['real']} | {s['publies']}"
+                      + (" | veille" if f.get("veille") else ""))
     avis = {}
     try:
         reponse = appeler_claude(PROMPT.format(flux="\n".join(lignes), cites="\n".join(f"{m} : {n}" for m, n in cites) or "(aucun)"),
@@ -101,9 +105,10 @@ def revue(chemin=DB_PATH):
         ajouts = [(p, v) for p, v in zip(avis.get("ajouter", []), ex.map(verifier, avis.get("ajouter", []))) if isinstance(p, dict)]
 
     r = [f"Revue automatique des {len(CONFIG['flux'])} flux de `config.json`. Rien n'a été modifié : à toi de décider.\n",
-         "## Santé des flux\n", "| Flux | Pays | État | Entrées | Sur le Real | Publiés (30 j, journal) |", "|---|---|---|---|---|---|"]
+         "## Santé des flux\n", "| Flux | Pays | État | Entrées | Sur le Real | Publiés (30 j, journal) |", "|---|---|---|---|---|---|",
+         ]
     ordre = sorted(zip(CONFIG["flux"], etats), key=lambda x: (x[1]["etat"] == "✅", x[1]["publies"]))  # problèmes en haut
-    r += [f"| {f['nom']} | {f.get('pays') or '-'} | {s['etat']} | {s['entrees']} | {s['real']} | {s['publies']} |" for f, s in ordre]
+    r += [f"| {f['nom']}{' (veille)' if f.get('veille') else ''} | {f.get('pays') or '-'} | {s['etat']} | {s['entrees']} | {s['real']} | {s['publies']} |" for f, s in ordre]
     r += ["\n## À retirer\n"] + ([f"- **{x.get('flux')}** : {x.get('raison')}" for x in avis.get("retirer", []) if isinstance(x, dict)]
                                 or ["Rien à retirer."])
     r += ["\n## À ajouter\n"] + ([f"- **{p.get('nom')}** ({p.get('pays') or '?'}{', opinion' if p.get('opinion') else ''}) : "
