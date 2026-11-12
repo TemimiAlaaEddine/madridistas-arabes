@@ -3843,4 +3843,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7993308481398219843-ligue
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/lio-gordo-sin-mbappe-f202611-n/','Lío gordo sin Mbappé','2026-11-12T21:50:47');
 INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/kijk-de-heerlijke-vrije-trap-van-arda-guler-leverde-niks-op-de-hoogtepunten-uit-turkije-belgie~ad6514fa/','KIJK. De héérlijke vrije trap van Arda Güler leverde niks op: de hoogtepunten uit Turkije-België','2026-11-12T21:50:47');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-12/italia-francia-nations-league-mancini-zidane_4464050/','Francia se estrella en Italia sin Kylian Mbappé (3-1)','2026-11-12T21:50:47');
+INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/kijk-er-was-nog-een-katachtige-reflex-van-lammens-nodig-voor-de-zege-de-hoogtepunten-uit-turkije-belgie~ad6514fa/','KIJK. Er was nog een katachtige reflex van Lammens nodig voor de zege: de hoogtepunten uit Turkije-België','2026-11-12T22:01:18');
 COMMIT;
