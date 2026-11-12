@@ -13,6 +13,9 @@ Dernier fait relu : 0
 - Été 2026, cible manquée : Rodri a choisi Barcelone. Le milieu reste la question ouverte du mercato. Source : The Hard Tackle.
 - Vinícius est resté au club : il a marqué contre la Real Sociedad (26 août) et Mourinho en parle en conférence le 6 novembre (ABC, Pablo Sierra).
 - 2026-11-07 : Vinícius disponible pour la J13 ; Diomandé titulaire à gauche à sa place pour le 5e match de suite à Valence. Sources : Marca (José Vicente Hernáez), Foot Mercato (Aurélien Bayard).
+- 2026-11-10 : Endrick, environ 140 minutes et 1 but (contre la Roma) en 7 matchs toutes compétitions ; 84 minutes en Liga. Les totaux varient de 140 à 156 minutes selon les sources. Sources : Marca (Jesús Mata, José Luis Hurtado), Trivela.
+- 2025-26, seconde moitié de saison : Endrick prêté à Lyon, 8 buts et 8 passes décisives en 21 matchs (1 631 minutes, 77 par match). Source : Trivela (Matheus Cristianini).
+- Novembre 2026 : Mourinho refuse publiquement un départ d'Endrick en janvier (« qu'ils oublient », « qui le veut devra se battre avec moi », TNT Sports). Sources : Trivela (Pedro Ramos), Marca (Joel del Río).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).

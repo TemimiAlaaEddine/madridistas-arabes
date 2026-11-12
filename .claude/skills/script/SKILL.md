@@ -41,14 +41,14 @@ Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
 
 ## 3. Écrire
 Règles communes :
-- Applique les règles de style du site, les mêmes que pour les articles automatiques : `STYLE` dans `generer_site.py` (écriture, titres, attributions, mots à éviter) et, pour un thread, `REGLES` dans `threads.py` (1er tweet qui nomme sa source, chaque tweet compréhensible seul, une attribution par tweet). Seules différences : la limite de 270 caractères et le dernier tweet réservé aux sources (voir plus bas). Relis le texte contre ces règles avant de le montrer.
+- Applique les règles de style du site, les mêmes que pour les articles automatiques : `STYLE` dans `generer_site.py` (écriture, titres, attributions, mots à éviter) et, pour un thread, `REGLES` dans `threads.py` (1er tweet qui nomme sa source, chaque tweet compréhensible seul, une attribution par tweet). Seule différence : la limite de 270 caractères. Relis le texte contre ces règles avant de le montrer.
 - Seulement des faits présents dans la base, dans connaissance.md ou dans une recherche web validée. Attribue les opinions (« selon Marca », « pour Sid Lowe ») et présente l'avis de l'utilisateur comme le sien (« قراءتي », « رأيي », « à mon avis »).
 - Structure : une accroche qui donne envie de lire, le contexte, les points d'analyse (un fait ou un chiffre, puis ce qu'il veut dire), un avis tranché, et une question aux lecteurs pour lancer les commentaires.
 - Images : seulement des visuels libres de droits (schémas tactiques dessinés soi-même, photos de Wikimedia Commons). Jamais d'images de match ni de photos d'agence.
 
 **Thread X**
 - Un tweet par bloc, séparés par `---`. Chaque tweet fait au plus 270 caractères comptés comme X (laisse la place à la numérotation « i/n », ajoutée à l'envoi). Vérifie avec `threads.longueur` de threads.py.
-- Le 1er tweet contient l'accroche, 🧵 et #ريال_مدريد. Le dernier liste les sources (journaux et auteurs).
+- Le 1er tweet contient l'accroche, 🧵 et #ريال_مدريد. Pas de tweet de sources à la fin (choix de l'utilisateur, 2026-11-12) : les sources restent en bas du fichier, et chaque tweet cite déjà la sienne. Le dernier tweet est la question aux lecteurs.
 - De 8 tweets pour un sujet simple jusqu'à 30 pour une analyse longue, selon ce que demande l'utilisateur.
 - Propose 3 accroches de rechange et 5 hashtags.
 
