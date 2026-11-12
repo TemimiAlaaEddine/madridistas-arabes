@@ -3779,4 +3779,6 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/12/re
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/al-habla-con-el-director-persiguiendo-a-zidane-por-tahiti-f202611-n/','‘Al habla con el director’: persiguiendo a Zidane por Tahití','2026-11-12T19:32:01');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115365/arda-guler-free-kick-turkiye-belgium-nations-league-defeat-performance','Arda Güler’s spectacular free-kick not enough as Türkiye fall 1-2 to Belgium','2026-11-12T19:50:48');
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-aftrap-springt-italie-opnieuw-over-rode-duivels~a60bce4f/','LIVE. Aftrap! Springt Italië opnieuw over Rode Duivels?','2026-11-12T19:50:48');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1424362237517419547-liverpool-pourquoi-un-ancien-du-psg-imagine-mbappe-rejoindre-les-reds','Liverpool : pourquoi un ancien du PSG imagine Mbappé rejoindre les Reds','2026-11-12T20:01:19');
+INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-de-rode-duivels-zien-het-graag-gebeuren-olise-straft-fout-donnarumma-af~a60bce4f/','LIVE. De Rode Duivels zien het graag gebeuren: Olise straft fout Donnarumma af','2026-11-12T20:01:19');
 COMMIT;
