@@ -3933,4 +3933,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/la-transformacion-de
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/dumfries-en-el-escaparate-f202611-n/','Dumfries, en el escaparate','2026-11-13T09:10:40');
 INSERT INTO "vus" VALUES('https://as.com/futbol/mundial/el-mensaje-de-real-madrid-a-la-fifa-somos-los-mejores-organizando-partidos-f202611-n/','El mensaje de Real Madrid a la FIFA: “Somos los mejores organizando partidos”','2026-11-13T09:21:34');
 INSERT INTO "vus" VALUES('https://turkish-football.com/sergen-yalcin-admits-arda-guler-carries-heavy-burden-after-turkiyes-defeat-to-belgium/','Sergen Yalçın Admits Arda Güler Carries ‘Heavy Burden’ After Türkiye’s Defeat to Belgium','2026-11-13T09:21:34');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/L-italie-retrouve-sa-grandeur-gros-desastre-sans-mbappe-la-revue-de-presse-apres-la-premiere-defaite-de-l-ere-zidane/1743345#at_medium=RSS_feeds','«L''Italie retrouve sa grandeur», «gros désastre sans Mbappé» : la revue de presse après la première défaite de l''ère Zidane','2026-11-13T09:31:24');
 COMMIT;
