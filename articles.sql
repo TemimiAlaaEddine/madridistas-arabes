@@ -3867,4 +3867,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8402621822550115359-franc
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/baloncesto/2026-11-12/el-real-madrid-aplasta-al-estrella-roja-uno-de-los-rivales-mas-correosos-de-la-euroliga.html','El Real Madrid aplasta al Estrella Roja, uno de los rivales más correosos de la Euroliga','2026-11-12T22:30:58');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/2026/11/12/diomande-enfunda-10-asiste-liderar-costa-marfil.html','Diomande se enfunda la ''10'' y asiste para liderar a Costa de Marfil','2026-11-12T22:40:59');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115379/camavinga-played-10-minutes-konate-stayed-on-the-bench-as-france-lost-3-1-to-italy-in-milan','Camavinga played 10 minutes; Konaté stayed on the bench as France lost 3–1 to Italy in Milan','2026-11-13T00:31:12');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115384/watch-diomandes-assist-vs-gambia','WATCH: Diomande’s Assist Vs Gambia','2026-11-13T02:01:14');
 COMMIT;
