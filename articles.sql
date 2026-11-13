@@ -4162,4 +4162,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-largo-viaje-de-mourin
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/Espere-75-minutes-et-de-retour-dans-l-axe-face-a-la-turquie-kylian-mbappe-attendu-pour-qualifier-les-bleus/1743466#at_medium=RSS_feeds','Mbappé, le changement, c''est dimanche','2026-11-13T20:20:54');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6832547057907679209-edf-kylian-mbappe-de-retour-a-lentrainement-collectif','EdF : Kylian Mbappé de retour à l’entraînement collectif','2026-11-13T20:20:54');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/optimismo-con-mbappe-f202611-n/','Optimismo con Mbappé','2026-11-13T20:21:13');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/genieten-geblazen-van-fantastisch-oranje-lijkt-wel-een-uitzwaaiwedstrijd','Genieten geblazen van ''fantastisch'' Oranje: ''Lijkt wel een uitzwaaiwedstrijd''','2026-11-13T21:01:18');
 COMMIT;
