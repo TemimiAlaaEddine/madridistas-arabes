@@ -3912,4 +3912,5 @@ INSERT INTO "vus" VALUES('https://turkish-football.com/arda-guler-spectacular-lo
 INSERT INTO "vus" VALUES('https://turkish-football.com/kevin-de-bruyne-urges-turkiye-teammates-to-step-up-and-help-arda-guler/','Kevin De Bruyne Urges Türkiye Teammates to Step Up and Help Arda Güler','2026-11-13T08:40:42');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/en-que-escalafon-del-futbol-mundial-esta-arda-guler-ahora-mismo-f202611-n/','¿En que escalafón del fútbol mundial está Arda Güler ahora mismo?','2026-11-13T09:01:20');
 INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/la-transformacion-de-la-esquina-del-bernabeu-f202611-f/','La transformación de la ‘Esquina del Bernabéu’','2026-11-13T09:01:35');
+INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/dumfries-en-el-escaparate-f202611-n/','Dumfries, en el escaparate','2026-11-13T09:10:40');
 COMMIT;
