@@ -3990,4 +3990,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/13/ocho-jugador
 INSERT INTO "vus" VALUES('https://trivela.com.br/inglaterra/sucessor-virgil-van-dijk-monitorado-liverpool-real-madrid-vuskovic-brighton/','Sucessor de Virgil van Dijk é monitorado pelo Liverpool, mas Real Madrid entra na jogada','2026-11-13T13:22:22');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/jogo/21-11-2026/realmadrid-celta-de-vigo.ghtml','Real Madrid x Celta - Campeonato Espanhol 2026/27 - globoesporte.com','2026-11-13T14:20:49');
 INSERT INTO "vus" VALUES('https://turkish-football.com/turkish-players-in-europes-top-5-leagues-2026-27-squad-guide/','Turkish Players in Europe’s Top 5 Leagues (2026/27 Complete Guide)','2026-11-13T14:20:49');
+INSERT INTO "vus" VALUES('https://turkish-football.com/arda-guler-real-madrid-2026-27-stats-contract-turkey-guide/','Arda Güler 2026/27 Hub: Real Madrid Stats, New 2031 Contract, José Mourinho Role & Türkiye Guide','2026-11-13T14:31:13');
 COMMIT;
