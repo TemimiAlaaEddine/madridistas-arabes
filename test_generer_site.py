@@ -388,6 +388,23 @@ with tempfile.TemporaryDirectory() as tmp:
     finally:
         t.CONFIG.pop("typefully_publish_at_actus")
     assert [(c["draft_title"], c["publish_at"]) for c in appels] == [("خبر عاجل", "now"), ("جديد", "next-free-slot")]
+    # un thread refusé (403) ne bloque plus les suivants, et la raison donnée par Typefully est affichée
+    import contextlib
+    import urllib.error
+    con.execute("UPDATE threads SET typefully = NULL WHERE article_id = 2")
+    con.commit()
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "ثالث", "texte": "ن", "tweets": ["فكرة ثالثة"]}],
+                  [{"lien": "https://as.com/9", "titre": "T9", "auteur": "", "source": "AS", "pays": "es"}], db)
+
+    def refuse_le_premier(chemin, corps=None):
+        if corps and corps.get("draft_title") == "جديد":
+            raise urllib.error.HTTPError("https://api", 403, "Forbidden", {}, io.BytesIO(b'{"detail": "raison du refus"}'))
+        return {"id": 88}
+    t.typefully_api, sortie = refuse_le_premier, io.StringIO()
+    with contextlib.redirect_stdout(sortie):
+        assert t.vers_typefully(con, {2: "c.png", 4: "c.png"}, Path(tmp)) == 1
+    assert "raison du refus" in sortie.getvalue() and "article 2" in sortie.getvalue()
+    assert con.execute("SELECT typefully FROM threads WHERE article_id = 2").fetchone()[0] is None
     con.close()
 print("OK Typefully")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés

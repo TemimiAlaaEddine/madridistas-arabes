@@ -233,8 +233,10 @@ def vers_typefully(con, couvertures, dossier_couv):
                 corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)
         except (OSError, KeyError, ValueError) as err:  # réseau, clé refusée... : repris au prochain passage
-            print(f"  ! Typefully : envoi impossible ({err}), repris au prochain passage")
-            break
+            # Typefully explique son refus dans le corps de la réponse ; un thread refusé ne bloque plus les suivants
+            detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
+            print(f"  ! Typefully : envoi impossible pour l'article {t['article_id']} ({err}) {detail}, repris au prochain passage")
+            continue
         con.execute("UPDATE threads SET typefully = ? WHERE article_id = ?", (str(d["id"]), t["article_id"]))
         con.commit()
         n += 1
