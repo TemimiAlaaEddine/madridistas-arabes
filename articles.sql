@@ -4120,4 +4120,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mbappe-se-supera-f202611
 INSERT INTO "vus" VALUES('https://trivela.com.br/italia/endrick-roma-melhor-caminho-brilhar-longe-real-madrid/','Por que Roma pode ser o melhor caminho para Endrick voltar a brilhar longe do Real Madrid','2026-11-13T17:11:31');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/sale-a-la-luz-la-reaccion-del-padre-de-arda-guler-al-golazo-de-su-hijo-no-se-lo-pierdan-f202611-v/','Sale a la luz la reacción del padre de Arda Güler al golazo de su hijo: no se lo pierdan','2026-11-13T18:01:22');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/primeras-imagenes-del-sky-walk-del-bernabeu-la-guinda-del-pastel-del-estadio-que-impresiona-f202611-v/','¡Primeras imágenes del Sky Walk del Bernabéu! La guinda del pastel del estadio que impresiona','2026-11-13T18:31:37');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a769643133696140449-suivez-la-rencontre-france-italie-espoirs-en-live-commente','Suivez la rencontre France - Italie espoirs en live commenté','2026-11-13T19:10:57');
 COMMIT;
