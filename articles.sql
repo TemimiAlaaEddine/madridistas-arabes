@@ -4012,4 +4012,5 @@ INSERT INTO "vus" VALUES('https://turkish-football.com/turkish-players-in-europe
 INSERT INTO "vus" VALUES('https://turkish-football.com/arda-guler-real-madrid-2026-27-stats-contract-turkey-guide/','Arda Güler 2026/27 Hub: Real Madrid Stats, New 2031 Contract, José Mourinho Role & Türkiye Guide','2026-11-13T14:31:13');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115402/madrid-daily-de-bruyne-hails-guler-as-fresneda-reflects-on-his-madrid-education','Madrid Daily: De Bruyne hails Güler as Fresneda reflects on his Madrid education','2026-11-13T15:01:17');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/13/dos-hombres-mourinho-sombra-explican-milagro.html','Los dos hombres de Mourinho en la sombra que explican el milagro','2026-11-13T15:01:49');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a8423193571623881636-mercato-ibrahim-maza-a-pris-une-grosse-decision-pour-son-avenir','Mercato : Ibrahim Maza a pris une grosse décision pour son avenir','2026-11-13T15:11:02');
 COMMIT;
