@@ -3939,4 +3939,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-nation
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/barca-b-el-filial-mas-caro-de-la-historia/','Barça B, el filial más caro de la historia','2026-11-13T09:40:53');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115398/real-madrid-set-to-sign-jj-gabriel-report','Real Madrid set to sign JJ Gabriel -report','2026-11-13T10:01:37');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/guler-sabe-donde-esta-la-escuadra-sin-informes/','Güler sabe dónde está la escuadra sin informes','2026-11-13T10:01:47');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-secreto-tactico-de-mourinho-un-cuadrado-indefendible-f202611-v/','El secreto táctico de Mourinho: un cuadrado indefendible','2026-11-13T10:10:50');
 COMMIT;
