@@ -195,7 +195,9 @@ import threads as t
 assert t.longueur("ريال مدريد") == 10 and t.longueur("https://www.marca.com/" + "x" * 200) == 23 and t.longueur("🔥") == 2
 art = {"auteur_ar": "خوانما كاستانيو", "auteur": "Juanma Castaño", "journal": "Marca", "lien": "https://marca.com/a"}
 th = t.assembler(art, ["فكرة أولى", "فكرة ثانية"])
-assert len(th) == 3 and th[0].endswith("1/3") and "خوانما كاستانيو | Marca" in th[2] and "https://marca.com/a" in th[2]
+assert len(th) == 3 and th[0].endswith("1/2") and th[1].endswith("2/2") and "خوانما كاستانيو | Marca" in th[2] and "https://marca.com/a" in th[2]
+assert not t.NUMERO.search(th[2])  # le tweet du lien ne compte pas dans la numérotation
+assert t.assembler(art, ["فكرة وحيدة"])[0] == "فكرة وحيدة"  # un seul tweet + le lien : pas de numéro
 assert t.assembler(art, ["ب" * 290]) is None and t.assembler(art, []) is None
 with tempfile.TemporaryDirectory() as tmp:
     db = Path(tmp) / "a.db"

@@ -74,7 +74,7 @@ Les articles n'affichent plus de photo de joueur ; les photos restent sur les pa
 
 ## Threads X et publications Facebook
 
-À chaque passage, `threads.py` découpe les articles des 2 derniers jours en threads X. Au plus `max_threads` par passage, nouvelles d'abord. Un tweet fait au plus 280 caractères comptés comme X. Le dernier tweet crédite le journaliste et le journal, avec le lien de la source.
+À chaque passage, `threads.py` découpe les articles des 2 derniers jours en threads X. Au plus `max_threads` par passage, nouvelles d'abord. Un tweet fait au plus 280 caractères comptés comme X. Le dernier tweet crédite le journaliste et le journal, avec le lien de la source ; il n'est pas numéroté (« i/n » ne compte que les autres tweets).
 
 Chaque nouvelle des dernières 24 h (communiqués, actualités, conférences de presse, compositions officielles, et tout le mercato, chroniques comprises ; ni les autres opinions, ni les compositions probables) est publiée sur la Page Facebook (au plus `max_threads` par passage) : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸 en message, et le lien de la source en carte. Les articles sans titres traduits ne sont pas publiés. Au tout premier passage, les articles déjà en base sont considérés comme publiés.
 

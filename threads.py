@@ -60,11 +60,13 @@ def credit(a):
 
 
 def assembler(a, tweets):
-    """Ajoute le tweet de crédit et la numérotation ; None si un tweet dépasse la limite de X."""
-    tweets = [str(t).strip() for t in tweets if str(t).strip()] + [credit(a)]
+    """Numérote les tweets puis ajoute le tweet de crédit (avec le lien), non numéroté : il peut être retiré à l'envoi
+    et ajouté à la main sans fausser « i/n ». None si un tweet dépasse la limite de X ou si le thread est vide."""
+    tweets = [str(t).strip() for t in tweets if str(t).strip()]
     n = len(tweets)
     tweets = [f"{t}\n\n{i}/{n}" for i, t in enumerate(tweets, 1)] if n > 1 else tweets
-    return tweets if n > 1 and all(longueur(t) <= LIMITE for t in tweets) else None
+    tweets.append(credit(a))
+    return tweets if n and all(longueur(t) <= LIMITE for t in tweets) else None
 
 
 def connexion_threads(con):
