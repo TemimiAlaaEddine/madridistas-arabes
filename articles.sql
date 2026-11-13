@@ -3972,4 +3972,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-secreto-tactico-de-mou
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/13/clasico-barca-arrebata-real-madrid-trono-marcas.html','El otro Clásico: el Barça arrebata al Real Madrid el trono de las marcas','2026-11-13T10:31:27');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1496569236479331452-equipe-de-france-zidane-et-mbappe-a-couteaux-tires','Équipe de France : Zidane et Mbappé, à couteaux tirés','2026-11-13T11:51:11');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/2026/11/13/falta-perfecta-arda-gueler-bruyne-me-dijo-creia-pudiera-marcar-lejos.html','La falta perfecta de Arda Güler: "De Bruyne me dijo que no se creía que pudiera marcar desde tan lejos"','2026-11-13T12:01:29');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a5131683000056662879-le-real-madrid-a-boucle-une-premiere-recrue-pour-2027','Le Real Madrid a bouclé une première recrue pour 2027','2026-11-13T12:20:41');
 COMMIT;
