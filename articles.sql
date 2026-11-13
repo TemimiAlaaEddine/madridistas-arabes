@@ -3934,4 +3934,7 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/dumfries-en-el-esc
 INSERT INTO "vus" VALUES('https://as.com/futbol/mundial/el-mensaje-de-real-madrid-a-la-fifa-somos-los-mejores-organizando-partidos-f202611-n/','El mensaje de Real Madrid a la FIFA: “Somos los mejores organizando partidos”','2026-11-13T09:21:34');
 INSERT INTO "vus" VALUES('https://turkish-football.com/sergen-yalcin-admits-arda-guler-carries-heavy-burden-after-turkiyes-defeat-to-belgium/','Sergen Yalçın Admits Arda Güler Carries ‘Heavy Burden’ After Türkiye’s Defeat to Belgium','2026-11-13T09:21:34');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/L-italie-retrouve-sa-grandeur-gros-desastre-sans-mbappe-la-revue-de-presse-apres-la-premiere-defaite-de-l-ere-zidane/1743345#at_medium=RSS_feeds','«L''Italie retrouve sa grandeur», «gros désastre sans Mbappé» : la revue de presse après la première défaite de l''ère Zidane','2026-11-13T09:31:24');
+INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/el-futuro-ya-esta-aqui-f202611-n/','El futuro ya está aquí','2026-11-13T09:40:48');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-nations-bleus-zinedine-zidane-apres-italie-france-j-espere-que-mbappe-jouera-contre-la-turquie/20245443#at_medium=RSS_feeds','Zidane compte sur Mbappé contre la Turquie','2026-11-13T09:40:48');
+INSERT INTO "vus" VALUES('https://www.lagalerna.com/barca-b-el-filial-mas-caro-de-la-historia/','Barça B, el filial más caro de la historia','2026-11-13T09:40:53');
 COMMIT;
