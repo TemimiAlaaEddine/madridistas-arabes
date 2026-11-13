@@ -4113,4 +4113,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/de-bruyne-se-deshace-en-e
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/antonio-dias-el-guru-de-la-fuerza-excentrica-que-ha-acabado-con-las-lesiones-f202611-n/','Antonio Dias, el gurú de la fuerza excéntrica que ha acabado con las lesiones','2026-11-13T16:52:09');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mbappe-se-supera-f202611-n/','Mbappé se supera','2026-11-13T16:52:09');
 INSERT INTO "vus" VALUES('https://trivela.com.br/italia/endrick-roma-melhor-caminho-brilhar-longe-real-madrid/','Por que Roma pode ser o melhor caminho para Endrick voltar a brilhar longe do Real Madrid','2026-11-13T17:11:31');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/sale-a-la-luz-la-reaccion-del-padre-de-arda-guler-al-golazo-de-su-hijo-no-se-lo-pierdan-f202611-v/','Sale a la luz la reacción del padre de Arda Güler al golazo de su hijo: no se lo pierdan','2026-11-13T18:01:22');
 COMMIT;
