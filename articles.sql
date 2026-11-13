@@ -3898,4 +3898,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115384/watc
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261113/bernabeu-pasa-examen-fifa-trabajo-hecho-espana-sigue-sin-garantias-final-mundial/1003744455808_0.html','El Bernabéu pasa el examen de la FIFA con el trabajo hecho, pero España sigue sin garantías para la final del Mundial 2030','2026-11-13T04:21:08');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/13/luz-final-tunel.html','La luz al final del túnel','2026-11-13T05:41:10');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/jj-gabriel-ultima-su-puesta-a-punto-f202611-n/','JJ Gabriel ultima su puesta a punto','2026-11-13T05:51:00');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vrijdag-de-dertiende-bracht-oranje-veel-geluk-dumfries-kan-van-dijk-evenaren','Vrijdag de dertiende bracht Oranje veel geluk, Dumfries kan Van Dijk evenaren','2026-11-13T06:20:45');
 COMMIT;
