@@ -4047,4 +4047,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8423193571623881636-merca
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/2026/11/13/valverde-forlan-foto-marca-luchar-argentina-10-anos-despues.html','Valverde-Forlán, de aquella foto en MARCA... a luchar juntos contra Argentina 10 años después','2026-11-13T15:31:11');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/bij-wat-roberto-carlos-op-trainingen-liet-zien-liep-het-kwijl-uit-mijn-mond-zomoo','''Bij wat Roberto Carlos op trainingen liet zien, liep het kwijl uit mijn mond, zo mooi''','2026-11-13T15:31:28');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/manual-contra-el-argumentario-falso-cule/','Manual contra el argumentario falso culé','2026-11-13T16:01:49');
+INSERT INTO "vus" VALUES('https://www.lagalerna.com/manual-contra-el-falso-argumentario-cule/','Manual contra el falso argumentario culé','2026-11-13T16:10:52');
 COMMIT;
