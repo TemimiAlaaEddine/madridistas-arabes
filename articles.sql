@@ -3986,4 +3986,6 @@ INSERT INTO "vus" VALUES('https://www.lagalerna.com/sergio-llull-veinte-euroliga
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-milagro-de-asencio-f202611-n/','El milagro de Asencio','2026-11-13T13:11:13');
 INSERT INTO "vus" VALUES('https://trivela.com.br/inglaterra/premier-league/sucessor-virgil-van-dijk-monitorado-liverpool-real-madrid-vuskovic-brighton/','Sucessor de Virgil van Dijk é monitorado pelo Liverpool, mas Real Madrid entra na jogada','2026-11-13T13:11:13');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/un-equipo-brasileno-tiene-cuatro-canteranos-llamados-cristiano-ronaldo-pense-que-era-el-unico-pero-habia-otros-tres-f202611-n/','Un equipo brasileño tiene cuatro canteranos llamados Cristiano Ronaldo: “Pensé que era el único, pero había otros tres”','2026-11-13T13:11:13');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/13/ocho-jugadores-de-la-euroliga-en-la-lista-de-chus-mateo-para-la-ventana-fiba-cadena-ser/','Ocho jugadores de la Euroliga en la lista de Chus Mateo para la ventana FIBA','2026-11-13T13:22:04');
+INSERT INTO "vus" VALUES('https://trivela.com.br/inglaterra/sucessor-virgil-van-dijk-monitorado-liverpool-real-madrid-vuskovic-brighton/','Sucessor de Virgil van Dijk é monitorado pelo Liverpool, mas Real Madrid entra na jogada','2026-11-13T13:22:22');
 COMMIT;
