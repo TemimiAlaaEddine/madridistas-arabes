@@ -13,6 +13,7 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timedelta, timezone
 
 from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, maintenant
 
@@ -229,6 +230,8 @@ def vers_typefully(con, couvertures, dossier_couv):
             # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
             nouvelle = t["section"] == "actus" or t["mode"] == "info"
             quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
+            if quand == "now":  # X refuse la publication immédiate d'un thread avec lien (403) : programmé 2 minutes plus tard
+                quand = (datetime.now(timezone.utc) + timedelta(minutes=2)).isoformat(timespec="seconds")
             if quand or CONFIG.get("typefully_publish_at"):
                 corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)

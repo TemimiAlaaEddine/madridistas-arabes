@@ -387,7 +387,11 @@ with tempfile.TemporaryDirectory() as tmp:
         assert t.vers_typefully(con, {2: "c.png", 3: "c.png"}, Path(tmp)) == 2
     finally:
         t.CONFIG.pop("typefully_publish_at_actus")
-    assert [(c["draft_title"], c["publish_at"]) for c in appels] == [("خبر عاجل", "now"), ("جديد", "next-free-slot")]
+    assert [c["draft_title"] for c in appels] == ["خبر عاجل", "جديد"] and appels[1]["publish_at"] == "next-free-slot"
+    # pas de publication immédiate (X la refuse pour un thread avec lien) : programmée environ 2 minutes plus tard
+    from datetime import datetime as dt, timezone as tz
+    ecart = (dt.fromisoformat(appels[0]["publish_at"]) - dt.now(tz.utc)).total_seconds()
+    assert 60 < ecart <= 120, ecart
     # un thread refusé (403) ne bloque plus les suivants, et la raison donnée par Typefully est affichée
     import contextlib
     import urllib.error
