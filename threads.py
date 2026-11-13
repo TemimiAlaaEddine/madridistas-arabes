@@ -199,6 +199,19 @@ def typefully_image(nom, contenu):
     return None
 
 
+NUMERO = re.compile(r"\n\n\d+/\d+$")
+
+
+def sans_tweet_de_lien(tweets):
+    """Thread publié tout de suite : X refuse la publication immédiate d'un thread qui contient un lien (403 de Typefully).
+    Le dernier tweet (crédit + lien de la source) est retiré, l'auteur l'ajoute à la main sur X, et le reste est renuméroté.
+    Retourne (tweets, quand) ; si un lien reste ailleurs, le thread entier est programmé 2 minutes plus tard."""
+    reste = [NUMERO.sub("", x) for x in (tweets[:-1] if tweets and URL.search(tweets[-1]) else tweets)]
+    if not reste or any(URL.search(x) for x in reste):
+        return tweets, (datetime.now(timezone.utc) + timedelta(minutes=2)).isoformat(timespec="seconds")
+    return ([f"{x}\n\n{i}/{len(reste)}" for i, x in enumerate(reste, 1)] if len(reste) > 1 else reste), "now"
+
+
 def vers_typefully(con, couvertures, dossier_couv):
     """Dépose les nouveaux threads dans Typefully, la photo de l'article source sur le 1er tweet (sinon la couverture) :
     au prochain créneau libre de sa file (publiés seuls, le plus ancien d'abord) si "typefully_publish_at" vaut
@@ -223,15 +236,16 @@ def vers_typefully(con, couvertures, dossier_couv):
                 couv = generer_couvertures([t], dossier_couv.parent, menage=False).get(t["article_id"])
             if not media and couv:
                 media = typefully_image(couv, (dossier_couv / couv).read_bytes())
-            posts = [{"text": tw} for tw in json.loads(t["tweets"])]
-            if media:
-                posts[0]["media_ids"] = [media]
-            corps = {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
+            tweets = json.loads(t["tweets"])
             # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
             nouvelle = t["section"] == "actus" or t["mode"] == "info"
             quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
-            if quand == "now":  # X refuse la publication immédiate d'un thread avec lien (403) : programmé 2 minutes plus tard
-                quand = (datetime.now(timezone.utc) + timedelta(minutes=2)).isoformat(timespec="seconds")
+            if quand == "now":
+                tweets, quand = sans_tweet_de_lien(tweets)
+            posts = [{"text": tw} for tw in tweets]
+            if media:
+                posts[0]["media_ids"] = [media]
+            corps = {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
             if quand or CONFIG.get("typefully_publish_at"):
                 corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)

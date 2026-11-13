@@ -388,10 +388,12 @@ with tempfile.TemporaryDirectory() as tmp:
     finally:
         t.CONFIG.pop("typefully_publish_at_actus")
     assert [c["draft_title"] for c in appels] == ["خبر عاجل", "جديد"] and appels[1]["publish_at"] == "next-free-slot"
-    # pas de publication immédiate (X la refuse pour un thread avec lien) : programmée environ 2 minutes plus tard
+    # publiée tout de suite, sans le tweet de crédit qui contient le lien (X refuse la publication immédiate avec lien)
+    assert appels[0]["publish_at"] == "now" and [p["text"] for p in appels[0]["platforms"]["x"]["posts"]] == ["خبر"]
+    assert t.sans_tweet_de_lien(["أ\n\n1/3", "ب\n\n2/3", "📰 AS\n🔗 المصدر: https://as.com/1\n\n3/3"]) == (["أ\n\n1/2", "ب\n\n2/2"], "now")
     from datetime import datetime as dt, timezone as tz
-    ecart = (dt.fromisoformat(appels[0]["publish_at"]) - dt.now(tz.utc)).total_seconds()
-    assert 60 < ecart <= 120, ecart
+    tw, quand = t.sans_tweet_de_lien(["انظر https://x.com/a\n\n1/2", "📰 AS\n🔗 https://as.com/1\n\n2/2"])
+    assert tw[0].startswith("انظر") and 60 < (dt.fromisoformat(quand) - dt.now(tz.utc)).total_seconds() <= 120  # lien ailleurs : programmé
     # un thread refusé (403) ne bloque plus les suivants, et la raison donnée par Typefully est affichée
     import contextlib
     import urllib.error
