@@ -125,8 +125,8 @@ GRAPH = "https://graph.facebook.com/v23.0/"  # version de l'API Graph : Meta ret
 
 
 def vers_page(con, heures=24):
-    """Publie sur la Page Facebook les nouvelles récentes (pas les opinions) avec titres traduits : titres FR/EN/ES en message, lien de la
-    source en carte. Au plus max_threads par passage. Réglages : FACEBOOK_PAGE_TOKEN (jeton de la Page, permission
+    """Publie sur la Page Facebook les nouvelles récentes (pas les opinions) avec titres traduits : image principale de l'article avec les
+    titres FR/EN/ES et le nom du journal en légende, sinon titres en message et lien de la source en carte. Au plus max_threads par passage. Réglages : FACEBOOK_PAGE_TOKEN (jeton de la Page, permission
     pages_manage_posts) et FACEBOOK_PAGE_ID."""
     jeton, page = reglage("facebook_page_token"), reglage("facebook_page_id")
     if not jeton or not page:
@@ -144,9 +144,13 @@ def vers_page(con, heures=24):
                          (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall():
         if PROBABLE.search(a["titre_original"] or ""):
             continue
-        corps = urllib.parse.urlencode({"message": titres_facebook(a), "link": a["lien"], "access_token": jeton}).encode()
+        if a["image"]:  # liens des médias bloqués au Canada (loi C-18) : photo de l'article + titres, retouchée à la main sur Facebook
+            envoi, champs = "photos", {"url": a["image"], "caption": f"{titres_facebook(a)}\n\nSource : {a['journal']}"}
+        else:
+            envoi, champs = "feed", {"message": titres_facebook(a), "link": a["lien"]}
+        corps = urllib.parse.urlencode({**champs, "access_token": jeton}).encode()
         try:
-            with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/feed", corps), timeout=60) as rep:
+            with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/{envoi}", corps), timeout=60) as rep:
                 json.load(rep)
         except OSError as err:  # réseau coupé, jeton refusé (HTTPError est un OSError) : repris au prochain passage
             # Facebook explique son refus dans le corps de la réponse (jeton expiré, permission manquante...)

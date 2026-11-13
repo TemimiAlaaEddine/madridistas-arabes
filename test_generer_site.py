@@ -238,6 +238,21 @@ with tempfile.TemporaryDirectory() as tmp:
         t.urllib.request.urlopen = vrai_urlopen
         t.CONFIG.pop("facebook_page_token")
     assert appels[0][0].endswith("/42/feed") and "link=https%3A%2F%2Fex.com%2Ffb" in appels[0][1] and "Titre" in urllib.parse.unquote_plus(appels[0][1])
+    # avec l'image principale : publiée en photo, titres et journal en légende, sans le lien (bloqué au Canada)
+    con.execute("DELETE FROM page_facebook WHERE article_id = (SELECT id FROM articles WHERE lien = 'https://ex.com/fb')")
+    con.execute("UPDATE articles SET image = 'https://ex.com/photo.jpg' WHERE lien = 'https://ex.com/fb'")
+    con.commit()
+    appels.clear()
+    t.CONFIG["facebook_page_token"] = "j"
+    t.urllib.request.urlopen = lambda req, timeout=None: (appels.append((req.full_url, req.data.decode())), io.BytesIO(b"{}"))[1]
+    try:
+        assert t.vers_page(con) == 1
+    finally:
+        t.urllib.request.urlopen = vrai_urlopen
+        t.CONFIG.pop("facebook_page_token")
+    envoi = urllib.parse.parse_qs(appels[0][1])
+    assert appels[0][0].endswith("/42/photos") and envoi["url"] == ["https://ex.com/photo.jpg"] and "link" not in envoi
+    assert envoi["caption"][0].startswith("⚜️ Titre") and envoi["caption"][0].endswith("Source : AS")
     con.close()
 print("OK threads")
 
