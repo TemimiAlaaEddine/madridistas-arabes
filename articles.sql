@@ -4208,4 +4208,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115414/slug
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115415/thiago-pitarch-makes-spain-u21-debut-vs-japan','Thiago Pitarch makes Spain U21 debut vs Japan','2026-11-13T22:01:32');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-nations-portugal-bernardo-silva-nouveau-capitaine-un-grand-honneur/20245499#at_medium=RSS_feeds','Bernardo Silva : « Un grand honneur »','2026-11-13T22:20:57');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/xaxi-laat-oranje-weer-floreren-dit-is-waar-het-nederlands-voetbal-voor-staat','Xaxi laat Oranje weer floreren: ''Dit is waar het Nederlands voetbal voor staat''','2026-11-13T22:31:05');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/xavi-laat-oranje-weer-floreren-dit-is-waar-het-nederlands-voetbal-voor-staat','Xavi laat Oranje weer floreren: ''Dit is waar het Nederlands voetbal voor staat''','2026-11-13T22:40:53');
 COMMIT;
