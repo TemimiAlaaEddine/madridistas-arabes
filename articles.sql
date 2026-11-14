@@ -4551,4 +4551,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-nation
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/iets-nieuws-op-zn-verlanglijstje-thibaut-courtois-dient-bod-in-om-italiaanse-derdeklasser-ac-reggiana-volledig-over-te-nemen~ae73a835/','Iets nieuws op z’n verlanglijstje: “Thibaut Courtois dient bod in om Italiaanse derdeklasser AC Reggiana volledig over te nemen”','2026-11-14T20:31:03');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera-rfef/una-cantada-de-gazzaniga-amplia-la-maldicion-del-huesca-a-domicilio-f202611-n/','Una cantada de Gazzaniga amplía la maldición del Huesca a domicilio','2026-11-14T20:50:45');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/14/6af49e03e85eceba608b45a2.html','De Stourbridge al Metropolitano, el sueño de los Bellingham: "Estaban todo el día con el balón"','2026-11-14T21:01:21');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a824087364706546000-ligue-des-nations-lyon-et-saint-etienne-luttent-contre-le-bernabeu-pour-le-final-four','Ligue des Nations : Lyon et Saint-Etienne luttent contre le Bernabeu pour le Final Four','2026-11-14T21:31:23');
 COMMIT;
