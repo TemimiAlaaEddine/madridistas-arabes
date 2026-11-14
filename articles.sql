@@ -4547,4 +4547,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/mbappe-terug-bij-frankrijk-zi
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5685789218774891887-equipe-de-france-zinedine-zidane-repond-cash-sur-les-tensions-avec-kylian-mbappe','Équipe de France : Zinédine Zidane répond cash sur les tensions avec Kylian Mbappé','2026-11-14T18:31:04');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Zinedine-zidane-sur-sa-relation-avec-kylian-mbappe-les-choses-qui-me-reviennent-c-est-agacant/1743688#at_medium=RSS_feeds','Zinédine Zidane sur sa relation avec Kylian Mbappé : « Les choses qui me reviennent, c''est agaçant »','2026-11-14T18:40:56');
 INSERT INTO "vus" VALUES('https://trivela.com.br/italia/ronaldinho-endrick-roma-milan-mercado/','Ronaldinho: ‘Endrick pode jogar em qualquer lugar do mundo’','2026-11-14T19:11:09');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-nations-les-joueurs-portugais-entrent-avec-le-numero-7-en-hommage-a-cristiano-ronaldo/20245568#at_medium=RSS_feeds','Les Portugais honorent Cristiano Ronaldo et entrent avec le numéro 7','2026-11-14T20:10:53');
 COMMIT;
