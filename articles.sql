@@ -4384,4 +4384,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3028041676575790751-la-pr
 INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/of-ik-eerste-doelman-wil-zijn-op-het-ek-ja-thibaut-courtois-spreekt-zich-uit-over-toekomst-als-rode-duivel-en-mogelijke-terugkeer-naar-racing-genk~a7e61ad0/','“Of ik eerste doelman wil zijn op het EK? Ja”: Thibaut Courtois spreekt zich uit over toekomst als Rode Duivel en mogelijke terugkeer naar Racing Genk','2026-11-14T10:40:52');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/14/yan-diomande-sigue-alimentando-debate.html','Yan Diomande sigue alimentando el debate','2026-11-14T10:41:39');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115427/rodrygo-could-be-back-in-early-december-report','Rodrygo could be back in early December -report','2026-11-14T10:41:39');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/arsenal-wonderkind-dowman-neemt-record-over-van-bellingham','Arsenal-wonderkind Dowman neemt record over van Bellingham','2026-11-14T11:10:45');
 COMMIT;
