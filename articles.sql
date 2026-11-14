@@ -4534,4 +4534,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a6581439567403113508-on-pr
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/vinicius-20261114174106-nt.html','Brasil cae ante Japón pese al doblete de Vinicius y acaba con Ancelotti y Raphinha expulsados','2026-11-14T17:40:44');
 INSERT INTO "vus" VALUES('https://as.com/futbol/mbappe-lo-cambia-todo-f202611-n/','“Mbappé lo cambia todo”','2026-11-14T18:20:45');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4163429041220750959-real-madrid-zidane-milite-pour-un-rafael-nadal-a-un-poste-haut-place','Real Madrid : Zidane milite pour un Rafael Nadal à un poste haut placé','2026-11-14T18:21:05');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/mbappe-terug-bij-frankrijk-zidane-verwerpt-irritante-geruchten','Mbappé terug bij Frankrijk, Zidane verwerpt ''irritante'' geruchten','2026-11-14T18:31:04');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a5685789218774891887-equipe-de-france-zinedine-zidane-repond-cash-sur-les-tensions-avec-kylian-mbappe','Équipe de France : Zinédine Zidane répond cash sur les tensions avec Kylian Mbappé','2026-11-14T18:31:04');
 COMMIT;
