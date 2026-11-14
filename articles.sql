@@ -4385,4 +4385,5 @@ INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/of-ik-eerste-doelman-w
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/14/yan-diomande-sigue-alimentando-debate.html','Yan Diomande sigue alimentando el debate','2026-11-14T10:41:39');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115427/rodrygo-could-be-back-in-early-december-report','Rodrygo could be back in early December -report','2026-11-14T10:41:39');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/arsenal-wonderkind-dowman-neemt-record-over-van-bellingham','Arsenal-wonderkind Dowman neemt record over van Bellingham','2026-11-14T11:10:45');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-descomunal-golazo-de-vinicius-es-un-misil-que-querran-ver-repetido-f202611-v/','El descomunal golazo de Vinicius: es un misil que querrán ver repetido','2026-11-14T11:31:11');
 COMMIT;
