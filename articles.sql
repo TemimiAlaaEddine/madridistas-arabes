@@ -4322,4 +4322,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/ganas-de-vinicius-
 INSERT INTO "vus" VALUES('https://as.com/opinion/mbappe-se-merece-privilegios-f202611-n/','Mbappé se merece privilegios','2026-11-14T01:31:37');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115424/brahim-diaz-provides-early-assist-as-morocco-beat-niger-5-1','Brahim Díaz provides early assist as Morocco beat Niger 5–1','2026-11-14T02:01:52');
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/seleccion/diego-forlan-explico-que-valverde-no-fue-titular-destaco-la-primera-atajada-fiermarin-y-dijo-que-no-cito-merentiel-por-sentido-comun-n6063828','Diego Forlán explicó por qué Valverde no fue titular, destacó la primera atajada de Fiermarín, y dijo que no citó a Merentiel "por sentido común"','2026-11-14T02:01:52');
+INSERT INTO "vus" VALUES('https://as.com/futbol/real-madrid/alcala-norte-nuestro-lema-es-pensad-como-mourinho-que-os-ira-bien-f202611-n/','Alcalá Norte: “Nuestro lema es: ‘Pensad como Mourinho que os irá bien”','2026-11-14T07:50:43');
 COMMIT;
