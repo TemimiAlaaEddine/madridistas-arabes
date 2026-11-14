@@ -4577,4 +4577,5 @@ INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/14/6af4
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a824087364706546000-ligue-des-nations-lyon-et-saint-etienne-luttent-contre-le-bernabeu-pour-le-final-four','Ligue des Nations : Lyon et Saint-Etienne luttent contre le Bernabeu pour le Final Four','2026-11-14T21:31:23');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115449/bernardo-silva-scores-late-consolation-goal-as-portugal-fall-4-1-to-denmark','Bernardo Silva scores late consolation goal as Portugal fall 4–1 to Denmark','2026-11-14T22:01:29');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5201267446288098216-liga-la-presse-catalane-denonce-un-arbitrage-largement-favorable-au-real-madrid','Liga : la presse catalane dénonce un arbitrage largement favorable au Real Madrid','2026-11-14T22:02:00');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/14/el-girona-amarga-el-debut-de-raul-como-entrenador-del-real-oviedo-cadena-ser/','El Girona amarga el debut de Raúl como entrenador del Real Oviedo','2026-11-14T22:31:11');
 COMMIT;
