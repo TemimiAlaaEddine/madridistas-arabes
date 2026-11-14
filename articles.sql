@@ -4419,4 +4419,5 @@ INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/not
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/14/vinicius-resucita-con-dos-golazos-pero-brasil-se-lleva-un-batacazo-ante-japon-2-3-cadena-ser/','Vinicius resucita con dos golazos, pero Brasil se lleva un batacazo ante Japón (2-3)','2026-11-14T12:21:13');
 INSERT INTO "vus" VALUES('https://trivela.com.br/brasil/brasil-x-japao-amistoso-vinicius-junior-ancelotti-criticas/','Brasil x Japão: Nem o brilho individual de Vini Jr salvou mais uma atuação pobre da Seleção de Ancelotti','2026-11-14T12:30:59');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2713029883601857779-bresil-les-deux-buts-phenomenaux-de-vinicius-junior-contre-le-japon','Brésil : les deux buts phénoménaux de Vinicius Junior contre le Japon','2026-11-14T12:50:48');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/14/6af8567921efa000158b45ad.html','Vinicius despierta con Brasil, marca dos golazos pero no evita la derrota ante Japón','2026-11-14T13:01:13');
 COMMIT;
