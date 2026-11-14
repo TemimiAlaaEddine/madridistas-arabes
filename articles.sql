@@ -4536,4 +4536,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/mbappe-lo-cambia-todo-f202611-n/
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4163429041220750959-real-madrid-zidane-milite-pour-un-rafael-nadal-a-un-poste-haut-place','Real Madrid : Zidane milite pour un Rafael Nadal à un poste haut placé','2026-11-14T18:21:05');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/mbappe-terug-bij-frankrijk-zidane-verwerpt-irritante-geruchten','Mbappé terug bij Frankrijk, Zidane verwerpt ''irritante'' geruchten','2026-11-14T18:31:04');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5685789218774891887-equipe-de-france-zinedine-zidane-repond-cash-sur-les-tensions-avec-kylian-mbappe','Équipe de France : Zinédine Zidane répond cash sur les tensions avec Kylian Mbappé','2026-11-14T18:31:04');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Zinedine-zidane-sur-sa-relation-avec-kylian-mbappe-les-choses-qui-me-reviennent-c-est-agacant/1743688#at_medium=RSS_feeds','Zinédine Zidane sur sa relation avec Kylian Mbappé : « Les choses qui me reviennent, c''est agaçant »','2026-11-14T18:40:56');
 COMMIT;
