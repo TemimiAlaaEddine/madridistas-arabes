@@ -4489,4 +4489,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/otros-deportes/2026/11/14/montan
 INSERT INTO "vus" VALUES('https://as.com/futbol/arranca-el-skywalk-del-bernabeu-f202611-n/','Arranca el Skywalk del Bernabéu','2026-11-14T16:01:26');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/14/espi-sorprende-valdebebas.html','El otro ''Espi'' que sorprende en Valdebebas','2026-11-14T16:11:39');
 INSERT INTO "vus" VALUES('https://trivela.com.br/brasil/vinicius-junior-selecao-brasileira-real-madrid-inverte-logica/','Vinícius Junior inverte a lógica e seleção brasileira vira refúgio em vez do Real Madrid','2026-11-14T16:11:39');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2231792750739236579-bresil-raphinha-ne-retournera-pas-a-barcelone','Brésil : Raphinha ne retournera pas à Barcelone','2026-11-14T16:21:00');
 COMMIT;
