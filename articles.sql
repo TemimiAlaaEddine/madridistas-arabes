@@ -4549,4 +4549,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Zinedine-zi
 INSERT INTO "vus" VALUES('https://trivela.com.br/italia/ronaldinho-endrick-roma-milan-mercado/','Ronaldinho: ‘Endrick pode jogar em qualquer lugar do mundo’','2026-11-14T19:11:09');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-nations-les-joueurs-portugais-entrent-avec-le-numero-7-en-hommage-a-cristiano-ronaldo/20245568#at_medium=RSS_feeds','Les Portugais honorent Cristiano Ronaldo et entrent avec le numéro 7','2026-11-14T20:10:53');
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/iets-nieuws-op-zn-verlanglijstje-thibaut-courtois-dient-bod-in-om-italiaanse-derdeklasser-ac-reggiana-volledig-over-te-nemen~ae73a835/','Iets nieuws op z’n verlanglijstje: “Thibaut Courtois dient bod in om Italiaanse derdeklasser AC Reggiana volledig over te nemen”','2026-11-14T20:31:03');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera-rfef/una-cantada-de-gazzaniga-amplia-la-maldicion-del-huesca-a-domicilio-f202611-n/','Una cantada de Gazzaniga amplía la maldición del Huesca a domicilio','2026-11-14T20:50:45');
 COMMIT;
