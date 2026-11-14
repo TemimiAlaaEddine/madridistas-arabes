@@ -4443,4 +4443,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/real-madrid-joia-brasil
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Malgre-deux-missiles-de-vinicius-le-bresil-s-incline-sur-le-gong-contre-le-japon-en-match-amical/1743618#at_medium=RSS_feeds','Malgré deux missiles de Vinicius, le Brésil s''incline sur le gong contre le Japon en match amical','2026-11-14T13:20:47');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-14/japon-brasil-vinicius-ancelotti-derrota-1tps_4465141/','Los fantasmas siguen para Brasil: ni el mejor Vinícius sirvió para superar a Japón (3-2)','2026-11-14T14:10:42');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115430/japan-stun-brazil-3-2-vinicius-brace-singapore','Japan Stun Brazil 3-2 Despite Vinicius Jr Brace of Long-Range Goals in Singapore','2026-11-14T15:10:48');
+INSERT INTO "vus" VALUES('https://www.marca.com/otros-deportes/2026/11/14/montanas-rusas-futbol-40-experiencias-descubre-parque-real-madrid-dubai.html','Montañas rusas, fútbol y más de 40 experiencias: descubre el parque del Real Madrid en Dubái','2026-11-14T15:31:09');
 COMMIT;
