@@ -4524,4 +4524,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/brasil/vinicius-junior-selecao-
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2231792750739236579-bresil-raphinha-ne-retournera-pas-a-barcelone','Brésil : Raphinha ne retournera pas à Barcelone','2026-11-14T16:21:00');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/cules-en-la-noche/','Culés en la noche','2026-11-14T17:11:13');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6581439567403113508-on-prefere-les-joueurs-plus-lisses-didier-drogba-defend-kylian-mbappe','« On préfère les joueurs plus lisses » : Didier Drogba défend Kylian Mbappé','2026-11-14T17:21:05');
+INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/vinicius-20261114174106-nt.html','Brasil cae ante Japón pese al doblete de Vinicius y acaba con Ancelotti y Raphinha expulsados','2026-11-14T17:40:44');
 COMMIT;
