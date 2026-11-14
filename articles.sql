@@ -4347,4 +4347,5 @@ INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/seleccion/diego-forlan
 INSERT INTO "vus" VALUES('https://as.com/futbol/real-madrid/alcala-norte-nuestro-lema-es-pensad-como-mourinho-que-os-ira-bien-f202611-n/','Alcalá Norte: “Nuestro lema es: ‘Pensad como Mourinho que os irá bien”','2026-11-14T07:50:43');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/le-preguntan-a-ibrahimovic-quien-es-el-mejor-del-mundo-tanto-cules-como-madridistas-deben-escucharlo-f202611-v/','Le preguntan a Ibrahimovic quién es el mejor del mundo: tanto culés como madridistas deben escucharlo','2026-11-14T08:40:49');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/la-prensa-vuelve-a-mentir-sobre-el-caso-barca-negreira/','La prensa vuelve a mentir sobre el caso Barça-Negreira','2026-11-14T08:41:26');
+INSERT INTO "vus" VALUES('https://turkish-football.com/arda-guler-reveals-kevin-de-bruynes-tunnel-message-after-stunning-free-kick-against-belgium/','Arda Güler Reveals Kevin De Bruyne’s Tunnel Message After Stunning Free-Kick Against Belgium','2026-11-14T08:50:43');
 COMMIT;
