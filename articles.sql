@@ -4621,4 +4621,5 @@ INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-15/jobe-bel
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/15/latif-issman-asi-animal-estudia-comercio-internacional-firmado-real-madrid.html','Latif Issman, así es el "animal" que estudia Comercio Internacional y ya ha firmado por el Real Madrid','2026-11-15T06:31:15');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/Qualification-obligatoire-et-utilisation-de-kylian-mbappe-contre-la-turquie-zinedine-zidane-a-des-choses-a-clarifier/1743715#at_medium=RSS_feeds','Qualification obligatoire et utilisation de Kylian Mbappé : contre la Turquie, Zinédine Zidane a des choses à clarifier','2026-11-15T06:50:37');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/vinicius-giro-de-guion-f202611-n/','Vinicius, giro de guion','2026-11-15T09:20:46');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/celta/2026/11/15/borja-iglesias-miguel-roman-llegan-partido-santiago-bernabeu.html','Borja Iglesias y Miguel Román no llegan al partido del Santiago Bernabéu','2026-11-15T10:10:48');
 COMMIT;
