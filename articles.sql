@@ -4813,4 +4813,5 @@ INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261115/kik
 INSERT INTO "vus" VALUES('https://trivela.com.br/alemanha/real-madrid-preco-astronomico-bayern-tirar-olise/','Bayern quer manter Olise e tem avaliação recorde de craque na mira do Real Madrid','2026-11-15T17:11:10');
 INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/espana-inglaterra-un-partido-de-3000-millones-de-euros-f202611-n/','España-Inglaterra: un partido de 3.000 millones de euros','2026-11-15T17:20:43');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115472/madrid-daily-mastantuono-attracts-serie-a-interest-as-celta-face-two-absences','Madrid Daily: Mastantuono attracts Serie A interest as Celta face two absences','2026-11-15T17:41:04');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/La-compo-des-bleus-contre-la-turquie-mbappe-et-konate-de-retour-dans-le-onze-kumbedi-egalement-titulaire/1743852#at_medium=RSS_feeds','La compo des Bleus contre la Turquie : Mbappé et Konaté de retour dans le onze, Kumbedi également titulaire','2026-11-15T18:30:58');
 COMMIT;
