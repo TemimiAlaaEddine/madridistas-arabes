@@ -4841,4 +4841,5 @@ INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/lig
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8075219797976512020-equipe-de-france-konate-pointe-du-doigt-les-axes-de-progression','Équipe de France : Konaté pointe du doigt les axes de progression','2026-11-15T22:01:16');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Ibrahima-konate-apres-la-victoire-de-la-france-contre-la-turquie-en-ligue-des-nations-on-retient-le-resultat/1743901#at_medium=RSS_feeds','Ibrahima Konaté après la victoire de la France contre la Turquie en Ligue des nations : « On retient le résultat »','2026-11-15T22:20:49');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115482/jude-bellingham-delivers-another-assist-in-englands-win-over-spain','Jude Bellingham delivers another assist in England’s win over Spain','2026-11-15T22:21:08');
+INSERT INTO "vus" VALUES('https://as.com/opinion/mucho-bellingham-para-espana-f202611-n/','Mucho Bellingham para España','2026-11-15T22:40:50');
 COMMIT;
