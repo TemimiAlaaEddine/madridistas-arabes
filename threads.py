@@ -23,6 +23,12 @@ URL = re.compile(r"https?://\S+")
 
 # règles communes : thread écrit avec l'article (generer_site) ou après coup (decouper)
 REGLES = """- Tweet 1, l'accroche : commence par ce qui arrête le lecteur dans son fil (le constat le plus fort, un chiffre, une courte citation, une vraie question), puis nomme l'auteur ou le média dans ce même tweet, à l'intérieur de la phrase. Ne commence jamais par « يرى الصحفي... » ni « وفقًا لـ... » ; pour une information, le fait d'abord, la source ensuite. Ajoute #ريال_مدريد à la fin.
+- Gabarit du tweet 1 (codes des comptes foot arabes) : il s'ouvre par UN émoji et « | », selon le contenu, puis la phrase :
+  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » si le club ou la fédération l'a annoncé ; « 🏥 » blessure ou retour de blessure ; « 📋 » composition officielle (un joueur ou une ligne par ligne, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom]: » suivi de la citation «» quand le tweet est une déclaration ;
+  section mercato : « 🔄 ميركاتو | », et à la fin du tweet le stade de l'information d'après le texte : 🟢 accord ou opération avancée, 🟡 contacts ou intérêt, 🔴 simple rumeur ;
+  section tactique : « 🧠 قراءة تكتيكية | », un chiffre « 📊 » s'il y en a un ; section club : « 🏟️ » (stade, direction) ou « 💶 » (argent) ;
+  section debats et autres opinions : « 🔥 نقاش | » avec une vraie question, et le dernier tweet du thread finit par « وأنت، ما رأيك؟ 👇 ».
+  Aucun autre émoji dans le thread.
 - Tweets suivants : fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. L'avis reste attribué à son auteur, sans répéter « الكاتب » à chaque tweet. Le dernier porte la conclusion ou la phrase la plus marquante.
 - Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, 4 à 10 pour une conférence de presse (une déclaration forte par tweet).
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag, pas d'intertitre « ## ».
