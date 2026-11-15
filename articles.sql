@@ -4826,4 +4826,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a2424681659086216615-turqu
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/cruce-de-cables-inexplicable-de-endrick-empujo-al-arbitro-por-detras-en-mitad-del-partido-f202611-v/','Cruce de cables inexplicable de Endrick: empujó al árbitro por detrás en mitad del partido','2026-11-15T19:31:16');
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/live-turkse-doelman-ozer-ontpopt-zich-tot-boeman-van-mbappe-en-co-frankrijk-virtueel-uitgeschakeld~a81d7808/','LIVE. Turkse doelman Özer ontpopt zich tot boeman van Mbappé en co, Frankrijk virtueel uitgeschakeld','2026-11-15T20:30:56');
 INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/pelea-al-descanso-en-el-metropolitano-fabian-ben-white-bellingham-empujando-a-cucurella-f202611-v/','Pelea al descanso en el Metropolitano: Fabián, Ben White, Bellingham empujando a Cucurella…','2026-11-15T20:50:46');
+INSERT INTO "vus" VALUES('https://cadenaser.com/euskadi/2026/11/15/derrota-en-el-buesa-ante-un-real-madrid-superior-84-98-ser-vitoria/','Derrota en el Buesa ante un Real Madrid superior (84-98)','2026-11-15T21:01:32');
 COMMIT;
