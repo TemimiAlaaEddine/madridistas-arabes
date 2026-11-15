@@ -4723,4 +4723,5 @@ INSERT INTO "vus" VALUES('https://www.lagalerna.com/ser-y-estar-2/','Ser y estar
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/15/zidane-desmiente-los-rumores-de-una-mala-relacion-con-mbappe-no-puedo-evitar-que-se-digan-tonterias-es-una-pena-cadena-ser/','Zidane desmiente los rumores de una mala relación con Mbappé: "No puedo evitar que se digan tonterías, es una pena"','2026-11-15T12:20:41');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/15/beltran-capote-todoterreno-conquista-valdebebas.html','Beltrán Capote, el todoterreno que conquista Valdebebas','2026-11-15T12:51:10');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4425013225843575203-algerie-ibrahim-maza-et-anis-hadj-moussa-declarent-forfait','Algérie : Ibrahim Maza et Anis Hadj Moussa déclarent forfait','2026-11-15T13:20:40');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2695128655004683543-ronaldinho-envoie-endrick-en-serie-a','Ronaldinho envoie Endrick en Serie A','2026-11-15T13:50:43');
 COMMIT;
