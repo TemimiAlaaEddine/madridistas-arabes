@@ -4649,4 +4649,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/celta/2026/11/15/borja-ig
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1700018529163292186-equipe-de-france-kylian-mbappe-et-lucas-da-cunha-seront-titulaires-face-a-la-turquie','Équipe de France : Kylian Mbappé et Lucas Da Cunha seront titulaires face à la Turquie','2026-11-15T10:40:51');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a897958435263452747-portugal-forfait-bernardo-silva-retourne-a-madrid','Portugal : forfait, Bernardo Silva retourne à Madrid','2026-11-15T10:50:44');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/la-espana-fea-tiene-miedo/','La España fea tiene miedo','2026-11-15T10:51:27');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/15/bernardo-silva-tocado-y-calificado-como-no-apto-para-el-partido-frente-a-gales-cadena-ser/','Bernardo Silva, tocado y calificado como "no apto" para el partido frente a Gales','2026-11-15T11:10:51');
 COMMIT;
