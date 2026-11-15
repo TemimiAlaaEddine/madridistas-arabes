@@ -4842,4 +4842,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8075219797976512020-equip
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Ibrahima-konate-apres-la-victoire-de-la-france-contre-la-turquie-en-ligue-des-nations-on-retient-le-resultat/1743901#at_medium=RSS_feeds','Ibrahima Konaté après la victoire de la France contre la Turquie en Ligue des nations : « On retient le résultat »','2026-11-15T22:20:49');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115482/jude-bellingham-delivers-another-assist-in-englands-win-over-spain','Jude Bellingham delivers another assist in England’s win over Spain','2026-11-15T22:21:08');
 INSERT INTO "vus" VALUES('https://as.com/opinion/mucho-bellingham-para-espana-f202611-n/','Mucho Bellingham para España','2026-11-15T22:40:50');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115484/cucurella-and-huijsen-feature-as-spain-surrender-nations-league-group-lead-to-england','Cucurella and Huijsen feature as Spain surrender Nations League group lead to England','2026-11-15T22:50:43');
 COMMIT;
