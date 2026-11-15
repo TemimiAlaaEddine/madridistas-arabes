@@ -4622,4 +4622,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/15/la
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/Qualification-obligatoire-et-utilisation-de-kylian-mbappe-contre-la-turquie-zinedine-zidane-a-des-choses-a-clarifier/1743715#at_medium=RSS_feeds','Qualification obligatoire et utilisation de Kylian Mbappé : contre la Turquie, Zinédine Zidane a des choses à clarifier','2026-11-15T06:50:37');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/vinicius-giro-de-guion-f202611-n/','Vinicius, giro de guion','2026-11-15T09:20:46');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/celta/2026/11/15/borja-iglesias-miguel-roman-llegan-partido-santiago-bernabeu.html','Borja Iglesias y Miguel Román no llegan al partido del Santiago Bernabéu','2026-11-15T10:10:48');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1700018529163292186-equipe-de-france-kylian-mbappe-et-lucas-da-cunha-seront-titulaires-face-a-la-turquie','Équipe de France : Kylian Mbappé et Lucas Da Cunha seront titulaires face à la Turquie','2026-11-15T10:40:51');
 COMMIT;
