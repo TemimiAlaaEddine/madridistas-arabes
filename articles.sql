@@ -4802,4 +4802,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/la-metamorfosis-de
 INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/el-pele-del-pueblo-f202611-n/','El ‘Pelé del pueblo’','2026-11-15T15:41:38');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261115/kiko-casilla-propiedades-mujer-local-abrimos-centro-eliminar-piojos-dt/1003744459120_0.html','Kiko Casilla (40), sobre sus propiedades: "Mi mujer y yo teníamos un local y abrimos un centro para eliminar piojos"','2026-11-15T16:01:32');
 INSERT INTO "vus" VALUES('https://trivela.com.br/alemanha/real-madrid-preco-astronomico-bayern-tirar-olise/','Bayern quer manter Olise e tem avaliação recorde de craque na mira do Real Madrid','2026-11-15T17:11:10');
+INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/espana-inglaterra-un-partido-de-3000-millones-de-euros-f202611-n/','España-Inglaterra: un partido de 3.000 millones de euros','2026-11-15T17:20:43');
 COMMIT;
