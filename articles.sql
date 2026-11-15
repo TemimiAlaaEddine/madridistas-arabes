@@ -4843,4 +4843,6 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Ibrahima-ko
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115482/jude-bellingham-delivers-another-assist-in-englands-win-over-spain','Jude Bellingham delivers another assist in England’s win over Spain','2026-11-15T22:21:08');
 INSERT INTO "vus" VALUES('https://as.com/opinion/mucho-bellingham-para-espana-f202611-n/','Mucho Bellingham para España','2026-11-15T22:40:50');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115484/cucurella-and-huijsen-feature-as-spain-surrender-nations-league-group-lead-to-england','Cucurella and Huijsen feature as Spain surrender Nations League group lead to England','2026-11-15T22:50:43');
+INSERT INTO "vus" VALUES('https://trivela.com.br/europa/olise-real-madrid-bruno-fernandes-impasse-united-resumo-dia/','Bruno Fernandes em impasse no United, Haaland fala sobre polêmica do City e mais: Veja o resumo do dia','2026-11-15T23:10:52');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Gravement-blesse-au-genou-droit-en-mars-rodrygo-se-rapproche-d-un-retour-avec-le-real-madrid/1743880#at_medium=RSS_feeds','Gravement blessé au genou droit en mars, Rodrygo se rapproche d''un retour avec le Real Madrid','2026-11-15T23:10:52');
 COMMIT;
