@@ -4829,4 +4829,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/seleccion/pelea-al-descanso-en-e
 INSERT INTO "vus" VALUES('https://cadenaser.com/euskadi/2026/11/15/derrota-en-el-buesa-ante-un-real-madrid-superior-84-98-ser-vitoria/','Derrota en el Buesa ante un Real Madrid superior (84-98)','2026-11-15T21:01:32');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/15/el-feo-gesto-de-bellingham-con-cucurella-en-la-jugada-que-termino-en-penalti-de-cubarsi-sobre-kane-cadena-ser/','El feo gesto de Bellingham con Cucurella en la jugada que terminó en penalti de Cubarsí sobre Kane','2026-11-15T21:20:48');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/liga-das-nacoes/jogo/15-11-2026/franca-turquia.ghtml','França joga bem, vence a Turquia e se classifica em primeiro na Liga das Nações','2026-11-15T21:50:40');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a8075219797976512020-equipe-de-france-konate-pointe-du-doigt-les-axes-de-progression','Équipe de France : Konaté pointe du doigt les axes de progression','2026-11-15T22:01:16');
 COMMIT;
