@@ -5153,4 +5153,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/zidane-arda-guler-fanta
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/tentacion-de-60m-para-endrick-f202611-n/','Tentación de 60M€ para Endrick','2026-11-16T16:31:05');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6740239197378200125-jt-foot-mercato-le-barca-retient-son-souffle-pour-cubarsi','JT Foot Mercato : le Barça retient son souffle pour Cubarsí','2026-11-16T16:31:05');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/detallazo-de-alemania-con-rudiger-f202611-n/','Detallazo de Alemania con Rüdiger','2026-11-16T16:41:14');
+INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/laliga-jornada-13-noviembre-2026-derbi-sevillano.html','LaLiga vuelve tras el parón con el gran derbi sevillano y el Barça-Villarreal en la jornada 13','2026-11-16T17:01:25');
 COMMIT;
