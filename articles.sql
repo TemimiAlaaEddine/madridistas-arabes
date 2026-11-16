@@ -4924,4 +4924,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Zinedine-zi
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-16/envidia-profunda-del-bipolar-balompedico-vinicius-jr.html','Envidia profunda del bipolar balompédico Vinicius Jr.','2026-11-16T04:41:31');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/Combatif-et-determine-mais-inefficace-kylian-mbappe-a-manque-de-reussite-pour-son-retour-avec-les-bleus/1743938#at_medium=RSS_feeds','Combatif et déterminé mais inefficace, Kylian Mbappé a manqué de réussite pour son retour avec les Bleus','2026-11-16T05:01:30');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/16/el-fichaje-frustrado-de-harry-kane-por-el-real-madrid-y-por-que-nunca-se-llego-a-hacer-cadena-ser/','El fichaje frustrado de Harry Kane por el Real Madrid y por qué nunca se llegó a hacer','2026-11-16T06:41:33');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-momentazo-de-guler-y-mbappe-que-no-se-vio-en-tv-f202611-v/','El momentazo de Güler y Mbappé que no se vio en TV','2026-11-16T07:01:18');
 COMMIT;
