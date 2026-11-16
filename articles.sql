@@ -4868,4 +4868,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/olise-real-madrid-bruno-fernandes-impasse-united-resumo-dia/','Bruno Fernandes em impasse no United, Haaland fala sobre polêmica do City e mais: Veja o resumo do dia','2026-11-15T23:10:52');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Gravement-blesse-au-genou-droit-en-mars-rodrygo-se-rapproche-d-un-retour-avec-le-real-madrid/1743880#at_medium=RSS_feeds','Gravement blessé au genou droit en mars, Rodrygo se rapproche d''un retour avec le Real Madrid','2026-11-15T23:10:52');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4450439188561704795-equipe-de-france-kylian-mbappe-a-completement-manque-son-grand-retour','Équipe de France : Kylian Mbappé a complètement manqué son grand retour !','2026-11-15T23:21:18');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2924909689575013179-endrick-a-agresse-un-arbitre','Endrick a agressé un arbitre !','2026-11-16T00:10:54');
 COMMIT;
