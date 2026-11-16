@@ -4993,4 +4993,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/vinicius-entrene-m
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/dumfries-se-resarce-f202611-n/','Dumfries se resarce','2026-11-16T09:50:44');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/bale-sucede-a-sergio-ramos-en-la-compra-del-sevilla-f202611-n/','Bale sucede a Sergio Ramos en la compra del Sevilla','2026-11-16T09:50:44');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/ancelotti-hace-mucho-tiempo-que-no-somos-competitivos-f202611-n/','“Mañana empezaré con Endrick”','2026-11-16T09:50:50');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6165536007271658994-real-madrid-vinicius-jr-explique-enfin-ses-performances-catastrophiques','Real Madrid : Vinicius Jr explique enfin ses performances catastrophiques','2026-11-16T10:01:18');
 COMMIT;
