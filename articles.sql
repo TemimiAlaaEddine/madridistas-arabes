@@ -5104,4 +5104,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/16/romelu-lukak
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/spaanse-krant-ziet-dumfries-bij-oranje-wel-weer-als-wervelwind-op-de-flank','Spaanse krant ziet Dumfries bij Oranje wél weer als ''wervelwind op de flank''','2026-11-16T12:01:58');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/nations-league/2026/11/16/reconquista-bellingham-perdi-sonrisa-me-senti-poco-chivo-expiatorio.html','La reconquista de Bellingham: "Perdí la sonrisa, me sentí un poco como el chivo expiatorio"','2026-11-16T12:51:55');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-reaccion-de-bellingham-cuando-le-preguntan-por-su-choque-con-cucurella-f202611-v/','La reacción de Bellingham cuando le preguntan por su choque con Cucurella','2026-11-16T13:11:00');
+INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/16/vinicius-explica-el-seu-mal-inici-de-temporada-vaig-acabar-entrenant-menys-que-en-els-ultims-anys-sercat/','Vinicius explica el seu mal inici de temporada: "Vaig acabar entrenant menys que en els últims anys..."','2026-11-16T13:31:05');
 COMMIT;
