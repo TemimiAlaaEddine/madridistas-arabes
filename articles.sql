@@ -5183,4 +5183,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/detallazo-de-alema
 INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/laliga-jornada-13-noviembre-2026-derbi-sevillano.html','LaLiga vuelve tras el parón con el gran derbi sevillano y el Barça-Villarreal en la jornada 13','2026-11-16T17:01:25');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1879467674283174346-portugal-apres-cristiano-ronaldo-jorge-jesus-soffre-une-polemique-avec-bernardo-silva','Portugal : après Cristiano Ronaldo, Jorge Jesus s’offre une polémique avec Bernardo Silva !','2026-11-16T17:10:43');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/16/madrid-extremo-fichajes.html','El Madrid más ''extremo'' en los fichajes','2026-11-16T17:11:18');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-gesto-de-zidane-al-referirse-a-arda-guler-que-es-muy-significativo-f202611-v/','El gesto de Zidane al referirse a Arda Güler que es muy significativo','2026-11-16T17:31:07');
 COMMIT;
