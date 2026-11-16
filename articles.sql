@@ -5005,4 +5005,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/ancelotti-hace-muc
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6165536007271658994-real-madrid-vinicius-jr-explique-enfin-ses-performances-catastrophiques','Real Madrid : Vinicius Jr explique enfin ses performances catastrophiques','2026-11-16T10:01:18');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1732835552196849517-neymar-dement-une-relation-avec-lex-de-vinicius-jr','Neymar dément une relation avec l’ex de Vinicius Jr','2026-11-16T10:51:06');
 INSERT INTO "vus" VALUES('https://cadenaser.com/galicia/2026/11/16/el-celta-inicia-su-frenetico-final-de-ano-radio-vigo/','El Celta inicia su frenético final de año','2026-11-16T10:51:06');
+INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-16/el-mea-culpa-de-vinicius-aproveche-las-vacaciones-para-descansar-y-termine-entrenando-menos.html','El ‘mea culpa’ de Vinicius: “Aproveché las vacaciones para descansar y terminé entrenando menos”','2026-11-16T11:20:54');
 COMMIT;
