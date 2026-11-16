@@ -4988,4 +4988,9 @@ INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/mark-van-bommel-zal-ee
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/16/vinicius-explica-su-mal-inicio-de-temporada-termine-entrenando-menos-que-en-los-ultimos-anos-cadena-ser/','Vinicius explica su mal inicio de temporada: "Terminé entrenando menos que en los últimos años..."','2026-11-16T09:20:46');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/16/sanitas-entrega-real-madrid-femenino-nuevas-tarjetas-sanitarias-digitales.html','Sanitas entrega al Real Madrid Femenino sus nuevas tarjetas sanitarias digitales','2026-11-16T09:31:21');
 INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/vinicius-explica-sin-rodeos-su-bajon-el-mundial-las-vacaciones-y-la-renovacion.html','Vinícius explica sin rodeos su bajón: el Mundial, las vacaciones y la renovación','2026-11-16T09:31:21');
+INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/vinicius-entona-mea-culpa-desgrana-motivos-bajo-20261116100131-nt.html','Vinicius entona el ''mea culpa'' y desgrana los motivos de su bajo rendimiento','2026-11-16T09:50:44');
+INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/vinicius-entrene-menos-cometi-errores-soy-humano-f202611-n/','Vinicius: “Entrené menos, cometí errores, soy humano”','2026-11-16T09:50:44');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/dumfries-se-resarce-f202611-n/','Dumfries se resarce','2026-11-16T09:50:44');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/bale-sucede-a-sergio-ramos-en-la-compra-del-sevilla-f202611-n/','Bale sucede a Sergio Ramos en la compra del Sevilla','2026-11-16T09:50:44');
+INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/ancelotti-hace-mucho-tiempo-que-no-somos-competitivos-f202611-n/','“Mañana empezaré con Endrick”','2026-11-16T09:50:50');
 COMMIT;
