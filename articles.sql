@@ -4948,4 +4948,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/16/raul-varela-der
 INSERT INTO "vus" VALUES('https://turkish-football.com/arda-gulers-new-real-madrid-salary-revealed-as-jose-mourinho-names-turkish-star-among-four-untouchables/','Arda Güler’s New Real Madrid Salary Revealed as José Mourinho Names Turkish Star Among Four ‘Untouchables’','2026-11-16T08:11:08');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261116/vinicius-senala-factores-bajon-entrene-afecto-clubes-interesaran-verano/1003744459411_0.html','Vinicius señala los factores de su bajón: "Entrené menos y me afectó que tantos clubes se interesaran por mí en verano"','2026-11-16T08:30:58');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/16/vinicius-explica-bajon-habla-renovacion-me-senti-realmente-abrumado.html','Vinicius explica su bajón y habla de la renovación: “Me sentí realmente abrumado”','2026-11-16T08:31:20');
+INSERT INTO "vus" VALUES('https://www.lagalerna.com/lapoltergeist/','Lapoltergeist','2026-11-16T08:40:58');
 COMMIT;
