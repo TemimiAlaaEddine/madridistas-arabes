@@ -5141,4 +5141,6 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50501260/vinici
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-momento-que-todo-el-madridismo-comparte-vean-lo-que-sucede-cuando-arda-guler-y-konate-se-cruzan-en-el-cesped-f202611-v/','El momento que todo el madridismo comparte: vean lo que sucede cuando Arda Güler y Konate se cruzan en el césped','2026-11-16T15:01:23');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/16/jose-bernabeu-elegido-unanimidad-presidente-federacion-penas-sureste.html','José Bernabéu, elegido por unanimidad presidente de la Federación de Peñas del Sureste','2026-11-16T15:40:59');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/zidane-arda-guler-fantasticos-muito-bom/','Zidane exalta destaque pouco valorizado do Real Madrid: ‘Ele é muito, muito, muito bom’','2026-11-16T16:11:36');
+INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/tentacion-de-60m-para-endrick-f202611-n/','Tentación de 60M€ para Endrick','2026-11-16T16:31:05');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6740239197378200125-jt-foot-mercato-le-barca-retient-son-souffle-pour-cubarsi','JT Foot Mercato : le Barça retient son souffle pour Cubarsí','2026-11-16T16:31:05');
 COMMIT;
