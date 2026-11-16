@@ -5196,4 +5196,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-gesto-de-zidane-al-ref
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/quien-es-john-shulman-el-socio-milmillonario-de-gareth-bale-con-el-que-pretende-comprar-el-sevilla-f202611-n/','Quién es John Shulman, el socio milmillonario de Gareth Bale con el que pretende comprar el Sevilla','2026-11-16T18:10:44');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/borja-iglesias-objetivo-bernabeu-f202611-n/','Borja Iglesias, objetivo Bernabéu','2026-11-16T18:50:48');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/16/bernardo-silva-vuelve-madrid-polemica.html','Bernardo Silva vuelve a Madrid con polémica','2026-11-16T19:01:52');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/chivu-treedt-als-eerste-buitenlander-in-zestien-jaar-in-de-voetsporen-van-mourinho','Chivu treedt als eerste buitenlander in zestien jaar in de voetsporen van Mourinho','2026-11-16T19:31:04');
 COMMIT;
