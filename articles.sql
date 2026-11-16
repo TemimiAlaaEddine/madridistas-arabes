@@ -5111,4 +5111,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/16/el-barca-es-
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1693416576156617498-real-madrid-bonne-nouvelle-pour-jose-mourinho','Real Madrid : bonne nouvelle pour José Mourinho','2026-11-16T14:31:42');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/vinicius-verklaart-moeizame-seizoenstart-ik-ben-ook-maar-een-mens','Vinícius verklaart moeizame seizoenstart: ''Ik ben ook maar een mens''','2026-11-16T14:31:42');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50501260/vinicius-junior-real-madrid-arsenal-transfer-interest','Vinícius Júnior: ''Overwhelmed'' by Arsenal transfer interest','2026-11-16T14:31:42');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-momento-que-todo-el-madridismo-comparte-vean-lo-que-sucede-cuando-arda-guler-y-konate-se-cruzan-en-el-cesped-f202611-v/','El momento que todo el madridismo comparte: vean lo que sucede cuando Arda Güler y Konate se cruzan en el césped','2026-11-16T15:01:23');
 COMMIT;
