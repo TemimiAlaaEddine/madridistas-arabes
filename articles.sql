@@ -5108,4 +5108,7 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/16/vinicius-exp
 INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/kijk-toen-waren-ze-nog-met-anderhalf-met-romelu-lukaku-verdwijnt-er-nog-een-vaandeldrager-van-de-gouden-generatie~a0528e22/','KIJK. Toen waren ze nog met anderhalf: met Romelu Lukaku verdwijnt er nóg een vaandeldrager van de Gouden Generatie','2026-11-16T14:10:45');
 INSERT INTO "vus" VALUES('https://cadenaser.com/galicia/2026/11/16/el-conclave-celeste-antes-de-la-visita-al-bernabeu-radio-vigo/','El Cónclave Celeste antes de la visita al Bernabéu','2026-11-16T14:10:45');
 INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/16/el-barca-es-lequip-que-mes-futbolistes-utilitza-per-davant-de-latletic-de-madrid-i-del-real-madrid-sercat/','El Barça és l''equip que més futbolistes utilitza per davant de l''Atlètic de Madrid i del Real Madrid','2026-11-16T14:20:47');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1693416576156617498-real-madrid-bonne-nouvelle-pour-jose-mourinho','Real Madrid : bonne nouvelle pour José Mourinho','2026-11-16T14:31:42');
+INSERT INTO "vus" VALUES('https://www.vi.nl/video/vinicius-verklaart-moeizame-seizoenstart-ik-ben-ook-maar-een-mens','Vinícius verklaart moeizame seizoenstart: ''Ik ben ook maar een mens''','2026-11-16T14:31:42');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50501260/vinicius-junior-real-madrid-arsenal-transfer-interest','Vinícius Júnior: ''Overwhelmed'' by Arsenal transfer interest','2026-11-16T14:31:42');
 COMMIT;
