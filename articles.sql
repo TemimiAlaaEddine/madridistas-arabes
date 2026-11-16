@@ -4984,4 +4984,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/16/vi
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/lapoltergeist/','Lapoltergeist','2026-11-16T08:40:58');
 INSERT INTO "vus" VALUES('https://turkish-football.com/basaksehir-striker-eldor-shomurodov-claims-real-madrid-are-already-tracking-galatasaray-star-aleksey-batrakov/','Başakşehir Striker Eldor Shomurodov Claims Real Madrid Are Already Tracking Galatasaray Star Aleksey Batrakov','2026-11-16T08:51:17');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/se-estrena-barca-negreira-la-pelicula/','¡Se estrena Barça/Negreira, la película!','2026-11-16T09:02:01');
+INSERT INTO "vus" VALUES('https://www.hln.be/rode-duivels/mark-van-bommel-zal-eerste-keer-toch-zeggen-courtois-jij-zit-op-de-bank-onze-analisten-over-sterke-senne-lammens-en-concurrentiestrijd-in-doel~a5bfd8fd/','“Mark van Bommel zal eerste keer toch zeggen: ‘Courtois, jij zit op de bank’”: onze analisten over sterke Senne Lammens en concurrentiestrijd in doel','2026-11-16T09:10:46');
 COMMIT;
