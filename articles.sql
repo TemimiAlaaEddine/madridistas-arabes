@@ -5221,4 +5221,5 @@ INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/d
 INSERT INTO "vus" VALUES('https://trivela.com.br/brasil/jogadores-selecao-brasileira-cotados-mudar-clube-janeiro-mercado/','Além de Endrick: Os jogadores da Seleção que podem mudar de clube no mercado de janeiro','2026-11-16T20:10:55');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4497341731171830872-le-real-madrid-a-sacrifie-la-piste-harry-kane-pour-mbappe','Le Real Madrid a sacrifié la piste Harry Kane pour Mbappé','2026-11-16T20:10:55');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8636941715777868379-le-comportement-de-michael-olise-aurait-refroidi-le-real-madrid','Le comportement de Michael Olise aurait refroidi le Real Madrid !','2026-11-16T20:11:23');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/aanvoerder-dumfries-treurt-na-wanprestatie-dit-was-collectief-falen','Aanvoerder Dumfries treurt na ''wanprestatie'': ''Dit was collectief falen''','2026-11-16T22:01:24');
 COMMIT;
