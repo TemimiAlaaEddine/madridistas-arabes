@@ -1,0 +1,54 @@
+name: Appliquer la revue des sources
+
+on:
+  issue_comment:
+    types: [created] # commentaire « /appliquer » sous l'issue « Revue des sources du … »
+
+concurrency: appliquer_revue
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  appliquer:
+    # seul le propriétaire du dépôt peut appliquer : un commentaire d'un autre compte est ignoré
+    if: >-
+      ${{ !github.event.issue.pull_request &&
+      github.event.comment.user.login == github.repository_owner &&
+      startsWith(github.event.issue.title, 'Revue des sources') &&
+      startsWith(github.event.comment.body, '/appliquer') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser # importé par commun.py
+      - name: Décisions cochées appliquées à config.json
+        env:
+          CORPS: ${{ github.event.issue.body }} # par l'environnement, jamais dans le script : pas d'injection de commande
+          PYTHONIOENCODING: utf-8
+        run: python sources.py --appliquer > resume.md
+      - name: Sauvegarde dans le dépôt
+        run: |
+          git config user.name "mise-a-jour"
+          git config user.email "actions@users.noreply.github.com"
+          git add config.json
+          git diff --cached --quiet || (git commit -m "Revue des sources appliquée (issue #${{ github.event.issue.number }})" && git pull --rebase && git push)
+      - name: Résumé et fermeture de l'issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMERO: ${{ github.event.issue.number }}
+        run: |
+          gh issue close "$NUMERO" --repo "$GITHUB_REPOSITORY" --comment "$(cat resume.md)"
+      - name: Échec signalé dans l'issue (elle reste ouverte)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMERO: ${{ github.event.issue.number }}
+        run: |
+          gh issue comment "$NUMERO" --repo "$GITHUB_REPOSITORY" --body "❌ Application en échec : config.json n'a pas été modifié. Journal : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

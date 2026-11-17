@@ -56,10 +56,17 @@ def alertes_workflows(workflows, derniers):
     return alertes
 
 
+def revues_ouvertes(issues):
+    """Issues « Revue des sources » encore ouvertes : décisions à cocher (puis commentaire /appliquer)."""
+    return [{"numero": i["number"], "titre": i["title"], "url": i["html_url"],
+             "a_decider": len(re.findall(r"^\s*- \[[ xX]\] (?:Retirer le flux|Ajouter le flux|Ajouter la graphie) `", i.get("body") or "", re.M))}
+            for i in issues if i["title"].startswith("Revue des sources") and "pull_request" not in i]
+
+
 def lire_github(depuis):
-    """Passages du workflow depuis `depuis` (UTC), dernière revue du lundi et alertes des autres workflows ;
-    vides si l'API ne répond pas."""
-    passages, revue, alertes = [], None, []
+    """Passages du workflow depuis `depuis` (UTC), dernière revue du lundi, alertes des autres workflows et revues
+    ouvertes ; vides si l'API ne répond pas."""
+    passages, revue, alertes, revues = [], None, [], []
     try:
         for page in range(1, 6):
             lot = api(f"actions/workflows/mise_a_jour.yml/runs?per_page=100&page={page}&created=%3E%3D{depuis:%Y-%m-%dT%H:%M:%SZ}")["workflow_runs"]
@@ -71,9 +78,10 @@ def lire_github(depuis):
         derniers = {wf["id"]: api(f"actions/workflows/{wf['id']}/runs?per_page=5")["workflow_runs"] for wf in workflows
                     if not wf["path"].endswith(("mise_a_jour.yml", "revue_sources.yml"))}
         alertes = alertes_workflows(workflows, derniers)
+        revues = revues_ouvertes(api("issues?state=open&per_page=50"))
     except (OSError, ValueError, KeyError) as err:
         print(f"  ! statut : API GitHub injoignable ({err}), tableau sans les passages")
-    return passages, revue, alertes
+    return passages, revue, alertes, revues
 
 
 def compter(con, table, col, a, b, cond="1"):
@@ -109,7 +117,7 @@ SERIES = {  # nom : (table, colonne de date, condition)
 
 
 def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=BASE / "videos", connaissance=BASE / "connaissance.md",
-            alertes_gh=()):
+            alertes_gh=(), revues=()):
     dec = heure_madrid(utc) - utc
     madrid = utc + dec
     j0 = datetime.combine(madrid.date(), time()) - dec  # minuit à Madrid, en UTC
@@ -211,8 +219,10 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
                                   ("performance", "📊", "Analyste Facebook", "Semaine comparée, posts par format et par heure"),
                                   ("audit", "⚖️", "Auditeur", "Relit 20 publications tirées au hasard face à leur article"),
                                   ("sante", "🩺", "Santé technique", "Jeton Facebook, quota Typefully, pannes en cours")]:
+        en_attente = [f"issue n° {r['numero']} : " + (f"{pluriel(r['a_decider'], 'décision')} à cocher, puis commente /appliquer" if r["a_decider"]
+                       else "ouverte sans décision à cocher, à fermer une fois lue") for r in revues] if id_ == "sources" else []
         agents.append(agent(id_, emoji, nom, role, "lundi", [("Dernier rapport", dernier_rapport), ("Prochain", f"lundi {lundi}, 7 h (Madrid)")],
-                            [] if reussi else ["dernier rapport en échec : voir l'onglet Actions"]))
+                            [] if reussi else ["dernier rapport en échec : voir l'onglet Actions"], attente=en_attente))
 
     # --- équipe à la demande (Claude Code)
     textes = sorted(scripts.glob("*.md")) if scripts.exists() else []
@@ -245,7 +255,7 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
     }
     kpi = [("Articles aujourd'hui", aa, ah), ("Threads X", ta, th), ("Posts Facebook", pfa, pfh),
            ("Passages réussis", f"{len(p_auj) - len(rates)}/{len(p_auj)}" if p_auj else "–", None), ("Pannes en cours", len(pannes), None)]
-    return {"genere": iso(utc) + "Z", "dernier_passage": dernier, "kpi": kpi, "agents": agents, "graphes": graphes, "faits": a_valider}
+    return {"genere": iso(utc) + "Z", "dernier_passage": dernier, "kpi": kpi, "agents": agents, "graphes": graphes, "faits": a_valider, "revues": list(revues)}
 
 
 ETATS = {"ok": "Actif", "attente": "T'attend", "bloque": "Bloqué", "repos": "Au repos", "demande": "Sur demande"}
@@ -254,14 +264,25 @@ EQUIPES = {"pipeline": ("⚙️ Pipeline automatique", "toutes les 10 minutes, s
            "demande": ("🧑‍💻 Équipe à la demande", "dans Claude Code, quand tu l'appelles")}
 
 
-def a_faire(faits):
-    """Faits notés à valider : cases à cocher, puis une issue GitHub pré-remplie que le workflow « Validation des faits »
-    traite (seule une issue ouverte par le propriétaire du dépôt est prise en compte)."""
-    if not faits:
+def a_faire(faits, revues=()):
+    """Section « À faire » : revues du lundi à décider (lien vers l'issue) et faits notés à valider (cases à cocher, puis
+    une issue pré-remplie que le workflow « Validation des faits » traite ; seule une issue du propriétaire compte)."""
+    if not (faits or revues):
         return ""
+    lignes_revue = "".join(
+        f'<li><a class="revue" href="{e(r["url"])}" target="_blank" rel="noopener"><b>🧭 {e(r["titre"])}</b> (issue n° {r["numero"]})<span>'
+        + (f'{pluriel(r["a_decider"], "décision")} : coche ce que tu acceptes, puis écris le commentaire <code>/appliquer</code>. '
+           f'<code>config.json</code> est modifié et l’issue se ferme.' if r["a_decider"] else
+           "Pas de décision à cocher (revue d'avant les cases) : applique-la à la main ou ferme l'issue.")
+        + '</span><em>Ouvrir l’issue →</em></a></li>' for r in revues)
+    bloc_revues = (f'<h3>Revue des sources</h3><ul class="revues">{lignes_revue}</ul>') if revues else ""
+    if not faits:
+        return (f'<section class="carte a-faire" id="a-faire"><h2>À faire <small>{pluriel(len(revues), "revue")} du lundi</small></h2>'
+                f'{bloc_revues}</section>')
     ligne = lambda i, d, f, j, l: (f'<li><label><input type="checkbox" name="fait" value="{i}" checked><span><b>n° {i}</b> · {e(d)} · '  # noqa: E731
                                    f'{e(f)} <a href="{e(l)}" target="_blank" rel="noopener">{e(j)}</a></span></label></li>') if l else         f'<li><label><input type="checkbox" name="fait" value="{i}" checked><span><b>n° {i}</b> · {e(d)} · {e(f)}</span></label></li>'
-    return (f'<section class="carte a-faire" id="a-faire"><h2>À faire · {pluriel(len(faits), "fait")} à valider <small>notés par la Mémoire</small></h2>'
+    return (f'<section class="carte a-faire" id="a-faire"><h2>À faire</h2>{bloc_revues}'
+            f'<h3>{pluriel(len(faits), "fait")} à valider <small>notés par la Mémoire</small></h3>'
             f'<p class="aide">Décoche ce qui est faux ou sans intérêt, puis « Valider sur GitHub » et « Submit new issue ». Claude range les faits '
             f'cochés dans <code>connaissance.md</code> (bonne section, fusion, tableau des matchs) ; les décochés ne reviennent pas. '
             f'La liste disparaît au passage suivant (10 min environ).</p>'
@@ -304,11 +325,11 @@ def page(d):
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
 <style>{CSS}</style></head><body>
 <header class="haut"><div><h1>Statut de l'équipe</h1><p><bdi>المدريديستا علاء</bdi> · agents du site, de X et de la Page Facebook</p></div>
-<div class="etat-global e-{humeur[0]}"><i class="point"></i>{f'<a href="#a-faire">{humeur[1]}</a>' if d["faits"] else humeur[1]}<small>Dernier passage <time data-depuis="{d['dernier_passage'] or ''}">–</time> ·
+<div class="etat-global e-{humeur[0]}"><i class="point"></i>{f'<a href="#a-faire">{humeur[1]}</a>' if d["faits"] or d.get("revues") else humeur[1]}<small>Dernier passage <time data-depuis="{d['dernier_passage'] or ''}">–</time> ·
 mis à jour <time data-depuis="{d['genere']}">–</time></small></div></header>
 <main>
 <div class="kpis">{"".join(tuile(*k) for k in d["kpi"])}</div>
-{a_faire(d["faits"])}
+{a_faire(d["faits"], d.get("revues", []))}
 <section class="carte"><h2>Organigramme</h2><div class="organi"><div class="chef">👤 <b>Toi</b><small>rédacteur en chef · tu décides et tu publies</small></div>
 <div class="branches">{organi}</div></div>
 <p class="legende">{"".join(f'<span class="e-{k}"><i class="point"></i>{v}</span>' for k, v in ETATS.items())}</p></section>
@@ -374,7 +395,10 @@ dl{margin:12px 0 0;display:grid;gap:8px}.rang{display:grid;grid-template-columns
 .blocages{margin-top:10px;padding-top:10px;border-top:1px solid var(--bord);display:grid;grid-template-columns:120px 1fr;gap:8px}
 .blocages span{color:var(--doux);font-size:13px}.blocages ul{margin:0;padding:0;list-style:none}.blocages li{color:var(--c)}
 .blocages li.rien{color:var(--doux)}
-.a-faire{border:2px solid var(--ambre)}.aide{color:var(--doux);font-size:14px;margin:6px 0 12px}
+.a-faire{border:2px solid var(--ambre)}.a-faire h3{font-size:15px;margin:16px 0 4px}.a-faire h3 small{color:var(--doux);font-weight:400}
+.revues{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.revue{display:grid;gap:2px;padding:10px 12px;border-radius:9px;background:var(--fond);color:inherit;text-decoration:none;border-inline-start:3px solid var(--ambre)}
+.revue span{color:var(--doux);font-size:14px}.revue em{color:var(--bleu);font-style:normal;font-weight:600;font-size:14px}.revue:hover em{text-decoration:underline}.aide{color:var(--doux);font-size:14px;margin:6px 0 12px}
 .etat-global a{color:inherit;text-decoration:underline;text-underline-offset:3px}
 .faits{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:420px;overflow-y:auto}
 .faits label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:9px;background:var(--fond);cursor:pointer}
@@ -429,9 +453,9 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     restaurer_base(DB_PATH)
     utc = maintenant()
-    passages, revue, alertes = lire_github(utc - timedelta(days=2))
+    passages, revue, alertes, revues = lire_github(utc - timedelta(days=2))
     con = sqlite3.connect(DB_PATH)
-    d = donnees(con, utc, passages, revue, alertes_gh=alertes)
+    d = donnees(con, utc, passages, revue, alertes_gh=alertes, revues=revues)
     con.close()
     SORTIE.mkdir(exist_ok=True)
     (SORTIE / "index.html").write_text(page(d), encoding="utf-8")

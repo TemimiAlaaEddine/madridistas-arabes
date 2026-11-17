@@ -116,7 +116,7 @@ Chaque lundi à 7 h (heure d'Espagne), le workflow « Revue des sources » ouvre
 - **audit de conformité** (`audit.py`, un appel à Claude) : 15 threads X et 5 posts Facebook de la semaine, tirés au hasard, relus face à leur article (fidélité, attribution, rumeurs, citations, étiquettes 🚨 et ✅, règles des plateformes, personnes et vie privée). Seuls les écarts sont listés, avec la correction proposée ; rien n'est modifié. Les images de presse ne sont pas signalées (décision assumée).
 - **santé technique** (`sante.py`) : validité du jeton de la Page Facebook, quota Typefully avec sa projection à la fin du mois (⚠️ au-delà de 80 %), envois en échec en ce moment.
 
-Rien n'est modifié automatiquement : tu décides, puis tu demandes à Claude Code d'appliquer la revue, ou tu modifies `config.json` à la main. Revue à la demande : bouton « Run workflow » du workflow, ou `python sources.py` sur le PC.
+Rien n'est modifié sans toi. L'issue finit par une section **Décisions** : une case par flux à retirer, par flux à ajouter (seulement ceux lus avec succès) et par graphie arabe. Coche ce que tu acceptes, puis écris le commentaire `/appliquer` : le workflow « Appliquer la revue des sources » (`python sources.py --appliquer`, sans appel à Claude) modifie `config.json`, poste le résumé et ferme l'issue. Seul un commentaire du propriétaire du dépôt est pris en compte ; un flux ajouté ne reçoit jamais `autorisation`. Le tableau de bord signale dans « À faire » les revues encore ouvertes. Tu peux aussi demander à Claude Code d'appliquer la revue, ou modifier `config.json` à la main. Revue à la demande : bouton « Run workflow » du workflow, ou `python sources.py` sur le PC.
 
 ## Tableau de bord de l'équipe
 

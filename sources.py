@@ -5,10 +5,12 @@
 3. Médias cités dans nos articles (« بحسب «آس» ») : ceux qu'on lit de seconde main sont des sources à suivre.
 4. Avis de Claude : flux à retirer, sources à ajouter ; chaque flux proposé est lu avant d'être recommandé.
 Le rapport sort en Markdown ; le workflow revue_sources.yml en fait une issue GitHub chaque lundi.
-Rien n'est changé dans config.json : c'est toi qui décides.
+Rien n'est changé dans config.json sans toi : tu coches les décisions de l'issue, et le commentaire /appliquer
+les applique (python sources.py --appliquer, workflow appliquer_revue.yml).
 """
 import calendar
 import json
+import os
 import re
 import socket
 import sqlite3
@@ -17,9 +19,10 @@ import time
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 
-from commun import (CONFIG, DB_PATH, ErreurClaude, appeler_claude, extraire_json, garde, lire_flux, nettoyer,
+from commun import (BASE, CONFIG, DB_PATH, ErreurClaude, appeler_claude, extraire_json, garde, lire_flux, nettoyer,
                     restaurer_base)
 
+CONFIG_PATH = BASE / "config.json"
 MOTS = [m.lower() for m in CONFIG["mots_cles"]]
 MUET_JOURS = 7  # plus rien depuis une semaine : flux mort, URL changée ou rubrique fermée
 MUET_VEILLE = 30  # flux de veille ("veille": true, presse d'un pays qui suit son joueur du Real) : creux de plusieurs semaines normaux
@@ -93,15 +96,47 @@ def modifications(avis, ajouts):
                 and p["nom"].split(" - ")[0] not in CONFIG.get("noms_ar", {})}
     if not (retraits or nouveaux or graphies):
         return []
-    r = ["\n## Modifications prêtes pour config.json\n"]
-    if retraits:
-        r.append("Flux à supprimer de `flux` : " + ", ".join(f"`{n}`" for n in retraits))
-    if nouveaux:
-        r += ["\nÀ ajouter dans `flux` (vérifie les options `filtre_lien`, `que_le_real`, `veille` avant de copier) :",
-              "```json", ",\n".join(json.dumps({k: v for k, v in f.items() if v is not None}, ensure_ascii=False) for f in nouveaux), "```"]
-    if graphies:
-        r += ["\nÀ ajouter dans `noms_ar` :", "```json", ",\n".join(f'"{n}": "{a}"' for n, a in graphies.items()), "```"]
-    return r
+    return (["\n## Décisions\n", "Coche ce que tu acceptes, puis écris le commentaire `/appliquer` : `config.json` est modifié, "
+             "puis l'issue se ferme avec le résumé. Vérifie avant les options `filtre_lien`, `que_le_real`, `veille` des flux ajoutés.\n"]
+            + [f"- [ ] Retirer le flux `{n}`" for n in retraits]
+            + [f"- [ ] Ajouter le flux `{json.dumps({k: v for k, v in f.items() if v is not None}, ensure_ascii=False)}`" for f in nouveaux]
+            + [f"- [ ] Ajouter la graphie `{json.dumps({n: a}, ensure_ascii=False)}`" for n, a in graphies.items()])
+
+
+DECISION = re.compile(r"^\s*- \[[xX]\] (Retirer le flux|Ajouter le flux|Ajouter la graphie) `(.+)`\s*$", re.M)
+
+
+def appliquer(corps, config):
+    """Décisions cochées dans l'issue de la revue → config modifiée (copie) et résumé. Seulement des retraits de flux
+    existants, des flux en http(s) avec nom, url, pays et opinion (jamais "autorisation") et des graphies arabes."""
+    config = json.loads(json.dumps(config))
+    resume = []
+    for quoi, valeur in DECISION.findall(corps or ""):
+        if quoi == "Retirer le flux":
+            avant = len(config["flux"])
+            config["flux"] = [f for f in config["flux"] if f["nom"] != valeur]
+            resume.append(f"- ➖ flux retiré : {valeur}" if len(config["flux"]) < avant else f"- ⏭️ {valeur} : déjà absent")
+            continue
+        try:
+            obj = json.loads(valeur)
+        except ValueError:
+            resume.append(f"- ⚠️ ligne illisible, ignorée : {valeur[:80]}")
+            continue
+        if quoi == "Ajouter le flux":
+            f = {k: obj[k] for k in ("nom", "url", "pays", "opinion") if isinstance(obj, dict) and k in obj}
+            if not (str(f.get("nom", "")).strip() and str(f.get("url", "")).startswith(("http://", "https://"))):
+                resume.append(f"- ⚠️ flux sans nom ou adresse valide, ignoré : {valeur[:80]}")
+            elif any(x["url"] == f["url"] or x["nom"] == f["nom"] for x in config["flux"]):
+                resume.append(f"- ⏭️ {f['nom']} : déjà suivi")
+            else:
+                config["flux"].append(f)
+                resume.append(f"- ➕ flux ajouté : {f['nom']} ({f['url']})")
+        elif isinstance(obj, dict):
+            for nom, ar in obj.items():
+                if isinstance(ar, str) and ar.strip() and nom not in config.setdefault("noms_ar", {}):
+                    config["noms_ar"][nom] = ar.strip()
+                    resume.append(f"- 🔤 graphie ajoutée : {nom} → {ar.strip()}")
+    return config, resume
 
 
 def revue(chemin=DB_PATH):
@@ -141,11 +176,17 @@ def revue(chemin=DB_PATH):
         r += ["\n## Médias cités dans nos articles sans être suivis (30 jours)\n", ", ".join(f"{m} ({n})" for m, n in cites)]
     if avis.get("remarques"):
         r += ["\n## Remarques\n", str(avis["remarques"])]
-    r += ["\n---\nPour appliquer : demande à Claude Code « applique la revue des sources », ou modifie `config.json` à la main."]
+    r += ["\n---\nPour appliquer : coche les décisions ci-dessus puis commente `/appliquer`, ou demande à Claude Code « applique la revue des sources »."]
     return "\n".join(r)
 
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
+    if sys.argv[1:] == ["--appliquer"]:  # workflow « Appliquer la revue » : corps de l'issue dans CORPS
+        conf, lignes_resume = appliquer(os.environ.get("CORPS", ""), CONFIG)
+        if conf != CONFIG:
+            CONFIG_PATH.write_text(json.dumps(conf, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
+        print("\n".join(lignes_resume) or "Aucune décision cochée : rien n'a changé.")
+        sys.exit()
     restaurer_base(DB_PATH)  # base à jour (gardée en texte dans git)
     print(revue())

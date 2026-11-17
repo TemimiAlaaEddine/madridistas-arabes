@@ -1098,3 +1098,22 @@ assert statut.alertes_workflows(wfs[1:], {2: [run("issues", "success"), run("iss
 d = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"), alertes_gh=["fichier invalide"])
 assert "fichier invalide" in {a["id"]: a for a in d["agents"]}["veilleur"]["blocages"]
 print("OK Veilleur des workflows")
+
+# revue des sources : décisions cochées appliquées à config.json, et seulement elles
+conf_t = {"flux": [{"nom": "A", "url": "https://a.es/rss"}, {"nom": "B", "url": "https://b.es/rss"}], "noms_ar": {"A": "أ"}}
+corps_t = """## Décisions
+- [x] Retirer le flux `A`
+- [ ] Retirer le flux `B`
+- [X] Ajouter le flux `{"nom": "C", "url": "https://c.it/rss", "pays": "it", "autorisation": true}`
+- [x] Ajouter le flux `{"nom": "D", "url": "ftp://d"}`
+- [x] Ajouter le flux `{"nom": "B2", "url": "https://b.es/rss"}`
+- [x] Ajouter la graphie `{"C": "سي", "A": "autre"}`
+- [x] Retirer le flux `Z`"""
+nouvelle, res = sources.appliquer(corps_t, conf_t)
+assert [f["nom"] for f in nouvelle["flux"]] == ["B", "C"] and nouvelle["flux"][1] == {"nom": "C", "url": "https://c.it/rss", "pays": "it"}  # jamais d'autorisation
+assert nouvelle["noms_ar"] == {"A": "أ", "C": "سي"} and conf_t["flux"][0]["nom"] == "A"  # graphie existante gardée ; l'original intact
+assert len(res) == 6 and "déjà suivi" in res[3] and "Z : déjà absent" in res[-1], res
+assert sources.appliquer("rien de coché", conf_t) == (conf_t, [])
+d_rev = "\n".join(sources.modifications({"retirer": [{"flux": sources.CONFIG["flux"][0]["nom"]}]}, []))
+assert sources.appliquer(d_rev.replace("- [ ]", "- [x]"), sources.CONFIG)[0]["flux"] == sources.CONFIG["flux"][1:]  # aller-retour
+print("OK revue des sources : décisions appliquées")
