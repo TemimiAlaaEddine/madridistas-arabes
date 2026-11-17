@@ -3832,6 +3832,7 @@ INSERT INTO "liens_x" VALUES('11987719','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('11988427','https://x.com/ElMadridistAlaa/status/2122634096858006003','2026-11-17T10:13:05.943Z');
 INSERT INTO "liens_x" VALUES('11988431','https://x.com/ElMadridistAlaa/status/2122634607778783396','2026-11-17T10:15:21.475Z');
 INSERT INTO "liens_x" VALUES('11988434','https://x.com/ElMadridistAlaa/status/2122635865663136177','2026-11-17T10:20:18.651Z');
+INSERT INTO "liens_x" VALUES('11989147','https://x.com/ElMadridistAlaa/status/2122644672053174722','2026-11-17T10:55:21.141Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -5604,4 +5605,7 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/hype-endrick-faz-sentid
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/La-difficile-succession-de-cristiano-ronaldo-bruno-fernandes-et-bernardo-silva-capitaines-de-galere/1744116#at_medium=RSS_feeds','Bruno Fernandes et Bernardo Silva, capitaines de galère','2026-11-17T10:40:43');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/ya-documental-negreira/','¿Ya habéis visto el documental de Negreira?','2026-11-17T10:51:41');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50505359/vinicius-junior-real-madrid-brazil-transfer','Has Vini Jr. finally put summer transfer saga behind him? Real Madrid need him at his best','2026-11-17T10:51:41');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a820447366769524325-real-madrid-lauteur-des-insultes-racistes-contre-kylian-mbappe-condamne-a-11-mois-de-prison','Real Madrid : l’auteur des insultes racistes contre Kylian Mbappé condamné à 11 mois de prison','2026-11-17T11:01:24');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vinicius-junior-snoert-critici-de-mond-met-hattrick-in-21-minuten','Vinícius Júnior snoert critici de mond met hattrick in 21 minuten','2026-11-17T11:01:24');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/17/condenado-un-aficionado-a-11-meses-de-prision-por-insultos-racistas-contra-mbappe-durante-el-oviedo-real-madrid-de-2025-cadena-ser/','Condenado un aficionado a 11 meses de prisión por insultos racistas contra Mbappé durante el Oviedo-Real Madrid de 2025','2026-11-17T11:01:24');
 COMMIT;
