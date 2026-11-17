@@ -21,6 +21,7 @@ Dernier fait relu : 12
 - 2026-11-13 : Thiago Pitarch a fait ses débuts avec l'Espagne U21 lors de la victoire 2-0 contre le Japon, avec Espi également entré en jeu. Source : Managing Madrid (Hridyam Arora).
 - 2026-11-15 : Latif Issman, milieu de l'UD Logroñés, a signé avec le Real Madrid en novembre 2026 et rejoindra le Castilla l'été prochain. Source : Marca (NACHO LABARGA).
 - 2026-11-15 : Jude Bellingham a été élu joueur de l'année de la sélection anglaise 2025-2026, pour la deuxième fois consécutive. Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (ALBERTO RUBIO).
+- 2026-11-17 : Bellingham, Coupe du monde 2026 : 7 buts (seuls Mbappé, 10, et Messi, 8, ont fait mieux), Soulier de bronze, Angleterre 3e. Saison 2025-26 : 111 jours d'absence pour blessures, après avoir joué de novembre 2023 (chute contre le Rayo, labrum de l'épaule gauche) jusqu'à l'opération de l'été 2025 sans se faire opérer (« j'ai décidé de continuer sans me faire opérer, et c'était une erreur »). Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (J. L. Calderón, José María Rodríguez).
 - 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
