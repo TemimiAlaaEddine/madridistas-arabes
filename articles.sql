@@ -5934,4 +5934,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/2026/11/17/brahim-brilla-
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2829259170531901600-norvege-haaland-depasse-le-nombre-de-buts-de-mbappe-mais-avec-46-matchs-de-moins','Norvège : Haaland dépasse le nombre de buts de Mbappé mais avec 46 matchs de moins','2026-11-17T22:21:17');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/marruecos-alucina-con-el-killer-de-laliga-f202611-n/','Marruecos alucina con el ‘killer’ de LaLiga','2026-11-17T22:21:17');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/mbappe-goleador-inevitable.html','Mbappé, el goleador inevitable','2026-11-17T22:21:52');
+INSERT INTO "vus" VALUES('https://as.com/futbol/femenino/ivana-me-hace-mucha-ilusion-tengo-al-madrid-en-el-corazoncito-f202611-n/','Ivana: “Me hace mucha ilusión, tengo al Madrid en el corazoncito”','2026-11-17T22:50:50');
 COMMIT;
