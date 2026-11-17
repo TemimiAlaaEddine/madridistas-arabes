@@ -5859,4 +5859,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3854284089906666911-quali
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/toptalent-neemt-afscheid-van-man-united-op-naar-volgend-hoofdstuk','Toptalent neemt afscheid van Man United: ''Op naar volgend hoofdstuk''','2026-11-17T19:20:47');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50512542/jj-gabriel-man-united-real-madrid','JJ Gabriel confirms Man United exit as Real Madrid transfer nears','2026-11-17T19:40:57');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2325594750710181727-real-madrid-lucas-vazquez-monte-au-creneau-pour-defendre-kylian-mbappe','Real Madrid : Lucas Vázquez monte au créneau pour défendre Kylian Mbappé','2026-11-17T19:51:17');
+INSERT INTO "vus" VALUES('https://www.theguardian.com/football/2026/nov/17/jj-gabriel-confirms-manchester-united-exit-video','JJ Gabriel confirms Manchester United exit: ‘You gave me moments I will always treasure’','2026-11-17T20:01:25');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/17/joia-cobicada-pelo-real-madrid-se-despede-e-confirma-saida-do-manchester-united.ghtml','Joia cobiçada pelo Real Madrid se despede e confirma saída do Manchester United','2026-11-17T20:01:25');
 COMMIT;
