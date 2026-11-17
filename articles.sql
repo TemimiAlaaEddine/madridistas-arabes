@@ -5518,4 +5518,5 @@ INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/champions-league-femenin
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/inglaterra-viraliza-esto-de-gordon-y-lamine-con-cucurella-en-el-suelo-enseguida-van-a-descubrir-el-motivo-f202611-v/','Inglaterra viraliza esto de Gordon y Lamine con Cucurella en el suelo: enseguida van a descubrir el motivo','2026-11-17T07:51:02');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/vicky-lopez-revela-su-gran-idolo-de-la-infancia-por-encima-de-messi-y-neymar-es-un-olvidado-del-madrid-de-mourinho-f202611-v/','Vicky López revela su gran ídolo de la infancia por encima de Messi y Neymar: es un ‘olvidado’ del Madrid de Mourinho','2026-11-17T08:01:47');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/17/ex-real-madrid-defende-vini-jr-e-faz-critica-a-torcida-injusto.ghtml','Ex-Real Madrid defende Vini Jr. e faz crítica à torcida: "Injusto"','2026-11-17T09:31:08');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115500/endrick-milan-2026-news-rumors','AC Milan offering €60 million for Endrick -report','2026-11-17T09:40:49');
 COMMIT;
