@@ -4053,6 +4053,7 @@ INSERT INTO "liens_x" VALUES('12000812','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12002065','https://x.com/ElMadridistAlaa/status/2122812555408335153','2026-11-17T22:02:13.744Z');
 INSERT INTO "liens_x" VALUES('12002226','https://x.com/ElMadridistAlaa/status/2122814882408219129','2026-11-17T22:11:25.809Z');
 INSERT INTO "liens_x" VALUES('12002449','https://x.com/ElMadridistAlaa/status/2122818318306615571','2026-11-17T22:25:21.673Z');
+INSERT INTO "liens_x" VALUES('12003066','https://x.com/ElMadridistAlaa/status/2122827576263712810','2026-11-17T23:01:57.628Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -5940,4 +5941,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/marruecos-alucina-
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/mbappe-goleador-inevitable.html','Mbappé, el goleador inevitable','2026-11-17T22:21:52');
 INSERT INTO "vus" VALUES('https://as.com/futbol/femenino/ivana-me-hace-mucha-ilusion-tengo-al-madrid-en-el-corazoncito-f202611-n/','Ivana: “Me hace mucha ilusión, tengo al Madrid en el corazoncito”','2026-11-17T22:50:50');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Pressenti-au-real-madrid-jj-gabriel-fait-ses-adieux-a-manchester-united/1744375#at_medium=RSS_feeds','Pressenti au Real Madrid, JJ Gabriel fait ses adieux à Manchester United','2026-11-17T23:01:32');
+INSERT INTO "vus" VALUES('https://trivela.com.br/europa/liverpool-olho-brasileiro-vini-jr-apoio-e-rooney-com-forte-desabafo-resumo-do-dia/','Liverpool de olho em brasileiro, Vini Jr recebe apoio e Rooney com forte desabafo: Confira o resumo do dia','2026-11-17T23:10:52');
 COMMIT;
