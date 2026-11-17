@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 0
+Dernier fait relu : 12
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -11,11 +11,19 @@ Dernier fait relu : 0
 - Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Source : TEAMtalk.
 - Été 2026 : Nico Paz passe la saison à Côme, avec une option de rachat pour le Real. Source : Les Nouvelles du Foot.
 - Été 2026, cible manquée : Rodri a choisi Barcelone. Le milieu reste la question ouverte du mercato. Source : The Hard Tackle.
-- Vinícius est resté au club : il a marqué contre la Real Sociedad (26 août) et Mourinho en parle en conférence le 6 novembre (ABC, Pablo Sierra).
+- Vinícius est resté au club : il a marqué contre la Real Sociedad (26 août) et Mourinho en parle en conférence le 6 novembre (ABC, Pablo Sierra). Le 6 août 2026, le Real Madrid a annoncé sa prolongation jusqu'en juin 2032 (Trivela, Guilherme Ramos).
 - 2026-11-07 : Vinícius disponible pour la J13 ; Diomandé titulaire à gauche à sa place pour le 5e match de suite à Valence. Sources : Marca (José Vicente Hernáez), Foot Mercato (Aurélien Bayard).
 - 2026-11-10 : Endrick, environ 140 minutes et 1 but (contre la Roma) en 7 matchs toutes compétitions ; 84 minutes en Liga. Les totaux varient de 140 à 156 minutes selon les sources. Sources : Marca (Jesús Mata, José Luis Hurtado), Trivela.
 - 2025-26, seconde moitié de saison : Endrick prêté à Lyon, 8 buts et 8 passes décisives en 21 matchs (1 631 minutes, 77 par match). Source : Trivela (Matheus Cristianini).
 - Novembre 2026 : Mourinho refuse publiquement un départ d'Endrick en janvier (« qu'ils oublient », « qui le veut devra se battre avec moi », TNT Sports). Sources : Trivela (Pedro Ramos), Marca (Joel del Río).
+- 2026-11-13 : Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars. Source : Marca (JOEL DEL RÍO).
+- 2026-11-13 : Asencio, atteint d'une fracture de stress au tibia droit, a été opéré le 1er octobre. Source : Marca (JOEL DEL RÍO).
+- 2026-11-13 : Thiago Pitarch a fait ses débuts avec l'Espagne U21 lors de la victoire 2-0 contre le Japon, avec Espi également entré en jeu. Source : Managing Madrid (Hridyam Arora).
+- 2026-11-15 : Latif Issman, milieu de l'UD Logroñés, a signé avec le Real Madrid en novembre 2026 et rejoindra le Castilla l'été prochain. Source : Marca (NACHO LABARGA).
+- 2026-11-15 : Jude Bellingham a été élu joueur de l'année de la sélection anglaise 2025-2026, pour la deuxième fois consécutive. Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (ALBERTO RUBIO).
+- 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
+- 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
+- 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
@@ -24,7 +32,7 @@ Dernier fait relu : 0
 - Inter, 8 sept. (FAIT) : Trent en double pivot avec Valverde, à cause des absences de Bernardo, Camavinga et Güler. Victoire 2-1, mais des doutes. LECTURE : contrainte d'effectif, pas un choix de fond. Source : Fichajes.net (à prendre avec prudence).
 - Elche, 15 sept. (FAIT) : 5 changements. Trent arrière droit, Huijsen dans l'axe, Tchouaméni au milieu, Güler préféré à Bellingham. Contre Elche puis l'Atlético, les positions moyennes de Mbappé et Vinícius se recouvrent à gauche : quand Mbappé se déporte, l'axe n'a plus de référence. LECTURE : match laboratoire, Güler testé en meneur.
 - Atlético, 20 sept. (FAIT) : Tchouaméni préféré à Bernardo, pour le poids défensif. Huijsen expulsé après VAR. Vinícius et Güler remplacés par Diomande et Rüdiger, Bernardo entré vers la 82e (choix critiqué). Rüdiger marque à la 89e sur un coup franc de Bernardo. LECTURE : sans créateur à la relance, Madrid est étouffé, et Vinícius perd du terrain face à Diomande. Sources : AFP/NST, Heavy, The Analyst, Hooligan Soccer.
-- Villarreal, 10 oct. (FAIT), tournant de la saison : Vinícius sur le banc (1 but en 8 apparitions, remplacé contre Elche et l'Atlético) ; Diomande à gauche, Güler à droite, Bellingham en 10, Mbappé en pointe. À la 52e, Vinícius entre pour Trent : Valverde passe arrière droit, Güler recule, Diomande bascule à droite. Diomande marque à la 62e, puis Vinícius est expulsé et suspendu. Valverde arrière droit naît ici, en cours de match. Sources : SI, Sports Mole.
+- Villarreal, 10 oct. (FAIT), tournant de la saison : Vinícius sur le banc (1 but en 8 apparitions, remplacé contre Elche et l'Atlético) ; Diomande à gauche, Güler à droite, Bellingham en 10, Mbappé en pointe. À la 52e, Vinícius entre pour Trent : Valverde passe arrière droit, Güler recule, Diomande bascule à droite. Diomande marque à la 62e, puis Vinícius est expulsé et écope de quatre matchs de suspension en LaLiga. Valverde arrière droit naît ici, en cours de match. Sources : SI, Sports Mole, Trivela (Guilherme Ramos).
 - Séville (18 oct.) et Leipzig (21 oct.) (FAIT) : Valverde titulaire arrière droit contre Séville alors que Trent et Dumfries sont disponibles. Vinícius absent : Diomande à gauche, Endrick à droite, Mbappé en référence axiale. Mourinho avait annoncé Vinícius à gauche contre Leipzig (« personne n'est intouchable »). Les détails ne sont pas attribués avec certitude à l'un ou l'autre match. LECTURE : le problème de la gauche est réglé. Diomande tient la largeur, Mbappé occupe l'axe et Valverde sécurise le couloir droit. Source : SI.
 - Clásico, 25 oct. (FAIT) : Courtois forfait le matin même (grippe). Onze : Lunin ; Valverde, Konaté, Huijsen, Cucurella ; Tchouaméni, Bernardo ; Güler, Bellingham, Diomande ; Mbappé. Premier grand match du pivot Tchouaméni-Bernardo, et 3e titularisation de suite de Valverde arrière droit. Victoire 2-1, pressing ajusté en cours de match. Sources : SI, Democrata, BusinessDay/Reuters, Africasoccer.
 - Lecture d'ensemble (LECTURE, à challenger) : le onze idéal de l'été (Dumfries ou Trent, et Vinícius titulaires ; Diomande en concurrence à droite) a explosé. À chaque problème sa réponse : Bernardo et Tchouaméni pour la construction, Diomande à gauche pour l'attaque placée, Valverde arrière droit pour la transition défensive. Le prix à payer : Valverde quitte le milieu, et Madrid dépend de Bernardo pour sortir le ballon.
@@ -66,6 +74,7 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 - Juin 2026, élections : Florentino Pérez réélu avec 65 % des voix face à Enrique Riquelme (37 ans, 620 M€ de fortune selon Forbes, groupe Cox), dont la campagne visait la « vente du club ». Sources : Marca (Sergio Rodríguez C., Enrique Corbella).
 - 2026-11-04 : Rafa Nadal proposé au conseil d'administration (socio d'honneur n° 67778) ; ratification à l'assemblée extraordinaire du 21 novembre, seul point de son ordre du jour. Rôle de conseiller, non exécutif, au départ. Sources : ABC, Managing Madrid (Lucas Navarrete), Foot Mercato (d'après DAZN).
 - Statuts, article 40 : 20 ans d'ancienneté de socio pour se présenter à la présidence (15 pour vice-président, 10 pour le conseil), et une garantie bancaire d'au moins 15 % du budget de dépenses. Nadal est socio d'honneur depuis 2011, donc éligible en 2031 si l'ancienneté compte depuis cette date. Si la présidence devient vacante, le conseil choisit l'un de ses membres et l'assemblée le ratifie. Source : Marca (Juan Ignacio García-Ochoa).
+- 2026-11-14 : Ballon d'Or 2026 : Harry Kane gagne, Kylian Mbappé termine deuxième à 28 points. Source : Foot Mercato (Jordan Pardon).
 
 ## Préférences pour les scripts
 - 2026-11-08 : utiliser les stats WhoScored (notes, passes clés, dribbles, système de jeu) pour l'analyse des matchs, en citant WhoScored comme source.
