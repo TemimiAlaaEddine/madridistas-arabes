@@ -47,4 +47,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           NUMERO: ${{ github.event.issue.number }}
-        run: gh issue comment "$NUMERO" --repo "$GITHUB_REPOSITORY" --body "❌ Validation en échec : rien n'a été modifié. Journal : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+        run: |
+          gh issue comment "$NUMERO" --repo "$GITHUB_REPOSITORY" --body "❌ Validation en échec : rien n'a été modifié. Journal : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
