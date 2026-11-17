@@ -918,7 +918,7 @@ print("OK intertitres")
 pr = g.construire_prompt([])
 assert g.STYLE in pr and "{style}" not in pr and "jamais par « يرى الكاتب" in pr and "(يرى الكاتب...)" not in pr
 assert "Ne commence jamais par « يرى الصحفي" in g.threads.REGLES
-assert all(code in g.threads.REGLES for code in ("🚨 عاجل |", "✅ رسميًا |", "🔄 ميركاتو |", "🧠 قراءة تكتيكية |", "🔥 نقاش |"))
+assert all(code in g.threads.REGLES for code in ("🚨 عاجل |", "✅ رسميًا |", "🔄 ميركاتو |", "🧠 قراءة |", "🔥 نقاش |"))
 assert "(اسم الكاتب - ماركا)" in g.threads.REGLES and "ne garde que le média d'origine" in g.threads.REGLES  # source entre parenthèses, sans chaîne
 print("OK style")
 

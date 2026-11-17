@@ -33,7 +33,7 @@ Fichier `videos/AAAA-MM-JJ-sujet-court/storyboard.json` :
 ```
 
 Styles (voir l'en-tête de `video.py` pour tous les champs) :
-- `cinetique` : typographie cinétique, mot par mot ; `*groupe de mots*` en or ; `etiquette` facultative (عاجل، رسميًا، ميركاتو، قراءة تكتيكية، نقاش، رقم...). Pour l'accroche et la chute.
+- `cinetique` : typographie cinétique, mot par mot ; `*groupe de mots*` en or ; `etiquette` facultative (عاجل، رسميًا، ميركاتو، قراءة، نقاش، رقم...). Pour l'accroche et la chute.
 - `compteur` : un chiffre qui défile jusqu'à sa valeur, `max` facultatif pour un anneau qui se remplit.
 - `barres` : 2 à 5 barres comparées ; la plus grande en or.
 - `duel` : joueur contre joueur, 1 à 4 critères en barres miroir.
