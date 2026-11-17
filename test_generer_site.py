@@ -1061,3 +1061,28 @@ assert d["graphes"]["par_heure"]["Articles rédigés"][11] == 1 and d["graphes"]
 html_statut = statut.page(d)
 assert 'id="editeur_x"' in html_statut and "2 agents bloqués" in html_statut  # Éditeur X et Veilleur
 print("OK tableau de bord")
+
+# validation des faits depuis le tableau de bord : lecture de l'issue, rangement sans jamais supprimer, secours « À classer »
+import faits
+assert faits.lire_issue("Texte\n\ngarder: 3, 5,9\ndernier: 12\n") == ([3, 5, 9], 12)
+assert faits.lire_issue("garder: \ndernier: 4") == ([], 4)
+try:
+    faits.lire_issue("garder: 1")
+    raise AssertionError("dernier absent : refusé")
+except ValueError:
+    pass
+base_c = "# T\n\nDernier fait relu : 2\n\n## Effectif\n- a\n- b\n\n## Matchs\n| D | S |\n|---|---|\n| 1 | 2-0 |\n\n- bilan : 3 buts\n\n## Médias\n\n## Préférences pour les scripts\n- p"
+ops = [{"action": "ajouter", "section": "Effectif", "ligne": "- c"},
+       {"action": "ajouter", "section": "Matchs", "ligne": "| 9 | 1-0 |"},
+       {"action": "remplacer", "ancienne": "- bilan : 3 buts", "ligne": "- bilan : 4 buts"},
+       {"action": "ajouter", "section": "Médias", "ligne": "- m"},
+       {"action": "ajouter", "section": "Inconnue", "ligne": "- x"},  # section inconnue → À classer
+       {"action": "remplacer", "ancienne": "- introuvable", "ligne": "- y"},  # ligne introuvable → À classer
+       {"action": "ajouter", "section": "Effectif", "ligne": "## titre glissé"}]  # ignoré
+texte_c, resume_c = faits.integrer(base_c, ops, [], 9)
+assert "- a\n- b\n- c\n" in texte_c and "| 1 | 2-0 |\n| 9 | 1-0 |\n" in texte_c and "- bilan : 4 buts" in texte_c and "3 buts" not in texte_c
+assert "## Médias\n\n- m\n\n## À classer\n\n- x\n- y\n\n## Préférences" in texte_c, texte_c
+assert "Dernier fait relu : 9" in texte_c and "titre glissé" not in texte_c and len(resume_c) == 6
+assert faits.integrer(base_c, None, ["- s"], 1)[0].count("Dernier fait relu : 2") == 1  # secours ; le numéro ne recule jamais
+assert "## À classer\n\n- s\n" in faits.integrer(base_c, None, ["- s"], 1)[0]
+print("OK validation des faits")

@@ -103,6 +103,8 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
     rubriques = lignes(con, "SELECT section, count(*) FROM articles WHERE date >= ? AND date < ? GROUP BY 1 ORDER BY 2 DESC", iso(j0), iso(demain))
     fh, fa = deux("faits", "date")
     relu = re.search(r"Dernier fait relu : (\d+)", connaissance.read_text(encoding="utf-8")) if connaissance.exists() else None
+    a_valider = lignes(con, "SELECT f.id, date(f.date), f.fait, a.journal, a.lien FROM faits f LEFT JOIN articles a ON a.id = f.article_id "
+                            "WHERE f.id > ? ORDER BY f.id LIMIT 60", int(relu.group(1)) if relu else 0)  # 60 par validation au plus
     faits_attente = (lignes(con, "SELECT count(*) FROM faits WHERE id > ?", int(relu.group(1)) if relu else 0) or [(0,)])[0][0]
     th, ta = deux("threads", "coalesce(envoye, date)", ENVOYES)
     imm = compter(con, "threads", "coalesce(envoye, date)", j0, demain, "statut = 'immédiat'")
@@ -148,7 +150,7 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
               panne("Claude (rédaction)"), actif=aa > 0),
         agent("memoire", "🧠", "Mémoire", "Note les faits durables de chaque article (table faits)", "pipeline",
               [("Hier", pluriel(fh, "fait", "noté")), ("Aujourd'hui", pluriel(fa, "fait", "noté"))],
-              attente=[f"{pluriel(faits_attente, 'fait')} attendent ta validation : lance /script"] if faits_attente else [], actif=fa > 0),
+              attente=[f"{pluriel(faits_attente, 'fait')} attendent ta validation : section « À faire » en haut de la page"] if faits_attente else [], actif=fa > 0),
         agent("controleur", "🛡️", "Contrôleur qualité", "Vérifie chaque thread avant l'envoi : longueur, source, ton, doublons", "pipeline",
               [("Hier", pluriel(th + bh, "thread", "contrôlé") + f", {bh} bloqué(s)"), ("Aujourd'hui", pluriel(ta + ba, "thread", "contrôlé") + f", {ba} bloqué(s)")],
               attente=[f"{pluriel(b48, 'thread')} mis en brouillon à relire dans Typefully (48 h)"] if b48 else [], actif=ta + ba > 0),
@@ -217,13 +219,29 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
     }
     kpi = [("Articles aujourd'hui", aa, ah), ("Threads X", ta, th), ("Posts Facebook", pfa, pfh),
            ("Passages réussis", f"{len(p_auj) - len(rates)}/{len(p_auj)}" if p_auj else "–", None), ("Pannes en cours", len(pannes), None)]
-    return {"genere": iso(utc) + "Z", "dernier_passage": dernier, "kpi": kpi, "agents": agents, "graphes": graphes}
+    return {"genere": iso(utc) + "Z", "dernier_passage": dernier, "kpi": kpi, "agents": agents, "graphes": graphes, "faits": a_valider}
 
 
 ETATS = {"ok": "Actif", "attente": "T'attend", "bloque": "Bloqué", "repos": "Au repos", "demande": "Sur demande"}
 EQUIPES = {"pipeline": ("⚙️ Pipeline automatique", "toutes les 10 minutes, sur GitHub Actions"),
            "lundi": ("📅 Revue du lundi", "chaque lundi à 7 h, en issue GitHub"),
            "demande": ("🧑‍💻 Équipe à la demande", "dans Claude Code, quand tu l'appelles")}
+
+
+def a_faire(faits):
+    """Faits notés à valider : cases à cocher, puis une issue GitHub pré-remplie que le workflow « Validation des faits »
+    traite (seule une issue ouverte par le propriétaire du dépôt est prise en compte)."""
+    if not faits:
+        return ""
+    ligne = lambda i, d, f, j, l: (f'<li><label><input type="checkbox" name="fait" value="{i}" checked><span><b>n° {i}</b> · {e(d)} · '  # noqa: E731
+                                   f'{e(f)} <a href="{e(l)}" target="_blank" rel="noopener">{e(j)}</a></span></label></li>') if l else         f'<li><label><input type="checkbox" name="fait" value="{i}" checked><span><b>n° {i}</b> · {e(d)} · {e(f)}</span></label></li>'
+    return (f'<section class="carte a-faire" id="a-faire"><h2>À faire · {pluriel(len(faits), "fait")} à valider <small>notés par la Mémoire</small></h2>'
+            f'<p class="aide">Décoche ce qui est faux ou sans intérêt, puis « Valider sur GitHub » et « Submit new issue ». Claude range les faits '
+            f'cochés dans <code>connaissance.md</code> (bonne section, fusion, tableau des matchs) ; les décochés ne reviennent pas. '
+            f'La liste disparaît au passage suivant (10 min environ).</p>'
+            f'<form id="form-faits" data-depot="{e(DEPOT)}" data-dernier="{faits[-1][0]}"><ul class="faits">{"".join(ligne(*f) for f in faits)}</ul>'
+            f'<div class="boutons"><button type="button" data-tout="1">Tout cocher</button><button type="button" data-tout="0">Tout décocher</button>'
+            f'<button type="submit" class="principal">Valider sur GitHub →</button></div></form></section>')
 
 
 def page(d):
@@ -260,10 +278,11 @@ def page(d):
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚽</text></svg>">
 <style>{CSS}</style></head><body>
 <header class="haut"><div><h1>Statut de l'équipe</h1><p><bdi>المدريديستا علاء</bdi> · agents du site, de X et de la Page Facebook</p></div>
-<div class="etat-global e-{humeur[0]}"><i class="point"></i>{humeur[1]}<small>Dernier passage <time data-depuis="{d['dernier_passage'] or ''}">–</time> ·
+<div class="etat-global e-{humeur[0]}"><i class="point"></i>{f'<a href="#a-faire">{humeur[1]}</a>' if d["faits"] else humeur[1]}<small>Dernier passage <time data-depuis="{d['dernier_passage'] or ''}">–</time> ·
 mis à jour <time data-depuis="{d['genere']}">–</time></small></div></header>
 <main>
 <div class="kpis">{"".join(tuile(*k) for k in d["kpi"])}</div>
+{a_faire(d["faits"])}
 <section class="carte"><h2>Organigramme</h2><div class="organi"><div class="chef">👤 <b>Toi</b><small>rédacteur en chef · tu décides et tu publies</small></div>
 <div class="branches">{organi}</div></div>
 <p class="legende">{"".join(f'<span class="e-{k}"><i class="point"></i>{v}</span>' for k, v in ETATS.items())}</p></section>
@@ -329,6 +348,15 @@ dl{margin:12px 0 0;display:grid;gap:8px}.rang{display:grid;grid-template-columns
 .blocages{margin-top:10px;padding-top:10px;border-top:1px solid var(--bord);display:grid;grid-template-columns:120px 1fr;gap:8px}
 .blocages span{color:var(--doux);font-size:13px}.blocages ul{margin:0;padding:0;list-style:none}.blocages li{color:var(--c)}
 .blocages li.rien{color:var(--doux)}
+.a-faire{border:2px solid var(--ambre)}.aide{color:var(--doux);font-size:14px;margin:6px 0 12px}
+.etat-global a{color:inherit;text-decoration:underline;text-underline-offset:3px}
+.faits{list-style:none;margin:0;padding:0;display:grid;gap:6px;max-height:420px;overflow-y:auto}
+.faits label{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-radius:9px;background:var(--fond);cursor:pointer}
+.faits input{margin-top:4px;width:18px;height:18px;accent-color:var(--vert);flex:none}.faits a{color:var(--bleu)}
+.faits label:has(input:not(:checked)) span{opacity:.5;text-decoration:line-through}
+.boutons{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.boutons button{font:inherit;padding:8px 14px;border-radius:9px;border:1px solid var(--bord);background:var(--carte);color:var(--texte);cursor:pointer}
+.boutons .principal{background:var(--vert);border-color:var(--vert);color:#fff;font-weight:600;margin-inline-start:auto}
 footer{text-align:center;color:var(--doux);font-size:13px;padding:0 16px 30px}
 @media (max-width:800px){.branches,.graphes{grid-template-columns:minmax(0,1fr)}.branches::before,.branche::before{display:none}.kpis{margin-top:-30px}
 .rang,.blocages{grid-template-columns:1fr;gap:2px}}
@@ -341,6 +369,17 @@ const d=new Date(v.endsWith('Z')?v:v+'Z'),m=Math.round((Date.now()-d)/60000);
 t.textContent=m<1?"à l'instant":m<60?`il y a ${m} min`:m<1440?`il y a ${Math.floor(m/60)} h ${m%60} min`:d.toLocaleString('fr');
 t.title=d.toLocaleString('fr');});}
 depuis();setInterval(depuis,30000);
+const F=document.getElementById('form-faits');
+if(F){F.querySelectorAll('[data-tout]').forEach(b=>b.onclick=()=>F.querySelectorAll('input[name=fait]').forEach(c=>c.checked=b.dataset.tout==='1'));
+F.addEventListener('submit',ev=>{ev.preventDefault();
+const g=[...F.querySelectorAll('input[name=fait]:checked')].map(c=>c.value);
+const corps=`Faits relus depuis le tableau de bord. Ne modifie pas les deux lignes ci-dessous.
+
+garder: ${g.join(', ')}
+dernier: ${F.dataset.dernier}
+
+Clique sur « Submit new issue » : Claude range les faits gardés dans connaissance.md, puis ferme cette issue.`;
+window.open(`https://github.com/${F.dataset.depot}/issues/new?title=${encodeURIComponent('Valider des faits')}&body=${encodeURIComponent(corps)}`,'_blank','noopener');});}
 if(window.Chart){
 const css=getComputedStyle(document.documentElement),v=n=>css.getPropertyValue(n).trim();
 const couleurs=[v('--or'),v('--bleu'),v('--violet'),v('--vert'),v('--ciel'),v('--ambre'),v('--rouge'),v('--gris')];

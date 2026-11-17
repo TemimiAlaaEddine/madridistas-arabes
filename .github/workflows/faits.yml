@@ -1,0 +1,50 @@
+name: Validation des faits
+
+on:
+  issues:
+    types: [opened] # issue « Valider des faits » ouverte par le bouton du tableau de bord
+
+concurrency: faits
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  valider:
+    # seul le propriétaire du dépôt peut valider : une issue d'un autre compte est ignorée
+    if: github.event.issue.user.login == github.repository_owner && startsWith(github.event.issue.title, 'Valider des faits')
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Rangement par Claude dans connaissance.md
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          CORPS: ${{ github.event.issue.body }} # par l'environnement, jamais dans le script : pas d'injection de commande
+          PYTHONIOENCODING: utf-8
+        run: python faits.py > resume.md
+      - name: Sauvegarde dans le dépôt
+        run: |
+          git config user.name "mise-a-jour"
+          git config user.email "actions@users.noreply.github.com"
+          git add connaissance.md
+          git diff --cached --quiet || (git commit -m "Faits validés depuis le tableau de bord (issue #${{ github.event.issue.number }})" && git pull --rebase && git push)
+      - name: Résumé et fermeture de l'issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMERO: ${{ github.event.issue.number }}
+        run: gh issue close "$NUMERO" --repo "$GITHUB_REPOSITORY" --comment "$(cat resume.md)"
+      - name: Échec signalé dans l'issue (elle reste ouverte)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          NUMERO: ${{ github.event.issue.number }}
+        run: gh issue comment "$NUMERO" --repo "$GITHUB_REPOSITORY" --body "❌ Validation en échec : rien n'a été modifié. Journal : $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"

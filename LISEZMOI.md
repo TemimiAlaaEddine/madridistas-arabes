@@ -14,6 +14,7 @@
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
 | `sources.py` | Revue des sources : santé des flux, rendement, sources à ajouter ou retirer |
 | `statut.py` | Tableau de bord de l'équipe d'agents, publié sur GitHub Pages après chaque passage |
+| `faits.py` | Range dans `connaissance.md` les faits validés depuis le tableau de bord |
 | `gabarits/` | `style.css`, `site.js` et `recherche.js` (page « بحث ») du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
 | `config.json` | Sources, personnes, réglages ; secrets dans `secrets.json` (hors git) |
 
@@ -120,6 +121,8 @@ Rien n'est modifié automatiquement : tu décides, puis tu demandes à Claude Co
 ## Tableau de bord de l'équipe
 
 https://temimialaaeddine.github.io/madridistas-arabes/ : organigramme des agents, « daily » de chacun (hier, aujourd'hui, blocages : panne, brouillons à relire, faits à valider), chiffres du jour et graphiques (heure par heure, 14 jours, rubriques, sources). Refait après chaque passage par `statut.py` (job « tableau » du workflow, sans appel à Claude) et publié sur GitHub Pages ; la page se recharge seule toutes les 5 minutes. Les chiffres viennent de `articles.sql`, déjà public, et de l'historique GitHub Actions. Sur le PC : `python statut.py`, puis ouvre `statut\index.html`.
+
+**Faits à valider** (section « À faire » du tableau) : décoche les faits faux ou sans intérêt, puis « Valider sur GitHub » ouvre une issue « Valider des faits » pré-remplie ; clique sur « Submit new issue ». Le workflow « Validation des faits » (`faits.py`, un appel à Claude) range les faits cochés dans `connaissance.md` comme `/script` : bonne section, fusion avec une ligne existante, tableau des matchs. Claude ne peut qu'ajouter ou remplacer une ligne, jamais en supprimer ; ce qu'il ne sait pas placer (ou tout, s'il ne répond pas) va dans « À classer ». « Dernier fait relu » avance, les faits décochés ne reviennent pas. Le résumé des changements est posté dans l'issue, qui se ferme ; seule une issue ouverte par le propriétaire du dépôt est traitée.
 
 ## Commandes de l'équipe (/sujets, /moderation, /angles)
 
