@@ -259,12 +259,29 @@ def vers_page(con, heures=24):
             print(f"  ! Page Facebook : publication impossible ({err}) {detail}, reprise au prochain passage")
             noter(con, "Page Facebook", f"{err} {detail}")
             break
-        con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)", (a["id"], maintenant().isoformat(timespec="seconds"),
-                                                                 str(fb.get("post_id") or fb.get("id") or "")))
+        post = str(fb.get("post_id") or fb.get("id") or "")
+        con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)", (a["id"], maintenant().isoformat(timespec="seconds"), post))
         con.commit()
         noter(con, "Page Facebook")
+        if envoi == "photos" and post and CONFIG.get("facebook_lien_en_commentaire", True):
+            commenter_source(post, a, jeton)
         n += 1
     return n
+
+
+def commenter_source(post, a, jeton):
+    """Lien de la source en commentaire de la Page sous un post photo (permission pages_manage_engagement). Le post est déjà
+    publié : un échec est seulement signalé. Au Canada, Meta bloque aussi ces liens de médias (loi C-18) : ils ne servent
+    qu'aux lecteurs hors du Canada ; "facebook_lien_en_commentaire": false dans config.json les arrête."""
+    nom = a["auteur"] if a["auteur"] else ""
+    texte = f"🔗 Source : {a['journal']}" + (f" ({nom})" if nom else "") + f"\n{a['lien']}"
+    corps = urllib.parse.urlencode({"message": texte, "access_token": jeton}).encode()
+    try:
+        with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{post}/comments", corps), timeout=60) as rep:
+            json.load(rep)
+    except OSError as err:
+        detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
+        print(f"  ! Page Facebook : lien de la source non commenté sous le post {post} ({err}) {detail}")
 
 
 PROMPT_RESUME = """Tu prépares pour le compte X « المدريديستا علاء » le résumé quotidien « صحافة مدريد اليوم » du {jour}, à partir des articles

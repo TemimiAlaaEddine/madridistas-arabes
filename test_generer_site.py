@@ -249,7 +249,8 @@ with tempfile.TemporaryDirectory() as tmp:
     con.commit()
     appels.clear()
     t.CONFIG["facebook_page_token"] = "j"
-    t.urllib.request.urlopen = lambda req, timeout=None: (appels.append((req.full_url, req.data.decode())), io.BytesIO(b"{}"))[1]
+    t.urllib.request.urlopen = lambda req, timeout=None: (appels.append((req.full_url, req.data.decode())),
+                                                         io.BytesIO(b'{"id": "7", "post_id": "42_9"}'))[1]
     try:
         assert t.vers_page(con) == 1
     finally:
@@ -258,6 +259,11 @@ with tempfile.TemporaryDirectory() as tmp:
     envoi = urllib.parse.parse_qs(appels[0][1])
     assert appels[0][0].endswith("/42/photos") and envoi["url"] == ["https://ex.com/photo.jpg"] and "link" not in envoi
     assert envoi["caption"][0].startswith("⚜️ Titre") and envoi["caption"][0].endswith("Source : AS")
+    # puis le lien de la source en commentaire de la Page, sous le post
+    commentaire = urllib.parse.parse_qs(appels[1][1])
+    assert len(appels) == 2 and appels[1][0].endswith("/42_9/comments")
+    assert commentaire["message"] == ["🔗 Source : AS\nhttps://ex.com/fb"]
+    assert con.execute("SELECT post FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE a.lien = 'https://ex.com/fb'").fetchone()[0] == "42_9"
     con.close()
 print("OK threads")
 
