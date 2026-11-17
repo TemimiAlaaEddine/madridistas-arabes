@@ -722,6 +722,29 @@ assert dict(con.execute("SELECT typefully, url FROM liens_x")) == {"11": "https:
                                                                     "31": "https://x.com/a/status/31"}
 con.close()
 print("OK adresses X")
+
+# vidéos verticales : durées par style, lignes dans la zone sûre, mise en valeur *en or* (groupe de mots), arabe, chaque style dessiné
+import video
+assert video.duree({"style": "cinetique", "texte": "un deux"}) == 1.8 and video.duree({"style": "cinetique", "texte": " ".join(["m"] * 30)}) == 4.0
+assert video.duree({"style": "presse", "citations": [{}, {}]}) == 4.8 and video.duree({"style": "compteur", "duree": 2}) == 2.0
+lignes, _ = video.lignes_mots("فينيسيوس يعود السبت *لكن هل ما زال* مكانه محفوظا على الجهة اليسرى", 104, "ar")
+assert all(sum(w for _, _, w in l) <= video.DROITE - video.GAUCHE for l in lignes)
+forts = [m for l in lignes for m, fort, _ in l if fort]
+assert forts == ["لكن", "هل", "ما", "زال"] and not any("*" in m for l in lignes for m, _, _ in l)
+assert "4-2-3-1" in video.visuel("خطة 4-2-3-1 🔥", "ar") and video.visuel("Vinícius revient 🚨", "fr") == "Vinícius revient"
+assert video.nombre("1,06") == (1.06, 2, ",") and video.ecrire_nombre(0.5, 2, ",") == "0,50"
+sb = {"langue": "ar", "source": "ماركا", "compte": "@ElMadridistAlaa", "scenes": [
+    {"style": "cinetique", "etiquette": "نقاش", "texte": "سؤال *مهم*"}, {"style": "compteur", "valeur": "141", "unite": "دقيقة", "max": 630, "texte": "ل"},
+    {"style": "barres", "titre": "ت", "elements": [{"label": "أ", "valeur": "0,75"}, {"label": "ب", "valeur": "1,06"}]},
+    {"style": "duel", "joueurs": ["أ", "ب"], "criteres": [{"label": "أهداف", "a": "1", "b": "4"}]},
+    {"style": "tactique", "texte": "ن", "joueurs": [{"nom": "أ", "x": .5, "y": .5}], "fleches": [{"de": [.5, .5], "a": [.8, .7]}],
+     "zones": [{"x": .6, "y": .6, "l": .2, "h": .2}]},
+    {"style": "titres", "cartes": [{"journal": "Marca", "titre": "عنوان"}]}, {"style": "presse", "citations": [{"journal": "AS", "texte": "قول"}]}]}
+fonds, durees = {"uni": video.fond_uni()}, [video.duree(sc) for sc in sb["scenes"]]
+for i in range(len(sb["scenes"])):
+    for tl in (0.05, durees[i] * 0.8):  # pendant la transition et une fois l'animation posée
+        assert video.image(sb, fonds, i, tl, durees, zones=True).size == (video.W, video.H)
+print("OK vidéos verticales")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:

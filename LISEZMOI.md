@@ -124,6 +124,17 @@ Dans Claude Code, ouvert dans ce dossier. Elles proposent, tu décides : rien n'
 - `/moderation` (community manager, 10 min par jour) : les commentaires de la Page Facebook encore sans réponse (`python moderation.py`), avec pour chacun une action (répondre, ignorer, masquer, transmettre...) et une réponse proposée dans la langue du commentaire. Pour X, colle les mentions reçues. Tu réponds toi-même sur Facebook et sur X : le jeton n'a pas la permission `pages_manage_engagement`.
 - `/angles [sujet]` (analyste tactique) : 3 angles d'analyse (thèse, faits sourcés tirés de `connaissance.md`, argument contraire, ce qui manque) à développer ensuite avec `/script`.
 
+## Vidéos verticales (/video)
+
+`/video <sujet>` (réalisateur vidéo) : une vidéo 1080×1920 de 15 à 60 secondes pour TikTok, YouTube Shorts, Facebook Reels et X, en scènes rythmées (un changement visuel toutes les 1 à 3 secondes, accroche dans les 2 premières, boucle possible). Claude écrit le storyboard, le montre pour accord, génère la vidéo avec `video.py`, puis écrit la légende de chaque plateforme. Tu publies toi-même.
+
+- Styles de scène : typographie cinétique (mot par mot, mots en or), compteur animé, barres comparées, duel joueur contre joueur, tableau tactique animé (joueurs, zones, courses et passes), gros titres de presse en cartes « une », « ce que dit la presse ». Voir l'en-tête de `video.py`.
+- Sans voix, langue choisie à chaque vidéo (arabe, français, anglais ou espagnol), fond uni ou photo de l'article (assombrie) ; jamais d'images de match. Les diacritiques arabes (tanwin, shadda) ne sont pas affichés (Pillow sans mise en forme arabe complète).
+- Tout le contenu reste dans la zone sûre, hors des parties masquées par TikTok et Shorts (positions estimées : à vérifier sur téléphone).
+- Muette par défaut : ajoute le son à la publication, depuis la bibliothèque de TikTok ou de YouTube (sons sous licence). Ou `--musique <fichier>` avec une musique libre de droits.
+- `python video.py videos/<dossier>/storyboard.json --apercu 2 --zones` : image de la scène 2, zones masquées en rouge ; sans `--apercu`, la vidéo (environ 3 s de rendu par seconde) et `couverture.png`.
+- Il faut FFmpeg (`winget install Gyan.FFmpeg`) et `pip install arabic-reshaper python-bidi`. Le fichier vidéo n'est pas versionné ; `storyboard.json` et `legende.md` le sont.
+
 ## Articles d'analyse (/script)
 
 Dans Claude Code, ouvert dans ce dossier : `/script <format> sur <sujet>`, par exemple `/script thread sur Vinícius` ou `/script article Facebook sur Valence 0-3`. Sans sujet, Claude en propose 3 tirés des articles récents.

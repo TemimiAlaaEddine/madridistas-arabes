@@ -12,4 +12,5 @@ videos/*/audio/
 videos/*/segments/
 videos/*/*.mp4
 videos/*/apercu-*.png
+videos/*/couverture.png
 videos/*/rendu.log
