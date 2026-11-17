@@ -5683,4 +5683,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a665264097687530185-bresil
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/hattrickheld-vinicius-gefrustreerd-na-wissel-wil-altijd-meer-goals','Hattrickheld Vinícius gefrustreerd na wissel: ''Wil altijd meer goals''','2026-11-17T14:31:22');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/endrick-padre-primer-hijo-kendrick.html','Endrick es padre de su primer hijo, Kendrick','2026-11-17T14:31:41');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/xavi-moet-hierarchie-binnen-deze-selectie-eens-flink-op-de-schop-nemen','''Xavi moet hiërarchie binnen deze selectie eens flink op de schop nemen''','2026-11-17T14:40:46');
+INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/lucas-vasquez-ex-real-madrid-sobre-vinicius-junior-parece-desculpa/','Ex-Real Madrid defende Vinícius Junior após fala sobre preparo: ‘Parece desculpa. Não acredito nisso’','2026-11-17T15:11:01');
 COMMIT;
