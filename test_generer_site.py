@@ -592,6 +592,40 @@ assert "✅ Jeton Facebook valide" in rapport and "⚠️ Quota Typefully : 450 
 assert "**Page Facebook** : 3 passage(s)" in rapport
 con.close()
 print("OK alertes et santé")
+
+# tableau de bord Facebook : formats, tranches horaires (heure de Madrid), semaine comparée à la précédente, pagination
+import performance
+assert performance.format_post("📰 Marca · la une du 17 novembre") == "Une de journal"
+assert performance.format_post("⚜️ Titre\n🇨🇦 Title") == "Nouvelle (automatique)" and performance.format_post(None) == "Autre (manuel, /script)"
+assert performance.tranche(datetime(2026, 11, 17, 22)) == "soir (18-24 h)" and performance.tranche(datetime(2026, 11, 17, 23)) == "nuit (0-7 h)"
+appels = []
+def graphe(chemin, **p):
+    appels.append((chemin, p.get("after")))
+    if chemin.endswith("/insights") and chemin.startswith("42/"):
+        return {"data": [{"name": "page_media_view", "values": [{"end_time": "2026-11-09T08:00:00+0000", "value": 10},
+                                                                {"end_time": "2026-11-16T08:00:00+0000", "value": 30}]},
+                         {"name": "page_follows", "values": [{"end_time": "2026-11-16T08:00:00+0000", "value": 5}]}]}
+    if chemin.endswith("/insights"):
+        return {"data": [{"values": [{"value": int(chemin.split("_")[1].split("/")[0])}]}]}
+    semaine = p["since"] >= int(datetime(2026, 11, 10).replace(tzinfo=__import__("datetime").timezone.utc).timestamp())
+    if not semaine:
+        return {"data": []}
+    if p.get("after") is None:  # 1re page, puis une 2e (curseur)
+        return {"data": [{"id": "42_7", "created_time": "2026-11-15T20:00:00+0000", "message": "⚜️ A", "shares": {"count": 2},
+                          "reactions": {"summary": {"total_count": 3}}, "comments": {"summary": {"total_count": 1}}}],
+                "paging": {"cursors": {"after": "c1"}, "next": "https://graph"}}
+    return {"data": [{"id": "42_4", "created_time": "2026-11-16T09:00:00+0000", "message": "📰 AS · la une du 16 novembre"}], "paging": {}}
+vrai = (t.reglage, t.graph_lire)
+t.reglage = lambda cle: "42" if cle == "facebook_page_id" else "k"
+t.graph_lire = graphe
+try:
+    tb = performance.tableau(datetime(2026, 11, 17, 8))
+finally:
+    t.reglage, t.graph_lire = vrai
+assert ("42/posts", "c1") in appels  # 2e page lue
+assert "| Abonnés | 5 |" in tb and "| Publications | 2 | 0 | nouveau |" in tb and "| Vues de la Page | 30 | 10 | +200% |" in tb
+assert "| Nouvelle (automatique) | 1 | trop peu de données |" in tb and "- 7 vues, 6 interactions : [⚜️ A]" in tb
+print("OK tableau de bord Facebook")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:
