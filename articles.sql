@@ -5696,4 +5696,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/video/xavi-moet-hierarchie-binnen-de
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/lucas-vasquez-ex-real-madrid-sobre-vinicius-junior-parece-desculpa/','Ex-Real Madrid defende Vinícius Junior após fala sobre preparo: ‘Parece desculpa. Não acredito nisso’','2026-11-17T15:11:01');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/17/ferramenta-da-fifa-bloqueou-39-milhoes-de-ofensas-em-redes-sociais-em-quatros-anos.ghtml','Ferramenta da Fifa bloqueou 39 milhões de ofensas em redes sociais em quatros anos','2026-11-17T15:21:05');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/reves-tribunal-supremo-laliga-acuerdo-cvc.html','Revés del Tribunal Supremo a LaLiga por su acuerdo con CVC','2026-11-17T15:31:26');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2243679609431175520-jt-foot-mercato-le-grand-retour-de-wissam-ben-yedder','JT Foot Mercato : le grand retour de Wissam Ben Yedder','2026-11-17T15:40:49');
 COMMIT;
