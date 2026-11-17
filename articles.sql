@@ -5783,4 +5783,5 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50509888/kylian
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/endrick-habla-de-su-futuro-en-el-madrid-creo-que-es-decision-de-mourinho-no-f202611-v/','Endrick habla de su futuro en el Madrid: “Creo que es decisión de Mourinho, ¿no?','2026-11-17T17:31:10');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115528/vinicius-speaks-after-scoring-hat-trick-with-brazil','Vinicius speaks after scoring hat-trick with Brazil','2026-11-17T17:31:10');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/17/endrick-manifiesta-su-compromiso-con-el-real-madrid-y-senala-al-responsable-de-su-falta-de-minutos-es-una-decision-de-mourinho-cadena-ser/','Endrick manifiesta su compromiso con el Real Madrid y señala al responsable de su falta de minutos: "Es una decisión de Mourinho"','2026-11-17T17:31:32');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-ts-da-la-razon-al-real-madrid-en-el-conflicto-de-cvc-f202611-n/','El TS da la razón al Real Madrid en el conflicto de CVC','2026-11-17T17:40:45');
 COMMIT;
