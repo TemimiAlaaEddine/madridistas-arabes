@@ -8,6 +8,7 @@ Le rapport sort en Markdown ; le workflow revue_sources.yml en fait une issue Gi
 Rien n'est changé dans config.json : c'est toi qui décides.
 """
 import calendar
+import json
 import re
 import socket
 import sqlite3
@@ -62,11 +63,11 @@ MÉDIAS CITÉS DANS NOS ARTICLES SANS ÊTRE SUIVIS (nom arabe : nombre de citati
 
 Propose :
 - "retirer" : les flux à supprimer (en panne, muets, sans rapport avec le Real, ou qui ne produisent rien de publié), avec la raison en une phrase. Ne propose pas de retirer un flux qui marche et publie.
-- "ajouter" : au plus 6 sources qui manquent vraiment, en priorité celles que nos articles citent souvent, chacune avec l'adresse exacte de son flux RSS (ou sitemap / API WordPress) si tu la connais, son pays (code ISO à 2 lettres en minuscules), s'il s'agit d'une rubrique d'opinion, et la raison en une phrase. N'invente pas d'adresse : si tu ne la connais pas, laisse "url" vide.
+- "ajouter" : au plus 6 sources qui manquent vraiment, en priorité celles que nos articles citent souvent, chacune avec l'adresse exacte de son flux RSS (ou sitemap / API WordPress) si tu la connais, son pays (code ISO à 2 lettres en minuscules), son nom en arabe tel que le public arabe l'écrit ("nom_ar"), s'il s'agit d'une rubrique d'opinion, et la raison en une phrase. N'invente pas d'adresse : si tu ne la connais pas, laisse "url" vide.
 - "remarques" : une ou deux phrases au plus.
 
 Réponds UNIQUEMENT avec un objet JSON entre crochets, sans texte autour :
-[{{"retirer": [{{"flux": "...", "raison": "..."}}], "ajouter": [{{"nom": "...", "url": "...", "pays": "es", "opinion": false, "raison": "..."}}], "remarques": "..."}}]
+[{{"retirer": [{{"flux": "...", "raison": "..."}}], "ajouter": [{{"nom": "...", "nom_ar": "...", "url": "...", "pays": "es", "opinion": false, "raison": "..."}}], "remarques": "..."}}]
 """
 
 
@@ -79,6 +80,28 @@ def verifier(proposition):
         return "déjà suivi"
     s = sante({"url": url})
     return s["etat"] if s["etat"] != "✅" else f"✅ {s['entrees']} entrées, {s['real']} sur le Real"
+
+
+def modifications(avis, ajouts):
+    """Lignes de config.json prêtes à copier : seulement les flux proposés qui ont été lus avec succès (✅), et les retraits
+    de flux qui existent vraiment. Jamais d'"autorisation" : elle exige l'accord écrit du journal."""
+    noms = {f["nom"] for f in CONFIG["flux"]}
+    retraits = [x.get("flux") for x in avis.get("retirer", []) if isinstance(x, dict) and x.get("flux") in noms]
+    nouveaux = [{"nom": p["nom"], "url": p["url"], "pays": (p.get("pays") or "").lower() or None,
+                 **({"opinion": True} if p.get("opinion") else {})} for p, v in ajouts if v.startswith("✅") and p.get("nom")]
+    graphies = {p["nom"]: p["nom_ar"] for p, v in ajouts if v.startswith("✅") and p.get("nom_ar")
+                and p["nom"].split(" - ")[0] not in CONFIG.get("noms_ar", {})}
+    if not (retraits or nouveaux or graphies):
+        return []
+    r = ["\n## Modifications prêtes pour config.json\n"]
+    if retraits:
+        r.append("Flux à supprimer de `flux` : " + ", ".join(f"`{n}`" for n in retraits))
+    if nouveaux:
+        r += ["\nÀ ajouter dans `flux` (vérifie les options `filtre_lien`, `que_le_real`, `veille` avant de copier) :",
+              "```json", ",\n".join(json.dumps({k: v for k, v in f.items() if v is not None}, ensure_ascii=False) for f in nouveaux), "```"]
+    if graphies:
+        r += ["\nÀ ajouter dans `noms_ar` :", "```json", ",\n".join(f'"{n}": "{a}"' for n, a in graphies.items()), "```"]
+    return r
 
 
 def revue(chemin=DB_PATH):
@@ -113,6 +136,7 @@ def revue(chemin=DB_PATH):
                                 or ["Rien à retirer."])
     r += ["\n## À ajouter\n"] + ([f"- **{p.get('nom')}** ({p.get('pays') or '?'}{', opinion' if p.get('opinion') else ''}) : "
                                   f"{p.get('raison')}  \n  `{p.get('url') or '-'}` → {v}" for p, v in ajouts] or ["Aucune proposition."])
+    r += modifications(avis, ajouts)
     if cites:
         r += ["\n## Médias cités dans nos articles sans être suivis (30 jours)\n", ", ".join(f"{m} ({n})" for m, n in cites)]
     if avis.get("remarques"):

@@ -626,6 +626,49 @@ assert ("42/posts", "c1") in appels  # 2e page lue
 assert "| Abonnés | 5 |" in tb and "| Publications | 2 | 0 | nouveau |" in tb and "| Vues de la Page | 30 | 10 | +200% |" in tb
 assert "| Nouvelle (automatique) | 1 | trop peu de données |" in tb and "- 7 vues, 6 interactions : [⚜️ A]" in tb
 print("OK tableau de bord Facebook")
+
+# revue des sources : lignes de config.json prêtes à copier, seulement pour les flux lus avec succès et les retraits réels
+import sources
+avis = {"retirer": [{"flux": sources.CONFIG["flux"][0]["nom"]}, {"flux": "Inconnu"}]}
+ajouts = [({"nom": "Diario AS Opinión", "nom_ar": "آس", "url": "https://as.com/rss", "pays": "ES", "opinion": True}, "✅ 20 entrées, 5 sur le Real"),
+          ({"nom": "Mundo Deportivo", "nom_ar": "موندو ديبورتيفو", "url": "https://md.es/rss", "pays": "es"}, "❌ vide")]
+r = "\n".join(sources.modifications(avis, ajouts))
+assert f"`{sources.CONFIG['flux'][0]['nom']}`" in r and "Inconnu" not in r
+assert '{"nom": "Diario AS Opinión", "url": "https://as.com/rss", "pays": "es", "opinion": true}' in r and "md.es" not in r
+assert "autorisation" not in r and sources.modifications({}, []) == []
+print("OK revue des sources : config prête")
+
+# audit de conformité : échantillon de la semaine (threads envoyés seulement, posts Facebook avec leur forme réelle), tirage stable
+import audit
+con = sqlite3.connect(":memory:")
+con.row_factory = sqlite3.Row
+con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, journal TEXT, auteur TEXT, auteur_ar TEXT, section TEXT, texte TEXT,"
+            " titres_fb TEXT, image TEXT, lien TEXT)")
+maintenant_iso = t.maintenant().isoformat(timespec="seconds")
+for i in range(1, 21):
+    con.execute("INSERT INTO articles VALUES (?, 'Marca', '', '', 'actus', 'نص', ?, ?, 'https://marca.com/x')",
+                (i, json.dumps({"fr": f"Titre {i}"}), "https://img/x.jpg" if i % 2 else ""))
+t.connexion_threads(con)
+for i in range(1, 19):
+    con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully) VALUES (?, ?, ?, ?, ?)",
+                (i, json.dumps([f"تغريدة {i} (ماركا)"]), "bloqué : test" if i == 18 else "immédiat", maintenant_iso, "avant" if i == 17 else "9"))
+t.connexion_page(con)
+con.execute("DELETE FROM page_facebook")
+for i in (19, 20):
+    con.execute("INSERT INTO page_facebook VALUES (?, ?, '1_2')", (i, maintenant_iso))
+pubs = audit.echantillon(con, "2026-47")
+assert pubs == audit.echantillon(con, "2026-47") and len(pubs) == 17  # 15 threads sur 16 envoyés, 2 posts Facebook
+assert not any("article 17]" in p or "article 18]" in p for p in pubs)  # ni « avant » ni bloqué
+fb = {p.split("article ")[1].split("]")[0]: p for p in pubs if p.startswith("[Facebook")}
+assert "[photo de l'article jointe, aucun lien]" in fb["19"] and "https://marca.com/x" not in fb["19"] and "https://marca.com/x" in fb["20"]
+vrai = audit.appeler_claude
+audit.appeler_claude = lambda p, *a, **k: "Aucun écart sur cet échantillon."
+try:
+    assert audit.audit(con, "2026-47").endswith("Aucun écart sur cet échantillon.")
+finally:
+    audit.appeler_claude = vrai
+con.close()
+print("OK audit de conformité")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:

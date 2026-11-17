@@ -38,6 +38,11 @@ jobs:
           FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
           PYTHONIOENCODING: utf-8
         run: python performance.py >> rapport.md
+      - name: Audit de conformité (20 publications de la semaine relues par Claude)
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          PYTHONIOENCODING: utf-8
+        run: python audit.py >> rapport.md
       - name: Issue GitHub
         env:
           GH_TOKEN: ${{ github.token }}
