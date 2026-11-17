@@ -5637,4 +5637,5 @@ INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/not
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/17/torcedor-e-condenado-a-prisao-por-racismo-contra-mbappe.ghtml','Torcedor é condenado à prisão por racismo contra Mbappé','2026-11-17T12:01:18');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/vinicius-siempre-quiere-mas-sus-gestos-tras-el-cambio-f202611-v/','Vinicius siempre quiere más: sus gestos tras el cambio','2026-11-17T12:01:31');
 INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/vinicius-marca-su-primer-triplete-con-brasil-en-12-minutos-en-la-goleada-a-singapur.html','Vinicius marca su primer triplete con Brasil en 12 minutos en la goleada a Singapur','2026-11-17T12:11:33');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/resumen-y-goles-del-singapur-vs-brasil-amistoso-internacional-f202611-v/','Resumen y goles del Singapur vs. Brasil, amistoso internacional','2026-11-17T12:20:46');
 COMMIT;
