@@ -15,6 +15,10 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
+        with:
+          # dernier état de la branche au démarrage du job, pas celui du déclenchement : un job resté une heure en file
+          # repartait d'une base périmée (threads republiés, conflit au push)
+          ref: ${{ github.ref_name }}
       - uses: actions/setup-python@v7
         with:
           python-version: "3.14"
