@@ -114,6 +114,14 @@ Chaque lundi à 7 h (heure d'Espagne), le workflow « Revue des sources » ouvre
 
 Rien n'est modifié automatiquement : tu décides, puis tu demandes à Claude Code d'appliquer la revue, ou tu modifies `config.json` à la main. Revue à la demande : bouton « Run workflow » du workflow, ou `python sources.py` sur le PC.
 
+## Commandes de l'équipe (/sujets, /moderation, /angles)
+
+Dans Claude Code, ouvert dans ce dossier. Elles proposent, tu décides : rien n'est publié, masqué ou supprimé sans ton accord.
+
+- `/sujets` (rédacteur en chef, 5 min par jour) : les 3 sujets du jour qui méritent ton avis, avec l'angle et les articles qui le soutiennent ; les doublons et les écarts de ton relevés dans les threads envoyés ; les threads bloqués qui t'attendent dans Typefully.
+- `/moderation` (community manager, 10 min par jour) : les commentaires de la Page Facebook encore sans réponse (`python moderation.py`), avec pour chacun une action (répondre, ignorer, masquer, transmettre...) et une réponse proposée dans la langue du commentaire. Pour X, colle les mentions reçues. Tu réponds toi-même sur Facebook et sur X : le jeton n'a pas la permission `pages_manage_engagement`.
+- `/angles [sujet]` (analyste tactique) : 3 angles d'analyse (thèse, faits sourcés tirés de `connaissance.md`, argument contraire, ce qui manque) à développer ensuite avec `/script`.
+
 ## Articles d'analyse (/script)
 
 Dans Claude Code, ouvert dans ce dossier : `/script <format> sur <sujet>`, par exemple `/script thread sur Vinícius` ou `/script article Facebook sur Valence 0-3`. Sans sujet, Claude en propose 3 tirés des articles récents.

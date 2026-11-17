@@ -669,6 +669,30 @@ finally:
     audit.appeler_claude = vrai
 con.close()
 print("OK audit de conformité")
+
+# /moderation : commentaires sans réponse de la Page (ni ceux de la Page, ni ceux auxquels elle a déjà répondu)
+import moderation
+def graphe(chemin, **p):
+    if chemin == "42/posts":
+        return {"data": [{"id": "42_1", "created_time": "2026-11-17T08:00:00+0000", "message": "⚜️ Titre\n🇨🇦 Title", "permalink_url": "https://fb/1"},
+                         {"id": "42_2", "created_time": "2026-11-17T07:00:00+0000", "message": "⚜️ Autre"}]}
+    if chemin == "42_1/comments":
+        return {"data": [{"id": "c1", "from": {"id": "9", "name": "Karim"}, "message": "Source ?", "created_time": "2026-11-17T09:00:00+0000"},
+                         {"id": "c2", "from": {"id": "8"}, "message": "Faux", "created_time": "2026-11-17T09:05:00+0000"},
+                         {"id": "c3", "from": {"id": "42"}, "message": "Marca", "parent": {"id": "c1"}, "created_time": "2026-11-17T09:10:00+0000"}]}
+    return {"data": [{"id": "c4", "from": {"id": "42"}, "message": "note de la Page", "created_time": "2026-11-17T07:30:00+0000"}]}
+vrai = (t.reglage, t.graph_lire)
+t.reglage = lambda cle: "42" if cle == "facebook_page_id" else "k"
+t.graph_lire = graphe
+try:
+    attente = moderation.commentaires(2)
+finally:
+    t.reglage, t.graph_lire = vrai
+assert [(p["id"], [c["id"] for c in cs]) for p, cs in attente] == [("42_1", ["c2"])]  # c1 a déjà sa réponse, c3 et c4 viennent de la Page
+texte = moderation.afficher(attente)
+assert "Post du 2026-11-17 08:00 UTC : ⚜️ Titre" in texte and "- [c2] 2026-11-17 09:05 · lecteur : Faux" in texte
+assert moderation.afficher([]) == "Aucun commentaire en attente de réponse."
+print("OK /moderation")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:
