@@ -993,7 +993,7 @@ def main():
         print(f"Threads X : {threads.decouper(con)} préparé(s), "
               f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully. "
               f"Page Facebook : {threads.vers_page(con)} publication(s). Résumé du jour : {threads.resume_du_jour(con)}. "
-              f"Unes Marca/AS : {threads.unes_du_jour(con)} publication(s).")
+              f"Unes Marca/AS : {threads.unes_du_jour(con)} publication(s). Adresses X relevées : {threads.liens_x(con)}.")
         threads.noter(con, "Claude (rédaction)", "Claude n'a pas répondu (quota ou jeton)" if panne else None)
         alerte = threads.alertes(con)
         ALERTE.unlink(missing_ok=True)

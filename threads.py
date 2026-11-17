@@ -420,6 +420,33 @@ def unes_du_jour(con, utc=None):
 TYPEFULLY = "https://api.typefully.com/v2/social-sets/{}/"
 
 
+def liens_x(con, max_appels=30):
+    """Adresse sur X de chaque publication Typefully des 3 derniers jours (threads, résumés du jour, unes), relevée une fois
+    publiée : elle servira à croiser l'export des statistiques de X (Premium) avec la base. Table liens_x."""
+    con.execute("CREATE TABLE IF NOT EXISTS liens_x (typefully TEXT PRIMARY KEY, url TEXT, date TEXT)")
+    if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
+        return 0
+    connexion_threads(con)
+    ids = [r[0] for r in con.execute(f"SELECT typefully FROM threads WHERE {ENVOYES} AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-3 days')")]
+    for table, colonne in (("resumes", "typefully"), ("unes", "x")):
+        if con.execute("SELECT 1 FROM sqlite_master WHERE name = ?", (table,)).fetchone():
+            ids += [r[0] for r in con.execute(f"SELECT {colonne} FROM {table} WHERE jour >= date('now', '-3 days')"
+                                              f" AND {colonne} IS NOT NULL AND {colonne} NOT IN ('sans', 'vide')")]
+    deja = {r[0] for r in con.execute("SELECT typefully FROM liens_x")}
+    n = 0
+    for i in [i for i in dict.fromkeys(ids) if i not in deja][:max_appels]:
+        try:
+            d = typefully_api(f"drafts/{i}")
+        except (OSError, ValueError) as err:  # sans gravité : repris au prochain passage
+            print(f"  ! Typefully : adresse X du brouillon {i} illisible ({err})")
+            break
+        if d.get("status") == "published" and d.get("x_published_url"):
+            con.execute("INSERT INTO liens_x VALUES (?, ?, ?)", (i, d["x_published_url"], d.get("published_at") or ""))
+            n += 1
+    con.commit()
+    return n
+
+
 def typefully_api(chemin, corps=None):
     """Appelle l'API Typefully v2 (clé : TYPEFULLY_API_KEY, compte : "typefully_social_set" dans config.json)."""
     req = urllib.request.Request((TYPEFULLY.format(CONFIG["typefully_social_set"]) + chemin).rstrip("/"),

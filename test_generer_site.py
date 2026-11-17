@@ -693,6 +693,35 @@ texte = moderation.afficher(attente)
 assert "Post du 2026-11-17 08:00 UTC : ⚜️ Titre" in texte and "- [c2] 2026-11-17 09:05 · lecteur : Faux" in texte
 assert moderation.afficher([]) == "Aucun commentaire en attente de réponse."
 print("OK /moderation")
+
+# adresses X : relevées une fois publiées (threads envoyés, résumés, unes), une seule fois, ni brouillon bloqué ni une sans le Real
+con = sqlite3.connect(":memory:")
+t.connexion_threads(con)
+maintenant_iso = t.maintenant().isoformat(timespec="seconds")
+con.executemany("INSERT INTO threads (article_id, tweets, statut, date, typefully) VALUES (?, '[]', ?, ?, ?)",
+                [(1, "immédiat", maintenant_iso, "11"), (2, "bloqué : test", maintenant_iso, "12"), (3, "file", maintenant_iso, "13")])
+con.execute("CREATE TABLE resumes (jour TEXT PRIMARY KEY, typefully TEXT)")
+con.execute("INSERT INTO resumes VALUES (date('now'), '21')")
+con.execute("CREATE TABLE unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT)")
+con.executemany("INSERT INTO unes VALUES (date('now'), ?, '[]', ?, NULL)", [("marca", "31"), ("as", "sans")])
+lus = []
+def brouillon(chemin, corps=None):
+    lus.append(chemin)
+    i = chemin.split("/")[1]
+    return {"status": "scheduled"} if i == "13" else {"status": "published", "x_published_url": f"https://x.com/a/status/{i}"}
+vrai = (t.typefully_api, t.reglage)
+t.typefully_api, t.reglage = brouillon, (lambda cle: "k")
+t.CONFIG["typefully_social_set"] = t.CONFIG.get("typefully_social_set") or 1
+try:
+    assert t.liens_x(con) == 3 and sorted(lus) == ["drafts/11", "drafts/13", "drafts/21", "drafts/31"]
+    lus.clear()
+    assert t.liens_x(con) == 0 and lus == ["drafts/13"]  # seul le thread encore en file est redemandé
+finally:
+    t.typefully_api, t.reglage = vrai
+assert dict(con.execute("SELECT typefully, url FROM liens_x")) == {"11": "https://x.com/a/status/11", "21": "https://x.com/a/status/21",
+                                                                    "31": "https://x.com/a/status/31"}
+con.close()
+print("OK adresses X")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:
