@@ -6,6 +6,7 @@ ne sait pas placer va dans « À classer ». Lancé par le workflow « Validatio
     CORPS="garder: 3, 5
     dernier: 12" python faits.py      → résumé en Markdown (commentaire de l'issue)
 """
+import contextlib
 import os
 import re
 import sqlite3
@@ -115,9 +116,11 @@ def main():
     operations, note = None, ""
     if faits:
         try:
-            operations = extraire_json(appeler_claude(PROMPT.format(texte=texte, faits="\n".join(
+            with contextlib.redirect_stdout(sys.stderr):  # la ligne de consommation de Claude reste dans le journal, hors du résumé
+                reponse = appeler_claude(PROMPT.format(texte=texte, faits="\n".join(
                 f"- n° {i} ({d}) : {f} Source : {j}{f' ({a})' if a else ''}." for i, d, f, j, a in faits)),
-                CONFIG.get("modele_redaction", "sonnet")))
+                    CONFIG.get("modele_redaction", "sonnet"))
+            operations = extraire_json(reponse)
         except (ValueError, ErreurClaude) as err:
             note = f"\n\nClaude n'a pas répondu ({err}) : les faits sont dans « {A_CLASSER} », à ranger avec /script."
     nouveau, resume = integrer(texte, operations, secours, dernier)
