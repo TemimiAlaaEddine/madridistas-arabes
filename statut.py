@@ -36,9 +36,30 @@ def api(chemin):
         return json.load(r)
 
 
+ECHECS = ("failure", "timed_out", "startup_failure")
+
+
+def alertes_workflows(workflows, derniers):
+    """Blocages du Veilleur hors passages : fichier de workflow invalide (GitHub lui donne alors son chemin pour nom) et
+    dernier run en échec des autres workflows. Un run « push » d'un workflow redevenu valide est l'ancien fichier
+    invalide, déjà réparé (aucun workflow du dépôt ne se déclenche sur un push). derniers = {id: [runs, du plus récent]}."""
+    alertes = []
+    for wf in workflows:
+        if wf["name"] == wf["path"]:
+            alertes.append(f"fichier de workflow invalide : {wf['path']} (voir le courriel de GitHub)")
+            continue
+        if wf["path"].endswith(("mise_a_jour.yml", "revue_sources.yml")):
+            continue  # passages : bilan du Veilleur ; revue : fiches du lundi
+        run = next((r for r in derniers.get(wf["id"], []) if r.get("event") != "push" and r.get("status") == "completed"), None)
+        if run and run.get("conclusion") in ECHECS:
+            alertes.append(f"workflow « {wf['name']} » en échec ({run['created_at'][:16].replace('T', ' ')} UTC) : voir l'onglet Actions")
+    return alertes
+
+
 def lire_github(depuis):
-    """Passages du workflow depuis `depuis` (UTC) et dernière revue du lundi ; vides si l'API ne répond pas."""
-    passages, revue = [], None
+    """Passages du workflow depuis `depuis` (UTC), dernière revue du lundi et alertes des autres workflows ;
+    vides si l'API ne répond pas."""
+    passages, revue, alertes = [], None, []
     try:
         for page in range(1, 6):
             lot = api(f"actions/workflows/mise_a_jour.yml/runs?per_page=100&page={page}&created=%3E%3D{depuis:%Y-%m-%dT%H:%M:%SZ}")["workflow_runs"]
@@ -46,9 +67,13 @@ def lire_github(depuis):
             if len(lot) < 100:
                 break
         revue = (api("actions/workflows/revue_sources.yml/runs?per_page=1")["workflow_runs"] or [None])[0]
+        workflows = api("actions/workflows?per_page=100")["workflows"]
+        derniers = {wf["id"]: api(f"actions/workflows/{wf['id']}/runs?per_page=5")["workflow_runs"] for wf in workflows
+                    if not wf["path"].endswith(("mise_a_jour.yml", "revue_sources.yml"))}
+        alertes = alertes_workflows(workflows, derniers)
     except (OSError, ValueError, KeyError) as err:
         print(f"  ! statut : API GitHub injoignable ({err}), tableau sans les passages")
-    return passages, revue
+    return passages, revue, alertes
 
 
 def compter(con, table, col, a, b, cond="1"):
@@ -83,7 +108,8 @@ SERIES = {  # nom : (table, colonne de date, condition)
 }
 
 
-def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=BASE / "videos", connaissance=BASE / "connaissance.md"):
+def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=BASE / "videos", connaissance=BASE / "connaissance.md",
+            alertes_gh=()):
     dec = heure_madrid(utc) - utc
     madrid = utc + dec
     j0 = datetime.combine(madrid.date(), time()) - dec  # minuit à Madrid, en UTC
@@ -166,11 +192,11 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
               [("Hier", unes(madrid.date() - timedelta(days=1))), ("Aujourd'hui", u_auj)], actif="X" in u_auj),
         agent("archiviste", "🔗", "Archiviste X", "Relève l'adresse X de chaque publication, pour les statistiques", "pipeline",
               [("Hier", pluriel(xh, "adresse", "relevée")), ("Aujourd'hui", pluriel(xa, "adresse", "relevée"))], actif=xa > 0),
-        agent("veilleur", "🚨", "Veilleur", "Suit chaque passage et ouvre une issue au 3e échec de suite", "pipeline",
+        agent("veilleur", "🚨", "Veilleur", "Suit les passages et tous les workflows ; issue au 3e échec de suite", "pipeline",
               [("Hier", bilan(p_hier)), ("Aujourd'hui", bilan(p_auj))],
               ([pluriel(len(rates), "passage") + " en échec aujourd'hui"] if rates else [])
               + ([f"aucun passage depuis {round(silence)} min : vérifier cron-job.org"] if silence and silence > 40 else [])
-              + [f"{p[0]} en échec depuis {p[1]} passages" for p in pannes.values()], actif=bool(p_auj)),
+              + [f"{p[0]} en échec depuis {p[1]} passages" for p in pannes.values()] + list(alertes_gh), actif=bool(p_auj)),
     ]
 
     # --- revue du lundi (un workflow, quatre rapports)
@@ -403,9 +429,9 @@ def main():
     sys.stdout.reconfigure(encoding="utf-8")
     restaurer_base(DB_PATH)
     utc = maintenant()
-    passages, revue = lire_github(utc - timedelta(days=2))
+    passages, revue, alertes = lire_github(utc - timedelta(days=2))
     con = sqlite3.connect(DB_PATH)
-    d = donnees(con, utc, passages, revue)
+    d = donnees(con, utc, passages, revue, alertes_gh=alertes)
     con.close()
     SORTIE.mkdir(exist_ok=True)
     (SORTIE / "index.html").write_text(page(d), encoding="utf-8")

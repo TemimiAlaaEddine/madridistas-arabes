@@ -1086,3 +1086,15 @@ assert "Dernier fait relu : 9" in texte_c and "titre glissé" not in texte_c and
 assert faits.integrer(base_c, None, ["- s"], 1)[0].count("Dernier fait relu : 2") == 1  # secours ; le numéro ne recule jamais
 assert "## À classer\n\n- s\n" in faits.integrer(base_c, None, ["- s"], 1)[0]
 print("OK validation des faits")
+
+# Veilleur : fichier de workflow invalide et autres workflows en échec ; l'ancien fichier invalide réparé ne compte plus
+wfs = [{"id": 1, "name": ".github/workflows/x.yml", "path": ".github/workflows/x.yml"},
+       {"id": 2, "name": "Validation des faits", "path": ".github/workflows/faits.yml"},
+       {"id": 3, "name": "Mise à jour", "path": ".github/workflows/mise_a_jour.yml"}]
+run = lambda ev, c: {"event": ev, "status": "completed", "conclusion": c, "created_at": "2026-11-17T20:53:04Z"}  # noqa: E731
+assert statut.alertes_workflows(wfs, {2: [run("push", "failure")]}) == ["fichier de workflow invalide : .github/workflows/x.yml (voir le courriel de GitHub)"]
+assert "« Validation des faits » en échec (2026-11-17 20:53 UTC)" in statut.alertes_workflows(wfs[1:], {2: [run("issues", "failure"), run("issues", "success")]})[0]
+assert statut.alertes_workflows(wfs[1:], {2: [run("issues", "success"), run("issues", "failure")]}) == []  # réparé depuis
+d = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"), alertes_gh=["fichier invalide"])
+assert "fichier invalide" in {a["id"]: a for a in d["agents"]}["veilleur"]["blocages"]
+print("OK Veilleur des workflows")
