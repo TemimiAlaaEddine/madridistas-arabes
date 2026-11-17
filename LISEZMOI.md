@@ -78,6 +78,8 @@ Les articles n'affichent plus de photo de joueur ; les photos restent sur les pa
 
 **Résumé du jour** : au premier passage entre minuit et 3 h (heure de Madrid), Claude choisit les 3 sujets de la veille parmi les articles du site et publie tout de suite le thread « 🗞️ صحافة مدريد اليوم » (4 tweets, sans lien) via Typefully. Une fois par jour (table `resumes`).
 
+**Unes de Marca et AS** : entre minuit et 6 h (heure de Madrid), chaque une du jour (image de kiosko.net) est lue par Claude, qui traduit les titres sur le Real Madrid ; elle part en publication à part sur X (titres en arabe, via Typefully) et sur la Page Facebook (titres en français, anglais et espagnol). Une une sans le Real n'est pas publiée (table `unes`).
+
 Chaque nouvelle des dernières 24 h (communiqués, actualités, conférences de presse, compositions officielles, et tout le mercato, chroniques comprises ; ni les autres opinions, ni les compositions probables) est publiée sur la Page Facebook (au plus `max_threads` par passage) : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸 : publiés en photo avec l'image principale de l'article et le nom du journal en légende, sans le lien (les liens des médias sont bloqués au Canada, loi C-18) ; sans image, en message avec le lien de la source en carte. Le post se retouche ensuite à la main sur Facebook. Les articles sans titres traduits ne sont pas publiés. Au tout premier passage, les articles déjà en base sont considérés comme publiés.
 
 - Config : secrets GitHub `FACEBOOK_PAGE_ID` et `FACEBOOK_PAGE_TOKEN` (jeton de la Page, permissions `pages_manage_posts` et `pages_read_engagement`), ou `facebook_page_id` / `facebook_page_token` dans `secrets.json` sur le PC. Sans eux, rien n'est publié.

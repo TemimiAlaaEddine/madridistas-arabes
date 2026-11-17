@@ -213,12 +213,12 @@ class ErreurClaude(RuntimeError):
     """Claude n'a pas répondu (quota, jeton expiré, délai dépassé) : le passage continue sans rédaction."""
 
 
-def appeler_claude(prompt, modele=None, effort=None):
+def appeler_claude(prompt, modele=None, effort=None, outils=""):  # outils="Read" : lecture d'une image (une du jour)
     exe = shutil.which("claude")
     if not exe:
         sys.exit("Claude Code introuvable. Installe-le et connecte-toi à ton compte (lance `claude` une fois).")
     # mode allégé : sans outils, plugins, MCP ni réglages, Claude Code n'ajoute ~1 000 tokens au lieu de ~50 000
-    cmd = [exe, "-p", "--output-format", "json", "--tools", "", "--strict-mcp-config", "--setting-sources", "",
+    cmd = [exe, "-p", "--output-format", "json", "--tools", outils, "--strict-mcp-config", "--setting-sources", "",
            "--no-session-persistence", "--system-prompt", "Tu es un rédacteur. Réponds strictement au format demandé."]
     cmd += ["--model", modele] if modele else []
     cmd += ["--effort", effort] if effort else []

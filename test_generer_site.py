@@ -282,6 +282,32 @@ assert envois[0]["publish_at"] == "now" and envois[0]["platforms"]["x"]["posts"]
 con.close()
 print("OK résumé du jour")
 
+# unes Marca / AS : une publication par journal sur X et Facebook, une sans le Real ignorée, rien en double au passage suivant
+con = sqlite3.connect(":memory:")
+con.row_factory = sqlite3.Row
+lus, x, fb = [], [], []
+vrai = (t.appeler_claude, t.typefully_api, t.typefully_image, t.telecharger_image, t.reglage, t.urllib.request.urlopen)
+t.telecharger_image = lambda url, nom: (f"{nom}.jpg", b"img")
+t.appeler_claude = lambda p, *a, **k: (lus.append((p, k)), '[{"es": "Hasta Zidane se rinde a Güler", "ar": "حتى زيدان يستسلم لغولر", "fr": "Même Zidane", "en": "Even Zidane"}]'
+                                       if "Marca" in p else "[]")[1]
+t.typefully_image = lambda nom, contenu: "m1"
+t.typefully_api = lambda chemin, corps=None: (x.append(corps), {"id": 9})[1]
+t.reglage = lambda cle: "k"
+t.urllib.request.urlopen = lambda req, timeout=None: (fb.append((req.full_url, urllib.parse.parse_qs(req.data.decode()))), io.BytesIO(b'{"id": "5"}'))[1]
+try:
+    assert t.unes_du_jour(con, datetime(2026, 11, 17, 8)) == 0 and not lus  # 9 h à Madrid : hors fenêtre
+    assert t.unes_du_jour(con, datetime(2026, 11, 16, 23, 30)) == 2  # 0 h 30 le 17 : Marca sur X et Facebook, AS sans le Real
+    assert t.unes_du_jour(con, datetime(2026, 11, 16, 23, 40)) == 0 and len(lus) == 2  # rien en double, chaque une lue une fois
+finally:
+    t.appeler_claude, t.typefully_api, t.typefully_image, t.telecharger_image, t.reglage, t.urllib.request.urlopen = vrai
+assert all(k == {"outils": "Read"} for _, k in lus) and "2026-11-17" in lus[0][0]
+post = x[0]["platforms"]["x"]["posts"][0]
+assert len(x) == 1 and post["media_ids"] == ["m1"] and post["text"].startswith("📰 غلاف ماركا | الثلاثاء 17 نوفمبر") and "▪️ حتى زيدان" in post["text"]
+assert len(fb) == 1 and fb[0][0].endswith("/photos") and fb[0][1]["url"] == ["https://img.kiosko.net/2026/11/17/es/marca.750.jpg"]
+assert fb[0][1]["caption"][0].startswith("📰 Marca · la une du 17 novembre") and "🇪🇸 Hasta Zidane" in fb[0][1]["caption"][0]
+con.close()
+print("OK unes Marca et AS")
+
 # économies de Claude : filtre gratuit, tri sur titre, textes coupés, thread écrit avec l'article
 assert g.est_pratique({"titre": "Valencia vs Real Madrid: a qué hora juega y dónde ver", "lien": "https://x"})
 assert g.est_pratique({"titre": "Match", "lien": "https://www.abc.es/deportes/real-madrid/ver-television-online-real-madrid"})

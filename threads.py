@@ -236,6 +236,88 @@ def resume_du_jour(con, utc=None):
     return 1
 
 
+UNES = (("marca", "Marca", "ماركا"), ("as", "AS", "آس"))  # code kiosko.net, nom, nom arabe
+JOURS_AR = ("الاثنين", "الثلاثاء", "الأربعاء", "الخميس", "الجمعة", "السبت", "الأحد")
+MOIS_AR = ("يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر")
+MOIS_FR = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre")
+PROMPT_UNE = """Lis le fichier {fichier} : la une du journal sportif espagnol {nom} du {jour}.
+Relève les sujets qui concernent le Real Madrid (joueurs, entraîneur, club, matchs), du plus grand titre au plus petit, au plus 4.
+Pour chaque sujet, un seul élément : le titre tel qu'il est imprimé (avec son sous-titre seulement s'il est indispensable pour
+comprendre), et sa traduction fidèle en arabe, en français et en anglais, noms propres dans leur graphie usuelle.
+Réponds UNIQUEMENT avec un tableau JSON, sans texte avant ni après : [{{"es": "...", "ar": "...", "fr": "...", "en": "..."}}],
+ou [] si la une ne parle pas du Real Madrid."""
+
+
+def unes_du_jour(con, utc=None):
+    """Unes de Marca et AS (images de kiosko.net), une publication par journal sur X (Typefully, tout de suite) et sur la Page
+    Facebook, entre minuit et 6 h à Madrid : Claude lit l'image et traduit les titres sur le Real Madrid. Une une sans le Real
+    n'est pas publiée. Chaque envoi est noté à part (table unes) : un échec n'est repris que là où il a eu lieu."""
+    madrid = heure_madrid(utc or maintenant())
+    if madrid.hour >= 6:
+        return 0
+    jour = madrid.date()
+    con.execute("CREATE TABLE IF NOT EXISTS unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT, PRIMARY KEY (jour, journal))")
+    x_ok = reglage("typefully_api_key") and CONFIG.get("typefully_social_set")
+    jeton, page = reglage("facebook_page_token"), reglage("facebook_page_id")
+    n = 0
+    for code, nom, nom_ar in UNES:
+        cle = (jour.isoformat(), code)
+        con.execute("INSERT OR IGNORE INTO unes (jour, journal) VALUES (?, ?)", cle)
+        u = con.execute("SELECT * FROM unes WHERE jour = ? AND journal = ?", cle).fetchone()
+        reste_x, reste_fb = x_ok and u["x"] is None, jeton and page and u["facebook"] is None
+        if not (reste_x or reste_fb):
+            continue
+        url = f"https://img.kiosko.net/{jour:%Y/%m/%d}/es/{code}.750.jpg"
+        try:
+            image = telecharger_image(url, f"une-{code}")  # 404 tant que la une n'est pas sortie : repris au passage suivant
+            if u["titres"] is None:  # Claude ne lit chaque une qu'une fois, même si un envoi échoue ensuite
+                fichier = BASE / f"une-{code}.jpg"
+                fichier.write_bytes(image[1])
+                try:
+                    titres = extraire_json(appeler_claude(PROMPT_UNE.format(fichier=fichier, nom=nom, jour=jour.isoformat()),
+                                                          CONFIG.get("modele_redaction", "sonnet"), outils="Read"))
+                finally:
+                    fichier.unlink(missing_ok=True)
+                titres = [t for t in titres if isinstance(t, dict) and t.get("ar")]
+                con.execute("UPDATE unes SET titres = ? WHERE jour = ? AND journal = ?", (json.dumps(titres, ensure_ascii=False), *cle))
+                con.commit()
+            else:
+                titres = json.loads(u["titres"])
+            if not titres:  # pas de Real Madrid en une : rien à publier
+                con.execute("UPDATE unes SET x = 'sans', facebook = 'sans' WHERE jour = ? AND journal = ?", cle)
+                con.commit()
+                continue
+            if reste_x:
+                garder = list(titres)
+                while True:  # titres du bas retirés tant que le tweet dépasse la limite de X
+                    texte = (f"📰 غلاف {nom_ar} | {JOURS_AR[jour.weekday()]} {jour.day} {MOIS_AR[jour.month - 1]}\n\n"
+                             + "\n".join(f"▪️ {t['ar']}" for t in garder) + "\n\n#ريال_مدريد")
+                    if longueur(texte) <= LIMITE or len(garder) == 1:
+                        break
+                    garder.pop()
+                media = typefully_image(*image)
+                if not media:
+                    raise ValueError("image pas prête dans Typefully")
+                d = typefully_api("drafts", {"draft_title": f"غلاف {nom_ar} {jour}", "publish_at": "now",
+                                             "platforms": {"x": {"enabled": True, "posts": [{"text": texte, "media_ids": [media]}]}}})
+                con.execute("UPDATE unes SET x = ? WHERE jour = ? AND journal = ?", (str(d["id"]), *cle))
+                con.commit()
+                n += 1
+            if reste_fb:
+                legende = f"📰 {nom} · la une du {jour.day} {MOIS_FR[jour.month - 1]}\n\n" + "\n\n".join(
+                    "\n".join(f"{d} {t[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if t.get(k)) for t in titres)
+                corps = urllib.parse.urlencode({"url": url, "caption": legende, "access_token": jeton}).encode()
+                with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/photos", corps), timeout=60) as rep:
+                    fb = json.load(rep)
+                con.execute("UPDATE unes SET facebook = ? WHERE jour = ? AND journal = ?", (str(fb.get("id", "ok")), *cle))
+                con.commit()
+                n += 1
+        except (OSError, ValueError, KeyError, ErreurClaude) as err:
+            detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
+            print(f"  ! une de {nom} : pas encore publiée ({err}) {detail}, reprise au prochain passage")
+    return n
+
+
 TYPEFULLY = "https://api.typefully.com/v2/social-sets/{}/"
 
 
