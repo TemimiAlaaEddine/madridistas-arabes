@@ -3938,6 +3938,7 @@ INSERT INTO "liens_x" VALUES('11994682','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('11995054','https://x.com/ElMadridistAlaa/status/2122720170062090690','2026-11-17T15:55:24.184Z');
 INSERT INTO "liens_x" VALUES('11996471','https://x.com/ElMadridistAlaa/status/2122737003653701687','2026-11-17T17:02:00.915Z');
 INSERT INTO "liens_x" VALUES('11996698','https://x.com/ElMadridistAlaa/status/2122739557129220253','2026-11-17T17:12:09.551Z');
+INSERT INTO "liens_x" VALUES('11996702','https://x.com/ElMadridistAlaa/status/2122739579111473154','2026-11-17T17:12:46.458Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -5767,4 +5768,5 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50510724/vinici
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115525/madrid-daily-lucas-vazquez-defends-vinicius-suker-backs-mourinho-and-discusses-modrics-future','Madrid Daily: Lucas Vázquez defends Vinícius, Šuker backs Mourinho and discusses Modrić’s future','2026-11-17T17:01:47');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/madrid-sigue-minimos-vuelta-trabajo.html','El Madrid sigue bajo mínimos en la vuelta al trabajo','2026-11-17T17:11:57');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7196712227129235398-le-real-madrid-est-en-train-dimplementer-une-nouvelle-strategie-mercato-etonnante-avec-les-jeunes','Le Real Madrid est en train d’implémenter une nouvelle stratégie mercato étonnante avec les jeunes','2026-11-17T17:11:57');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50509888/kylian-mbappe-racist-abuse-oviedo-fan-real-madrid','Oviedo fan gets suspended prison sentence for racist abuse toward Mbappé','2026-11-17T17:21:16');
 COMMIT;
