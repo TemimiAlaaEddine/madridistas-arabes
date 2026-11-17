@@ -70,3 +70,36 @@ jobs:
           if [ -s alerte.md ]; then
             gh issue create --title "Alerte : envoi en échec ($(date -u +'%Y-%m-%d %H:%M') UTC)" --body-file alerte.md
           fi
+
+  # tableau de bord de l'équipe (statut.py) sur GitHub Pages, même si le passage a échoué : c'est là qu'on le voit
+  tableau:
+    needs: passage
+    if: always()
+    continue-on-error: true # le passage reste « réussi » si seule la publication du tableau échoue
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }} # avec la base que le passage vient de pousser
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser # importé par commun.py
+      - run: python statut.py
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONIOENCODING: utf-8
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: statut
+      - id: deploiement
+        uses: actions/deploy-pages@v4

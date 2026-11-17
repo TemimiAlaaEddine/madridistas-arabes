@@ -1039,3 +1039,25 @@ assert "| Ok - RSS | es | ✅ | 1 | 1 | 1 |" in rapport and "| Club - Site | - |
 assert "| Uy - RSS (veille) | uy | ✅ | 1 | 0 | 0 |" in rapport  # veille : 20 jours sans rien sur le Real, normal and "**Mort - RSS** : en panne" in rapport
 assert "→ ✅ 1 entrées, 1 sur le Real" in rapport and "invente.es/rss` → ❌ vide" in rapport and "ذا أثلتيك (3)" in rapport
 print("OK revue des sources")
+
+# tableau de bord : compte par jour de Madrid, pannes et brouillons remontés en blocages, page rendue sans l'API GitHub
+import statut
+from datetime import datetime as _dt
+con = sqlite3.connect(":memory:")
+t.connexion_threads(con)
+con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, date TEXT, section TEXT, journal TEXT)")
+con.executemany("INSERT INTO articles (date, section, journal) VALUES (?, ?, ?)",
+                [("2026-11-17T10:00:00", "actus", "Marca"), ("2026-11-16T22:30:00", "actus", "AS"),  # 23 h 30 à Madrid : hier
+                 ("2026-11-16T12:00:00", "tactique", "AS")])
+con.executemany("INSERT INTO threads (article_id, tweets, statut, date, typefully) VALUES (?, '[]', ?, ?, ?)",
+                [(1, "immédiat", "2026-11-17T10:05:00", "11"), (2, "bloqué : test", "2026-11-17T10:06:00", "12")])
+t.noter(con, "Typefully", "erreur 500")
+d = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"))
+ag = {a["id"]: a for a in d["agents"]}
+assert ag["redacteur"]["rangs"] == [("Hier", "2 articles rédigés"), ("Aujourd'hui", "1 article rédigé (1 actus)")], ag["redacteur"]["rangs"]
+assert ag["editeur_x"]["etat"] == "bloque" and "erreur 500" in ag["editeur_x"]["blocages"][0]
+assert ag["controleur"]["etat"] == "attente" and ag["sujets"]["etat"] == "demande"
+assert d["graphes"]["par_heure"]["Articles rédigés"][11] == 1 and d["graphes"]["par_heure"]["Articles rédigés"][14] is None  # 11 h à Madrid ; futur vide
+html_statut = statut.page(d)
+assert 'id="editeur_x"' in html_statut and "2 agents bloqués" in html_statut  # Éditeur X et Veilleur
+print("OK tableau de bord")

@@ -13,6 +13,7 @@
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
 | `sources.py` | Revue des sources : santé des flux, rendement, sources à ajouter ou retirer |
+| `statut.py` | Tableau de bord de l'équipe d'agents, publié sur GitHub Pages après chaque passage |
 | `gabarits/` | `style.css`, `site.js` et `recherche.js` (page « بحث ») du site, `couverture.css` des couvertures : à modifier directement, puis `lancer_site.bat --rendre` |
 | `config.json` | Sources, personnes, réglages ; secrets dans `secrets.json` (hors git) |
 
@@ -115,6 +116,10 @@ Chaque lundi à 7 h (heure d'Espagne), le workflow « Revue des sources » ouvre
 - **santé technique** (`sante.py`) : validité du jeton de la Page Facebook, quota Typefully avec sa projection à la fin du mois (⚠️ au-delà de 80 %), envois en échec en ce moment.
 
 Rien n'est modifié automatiquement : tu décides, puis tu demandes à Claude Code d'appliquer la revue, ou tu modifies `config.json` à la main. Revue à la demande : bouton « Run workflow » du workflow, ou `python sources.py` sur le PC.
+
+## Tableau de bord de l'équipe
+
+https://temimialaaeddine.github.io/madridistas-arabes/ : organigramme des agents, « daily » de chacun (hier, aujourd'hui, blocages : panne, brouillons à relire, faits à valider), chiffres du jour et graphiques (heure par heure, 14 jours, rubriques, sources). Refait après chaque passage par `statut.py` (job « tableau » du workflow, sans appel à Claude) et publié sur GitHub Pages ; la page se recharge seule toutes les 5 minutes. Les chiffres viennent de `articles.sql`, déjà public, et de l'historique GitHub Actions. Sur le PC : `python statut.py`, puis ouvre `statut\index.html`.
 
 ## Commandes de l'équipe (/sujets, /moderation, /angles)
 
