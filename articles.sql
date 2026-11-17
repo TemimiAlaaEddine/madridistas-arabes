@@ -5611,4 +5611,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/17/condenado-un
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/primera-division/2026/11/17/6afc337ae9cf4a3c4b8b45a7.html','Once meses de prisión y multa de 1.440 euros para el aficionado que dedicó gestos racistas a Mbappé en Oviedo','2026-11-17T11:10:54');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/crees-que-el-madrid-deberia-dejar-salir-a-endrick-en-el-mercado-de-invierno-f202611-n/','¿Crees que el Madrid debería dejar salir a Endrick en el mercado de invierno?','2026-11-17T11:20:43');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/endrick-da-un-toque-a-mourinho-tremendo-misil-que-multiplica-sus-reivindicaciones-por-diez-f202611-v/','Endrick da un ‘toque’ a Mourinho: tremendo misil que multiplica sus reivindicaciones por diez','2026-11-17T11:20:50');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/17/6afc3b63fc6c831c728b45a5.html','Condenado el aficionado que insultó de forma racista a Mbappé en Oviedo','2026-11-17T11:40:44');
 COMMIT;
