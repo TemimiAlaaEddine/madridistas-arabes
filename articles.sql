@@ -5886,4 +5886,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115541/jj-g
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a883368784775299478-real-madrid-endrick-met-la-pression-sur-mourinho','Real Madrid : Endrick met la pression sur Mourinho','2026-11-17T20:50:52');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115538/yan-diomande-creates-two-big-chances-as-ivory-coast-draw-2-2-with-the-gambia','Yan Diomande creates two big chances as Ivory Coast draw 2–2 with The Gambia','2026-11-17T20:50:52');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-video-de-vinicius-con-un-influencer-que-deja-a-las-claras-que-tiene-un-objetivo-muy-claro-presten-atencion-f202611-v/','El vídeo de Vinicius con un influencer que deja a las claras que tiene un objetivo muy claro: presten atención','2026-11-17T20:51:08');
+INSERT INTO "vus" VALUES('https://trivela.com.br/europa/adeus-lukaku-duvida-geracao-de-ouro-da-belgica-foi-tudo-isso/','Adeus de Lukaku e a dúvida: A geração de ouro da Bélgica foi tudo isso?','2026-11-17T21:11:09');
 COMMIT;
