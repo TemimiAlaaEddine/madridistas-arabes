@@ -366,7 +366,7 @@ def unes_du_jour(con, utc=None):
     Facebook, entre minuit et 6 h à Madrid : Claude lit l'image et traduit les titres sur le Real Madrid. Une une sans le Real
     n'est pas publiée. Chaque envoi est noté à part (table unes) : un échec n'est repris que là où il a eu lieu."""
     madrid = heure_madrid(utc or maintenant())
-    if madrid.hour >= 6:
+    if madrid.hour >= 6 and not os.environ.get("FORCER_UNES"):  # FORCER_UNES : test hors fenêtre (workflow lancé à la main)
         return 0
     jour = madrid.date()
     con.execute("CREATE TABLE IF NOT EXISTS unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT, PRIMARY KEY (jour, journal))")
