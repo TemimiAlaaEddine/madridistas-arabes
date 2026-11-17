@@ -5667,4 +5667,6 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-show-vin
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/17/6afc4e6efdddff6f418b45ba.html','Vinicius hat trick y enfado con Brasil: "Había acordado jugar 15 minutos más"','2026-11-17T13:01:23');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/17/vinicius-logra-su-primer-hat-trick-con-brasil-pero-sale-enfadado-habia-acordado-jugar-15-o-20-minutos-mas-cadena-ser/','Vinicius logra su primer hat-trick con Brasil pero sale enfadado: "Había acordado jugar 15 o 20 minutos más..."','2026-11-17T13:20:44');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-news/115504/vinicius-first-hat-trick-brazil-singapore-7-0','Vinicius Scores First-Ever Brazil Hat-Trick in Dominant 0-7 Rout of Singapore','2026-11-17T14:01:22');
+INSERT INTO "vus" VALUES('https://trivela.com.br/italia/milan-endrick-duas-joias-ligue-1/','Mercado: Milan não para em Endrick e mira duas joias da Ligue 1','2026-11-17T14:20:45');
+INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-17/condenado-el-aficionado-que-profirio-insultos-racistas-a-mbappe-en-oviedo-de-2025.html','Condenado el aficionado que profirió insultos racistas a Mbappé en Oviedo de 2025','2026-11-17T14:20:45');
 COMMIT;
