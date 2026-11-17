@@ -3902,6 +3902,7 @@ INSERT INTO "liens_x" VALUES('11991085','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('11991458','https://x.com/ElMadridistAlaa/status/2122673926480556214','2026-11-17T12:51:22.057Z');
 INSERT INTO "liens_x" VALUES('11993414','https://x.com/ElMadridistAlaa/status/2122699233149309002','2026-11-17T14:31:55.614Z');
 INSERT INTO "liens_x" VALUES('11994682','https://x.com/ElMadridistAlaa/status/2122714263689269462','2026-11-17T15:31:39.145Z');
+INSERT INTO "liens_x" VALUES('11995054','https://x.com/ElMadridistAlaa/status/2122720170062090690','2026-11-17T15:55:24.184Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -5721,4 +5722,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/re
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2243679609431175520-jt-foot-mercato-le-grand-retour-de-wissam-ben-yedder','JT Foot Mercato : le grand retour de Wissam Ben Yedder','2026-11-17T15:40:49');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261117/supremo-da-razon-real-madrid-athletic-laliga-mantiene-firme-nulidad-acuerdo-cvc/1003744461705_0.html','El Supremo da la razón a Real Madrid y Athletic contra LaLiga y mantiene firme la nulidad del acuerdo con CVC en 2021','2026-11-17T15:50:50');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/una-pareja-de-hechos-f202611-n/','Una pareja de hechos','2026-11-17T15:51:29');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50510724/vinicius-junior-brazil-hat-trick-real-madrid','Vinícius Júnior hits Brazil hat trick, vows to take form to Real Madrid','2026-11-17T16:01:49');
 COMMIT;
