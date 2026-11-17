@@ -173,6 +173,69 @@ def vers_page(con, heures=24):
     return n
 
 
+PROMPT_RESUME = """Tu prépares pour le compte X « المدريديستا علاء » le résumé quotidien « صحافة مدريد اليوم » du {jour}, à partir des articles
+publiés ce jour-là sur son site (liste plus bas).
+Choisis les 3 sujets qui comptent le plus pour un supporter (blessure, composition, résultat, transfert, polémique, opinion forte) ;
+un sujet traité par plusieurs articles ne compte qu'une fois.
+Thread de 4 tweets en arabe :
+- Tweet 1 : « 🗞️ صحافة مدريد اليوم | » suivi de la date en arabe (ex. 17 نوفمبر), une ligne vide, une phrase qui annonce les 3 sujets, une ligne vide, « #ريال_مدريد ».
+- Tweets 2 à 4, un sujet chacun : « ▪️ » puis le fait ou l'avis en une ou deux phrases courtes, une ligne vide, puis la source entre parenthèses :
+  (ماركا) pour une information, (اسم الكاتب - ماركا) pour une opinion signée.
+Chaque tweet fait AU MAXIMUM 240 caractères. Pas de lien, aucun autre émoji ni hashtag, pas de point d'exclamation, aucun fait absent des articles.
+Réponds UNIQUEMENT avec un tableau JSON des 4 tweets, sans texte avant ni après : ["...", "...", "...", "..."]
+
+ARTICLES
+{articles}
+"""
+
+
+def heure_madrid(utc):
+    """Heure de Madrid depuis l'heure UTC (sans tzdata, absent de Python sous Windows) : heure d'été européenne du dernier
+    dimanche de mars au dernier dimanche d'octobre, à 1 h UTC."""
+    def dernier_dimanche(mois):
+        d = datetime(utc.year, mois, 31, 1)
+        return d - timedelta(days=(d.weekday() + 1) % 7)
+    return utc + timedelta(hours=2 if dernier_dimanche(3) <= utc < dernier_dimanche(10) else 1)
+
+
+def resume_du_jour(con, utc=None):
+    """Thread « صحافة مدريد اليوم » : au premier passage entre minuit et 3 h (heure de Madrid), les 3 sujets de la veille, choisis
+    par Claude parmi les articles du site, publiés tout de suite dans Typefully (pas de lien). Une fois par jour."""
+    utc = utc or maintenant()
+    madrid = heure_madrid(utc)
+    if madrid.hour >= 3 or not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
+        return 0
+    jour = (madrid - timedelta(days=1)).date().isoformat()
+    con.execute("CREATE TABLE IF NOT EXISTS resumes (jour TEXT PRIMARY KEY, typefully TEXT)")
+    if con.execute("SELECT 1 FROM resumes WHERE jour = ?", (jour,)).fetchone():
+        return 0
+    # shortcut: les jours de changement d'heure, la fenêtre de la veille est décalée d'une heure ; sans effet sur le choix des sujets
+    debut = datetime.fromisoformat(jour) - (madrid - utc)
+    arts = con.execute("SELECT * FROM articles WHERE date >= ? AND date < ? ORDER BY date",
+                       (debut.isoformat(timespec="seconds"), (debut + timedelta(days=1)).isoformat(timespec="seconds"))).fetchall()
+    if not arts:
+        con.execute("INSERT INTO resumes VALUES (?, 'vide')", (jour,))
+        con.commit()
+        return 0
+    blocs = [f"- [{a['section']}, {'information' if a['section'] == 'actus' or a['mode'] == 'info' else 'opinion'}] {a['titre']} : {a['chapeau']}"
+             f" (média : {a['journal']} ; auteur : {a['auteur_ar'] or a['auteur'] or 'non signé'})" for a in arts]
+    try:
+        tweets = [str(x).strip() for x in extraire_json(appeler_claude(PROMPT_RESUME.format(jour=jour, articles="\n".join(blocs)),
+                                                                       CONFIG.get("modele_redaction", "sonnet")))]
+        if not 2 <= len(tweets) <= 5 or any(not x or longueur(x) > LIMITE - 6 for x in tweets):  # 6 : place du « i/n »
+            raise ValueError(f"thread inutilisable ({len(tweets)} tweets)")
+        posts = [{"text": f"{x}\n\n{i}/{len(tweets)}"} for i, x in enumerate(tweets, 1)]
+        d = typefully_api("drafts", {"draft_title": f"صحافة مدريد اليوم {jour}", "publish_at": "now",
+                                     "platforms": {"x": {"enabled": True, "posts": posts}}})
+    except (OSError, ValueError, KeyError, ErreurClaude) as err:  # repris au passage suivant, tant qu'on est avant 3 h
+        detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
+        print(f"  ! résumé du jour : envoi impossible ({err}) {detail}, repris au prochain passage")
+        return 0
+    con.execute("INSERT INTO resumes VALUES (?, ?)", (jour, str(d["id"])))
+    con.commit()
+    return 1
+
+
 TYPEFULLY = "https://api.typefully.com/v2/social-sets/{}/"
 
 

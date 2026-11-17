@@ -256,6 +256,32 @@ with tempfile.TemporaryDirectory() as tmp:
     con.close()
 print("OK threads")
 
+from datetime import datetime
+# résumé du jour : heure de Madrid (été / hiver), fenêtre minuit-3 h, articles de la veille seulement, une seule fois par jour
+assert t.heure_madrid(datetime(2026, 7, 1, 22)) == datetime(2026, 7, 2, 0) and t.heure_madrid(datetime(2026, 11, 17, 23)) == datetime(2026, 11, 18, 0)
+assert t.heure_madrid(datetime(2026, 3, 29, 0, 59)).hour == 1 and t.heure_madrid(datetime(2026, 3, 29, 1)).hour == 3  # passage à l'heure d'été
+con = sqlite3.connect(":memory:")
+con.row_factory = sqlite3.Row
+con.execute("CREATE TABLE articles (date TEXT, section TEXT, mode TEXT, titre TEXT, chapeau TEXT, journal TEXT, auteur TEXT, auteur_ar TEXT)")
+con.executemany("INSERT INTO articles VALUES (?, 'actus', 'info', ?, 'c', 'Marca', '', '')",
+                [("2026-11-15T22:30:00", "avant-veille"), ("2026-11-16T10:00:00", "veille"), ("2026-11-16T23:05:00", "aujourd'hui")])
+prompts, envois = [], []
+vrai = (t.appeler_claude, t.typefully_api, t.reglage)
+t.appeler_claude = lambda p, *a: (prompts.append(p), '["🗞️ صحافة مدريد اليوم | 16 نوفمبر", "▪️ خبر\\n\\n(ماركا)"]')[1]
+t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": 7})[1]
+t.reglage = lambda cle: "k"
+t.CONFIG["typefully_social_set"] = t.CONFIG.get("typefully_social_set") or 1
+try:
+    assert t.resume_du_jour(con, datetime(2026, 11, 16, 22)) == 0 and not prompts  # 23 h à Madrid : trop tôt
+    assert t.resume_du_jour(con, datetime(2026, 11, 16, 23, 10)) == 1  # 0 h 10 à Madrid : résumé du 16
+    assert t.resume_du_jour(con, datetime(2026, 11, 16, 23, 20)) == 0 and len(envois) == 1  # une seule fois
+finally:
+    t.appeler_claude, t.typefully_api, t.reglage = vrai
+assert "veille" in prompts[0] and "avant-veille" not in prompts[0] and "aujourd'hui" not in prompts[0]
+assert envois[0]["publish_at"] == "now" and envois[0]["platforms"]["x"]["posts"][1]["text"].endswith("2/2")
+con.close()
+print("OK résumé du jour")
+
 # économies de Claude : filtre gratuit, tri sur titre, textes coupés, thread écrit avec l'article
 assert g.est_pratique({"titre": "Valencia vs Real Madrid: a qué hora juega y dónde ver", "lien": "https://x"})
 assert g.est_pratique({"titre": "Match", "lien": "https://www.abc.es/deportes/real-madrid/ver-television-online-real-madrid"})

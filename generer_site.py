@@ -991,7 +991,7 @@ def main():
         con = connexion()
         print(f"Threads X : {threads.decouper(con)} préparé(s), "
               f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully. "
-              f"Page Facebook : {threads.vers_page(con)} publication(s).")
+              f"Page Facebook : {threads.vers_page(con)} publication(s). Résumé du jour : {threads.resume_du_jour(con)}.")
         con.close()
     if panne:  # code d'erreur : le passage apparaît en rouge sur GitHub au lieu d'échouer en silence d'heure en heure
         raise SystemExit("Passage incomplet : Claude n'a pas répondu (quota ou jeton à vérifier).")
