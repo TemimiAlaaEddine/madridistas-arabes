@@ -5577,4 +5577,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115500/endrick-milan-20
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/marcelo-20-anos-atras/','Marcelo, 20 años atrás','2026-11-17T10:12:52');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/justicia-condena-delito-odio-autor-insultos-racistas-mbappe-tartiere.html','La Justicia condena por delito de odio al autor de los insultos racistas contra Mbappé en el Tartiere','2026-11-17T10:12:52');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/hype-endrick-faz-sentido-real-madrid-selecao-brasileira/','Por que o hype em Endrick faz sentido, mas há brechas convincentes para quem questione','2026-11-17T10:12:52');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/La-difficile-succession-de-cristiano-ronaldo-bruno-fernandes-et-bernardo-silva-capitaines-de-galere/1744116#at_medium=RSS_feeds','Bruno Fernandes et Bernardo Silva, capitaines de galère','2026-11-17T10:40:43');
 COMMIT;
