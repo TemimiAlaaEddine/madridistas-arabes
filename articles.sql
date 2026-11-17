@@ -5291,4 +5291,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/aanvoerder-dumfries-treurt-na
 INSERT INTO "vus" VALUES('https://as.com/opinion/vinicius-una-golondrina-no-hace-verano-f202611-n/','Vinicius: una golondrina no hace verano','2026-11-16T23:22:03');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/imparable-bellingham.html','El imparable Bellingham','2026-11-16T23:22:03');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/16/lucas-vazquez-en-el-bernabeu-se-ha-creado-una-corriente-de-pitar-y-ultimamente-se-hace-demasiado-no-solo-a-vinicius-cadena-ser/','Lucas Vázquez: "En el Bernabéu se ha creado una corriente de pitar y últimamente se hace demasiado, no sólo a Vinícius"','2026-11-16T23:22:03');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/16/lucas-vazquez-sale-en-defensa-de-vinicius-hay-pocos-que-sientan-los-colores-como-el-los-que-hoy-le-pitan-acabaran-aplaudiendo-cadena-ser/','Lucas Vázquez sale en defensa de Vinícius: "Hay pocos que sientan los colores como él, los que hoy le pitan acabarán aplaudiendo"','2026-11-17T00:01:16');
 COMMIT;
