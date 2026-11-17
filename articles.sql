@@ -5798,4 +5798,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/17/endrick-mani
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-ts-da-la-razon-al-real-madrid-en-el-conflicto-de-cvc-f202611-n/','El TS da la razón al Real Madrid en el conflicto de CVC','2026-11-17T17:40:45');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-celta-recupera-efectivos-para-la-visita-al-real-madrid-f202611-n/','El Celta recupera efectivos para la visita al Real Madrid','2026-11-17T17:51:05');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/multa-de-3001-euros-al-real-madrid-por-una-pancarta-contra-tebas-f202611-n/','Multa de 3.001 euros al Real Madrid por una pancarta contra Tebas','2026-11-17T17:51:26');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/2026/11/17/3-001-euros-multa-real-madrid-pancarta-tebas.html','3.001 euros de multa al Real Madrid por una pancarta contra Tebas','2026-11-17T18:01:27');
 COMMIT;
