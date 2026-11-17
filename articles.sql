@@ -5434,4 +5434,6 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/17/me-suena-un-
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/17/suker-marca-vinicius-hay-cosas-me-gustan.html','Suker, con MARCA: "¿Vinicius? Hay cosas que no me gustan..."','2026-11-17T06:32:36');
 INSERT INTO "vus" VALUES('https://as.com/opinion/mbappe-merece-exigencia-no-privilegios-f202611-n/','Mbappé merece exigencia, no privilegios','2026-11-17T06:51:17');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261117/metamorfosis-fisica-real-madrid-mourinho-control-gps-fuerza-excentrica-lesiones/1003744460546_0.html','La metamorfosis física del Real Madrid en la era Mourinho: control GPS y fuerza excéntrica para un 90% menos de lesiones','2026-11-17T07:01:55');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/dumfries-moet-het-ontgelden-hij-is-gewoon-niet-zo-n-goede-verdediger','Dumfries moet het ontgelden: ''Hij is gewoon niet zo''n goede verdediger''','2026-11-17T07:10:44');
+INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/champions-league-femenina/champions-femenina-jornada-5-real-madrid-inter-barca-servette.html','Real Madrid-Inter y Barça-Servette: la Champions femenina entra en su quinta jornada','2026-11-17T07:10:44');
 COMMIT;
