@@ -34,6 +34,7 @@ from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClau
 from couvertures import generer_couvertures, vignette
 
 DB = BASE / "articles.db"
+ALERTE = BASE / "alerte.md"  # envois en échec depuis 3 passages : le workflow en fait une issue GitHub
 SITE = BASE / "site"
 FICHES = CONFIG.get("personnes", {})  # une fiche par personne : {"nom": arabe, "wikipedia": page, "photo": fichier Commons}
 PERSONNES = {k: f["nom"] for k, f in FICHES.items()}
@@ -993,6 +994,12 @@ def main():
               f"{threads.vers_typefully(con, COUVERTURES, SITE / 'couvertures')} déposé(s) dans Typefully. "
               f"Page Facebook : {threads.vers_page(con)} publication(s). Résumé du jour : {threads.resume_du_jour(con)}. "
               f"Unes Marca/AS : {threads.unes_du_jour(con)} publication(s).")
+        threads.noter(con, "Claude (rédaction)", "Claude n'a pas répondu (quota ou jeton)" if panne else None)
+        alerte = threads.alertes(con)
+        ALERTE.unlink(missing_ok=True)
+        if alerte:  # lu par le workflow, qui ouvre une issue GitHub
+            ALERTE.write_text(alerte + "\n", encoding="utf-8")
+            print(f"  ! alerte :\n{alerte}")
         con.close()
     if panne:  # code d'erreur : le passage apparaît en rouge sur GitHub au lieu d'échouer en silence d'heure en heure
         raise SystemExit("Passage incomplet : Claude n'a pas répondu (quota ou jeton à vérifier).")

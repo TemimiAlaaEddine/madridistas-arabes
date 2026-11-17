@@ -548,6 +548,50 @@ assert supprimes == [("DELETE", t.GRAPH + "42_7?access_token=k")] and "https://x
 assert vide[0].startswith("Facebook : aucun post") and vide[1] == "X : aucun thread connu pour cet article"
 con.close()
 print("OK retrait")
+
+# alertes : signalée au 3e échec de suite, une seule fois ; remise à zéro après un succès, de nouveau signalable ensuite
+con = sqlite3.connect(":memory:")
+con.row_factory = sqlite3.Row
+for _ in range(2):
+    t.noter(con, "Page Facebook", "HTTP Error 400 : Session has expired")
+assert t.alertes(con) == ""
+t.noter(con, "Page Facebook", "HTTP Error 400 : Session has expired")
+alerte = t.alertes(con)
+assert "**Page Facebook** : en échec depuis 3 passages" in alerte and "Session has expired" in alerte
+t.noter(con, "Page Facebook", "encore")
+assert t.alertes(con) == ""  # déjà signalée
+t.noter(con, "Page Facebook")
+assert con.execute("SELECT count(*) FROM echecs").fetchone()[0] == 0
+for _ in range(3):
+    t.noter(con, "Page Facebook", "de nouveau")
+assert "de nouveau" in t.alertes(con)
+# une de journal pas encore sortie (404) : pas une panne ; autre erreur : comptée
+import urllib.error
+vrai = (t.telecharger_image, t.reglage)
+t.reglage = lambda cle: "k"
+for code in (404, 500):
+    def refus(url, nom, code=code):
+        raise urllib.error.HTTPError(url, code, "x", {}, io.BytesIO(b""))
+    t.telecharger_image = refus
+    with contextlib.redirect_stdout(io.StringIO()):
+        t.unes_du_jour(con, datetime(2026, 11, 16, 23, 30))
+t.telecharger_image, t.reglage = vrai
+assert {r[0]: r[1] for r in con.execute("SELECT envoi, n FROM echecs WHERE envoi LIKE 'Une%'")} == {"Une de Marca": 1, "Une de AS": 1}
+# santé : projection du quota Typefully à la fin du mois
+import sante
+vrai = (t.reglage, t.typefully_api, t.graph_lire, sante.maintenant)
+t.reglage = lambda cle: "k"
+t.graph_lire = lambda chemin, **p: {"name": "Peña"}
+t.typefully_api = lambda chemin, corps=None: {"publishing_quota": {"used": 450, "remaining": 550}}
+sante.maintenant = lambda: datetime(2026, 11, 16, 0)  # 15 jours écoulés : 30 par jour, 900 sur 30 jours
+try:
+    rapport = sante.sante(con)
+finally:
+    t.reglage, t.typefully_api, t.graph_lire, sante.maintenant = vrai
+assert "✅ Jeton Facebook valide" in rapport and "⚠️ Quota Typefully : 450 publications sur 1000" in rapport and "environ 900" in rapport
+assert "**Page Facebook** : 3 passage(s)" in rapport
+con.close()
+print("OK alertes et santé")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:

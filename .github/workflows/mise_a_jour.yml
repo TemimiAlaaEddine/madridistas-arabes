@@ -8,6 +8,7 @@ concurrency: mise_a_jour # jamais deux passages en même temps
 
 permissions:
   contents: write
+  issues: write # issue d'alerte quand un envoi échoue 3 passages de suite
 
 jobs:
   passage:
@@ -55,3 +56,11 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add articles.sql photos.json
           git diff --cached --quiet || (git commit -m "Passage du $(date -u +'%Y-%m-%d %H:%M') UTC" && git pull --rebase && git push)
+      - name: Alerte (envoi en échec depuis 3 passages)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -s alerte.md ]; then
+            gh issue create --title "Alerte : envoi en échec ($(date -u +'%Y-%m-%d %H:%M') UTC)" --body-file alerte.md
+          fi

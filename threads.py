@@ -96,6 +96,27 @@ def connexion_threads(con):
         pass
 
 
+def noter(con, envoi, erreur=None):
+    """Suivi des échecs d'un envoi (Facebook, Typefully...) d'un passage à l'autre : erreur=None le remet à zéro."""
+    con.execute("CREATE TABLE IF NOT EXISTS echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER)")
+    if erreur is None:
+        con.execute("DELETE FROM echecs WHERE envoi = ?", (envoi,))
+    else:
+        con.execute("INSERT INTO echecs VALUES (?, 1, ?, ?, 0) ON CONFLICT (envoi) DO UPDATE SET n = n + 1, message = excluded.message",
+                    (envoi, maintenant().isoformat(timespec="seconds"), str(erreur)[:300]))
+    con.commit()
+
+
+def alertes(con, seuil=3):
+    """Envois en échec depuis au moins `seuil` passages, pas encore signalés : texte de l'issue d'alerte ("" si rien).
+    Chaque panne n'est signalée qu'une fois ; elle peut l'être de nouveau après avoir été réparée."""
+    con.execute("CREATE TABLE IF NOT EXISTS echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER)")
+    lignes = con.execute("SELECT * FROM echecs WHERE n >= ? AND alerte = 0", (seuil,)).fetchall()
+    con.execute("UPDATE echecs SET alerte = 1 WHERE n >= ?", (seuil,))
+    con.commit()
+    return "\n".join(f"- **{r[0]}** : en échec depuis {r[1]} passages (depuis le {r[2]} UTC). Dernière erreur : `{r[3]}`" for r in lignes)
+
+
 # contrôles avant envoi : les contenus partent sans relecture, ce qui échoue part en brouillon (X) ou n'est pas publié (Facebook)
 INTERDITS = re.compile(r"[!！]|مفاجأة مدوية|زلزال|قنبلة")  # point d'exclamation et exagérations proscrits par STYLE
 APPATS = re.compile(r"ريتويت|رتويت|أعد التغريد|أعيدوا التغريد|تابعونا|تابع الحساب|فعّلوا التنبيهات")  # appel à l'engagement
@@ -236,10 +257,12 @@ def vers_page(con, heures=24):
             # Facebook explique son refus dans le corps de la réponse (jeton expiré, permission manquante...)
             detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
             print(f"  ! Page Facebook : publication impossible ({err}) {detail}, reprise au prochain passage")
+            noter(con, "Page Facebook", f"{err} {detail}")
             break
         con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)", (a["id"], maintenant().isoformat(timespec="seconds"),
                                                                  str(fb.get("post_id") or fb.get("id") or "")))
         con.commit()
+        noter(con, "Page Facebook")
         n += 1
     return n
 
@@ -301,9 +324,11 @@ def resume_du_jour(con, utc=None):
     except (OSError, ValueError, KeyError, ErreurClaude) as err:  # repris au passage suivant, tant qu'on est avant 3 h
         detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
         print(f"  ! résumé du jour : envoi impossible ({err}) {detail}, repris au prochain passage")
+        noter(con, "Résumé du jour", f"{err} {detail}")
         return 0
     con.execute("INSERT INTO resumes VALUES (?, ?)", (jour, str(d["id"])))
     con.commit()
+    noter(con, "Résumé du jour")
     return 1
 
 
@@ -383,9 +408,12 @@ def unes_du_jour(con, utc=None):
                 con.execute("UPDATE unes SET facebook = ? WHERE jour = ? AND journal = ?", (str(fb.get("id", "ok")), *cle))
                 con.commit()
                 n += 1
+            noter(con, f"Une de {nom}")
         except (OSError, ValueError, KeyError, ErreurClaude) as err:
             detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
             print(f"  ! une de {nom} : pas encore publiée ({err}) {detail}, reprise au prochain passage")
+            if getattr(err, "code", None) != 404:  # 404 : la une n'est pas encore sortie, ce n'est pas une panne
+                noter(con, f"Une de {nom}", f"{err} {detail}")
     return n
 
 
@@ -394,7 +422,7 @@ TYPEFULLY = "https://api.typefully.com/v2/social-sets/{}/"
 
 def typefully_api(chemin, corps=None):
     """Appelle l'API Typefully v2 (clé : TYPEFULLY_API_KEY, compte : "typefully_social_set" dans config.json)."""
-    req = urllib.request.Request(TYPEFULLY.format(CONFIG["typefully_social_set"]) + chemin,
+    req = urllib.request.Request((TYPEFULLY.format(CONFIG["typefully_social_set"]) + chemin).rstrip("/"),
                                  json.dumps(corps).encode() if corps is not None else None,
                                  {"Authorization": f"Bearer {reglage('typefully_api_key')}", "Content-Type": "application/json"})
     with urllib.request.urlopen(req, timeout=60) as rep:
@@ -449,7 +477,7 @@ def vers_typefully(con, couvertures, dossier_couv):
     if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
-    n, plafond = 0, False
+    n, plafond, echec = 0, False, None
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
@@ -489,6 +517,7 @@ def vers_typefully(con, couvertures, dossier_couv):
             # Typefully explique son refus dans le corps de la réponse ; un thread refusé ne bloque plus les suivants
             detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
             print(f"  ! Typefully : envoi impossible pour l'article {t['article_id']} ({err}) {detail}, repris au prochain passage")
+            echec = f"{err} {detail}"
             continue
         statut = f"bloqué : {', '.join(motifs)}" if motifs else ("immédiat" if quand == "now" else "file")
         if motifs:
@@ -500,6 +529,8 @@ def vers_typefully(con, couvertures, dossier_couv):
     if plafond:
         print(f"  ! Typefully : plafond de {CONFIG.get('max_publications_heure', 8)} publications immédiates par heure atteint,"
               " la suite au prochain passage")
+    if n or echec:  # panne seulement si rien n'est passé : un thread refusé seul ne l'est pas
+        noter(con, "Typefully", None if n else echec)
     return n
 
 

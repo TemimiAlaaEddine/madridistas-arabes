@@ -5,6 +5,7 @@ site/
 vus.db
 articles.db
 articles.tmp
+alerte.md
 
 # vidéos : fichiers générés (voix, segments, aperçus, MP4)
 videos/*/audio/

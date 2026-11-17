@@ -84,6 +84,8 @@ Les articles n'affichent plus de photo de joueur ; les photos restent sur les pa
 
 **Retirer une publication** : `python threads.py --retirer <numéro d'article>` supprime le post de la Page Facebook (numéro enregistré pour les posts publiés depuis le 17 novembre 2026) et affiche l'adresse du thread X, à supprimer à la main sur X.
 
+**Alertes** : chaque envoi (Page Facebook, Typefully, résumé du jour, unes, rédaction par Claude) est suivi d'un passage à l'autre (table `echecs`). Quand l'un échoue 3 passages de suite, le workflow ouvre une issue GitHub « Alerte : envoi en échec » avec la dernière erreur. Une même panne n'est signalée qu'une fois, puis de nouveau si elle revient après avoir été réparée. Une une pas encore sortie (erreur 404 de kiosko.net) ne compte pas comme une panne.
+
 Chaque nouvelle des dernières 24 h (communiqués, actualités, conférences de presse, compositions officielles, et tout le mercato, chroniques comprises ; ni les autres opinions, ni les compositions probables) est publiée sur la Page Facebook (au plus `max_threads` par passage) : le titre en français ⚜️, anglais 🇨🇦 et espagnol 🇪🇸 : publiés en photo avec l'image principale de l'article et le nom du journal en légende, sans le lien (les liens des médias sont bloqués au Canada, loi C-18) ; sans image, en message avec le lien de la source en carte. Le post se retouche ensuite à la main sur Facebook. Les articles sans titres traduits ne sont pas publiés. Au tout premier passage, les articles déjà en base sont considérés comme publiés.
 
 - Config : secrets GitHub `FACEBOOK_PAGE_ID` et `FACEBOOK_PAGE_TOKEN` (jeton de la Page, permissions `pages_manage_posts` et `pages_read_engagement`), ou `facebook_page_id` / `facebook_page_token` dans `secrets.json` sur le PC. Sans eux, rien n'est publié.
@@ -105,6 +107,8 @@ Chaque lundi à 7 h (heure d'Espagne), le workflow « Revue des sources » ouvre
 - **rendement** : articles publiés sur le site en 30 jours, par journal ;
 - **médias cités** dans nos articles sans être suivis : ceux qu'on lit de seconde main ;
 - **avis de Claude** : flux à retirer et sources à ajouter. Chaque flux proposé est lu avant d'être recommandé (✅), sinon il est marqué « adresse à trouver » ou en échec.
+
+- **santé technique** (`sante.py`) : validité du jeton de la Page Facebook, quota Typefully avec sa projection à la fin du mois (⚠️ au-delà de 80 %), envois en échec en ce moment.
 
 Rien n'est modifié automatiquement : tu décides, puis tu demandes à Claude Code d'appliquer la revue, ou tu modifies `config.json` à la main. Revue à la demande : bouton « Run workflow » du workflow, ou `python sources.py` sur le PC.
 

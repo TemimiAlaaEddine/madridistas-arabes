@@ -25,6 +25,13 @@ jobs:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           PYTHONIOENCODING: utf-8
         run: python sources.py > rapport.md
+      - name: Santé technique (jeton Facebook, quota Typefully, pannes en cours)
+        env:
+          TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+          FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
+          FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+          PYTHONIOENCODING: utf-8
+        run: python sante.py >> rapport.md
       - name: Issue GitHub
         env:
           GH_TOKEN: ${{ github.token }}
