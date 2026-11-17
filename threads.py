@@ -22,16 +22,20 @@ SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHu
 URL = re.compile(r"https?://\S+")
 
 # règles communes : thread écrit avec l'article (generer_site) ou après coup (decouper)
-REGLES = """- Tweet 1, l'accroche : commence par ce qui arrête le lecteur dans son fil (le constat le plus fort, un chiffre, une courte citation, une vraie question), puis nomme l'auteur ou le média dans ce même tweet, à l'intérieur de la phrase. Ne commence jamais par « يرى الصحفي... » ni « وفقًا لـ... » ; pour une information, le fait d'abord, la source ensuite. Ajoute #ريال_مدريد à la fin.
-- Gabarit du tweet 1 (codes des comptes foot arabes) : il s'ouvre par UN émoji et « | », selon le contenu, puis la phrase :
-  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » si le club ou la fédération l'a annoncé ; « 🏥 » blessure ou retour de blessure ; « 📋 » composition officielle (un joueur ou une ligne par ligne, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom]: » suivi de la citation «» quand le tweet est une déclaration ;
-  section mercato : « 🔄 ميركاتو | », et à la fin du tweet le stade de l'information d'après le texte : 🟢 accord ou opération avancée, 🟡 contacts ou intérêt, 🔴 simple rumeur ;
-  section tactique : « 🧠 قراءة تكتيكية | », un chiffre « 📊 » s'il y en a un ; section club : « 🏟️ » (stade, direction) ou « 💶 » (argent) ;
-  section debats et autres opinions : « 🔥 نقاش | » avec une vraie question, et le dernier tweet du thread finit par « وأنت، ما رأيك؟ 👇 ».
-  Aucun autre émoji dans le thread.
-- Tweets suivants : fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. L'avis reste attribué à son auteur, sans répéter « الكاتب » à chaque tweet. Le dernier porte la conclusion ou la phrase la plus marquante.
+REGLES = """- Tweet 1, l'accroche, écrit comme les comptes foot arabes les plus suivis, sur plusieurs lignes courtes :
+  ligne 1 : UN émoji, son étiquette et « | » (liste plus bas), puis une accroche de 12 mots au plus, qui se lit comme un titre : le fait lui-même, un chiffre, une courte citation «» ou une vraie question. Ne commence jamais par « يرى الصحفي... » ni « وفقًا لـ... ».
+  ligne vide, puis une ou deux phrases courtes : le détail qui donne envie de lire la suite (qui, quand, combien, pourquoi c'est important).
+  ligne vide, puis la source seule entre parenthèses, sans « بحسب » ni guillemets : (ماركا) pour une information, (اسم الكاتب - ماركا) pour une opinion, (اسم المعلّق - راديو ماركا) pour un avis donné à la radio ou à la télévision.
+  dernière ligne : #ريال_مدريد
+- Étiquette de la ligne 1, selon le contenu :
+  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » si le club ou la fédération l'a annoncé ; « 🏥 إصابة | » blessure, « 💪 عودة | » retour de blessure ; « 📋 التشكيلة | » composition officielle (une ligne par ligne de jeu, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom] | » quand l'accroche est une déclaration «» ; « 🎙️ مؤتمر [nom] | » conférence de presse ; « 📊 رقم | » information bâtie sur une statistique ; sinon « 📰 خبر | » ;
+  section mercato, et toute information de transfert ou de prolongation quelle que soit la section : « 🔄 ميركاتو | », et, seulement si le texte annonce un transfert ou une prolongation en cours (pas pour une analyse, un bilan ou une opération déjà conclue), juste avant la source et seul sur sa ligne, son stade d'après le texte : « 🟢 اتفاق » accord ou opération avancée, « 🟡 مفاوضات » contacts ou intérêt, « 🔴 شائعة » simple rumeur ;
+  section tactique : « 🧠 قراءة تكتيكية | » ; section club : « 🏟️ برنابيو | » (stade), « 🏛️ الإدارة | » (direction, institutions) ou « 💶 مالية النادي | » (argent) ;
+  section debats et autres opinions : « 🔥 نقاش | » avec une vraie question en accroche, et le dernier tweet du thread finit, sur sa propre ligne, par « ما رأيكم؟ 👇 ».
+- Source : une seule, celle qui a révélé l'information ou porté l'avis. Si le texte dit qu'un média en cite un autre (« نقلت إي إس بي إن عن ليكيب »), ne garde que le média d'origine : (ليكيب). La source est donnée une seule fois, au tweet 1 : les tweets suivants ne la redisent pas (pas de « بحسب ماركا » au tweet 2), sauf pour une information venue d'un autre média. Jamais de chaîne « نقلًا عن... عن... » ni deux médias pour la même information.
+- Tweets suivants : chacun apporte du nouveau, sans redire l'accroche ni la source du tweet 1 ; fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. Deux ou trois lignes courtes valent mieux qu'un bloc ; une énumération (notes des joueurs, chiffres, noms) va à la ligne, chaque élément précédé de « ▪️ ». L'avis reste attribué à son auteur, par son nom de famille ou une tournure (في نظره، يذهب أبعد من ذلك) : n'écris jamais « الكاتب » ni « الصحفي », et ne recite pas le journal. Le dernier porte la conclusion ou la phrase la plus marquante.
 - Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, 4 à 10 pour une conférence de presse (une déclaration forte par tweet).
-- Chaque tweet fait AU MAXIMUM 240 caractères, espaces compris. Pas de lien, pas de numérotation, pas d'autre hashtag, pas d'intertitre « ## ».
+- Chaque tweet fait AU MAXIMUM 240 caractères, espaces et retours à la ligne compris. Pas de lien, pas de numérotation, pas d'autre hashtag, pas d'intertitre « ## », aucun émoji en dehors de ceux prévus ci-dessus.
 - N'ajoute aucun fait ni avis absent du texte. Pas d'exagération ni de point d'exclamation."""
 
 PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا علاء », à partir d'articles déjà rédigés pour son site.

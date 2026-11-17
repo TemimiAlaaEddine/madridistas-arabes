@@ -598,6 +598,7 @@ pr = g.construire_prompt([])
 assert g.STYLE in pr and "{style}" not in pr and "jamais par « يرى الكاتب" in pr and "(يرى الكاتب...)" not in pr
 assert "Ne commence jamais par « يرى الصحفي" in g.threads.REGLES
 assert all(code in g.threads.REGLES for code in ("🚨 عاجل |", "✅ رسميًا |", "🔄 ميركاتو |", "🧠 قراءة تكتيكية |", "🔥 نقاش |"))
+assert "(اسم الكاتب - ماركا)" in g.threads.REGLES and "ne garde que le média d'origine" in g.threads.REGLES  # source entre parenthèses, sans chaîne
 print("OK style")
 
 # Claude en panne : erreur rattrapable (plus de sys.exit au milieu d'un passage), threads repris plus tard
