@@ -15,7 +15,9 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 
-from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, maintenant
+from difflib import SequenceMatcher
+
+from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, maintenant, normaliser_titre
 
 LIMITE = 280
 SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHub : variables d'environnement
@@ -87,6 +89,54 @@ def connexion_threads(con):
         con.commit()
     except sqlite3.OperationalError:
         pass  # colonne déjà présente
+    try:  # heure d'envoi à Typefully : plafond de publications immédiates par heure
+        con.execute("ALTER TABLE threads ADD COLUMN envoye TEXT")
+        con.commit()
+    except sqlite3.OperationalError:
+        pass
+
+
+# contrôles avant envoi : les contenus partent sans relecture, ce qui échoue part en brouillon (X) ou n'est pas publié (Facebook)
+INTERDITS = re.compile(r"[!！]|مفاجأة مدوية|زلزال|قنبلة")  # point d'exclamation et exagérations proscrits par STYLE
+APPATS = re.compile(r"ريتويت|رتويت|أعد التغريد|أعيدوا التغريد|تابعونا|تابع الحساب|فعّلوا التنبيهات")  # appel à l'engagement
+SOURCE = re.compile(r"\([^()\n]{2,80}\)")
+ETIQUETTE = re.compile(r"^[^|\n]{0,30}\|\s*")
+NUMERO = re.compile(r"\n\n\d+/\d+$")
+ENVOYES = "typefully IS NOT NULL AND typefully != 'avant' AND statut NOT LIKE 'bloqu%'"
+
+
+def accroche(texte):
+    """Première ligne d'un tweet, sans l'étiquette (« 🚨 عاجل | ») ni la ponctuation : ce qu'on compare entre deux threads."""
+    return normaliser_titre(ETIQUETTE.sub("", NUMERO.sub("", texte).strip().split("\n")[0]))
+
+
+def proche(a, b):
+    # moins de 4 mots : trop court pour juger (comme l'anti-doublon de generer_site) ; seuil mesuré sur 184 threads et 86 posts
+    return len(a.split()) >= 4 and len(b.split()) >= 4 and SequenceMatcher(None, a, b).ratio() >= CONFIG.get("seuil_doublon", 0.6)
+
+
+def controler_thread(con, article_id, tweets):
+    """Motifs de blocage d'un thread avant envoi ([] : il peut partir)."""
+    motifs = []
+    if any(longueur(x) > LIMITE for x in tweets):
+        motifs.append("tweet trop long")
+    if not SOURCE.search(tweets[0]):
+        motifs.append("source absente du 1er tweet")
+    if any(INTERDITS.search(x) for x in tweets):
+        motifs.append("point d'exclamation ou exagération")
+    if any(APPATS.search(x) for x in tweets):
+        motifs.append("appel à l'engagement")
+    if tweets[0].lstrip().startswith("🚨") and sum(json.loads(r[0])[0].lstrip().startswith("🚨") for r in con.execute(
+            f"SELECT tweets FROM threads WHERE {ENVOYES} AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-24 hours')")
+    ) >= CONFIG.get("max_urgences_jour", 3):  # compté après lecture : le JSON en base peut encoder l'émoji (\ud83d...)
+        motifs.append("trop de 🚨 عاجل en 24 h")
+    nouvelle = accroche(tweets[0])
+    for r in con.execute(f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
+                         " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-48 hours')", (article_id,)):
+        if proche(nouvelle, accroche(json.loads(r[1])[0])):
+            motifs.append(f"doublon du thread de l'article {r[0]}")
+            break
+    return motifs
 
 
 def decouper(con, heures=24):
@@ -134,6 +184,18 @@ PROBABLE = re.compile(r"alineaci[óo]n(es)? (probables?|posibles?)|posible (once
 GRAPH = "https://graph.facebook.com/v23.0/"  # version de l'API Graph : Meta retire chaque version environ 2 ans après sa sortie
 
 
+def connexion_page(con):
+    if not con.execute("SELECT 1 FROM sqlite_master WHERE name = 'page_facebook'").fetchone():
+        con.execute("CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT)")
+        con.execute("INSERT INTO page_facebook SELECT id, 'avant' FROM articles")  # 1er passage : seuls les articles à venir partent
+        con.commit()
+    try:  # numéro du post Facebook : statistiques, commentaires et retrait
+        con.execute("ALTER TABLE page_facebook ADD COLUMN post TEXT")
+        con.commit()
+    except sqlite3.OperationalError:
+        pass
+
+
 def vers_page(con, heures=24):
     """Publie sur la Page Facebook les nouvelles récentes (pas les opinions) avec titres traduits : image principale de l'article avec les
     titres FR/EN/ES et le nom du journal en légende, sinon titres en message et lien de la source en carte. Au plus max_threads par passage. Réglages : FACEBOOK_PAGE_TOKEN (jeton de la Page, permission
@@ -141,10 +203,7 @@ def vers_page(con, heures=24):
     jeton, page = reglage("facebook_page_token"), reglage("facebook_page_id")
     if not jeton or not page:
         return 0  # pas encore configuré
-    if not con.execute("SELECT 1 FROM sqlite_master WHERE name = 'page_facebook'").fetchone():
-        con.execute("CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT)")
-        con.execute("INSERT INTO page_facebook SELECT id, 'avant' FROM articles")  # 1er passage : seuls les articles à venir partent
-        con.commit()
+    connexion_page(con)
     n = 0
     # la Page ne reçoit que les nouvelles : communiqués, actualités, compositions officielles et tout le mercato, chroniques
     # comprises (ni les autres opinions, ni les compositions probables)
@@ -154,6 +213,17 @@ def vers_page(con, heures=24):
                          (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall():
         if PROBABLE.search(a["titre_original"] or ""):
             continue
+        titre = normaliser_titre(json.loads(a["titres_fb"]).get("fr", ""))
+        double = next((r[0] for r in con.execute(
+            "SELECT a.id, a.titres_fb FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE coalesce(p.post, '') NOT LIKE 'bloqu%'"
+            " AND p.date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)", (f"-{heures * 2} hours",))
+            if proche(titre, normaliser_titre(json.loads(r[1] or "{}").get("fr", "")))), None)
+        if double:  # même nouvelle déjà publiée (deux journaux, deux articles) : pas de second post
+            print(f"  ! Page Facebook : article {a['id']} non publié, doublon de l'article {double}")
+            con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)",
+                        (a["id"], maintenant().isoformat(timespec="seconds"), f"bloqué : doublon de {double}"))
+            con.commit()
+            continue
         if a["image"]:  # liens des médias bloqués au Canada (loi C-18) : photo de l'article + titres, retouchée à la main sur Facebook
             envoi, champs = "photos", {"url": a["image"], "caption": f"{titres_facebook(a)}\n\nSource : {a['journal']}"}
         else:
@@ -161,13 +231,14 @@ def vers_page(con, heures=24):
         corps = urllib.parse.urlencode({**champs, "access_token": jeton}).encode()
         try:
             with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/{envoi}", corps), timeout=60) as rep:
-                json.load(rep)
+                fb = json.load(rep)
         except OSError as err:  # réseau coupé, jeton refusé (HTTPError est un OSError) : repris au prochain passage
             # Facebook explique son refus dans le corps de la réponse (jeton expiré, permission manquante...)
             detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
             print(f"  ! Page Facebook : publication impossible ({err}) {detail}, reprise au prochain passage")
             break
-        con.execute("INSERT INTO page_facebook VALUES (?, ?)", (a["id"], maintenant().isoformat(timespec="seconds")))
+        con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)", (a["id"], maintenant().isoformat(timespec="seconds"),
+                                                                 str(fb.get("post_id") or fb.get("id") or "")))
         con.commit()
         n += 1
     return n
@@ -360,9 +431,6 @@ def typefully_image(nom, contenu):
     return None
 
 
-NUMERO = re.compile(r"\n\n\d+/\d+$")
-
-
 def sans_tweet_de_lien(tweets):
     """Thread publié tout de suite : X refuse la publication immédiate d'un thread qui contient un lien (403 de Typefully).
     Le dernier tweet (crédit + lien de la source) est retiré, l'auteur l'ajoute à la main sur X, et le reste est renuméroté.
@@ -381,9 +449,19 @@ def vers_typefully(con, couvertures, dossier_couv):
     if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
-    n = 0
+    n, plafond = 0, False
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
+        tweets = json.loads(t["tweets"])
+        motifs = controler_thread(con, t["article_id"], tweets)
+        # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
+        nouvelle = t["section"] == "actus" or t["mode"] == "info"
+        quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
+        if quand == "now" and not motifs and con.execute(
+                "SELECT count(*) FROM threads WHERE statut = 'immédiat' AND envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-1 hour')"
+        ).fetchone()[0] >= CONFIG.get("max_publications_heure", 8):
+            plafond = True  # reporté au passage suivant, sans être bloqué
+            continue
         try:
             media = None
             if t["image"]:  # photo de l'article source, à remplacer dans Typefully avant la publication
@@ -397,17 +475,14 @@ def vers_typefully(con, couvertures, dossier_couv):
                 couv = generer_couvertures([t], dossier_couv.parent, menage=False).get(t["article_id"])
             if not media and couv:
                 media = typefully_image(couv, (dossier_couv / couv).read_bytes())
-            tweets = json.loads(t["tweets"])
-            # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
-            nouvelle = t["section"] == "actus" or t["mode"] == "info"
-            quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
-            if quand == "now":
+            if quand == "now" and not motifs:
                 tweets, quand = sans_tweet_de_lien(tweets)
             posts = [{"text": tw} for tw in tweets]
             if media:
                 posts[0]["media_ids"] = [media]
-            corps = {"draft_title": t["titre"][:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
-            if quand or CONFIG.get("typefully_publish_at"):
+            titre = (f"⛔ {', '.join(motifs)} | " if motifs else "") + t["titre"]
+            corps = {"draft_title": titre[:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
+            if not motifs and (quand or CONFIG.get("typefully_publish_at")):  # bloqué : simple brouillon, publié à la main
                 corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)
         except (OSError, KeyError, ValueError) as err:  # réseau, clé refusée... : repris au prochain passage
@@ -415,9 +490,16 @@ def vers_typefully(con, couvertures, dossier_couv):
             detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
             print(f"  ! Typefully : envoi impossible pour l'article {t['article_id']} ({err}) {detail}, repris au prochain passage")
             continue
-        con.execute("UPDATE threads SET typefully = ? WHERE article_id = ?", (str(d["id"]), t["article_id"]))
+        statut = f"bloqué : {', '.join(motifs)}" if motifs else ("immédiat" if quand == "now" else "file")
+        if motifs:
+            print(f"  ! Typefully : article {t['article_id']} mis en brouillon ({', '.join(motifs)})")
+        con.execute("UPDATE threads SET typefully = ?, statut = ?, envoye = ? WHERE article_id = ?",
+                    (str(d["id"]), statut, maintenant().isoformat(timespec="seconds"), t["article_id"]))
         con.commit()
         n += 1
+    if plafond:
+        print(f"  ! Typefully : plafond de {CONFIG.get('max_publications_heure', 8)} publications immédiates par heure atteint,"
+              " la suite au prochain passage")
     return n
 
 
@@ -442,9 +524,43 @@ def jeton_permanent(app_id, app_secret, jeton_court, page):
     return jeton, pages[str(page)]["name"]
 
 
+def retirer(con, article_id):
+    """Retire la publication d'un article : supprime le post de la Page Facebook et donne l'adresse du thread X à supprimer
+    à la main (Typefully ne supprime pas un tweet déjà publié). Retourne les lignes à afficher."""
+    lignes = []
+    connexion_page(con)
+    fb = con.execute("SELECT post FROM page_facebook WHERE article_id = ?", (article_id,)).fetchone()
+    if fb and fb[0] and not fb[0].startswith("bloqu"):
+        req = urllib.request.Request(f"{GRAPH}{fb[0]}?" + urllib.parse.urlencode({"access_token": reglage("facebook_page_token")}),
+                                     method="DELETE")
+        with urllib.request.urlopen(req, timeout=60) as rep:
+            lignes.append(f"Facebook : post {fb[0]} supprimé ({json.load(rep)})")
+    else:
+        lignes.append("Facebook : aucun post connu pour cet article (publié avant l'enregistrement des numéros, ou jamais publié)")
+    connexion_threads(con)
+    th = con.execute("SELECT typefully FROM threads WHERE article_id = ?", (article_id,)).fetchone()
+    if th and th[0] and th[0] != "avant":
+        d = typefully_api(f"drafts/{th[0]}")
+        lignes.append(f"X : à supprimer à la main : {d.get('x_published_url') or 'pas encore publié, brouillon Typefully ' + th[0]}")
+    else:
+        lignes.append("X : aucun thread connu pour cet article")
+    return lignes
+
+
 if __name__ == "__main__":  # python threads.py : renouvelle le jeton de la Page Facebook (voir LISEZMOI.md)
     import sys
     sys.stdout.reconfigure(encoding="utf-8")
+    if sys.argv[1:2] == ["--retirer"]:  # python threads.py --retirer <numéro d'article>
+        from commun import DB_PATH, restaurer_base
+        restaurer_base(DB_PATH)
+        base = sqlite3.connect(DB_PATH)
+        try:
+            print("\n".join(retirer(base, int(sys.argv[2]))))
+        except (IndexError, ValueError):
+            sys.exit("Usage : python threads.py --retirer <numéro d'article>")
+        except OSError as err:
+            sys.exit(f"Échec : {err} {err.read().decode('utf-8', 'replace')[:300] if hasattr(err, 'read') else ''}")
+        sys.exit(0)
     local = json.loads(SECRETS.read_text(encoding="utf-8")) if SECRETS.exists() else {}
     manque = [k for k in ("facebook_app_id", "facebook_app_secret", "facebook_user_token", "facebook_page_id") if not local.get(k)]
     if manque:

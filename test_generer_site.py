@@ -223,17 +223,22 @@ with tempfile.TemporaryDirectory() as tmp:
                       [{"lien": "https://ex.com/fb", "titre": "T2", "auteur": "", "source": "AS", "pays": "es"}], db)
         assert t.vers_page(con) == 1 and t.vers_page(con) == 0
         # la Page ne reçoit que les nouvelles : ni opinion, ni composition probable
-        fb = {"fr": "Avis", "en": "Opinion", "es": "Opinión"}
-        g.enregistrer([{"id": 1, "section": "debats", "titre": "رأي جديد في النقاش", "texte": "ن", "titres_fb": fb},
-                       {"id": 2, "section": "actus", "titre": "التشكيلة المحتملة أمام سيلتا", "texte": "ن", "titres_fb": fb},
-                       {"id": 3, "section": "club", "titre": "حفل موسيقي في البرنابيو قريبًا", "texte": "ن", "titres_fb": fb},
-                       {"id": 4, "section": "mercato", "titre": "صفقة الشتاء التي يحتاجها الفريق", "texte": "ن", "titres_fb": fb}],
+        fb = lambda fr: {"fr": fr, "en": "Opinion", "es": "Opinión"}
+        g.enregistrer([{"id": 1, "section": "debats", "titre": "رأي جديد في النقاش", "texte": "ن", "titres_fb": fb("Un avis tranché sur le débat")},
+                       {"id": 2, "section": "actus", "titre": "التشكيلة المحتملة أمام سيلتا", "texte": "ن", "titres_fb": fb("La composition probable contre le Celta")},
+                       {"id": 3, "section": "club", "titre": "حفل موسيقي في البرنابيو قريبًا", "texte": "ن", "titres_fb": fb("Un concert au Bernabéu bientôt")},
+                       {"id": 4, "section": "mercato", "titre": "صفقة الشتاء التي يحتاجها الفريق", "texte": "ن", "titres_fb": fb("Le transfert d'hiver dont l'équipe a besoin")}],
                       [{"lien": "https://ex.com/op", "titre": "Una opinión", "auteur": "", "source": "AS", "pays": "es", "type": "opinion"},
                        {"lien": "https://ex.com/xi", "titre": "Alineación probable del Madrid", "auteur": "", "source": "AS", "pays": "es", "type": "info"},
                        {"lien": "https://ex.com/nfl", "titre": "Concierto en el Bernabéu", "auteur": "", "source": "AS", "pays": "es", "type": "info"},
                        {"lien": "https://ex.com/fichaje", "titre": "El fichaje de invierno", "auteur": "", "source": "AS", "pays": "es", "type": "opinion"}], db)
         assert t.vers_page(con) == 2 and "ex.com%2Fnfl" in appels[-2][1] and "ex.com%2Ffichaje" in appels[-1][1]  # mercato compris
         assert t.vers_page(con) == 0 and not any("ex.com%2Fop" in c or "ex.com%2Fxi" in c for _, c in appels)
+        # même nouvelle venue d'un autre journal : pas de second post Facebook
+        g.enregistrer([{"id": 1, "section": "club", "titre": "حفل في برنابيو", "texte": "ن", "titres_fb": fb("Un concert au Bernabéu, bientôt")}],
+                      [{"lien": "https://ex.com/nfl2", "titre": "Concierto en el estadio", "auteur": "", "source": "Marca", "pays": "es", "type": "info"}], db)
+        assert t.vers_page(con) == 0 and not any("nfl2" in c for _, c in appels)
+        assert con.execute("SELECT post FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE a.lien = 'https://ex.com/nfl2'").fetchone()[0].startswith("bloqué : doublon")
     finally:
         t.urllib.request.urlopen = vrai_urlopen
         t.CONFIG.pop("facebook_page_token")
@@ -410,7 +415,7 @@ with tempfile.TemporaryDirectory() as tmp:
     con = g.connexion(db)
     con.execute("ALTER TABLE threads DROP COLUMN typefully")  # base d'avant l'ajout de Typefully
     t.connexion_threads(con)  # ajoute la colonne : le thread existant est marqué « avant »
-    g.enregistrer([{"id": 1, "section": "debats", "titre": "جديد", "texte": "ن", "tweets": ["فكرة"]}],
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "جديد", "texte": "ن", "tweets": ["فكرة (آس)"]}],
                   [{"lien": "https://as.com/2", "titre": "T", "auteur": "", "source": "AS", "pays": "es"}], db)
     (Path(tmp) / "c.png").write_bytes(b"png")
     appels = []
@@ -450,7 +455,7 @@ with tempfile.TemporaryDirectory() as tmp:
     t.typefully_api, appels[:] = (lambda chemin, corps=None: appels.append(corps) or {"id": len(appels)}), []
     t.CONFIG["typefully_publish_at_actus"] = "now"
     con.commit()  # libère la base pour enregistrer
-    g.enregistrer([{"id": 1, "section": "actus", "titre": "خبر عاجل", "texte": "ن", "tweets": ["خبر"]}],
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "خبر عاجل", "texte": "ن", "tweets": ["خبر (آس)"]}],
                   [{"lien": "https://as.com/3", "titre": "T3", "auteur": "", "source": "AS", "pays": "es", "type": "info"}], db)
     try:
         assert t.vers_typefully(con, {2: "c.png", 3: "c.png"}, Path(tmp)) == 2
@@ -458,7 +463,7 @@ with tempfile.TemporaryDirectory() as tmp:
         t.CONFIG.pop("typefully_publish_at_actus")
     assert [c["draft_title"] for c in appels] == ["خبر عاجل", "جديد"] and appels[1]["publish_at"] == "next-free-slot"
     # publiée tout de suite, sans le tweet de crédit qui contient le lien (X refuse la publication immédiate avec lien)
-    assert appels[0]["publish_at"] == "now" and [p["text"] for p in appels[0]["platforms"]["x"]["posts"]] == ["خبر"]
+    assert appels[0]["publish_at"] == "now" and [p["text"] for p in appels[0]["platforms"]["x"]["posts"]] == ["خبر (آس)"]
     assert t.sans_tweet_de_lien(["أ\n\n1/3", "ب\n\n2/3", "📰 AS\n🔗 المصدر: https://as.com/1\n\n3/3"]) == (["أ\n\n1/2", "ب\n\n2/2"], "now")
     from datetime import datetime as dt, timezone as tz
     tw, quand = t.sans_tweet_de_lien(["انظر https://x.com/a\n\n1/2", "📰 AS\n🔗 https://as.com/1\n\n2/2"])
@@ -468,7 +473,7 @@ with tempfile.TemporaryDirectory() as tmp:
     import urllib.error
     con.execute("UPDATE threads SET typefully = NULL WHERE article_id = 2")
     con.commit()
-    g.enregistrer([{"id": 1, "section": "debats", "titre": "ثالث", "texte": "ن", "tweets": ["فكرة ثالثة"]}],
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "ثالث", "texte": "ن", "tweets": ["فكرة ثالثة (آس)"]}],
                   [{"lien": "https://as.com/9", "titre": "T9", "auteur": "", "source": "AS", "pays": "es"}], db)
 
     def refuse_le_premier(chemin, corps=None):
@@ -480,8 +485,69 @@ with tempfile.TemporaryDirectory() as tmp:
         assert t.vers_typefully(con, {2: "c.png", 4: "c.png"}, Path(tmp)) == 1
     assert "raison du refus" in sortie.getvalue() and "article 2" in sortie.getvalue()
     assert con.execute("SELECT typefully FROM threads WHERE article_id = 2").fetchone()[0] is None
+    # plafond de publications immédiates par heure : la nouvelle attend le passage suivant, sans être bloquée
+    con.execute("UPDATE threads SET typefully = '88' WHERE article_id = 2")
+    con.commit()
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "خبر ثان", "texte": "ن", "tweets": ["إصابة جديدة في التدريب (آس)"]}],
+                  [{"lien": "https://as.com/10", "titre": "T10", "auteur": "", "source": "AS", "pays": "es", "type": "info"}], db)
+    aid = con.execute("SELECT id FROM articles WHERE lien = 'https://as.com/10'").fetchone()[0]
+    t.typefully_api, appels[:] = (lambda chemin, corps=None: appels.append(corps) or {"id": 99}), []
+    t.CONFIG.update(typefully_publish_at_actus="now", max_publications_heure=1)
+    try:
+        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 0 and not appels  # une nouvelle est déjà partie il y a moins d'une heure
+        # contrôle en échec : simple brouillon, sans date de publication, motif en tête du titre
+        t.CONFIG["max_publications_heure"] = 8
+        con.execute("UPDATE threads SET tweets = ? WHERE article_id = ?", (json.dumps(["إصابة جديدة في التدريب! (آس)"]), aid))
+        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1
+    finally:
+        t.CONFIG.pop("typefully_publish_at_actus")
+        t.CONFIG.pop("max_publications_heure")
+    assert "publish_at" not in appels[0] and appels[0]["draft_title"].startswith("⛔ point d'exclamation")
+    assert con.execute("SELECT statut FROM threads WHERE article_id = ?", (aid,)).fetchone()[0].startswith("bloqué")
     con.close()
 print("OK Typefully")
+
+# contrôles avant envoi : source, ton, appel à l'engagement, doublon (les threads bloqués ne comptent pas), trop de 🚨
+con = sqlite3.connect(":memory:")
+t.connexion_threads(con)
+def envoye(i, accroche, statut="immédiat"):
+    con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully, envoye) VALUES (?, ?, ?, ?, '1', ?)",
+                (i, json.dumps([f"{accroche}\n\n(ماركا)"]), statut, *[t.maintenant().isoformat(timespec="seconds")] * 2))
+assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود إلى التدريبات\n\n(ماركا)"]) == []
+assert t.controler_thread(con, 1, ["مبابي يعود إلى التدريبات"]) == ["source absente du 1er tweet"]
+assert t.controler_thread(con, 1, ["📰 خبر | زلزال في برنابيو\n\n(ماركا)"]) == ["point d'exclamation ou exagération"]
+assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود\n\n(ماركا)", "ريتويت"]) == ["appel à l'engagement"]
+envoye(10, "📰 خبر | مبابي يعود إلى التدريبات الجماعية مع الفريق")
+envoye(11, "📰 خبر | كورتوا يغيب عن مباراة السبت بسبب الإصابة", "bloqué : test")
+assert t.controler_thread(con, 12, ["🚨 عاجل | مبابي يعود إلى التدريبات الجماعية مع الفريق\n\n(آس)"]) == ["doublon du thread de l'article 10"]
+assert t.controler_thread(con, 12, ["📰 خبر | كورتوا يغيب عن مباراة السبت بسبب الإصابة\n\n(آس)"]) == []  # le bloqué ne compte pas
+for i, sujet in ((20, "فالفيردي"), (21, "رودريغو"), (22, "تشواميني")):
+    envoye(i, f"🚨 عاجل | إصابة {sujet} في الركبة")
+assert t.controler_thread(con, 23, ["🚨 عاجل | غولر يمدد عقده حتى 2031\n\n(آس)"]) == ["trop de 🚨 عاجل en 24 h"]
+con.close()
+print("OK contrôles avant envoi")
+
+# retrait : suppression du post Facebook enregistré, adresse du thread X à supprimer à la main
+con = sqlite3.connect(":memory:")
+con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY)")
+t.connexion_page(con)
+con.execute("INSERT INTO page_facebook VALUES (5, 'd', '42_7')")
+t.connexion_threads(con)
+con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully) VALUES (5, '[]', 'immédiat', 'd', '88')")
+supprimes = []
+vrai = (t.urllib.request.urlopen, t.typefully_api, t.reglage)
+t.urllib.request.urlopen = lambda req, timeout=None: (supprimes.append((req.get_method(), req.full_url)), io.BytesIO(b'{"success": true}'))[1]
+t.typefully_api = lambda chemin, corps=None: {"x_published_url": "https://x.com/ElMadridistAlaa/status/1"} if chemin == "drafts/88" else {}
+t.reglage = lambda cle: "k"
+try:
+    lignes = t.retirer(con, 5)
+    vide = t.retirer(con, 6)
+finally:
+    t.urllib.request.urlopen, t.typefully_api, t.reglage = vrai
+assert supprimes == [("DELETE", t.GRAPH + "42_7?access_token=k")] and "https://x.com/ElMadridistAlaa/status/1" in lignes[1]
+assert vide[0].startswith("Facebook : aucun post") and vide[1] == "X : aucun thread connu pour cet article"
+con.close()
+print("OK retrait")
 # recherche pour /script : accents ignorés, titre prioritaire sur le texte, mots absents écartés
 import connaissance
 with tempfile.TemporaryDirectory() as tmp:
