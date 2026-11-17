@@ -5847,4 +5847,5 @@ INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261117/jj-
 INSERT INTO "vus" VALUES('https://trivela.com.br/italia/dida-endrick-romario-me-lembra-milan-espero-ver/','Dida: ‘Endrick me lembra Romário. Espero ver em breve um brasileiro no Milan’','2026-11-17T19:11:21');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3854284089906666911-qualifications-can-2027-la-reaction-de-brahim-hemdani-au-fiasco-de-lalgerie','Qualifications CAN 2027 : la réaction de Brahim Hemdani au fiasco de l’Algérie !','2026-11-17T19:20:47');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/toptalent-neemt-afscheid-van-man-united-op-naar-volgend-hoofdstuk','Toptalent neemt afscheid van Man United: ''Op naar volgend hoofdstuk''','2026-11-17T19:20:47');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50512542/jj-gabriel-man-united-real-madrid','JJ Gabriel confirms Man United exit as Real Madrid transfer nears','2026-11-17T19:40:57');
 COMMIT;
