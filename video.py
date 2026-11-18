@@ -30,7 +30,7 @@ Storyboard : {"langue": "ar|fr|en|es", "photo": {"article": 437} | {"url": "..."
   trophees  : "titre", "icone" (trophee|ballon|etoile|carton), "groupes": [{"label", "n", "couleur"}] : grille qui se remplit,
               une icône par trophée (ou but, passe...), au rythme de la voix ; légende avec compteur par groupe.
   tableau   : "lignes": ["texte" | {"texte", "couleur": noir|rouge|bleu|vert, "souligne", "entoure", "taille"}] : écrites
-              au feutre sur un tableau blanc, soulignées ou entourées en rouge.
+              au feutre sur un tableau blanc par une main dessinée (assets/main.png si elle existe), soulignées ou entourées en rouge.
 Les émojis ne s'affichent pas (police sans émojis) : ils vont dans la légende.
 """
 import argparse
@@ -613,17 +613,19 @@ def etincelles(c, cx, cy, rayon, tl, n=7, couleur=BLANC):
 
 
 def sans_fond_vert(img):
-    """Détourage chromatique : si les coins sont vert vif (portraits générés sur fond #00FF00), le vert devient transparent
-    et le liseré vert des bords est neutralisé. Une image sans fond vert est rendue telle quelle."""
-    r, g, b, a = img.split()
-    coins = [img.getpixel(p) for p in ((2, 2), (img.width - 3, 2))]  # coins du haut : en bas, le buste touche souvent le bord
-    if not all(px[1] > 150 and px[1] > 1.6 * max(px[0], px[2]) for px in coins):
+    """Détourage chromatique : si les coins du haut sont verts (illustrations générées sur fond vert), tout ce qui est proche
+    de ce vert devient transparent, en fondu sur les bords, et le reflet vert des contours est neutralisé. La couleur du fond
+    est mesurée dans l'image : vert vif ou vert plus terne. Une image sans fond vert est rendue telle quelle."""
+    coins = [img.getpixel(p)[:3] for p in ((2, 2), (img.width - 3, 2))]  # en bas, le sujet touche souvent le bord
+    if not all(g > 120 and g > 1.3 * max(r, b) for r, g, b in coins):
         return img
-    autre = ImageChops.lighter(r, b)
-    vert = ImageChops.subtract(g, autre)  # de combien le vert dépasse le rouge et le bleu
-    alpha = vert.point(lambda v: 255 if v < 40 else max(0, 255 - (v - 40) * 4))
-    g = ImageChops.darker(g, autre)  # bords : plus de reflet vert
-    return Image.merge("RGBA", (r, g, b, ImageChops.multiply(a, alpha))).crop(ImageChops.multiply(a, alpha).getbbox())
+    fond = tuple(sum(c[i] for c in coins) // 2 for i in range(3))
+    r, g, b, a = img.split()
+    ecart = ImageChops.difference(img.convert("RGB"), Image.new("RGB", img.size, fond)).split()
+    distance = ImageChops.lighter(ImageChops.lighter(ecart[0], ecart[1]), ecart[2])  # écart au vert du fond, canal par canal
+    alpha = ImageChops.multiply(a, distance.point(lambda v: 0 if v < 45 else min(255, (v - 45) * 4)))
+    g = ImageChops.darker(g, ImageChops.lighter(r, b))  # bords : plus de reflet vert
+    return Image.merge("RGBA", (r, g, b, alpha)).crop(alpha.getbbox())
 
 
 def image_portrait(sc, hauteur):
@@ -840,6 +842,57 @@ def temps_lignes(sc, dur, langue):
     return out
 
 
+def main_feutre(couleur, gauche=False):
+    """(image, pointe) : une main qui tient un feutre, la pointe vers le haut à gauche. assets/main.png si elle existe
+    (illustration sur fond vert, détourée), sinon dessinée ici (trait noir, aplats). pointe : bout du feutre dans l'image."""
+    cle = ("main", couleur, gauche)
+    if cle in _images:
+        return _images[cle]
+    if gauche:  # écriture de droite à gauche : la main vient de la gauche pour ne pas cacher ce qui vient d'être écrit
+        img, (tx, ty) = main_feutre(couleur)
+        _images[cle] = (img.transpose(Image.FLIP_LEFT_RIGHT), (img.width - 1 - tx, ty))
+        return _images[cle]
+    fichier = ASSETS / "main.png"
+    if fichier.is_file():
+        img = sans_fond_vert(Image.open(fichier).convert("RGBA"))
+        img = img.resize((round(img.width * 1000 / img.height), 1000), Image.LANCZOS)  # avec l'avant-bras, qui sort par le bas
+        def milieu(y):  # centre du bras sur la ligne y
+            xs = [x for x in range(img.width) if img.getpixel((x, y))[3] > 128]
+            return sum(xs) / len(xs) if xs else None
+        m1, m0 = milieu(img.height - 2), milieu(img.height - 120)
+        if m1 is not None and m0 is not None:  # bras prolongé hors de l'écran, dans sa direction
+            pente, ligne = (m1 - m0) / 118, img.crop((0, img.height - 2, img.width, img.height - 1))
+            long = Image.new("RGBA", (img.width + round(abs(pente) * 900) + 2, img.height + 900), (0, 0, 0, 0))
+            long.paste(img, (0, 0))
+            for k in range(900):
+                long.alpha_composite(ligne, (round(max(0, pente * k)), img.height - 1 + k))
+            img = long
+    else:
+        s, noir, peau = 2, (15, 15, 20, 255), (226, 178, 140, 255)
+        img = Image.new("RGBA", (440 * s, 240 * s), (0, 0, 0, 0))
+        d = ImageDraw.Draw(img)
+        k = 5 * s
+
+        def boite(x0, y0, x1, y1):
+            return [x0 * s, y0 * s, x1 * s, y1 * s]
+        d.rounded_rectangle(boite(36, 100, 250, 128), 6 * s, fill=(70, 70, 82, 255), outline=noir, width=k)  # corps du feutre
+        d.rectangle(boite(36, 100, 54, 128), fill=couleur + (255,), outline=noir, width=k)  # bague de couleur
+        d.polygon([(4 * s, 114 * s), (38 * s, 102 * s), (38 * s, 126 * s)], fill=couleur + (255,), outline=noir)  # pointe
+        d.rounded_rectangle(boite(330, 56, 440, 214), 20 * s, fill=(28, 40, 72, 255), outline=noir, width=k)  # manche
+        d.rectangle(boite(322, 62, 342, 208), fill=(232, 232, 238, 255), outline=noir, width=k)  # poignet de chemise
+        d.rounded_rectangle(boite(190, 66, 336, 200), 50 * s, fill=peau, outline=noir, width=k)  # poing
+        for i in range(4):  # doigts repliés sur le feutre
+            d.rounded_rectangle(boite(166, 90 + i * 27, 236, 122 + i * 27), 15 * s, fill=peau, outline=noir, width=k)
+        d.ellipse(boite(158, 70, 262, 114), fill=peau, outline=noir, width=k)  # pouce
+        img = img.rotate(-32, resample=Image.BICUBIC, expand=True)
+        img = img.resize((round(img.width * 1.35 / s), round(img.height * 1.35 / s)), Image.LANCZOS)  # grande, comme filmée
+    a = img.getchannel("A")
+    pointe = min(((x, y) for y in range(0, img.height, 2) for x in range(0, img.width, 2) if a.getpixel((x, y)) > 128),
+                 key=lambda q: q[0] + q[1])  # le point opaque le plus en haut à gauche : le bout du feutre
+    _images[cle] = (img, pointe)
+    return _images[cle]
+
+
 def s_tableau(c, sc, tl, dur, langue):
     d = ImageDraw.Draw(c)
     x0, y0, x1, y1 = GAUCHE - 20, HAUT + 10, DROITE, BAS - 70
@@ -847,29 +900,50 @@ def s_tableau(c, sc, tl, dur, langue):
     d.rounded_rectangle([x0, y0, x1, y1], 36, fill=(250, 249, 244, 255), outline=(200, 200, 205, 255), width=6)
     lignes, temps = lignes_tableau(sc, langue), temps_lignes(sc, dur, langue)
     y = max(y0 + 70, (y0 + y1) / 2 - sum(img.height * 1.4 for img, *_ in lignes) / 2)  # bloc centré sur le tableau
+    pointe, repos, depart, fin, couleur_main = None, None, None, 0.0, FEUTRES["noir"]
     for (img, couleur, ligne, _), (debut, d_l) in zip(lignes, temps):
+        h, xg = img.height, CX - img.width / 2
+        if depart is None:  # là où la main entre : le début de la première ligne
+            depart = (xg + (img.width if langue == "ar" else 0), y + h * 0.62)
+        fin = max(fin, debut + d_l + (0.35 if ligne.get("souligne") else 0) + (0.5 if ligne.get("entoure") else 0))
         p = avance(tl, debut, d_l)
         if p <= 0:
-            break
+            y += h * 1.4
+            continue
         larg = round(img.width * p)
-        xg = CX - img.width / 2
         if larg:  # révélée comme si elle s'écrivait : de droite à gauche en arabe
             morceau = img.crop((img.width - larg, 0, img.width, img.height)) if langue == "ar" else img.crop((0, 0, larg, img.height))
             c.alpha_composite(morceau, (round(xg + (img.width - larg if langue == "ar" else 0)), round(y)))
-        h = img.height
+        bout = (xg + (img.width - larg if langue == "ar" else larg), y + h * 0.62)
+        if p < 1:
+            pointe, couleur_main = (bout[0], bout[1] + 5 * math.sin(tl * 40)), couleur  # léger tremblement de l'écriture
+        repos = bout
         if ligne.get("souligne") and p >= 1:
             ps = avance(tl, debut + d_l, 0.35)
             d.line([xg, y + h * 0.92, xg + img.width * ps, y + h * 0.92 + 4], fill=FEUTRES["rouge"] + (255,), width=9)
+            repos = (xg + img.width * ps, y + h * 0.92)
+            if ps < 1:
+                pointe, couleur_main = repos, FEUTRES["rouge"]
         if ligne.get("entoure") and p >= 1:
             pe = avance(tl, debut + d_l, 0.5)
-            d.arc([xg - 30, y - 6, xg + img.width + 30, y + h + 6], -100, -100 + 370 * pe, fill=FEUTRES["rouge"] + (255,), width=8)
-        if p < 1:  # le feutre, au bout du trait
-            px = xg + (img.width - larg if langue == "ar" else larg)
-            py = y + h * 0.62 + 6 * math.sin(tl * 40)
-            d.polygon([(px, py), (px + 22, py - 30), (px + 128, py - 190), (px + 168, py - 160), (px + 62, py)], fill=(60, 60, 68, 255))
-            d.polygon([(px, py), (px + 22, py - 30), (px + 62, py)], fill=couleur + (255,))
-            d.polygon([(px + 128, py - 190), (px + 168, py - 160), (px + 185, py - 186), (px + 146, py - 214)], fill=couleur + (255,))
+            boite = [xg - 30, y - 6, xg + img.width + 30, y + h + 6]
+            angle = -100 + 370 * pe
+            d.arc(boite, -100, angle, fill=FEUTRES["rouge"] + (255,), width=8)
+            repos = ((boite[0] + boite[2]) / 2 + (boite[2] - boite[0]) / 2 * math.cos(math.radians(angle)),
+                     (boite[1] + boite[3]) / 2 + (boite[3] - boite[1]) / 2 * math.sin(math.radians(angle)))
+            if pe < 1:
+                pointe, couleur_main = repos, FEUTRES["rouge"]
         y += h * 1.4
+    if depart:  # la main : entre par le bas (à droite, à gauche en arabe), écrit, attend au bout du trait, puis ressort
+        sens = -1 if langue == "ar" else 1
+        if pointe is None and repos is None:
+            q = sortie_douce(avance(tl, temps[0][0] - 0.35, 0.35))
+            pointe = (depart[0] + sens * 700 * (1 - q), depart[1] + 800 * (1 - q))
+        elif pointe is None:
+            q = sortie_douce(avance(tl, fin + 0.2, 0.5))
+            pointe = (repos[0] + sens * 700 * q, repos[1] + 800 * q)
+        main, (tx, ty) = main_feutre(couleur_main, langue == "ar")
+        c.alpha_composite(main, (round(pointe[0] - tx), round(pointe[1] - ty)))
     if sc.get("texte"):
         sous_titre(c, sc["texte"], langue, tl, 0.15, sc)
 
