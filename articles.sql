@@ -6480,4 +6480,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/real-madrid-jj-gabriel-
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4654358020710271963-jt-foot-mercato-jude-bellingham-met-un-coup-de-pression-au-real-madrid','JT Foot Mercato : Jude Bellingham met un coup de pression au Real Madrid','2026-11-18T16:31:52');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/endrick-sale-reforzado-en-su-aniversario-f202611-n/','Endrick sale reforzado en su aniversario','2026-11-18T16:41:14');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/antonio-adan-se-retira-f202611-n/','Antonio Adán se retira','2026-11-18T16:41:14');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Bresil-adjoint-de-carlo-ancelotti-au-bresil-francesco-mauri-salue-le-comportement-de-vinicius-lors-du-rassemblement-son-attitude-a-ete-fantastique/20245807#at_medium=RSS_feeds','Mauri : «L''attitude de Vinicius a été fantastique»','2026-11-18T16:51:02');
 COMMIT;
