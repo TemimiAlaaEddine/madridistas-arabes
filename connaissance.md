@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 12
+Dernier fait relu : 17
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -16,7 +16,7 @@ Dernier fait relu : 12
 - 2026-11-10 : Endrick, environ 140 minutes et 1 but (contre la Roma) en 7 matchs toutes compétitions ; 84 minutes en Liga. Les totaux varient de 140 à 156 minutes selon les sources. Sources : Marca (Jesús Mata, José Luis Hurtado), Trivela.
 - 2025-26, seconde moitié de saison : Endrick prêté à Lyon, 8 buts et 8 passes décisives en 21 matchs (1 631 minutes, 77 par match). Source : Trivela (Matheus Cristianini).
 - Novembre 2026 : Mourinho refuse publiquement un départ d'Endrick en janvier (« qu'ils oublient », « qui le veut devra se battre avec moi », TNT Sports). Sources : Trivela (Pedro Ramos), Marca (Joel del Río).
-- 2026-11-13 : Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars. Source : Marca (JOEL DEL RÍO).
+- 2026-11-13 : Rodrygo, blessé le 2 mars 2026 contre Getafe (rupture des ligaments croisés : ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars. Sources : Marca (JOEL DEL RÍO), Foot Mercato (Jordan Pardon).
 - 2026-11-13 : Asencio, atteint d'une fracture de stress au tibia droit, a été opéré le 1er octobre. Source : Marca (JOEL DEL RÍO).
 - 2026-11-13 : Thiago Pitarch a fait ses débuts avec l'Espagne U21 lors de la victoire 2-0 contre le Japon, avec Espi également entré en jeu. Source : Managing Madrid (Hridyam Arora).
 - 2026-11-15 : Latif Issman, milieu de l'UD Logroñés, a signé avec le Real Madrid en novembre 2026 et rejoindra le Castilla l'été prochain. Source : Marca (NACHO LABARGA).
@@ -25,6 +25,7 @@ Dernier fait relu : 12
 - 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
+- 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (site officiel), AS (Tomás Roncero), Foot Mercato (Jordan Pardon), Voetbal International.
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
