@@ -24,6 +24,13 @@ Storyboard : {"langue": "ar|fr|en|es", "photo": {"article": 437} | {"url": "..."
               fige l'action (badge ⏸, anneau doré autour du joueur, 2 s par défaut).
   titres    : "cartes": [{"journal", "titre"}] (1 à 3) : gros titres de presse traduits.
   presse    : "citations": [{"journal", "texte"}] (2 à 4) : « ce que dit la presse ».
+  portrait  : "joueur", "image" facultative (sinon assets/joueurs/<joueur>.png, sinon silhouette dessinée avec "numero"),
+              "couleur" facultative (sans elle : couleurs du Real, rayons bleu marine, anneau et étincelles dorés ; sinon nom de
+              COULEURS ou [r, g, b] pour un autre club), "texte" : le joueur entre en rebond, zoom lent.
+  trophees  : "titre", "icone" (trophee|ballon|etoile|carton), "groupes": [{"label", "n", "couleur"}] : grille qui se remplit,
+              une icône par trophée (ou but, passe...), au rythme de la voix ; légende avec compteur par groupe.
+  tableau   : "lignes": ["texte" | {"texte", "couleur": noir|rouge|bleu|vert, "souligne", "entoure", "taille"}] : écrites
+              au feutre sur un tableau blanc, soulignées ou entourées en rouge.
 Les émojis ne s'affichent pas (police sans émojis) : ils vont dans la légende.
 """
 import argparse
@@ -40,7 +47,7 @@ from pathlib import Path
 
 import arabic_reshaper
 from bidi import get_display
-from PIL import Image, ImageDraw, ImageEnhance, ImageFilter, ImageFont
+from PIL import Image, ImageChops, ImageDraw, ImageEnhance, ImageFilter, ImageFont
 
 from commun import DB_PATH, restaurer_base
 
@@ -107,7 +114,8 @@ def image_mot(mot, taille, couleur, langue, fichier=None, contour=0):
     if cle not in _mots:
         f, v = police(taille, fichier), visuel(mot, langue)
         g, h_, d, b = f.getbbox(v)
-        img = Image.new("RGBA", (max(1, d - g + 8 + 2 * contour), round(taille * 1.45) + 2 * contour), (0, 0, 0, 0))
+        haut = max(round(taille * 1.45), b + round(taille * 0.12) + 6)  # les polices manuscrites descendent plus bas
+        img = Image.new("RGBA", (max(1, d - g + 8 + 2 * contour), haut + 2 * contour), (0, 0, 0, 0))
         ImageDraw.Draw(img).text((4 - g + contour, round(taille * 0.12) + contour), v, font=f, fill=couleur + (255,),
                                  stroke_width=contour, stroke_fill=(0, 0, 0, 255))
         _mots[cle] = img
@@ -526,8 +534,333 @@ def s_presse(c, sc, tl, dur, langue):
         d.ellipse([xx - 9, BAS - 120, xx + 9, BAS - 102], fill=(OR if i == k else (255, 255, 255)) + (255 if i == k else 90,))
 
 
+# ---------- scènes dessinées (style Tifo Football et tableau blanc : dessins fixes, mouvement autour) ----------
+COULEURS = {"or": OR, "blanc": BLANC, "rouge": ROUGE, "bleu": (64, 160, 255), "vert": (70, 200, 120), "violet": (170, 110, 240)}
+FEUTRES = {"noir": (25, 25, 30), "rouge": (210, 30, 40), "bleu": (25, 80, 200), "vert": (20, 140, 70)}
+ASSETS = Path(__file__).with_name("assets")
+_images = {}
+
+
+def icone(nom, taille, couleur):
+    """Icône dessinée (trait noir, aplat), mise en cache : trophee, ballon, etoile, carton."""
+    cle = (nom, taille, couleur)
+    if cle in _images:
+        return _images[cle]
+    s = 4  # dessinée 4 fois plus grande puis réduite : bords lisses
+    T, k = taille * s, max(2, taille * s // 14)
+    img = Image.new("RGBA", (T, T), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    noir, fill = (15, 15, 20, 255), couleur + (255,)
+    if nom == "ballon":
+        d.ellipse([k, k, T - k, T - k], fill=(255, 255, 255, 255), outline=noir, width=k)
+        cx, cy, r = T / 2, T / 2, T * 0.17
+        d.polygon([(cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a))) for a in range(-90, 270, 72)], fill=noir)
+    elif nom == "etoile":
+        pts = [(T / 2 + (T * 0.46 if i % 2 == 0 else T * 0.2) * math.cos(math.radians(-90 + 36 * i)),
+                T / 2 + (T * 0.46 if i % 2 == 0 else T * 0.2) * math.sin(math.radians(-90 + 36 * i))) for i in range(10)]
+        d.polygon(pts, fill=fill, outline=noir, width=k)
+    elif nom == "carton":
+        d.rounded_rectangle([T * 0.25, T * 0.1, T * 0.75, T * 0.9], T // 14, fill=fill, outline=noir, width=k)
+    else:  # trophee : anses, coupe (demi-ellipse), pied, socle
+        for x0, x1, a, b in ((0.06, 0.4, 90, 270), (0.6, 0.94, -90, 90)):
+            d.arc([T * x0, T * 0.14, T * x1, T * 0.46], a, b, fill=noir, width=k * 2)
+            d.arc([T * x0 + k, T * 0.14 + k, T * x1 - k, T * 0.46 - k], a, b, fill=fill, width=k)
+        d.chord([T * 0.16, -T * 0.26, T * 0.84, T * 0.64], 0, 180, fill=fill, outline=noir, width=k)
+        d.rectangle([T * 0.43, T * 0.62, T * 0.57, T * 0.76], fill=fill, outline=noir, width=k)
+        d.rounded_rectangle([T * 0.26, T * 0.74, T * 0.74, T * 0.92], T // 30, fill=fill, outline=noir, width=k)
+        d.ellipse([T * 0.3, T * 0.12, T * 0.4, T * 0.3], fill=(255, 255, 255, 150))  # reflet
+    _images[cle] = img.resize((taille, taille), Image.LANCZOS)
+    return _images[cle]
+
+
+def rayons(c, cx, cy, tl, couleur, clair=None):
+    """Fond en rayons « pop art » qui tournent lentement, sur tout l'écran."""
+    clair = clair or tuple(min(255, round(v * 1.35 + 12)) for v in couleur)
+    d = ImageDraw.Draw(c)
+    d.rectangle([0, 0, W, H], fill=couleur + (255,))
+    a0, R = tl * 9, 2400
+    for i in range(0, 24, 2):
+        a, b = math.radians(a0 + i * 15), math.radians(a0 + (i + 1) * 15)
+        d.polygon([(cx, cy), (cx + R * math.cos(a), cy + R * math.sin(a)), (cx + R * math.cos(b), cy + R * math.sin(b))], fill=clair + (255,))
+
+
+def halo(c, cx, cy, r, tl):
+    """Anneau doré lumineux qui pulse doucement derrière le portrait (identité du Real : bleu nuit, or, blanc)."""
+    calque = Image.new("RGBA", (W, H), (0, 0, 0, 0))
+    d = ImageDraw.Draw(calque)
+    r = r * (1 + 0.015 * math.sin(tl * 3))
+    for k in range(6, 0, -1):  # lueur : anneaux de plus en plus larges et transparents
+        e = 10 + k * 14
+        d.ellipse([cx - r - e / 2, cy - r - e / 2, cx + r + e / 2, cy + r + e / 2], outline=OR + (14,), width=round(e))
+    d.ellipse([cx - r, cy - r, cx + r, cy + r], outline=OR + (255,), width=10)
+    c.alpha_composite(calque)
+
+
+def etincelles(c, cx, cy, rayon, tl, n=7, couleur=BLANC):
+    """Petites étoiles qui scintillent autour d'un point (positions fixes, phases décalées)."""
+    d = ImageDraw.Draw(c)
+    for i in range(n):
+        a = math.radians(i * 360 / n + 20)
+        x, y = cx + rayon * math.cos(a) * (0.85 + 0.15 * (i % 3)), cy + rayon * math.sin(a) * (0.85 + 0.15 * ((i + 1) % 3))
+        r = 18 * max(0.0, math.sin(tl * 4 + i * 1.7))
+        if r > 2:
+            d.polygon([(x, y - r), (x + r * 0.25, y - r * 0.25), (x + r, y), (x + r * 0.25, y + r * 0.25), (x, y + r),
+                       (x - r * 0.25, y + r * 0.25), (x - r, y), (x - r * 0.25, y - r * 0.25)], fill=couleur + (230,))
+
+
+def sans_fond_vert(img):
+    """Détourage chromatique : si les coins sont vert vif (portraits générés sur fond #00FF00), le vert devient transparent
+    et le liseré vert des bords est neutralisé. Une image sans fond vert est rendue telle quelle."""
+    r, g, b, a = img.split()
+    coins = [img.getpixel(p) for p in ((2, 2), (img.width - 3, 2))]  # coins du haut : en bas, le buste touche souvent le bord
+    if not all(px[1] > 150 and px[1] > 1.6 * max(px[0], px[2]) for px in coins):
+        return img
+    autre = ImageChops.lighter(r, b)
+    vert = ImageChops.subtract(g, autre)  # de combien le vert dépasse le rouge et le bleu
+    alpha = vert.point(lambda v: 255 if v < 40 else max(0, 255 - (v - 40) * 4))
+    g = ImageChops.darker(g, autre)  # bords : plus de reflet vert
+    return Image.merge("RGBA", (r, g, b, ImageChops.multiply(a, alpha))).crop(ImageChops.multiply(a, alpha).getbbox())
+
+
+def image_portrait(sc, hauteur):
+    """Portrait du joueur, détouré avec un contour noir épais (effet autocollant) ; sinon une silhouette dessinée."""
+    chemin = Path(sc["image"]) if sc.get("image") else ASSETS / "joueurs" / f"{nom_canonique(sc.get('joueur', ''))}.png"
+    cle = (str(chemin), hauteur, sc.get("numero"), json.dumps(sc.get("apparence"), sort_keys=True))
+    if cle in _images:
+        return _images[cle]
+    if chemin.is_file():
+        img = sans_fond_vert(Image.open(chemin).convert("RGBA"))
+        img = img.resize((round(img.width * hauteur / img.height), hauteur), Image.LANCZOS)
+        bord = 14
+        fond = Image.new("RGBA", (img.width + 2 * bord, img.height + 2 * bord), (0, 0, 0, 0))
+        if img.getchannel("A").getextrema()[0] < 250:  # détouré : contour qui suit la silhouette
+            masque = Image.new("L", fond.size, 0)
+            masque.paste(img.getchannel("A"), (bord, bord))
+            fond.paste((15, 15, 20, 255), (0, 0), masque.filter(ImageFilter.MaxFilter(2 * bord - 1)))
+            fond.alpha_composite(img, (bord, bord))
+        else:  # image pleine : carte aux coins arrondis, bord noir
+            ImageDraw.Draw(fond).rounded_rectangle([0, 0, fond.width - 1, fond.height - 1], 40, fill=(15, 15, 20, 255))
+            coins = Image.new("L", img.size, 0)
+            ImageDraw.Draw(coins).rounded_rectangle([0, 0, img.width - 1, img.height - 1], 30, fill=255)
+            fond.paste(img, (bord, bord), coins)
+        _images[cle] = fond
+        return fond
+    _images[cle] = silhouette(apparence(sc), hauteur, sc.get("numero"))
+    return _images[cle]
+
+
+PEAUX = {"claire": (238, 198, 168), "mate": (200, 150, 110), "foncee": (120, 82, 58)}
+TEINTES_CHEVEUX = {"noir": (28, 24, 22), "brun": (78, 52, 32), "blond": (214, 172, 92), "roux": (164, 82, 40), "blanc": (225, 225, 225)}
+
+
+def nom_canonique(nom):
+    """« فالفيردي » -> « Valverde » : le nom sous lequel le joueur est rangé dans apparences.json (et son portrait .png)."""
+    fichier = ASSETS / "joueurs" / "apparences.json"
+    toutes = json.loads(fichier.read_text(encoding="utf-8")) if fichier.exists() else {}
+    return next((n for n, a in toutes.items() if nom in a.get("aussi", [])), nom)
+
+
+def apparence(sc):
+    """Attributs dessinés du joueur : assets/joueurs/apparences.json (par nom, ou par un de ses "aussi"), puis "apparence"
+    de la scène par-dessus. Clés : peau, cheveux (court|boucles|rase|long|tresses|chauve), couleur_cheveux, barbe
+    (aucune|courte|pleine), maillot [r, g, b], col [r, g, b]."""
+    fichier, nom = ASSETS / "joueurs" / "apparences.json", sc.get("joueur", "")
+    toutes = json.loads(fichier.read_text(encoding="utf-8")) if fichier.exists() else {}
+    base = next((a for n, a in toutes.items() if n == nom or nom in a.get("aussi", [])), {})
+    return {**base, **sc.get("apparence", {})}
+
+
+def silhouette(a, hauteur, numero=None):
+    """Buste dessiné façon caricature (trait noir, aplats) : on reconnaît le joueur à sa coupe, sa barbe, son teint, son numéro."""
+    s = 2  # dessiné 2 fois plus grand puis réduit : bords lisses
+    L, Hh, noir = round(hauteur * 0.8) * s, hauteur * s, (15, 15, 20, 255)
+    img = Image.new("RGBA", (L, Hh), (0, 0, 0, 0))
+    d = ImageDraw.Draw(img)
+    k = max(6, Hh // 70)
+    peau = PEAUX.get(a.get("peau"), PEAUX["mate"]) + (255,)
+    ombre = tuple(round(v * 0.82) for v in peau[:3]) + (255,)
+    tc = TEINTES_CHEVEUX.get(a.get("couleur_cheveux"), TEINTES_CHEVEUX["noir"]) + (255,)
+    maillot, col = tuple(a.get("maillot", (246, 246, 246))) + (255,), tuple(a.get("col", (30, 30, 40))) + (255,)
+    coupe = a.get("cheveux", "court")
+    tete = [L * 0.29, Hh * 0.14, L * 0.71, Hh * 0.56]
+    if coupe in ("long", "tresses"):  # cheveux qui tombent derrière la tête
+        d.rounded_rectangle([L * 0.22, Hh * 0.12, L * 0.78, Hh * 0.64], round(L * 0.18), fill=tc, outline=noir, width=k)
+        if coupe == "tresses":
+            for x in (0.25, 0.29, 0.71, 0.75):
+                d.line([L * x, Hh * 0.2, L * x, Hh * 0.63], fill=tuple(min(255, v + 50) for v in tc[:3]) + (255,), width=k)
+    # buste, col en V, cou
+    d.rounded_rectangle([L * 0.04, Hh * 0.6, L * 0.96, Hh * 1.25], round(L * 0.3), fill=maillot, outline=noir, width=k)
+    d.polygon([(L * 0.38, Hh * 0.61), (L * 0.5, Hh * 0.71), (L * 0.62, Hh * 0.61)], fill=col, outline=noir)
+    d.rectangle([L * 0.42, Hh * 0.47, L * 0.58, Hh * 0.63], fill=ombre, outline=noir, width=k)
+    # oreilles, visage
+    for x0 in (0.25, 0.68):
+        d.ellipse([L * x0, Hh * 0.32, L * (x0 + 0.07), Hh * 0.42], fill=peau, outline=noir, width=k)
+    d.ellipse(tete, fill=peau, outline=noir, width=k)
+    if a.get("barbe") in ("courte", "pleine"):  # bas du visage : barbe pleine, ou ombre de barbe (calque à part : mélange)
+        calque = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        dc = ImageDraw.Draw(calque)
+        dc.chord(tete, 15, 165, fill=tc[:3] + ((255,) if a["barbe"] == "pleine" else (95,)))
+        img.alpha_composite(calque)
+    # yeux, sourcils, nez, bouche : traits simples
+    for xo in (0.41, 0.59):
+        d.ellipse([L * xo - k * 1.4, Hh * 0.335 - k * 1.4, L * xo + k * 1.4, Hh * 0.335 + k * 1.4], fill=noir)
+        d.line([L * xo - L * 0.05, Hh * 0.3, L * xo + L * 0.05, Hh * 0.295], fill=tc[:3] + (255,) if coupe != "chauve" else noir, width=k * 2)
+    d.line([L * 0.5, Hh * 0.35, L * 0.48, Hh * 0.42, L * 0.52, Hh * 0.42], fill=noir, width=max(3, k // 2))
+    d.arc([L * 0.44, Hh * 0.43, L * 0.56, Hh * 0.49], 20, 160, fill=noir, width=max(3, k // 2))
+    # cheveux par-dessus le haut de la tête
+    if coupe == "court":
+        d.chord([L * 0.27, Hh * 0.1, L * 0.73, Hh * 0.38], 180, 360, fill=tc, outline=noir, width=k)
+    elif coupe == "rase":
+        calque = Image.new("RGBA", img.size, (0, 0, 0, 0))
+        ImageDraw.Draw(calque).chord([L * 0.29 + k, Hh * 0.14 + k, L * 0.71 - k, Hh * 0.34], 180, 360, fill=tc[:3] + (190,))
+        img.alpha_composite(calque)
+    elif coupe == "boucles":
+        for i in range(9):
+            ang = math.radians(180 + i * 22.5)
+            cx, cy, r = L * 0.5 + L * 0.21 * math.cos(ang), Hh * 0.27 + Hh * 0.13 * math.sin(ang), L * 0.075
+            d.ellipse([cx - r, cy - r, cx + r, cy + r], fill=tc, outline=noir, width=k)
+    elif coupe in ("long", "tresses"):
+        d.chord([L * 0.27, Hh * 0.1, L * 0.73, Hh * 0.36], 180, 360, fill=tc, outline=noir, width=k)
+    if numero:
+        coller(img, image_mot(str(numero), Hh * 0.2, (20, 20, 30) if sum(maillot[:3]) > 380 else (245, 245, 245), "fr", NOIR),
+               L / 2, Hh * 0.86)
+    return img.resize((L // s, Hh // s), Image.LANCZOS)
+
+
+def s_portrait(c, sc, tl, dur, langue):
+    cy = HAUT + (SOUS_TITRE_Y - 120 - HAUT) * 0.48
+    fond = sc.get("couleur")  # par défaut les couleurs du Real ; sinon un nom de COULEURS ou [r, g, b] (autre club)
+    if fond:
+        rayons(c, CX, cy, tl, tuple(fond) if isinstance(fond, list) else COULEURS.get(fond, NAVY))
+    else:
+        rayons(c, CX, cy, tl, NAVY, (17, 42, 82))
+        halo(c, CX, cy - 40, 330, tl)
+    img = image_portrait(sc, 760)
+    p = avance(tl, 0.05, 0.45)
+    zoom = 1 + 0.05 * borne(tl / max(dur, 0.1))  # zoom lent, comme une caméra qui s'approche
+    coller(c, img, CX, cy + 160 * (1 - sortie_douce(p)), alpha=borne(p * 3), echelle=(0.7 + 0.3 * rebond(p)) * zoom)
+    etincelles(c, CX, cy, 430, tl, couleur=BLANC if fond else OR)
+    if sc.get("joueur"):
+        pastille(c, sc["joueur"], langue, CX, cy + 400, taille=52, alpha=avance(tl, 0.4, 0.3))
+    if sc.get("texte"):
+        sous_titre(c, sc["texte"], langue, tl, 0.6, sc.get("_pas"))
+
+
+def temps_icones(sc, dur):
+    """(début, intervalle) du remplissage de la grille : au rythme de la voix s'il y en a une."""
+    n = max(1, sum(int(g.get("n", 0)) for g in sc.get("groupes", [])))
+    fenetre = len(sc["_voix"]) / SR * 0.85 if sc.get("_voix") else min(dur * 0.6, n * 0.12)
+    return 0.5, fenetre / n
+
+
+def s_trophees(c, sc, tl, dur, langue):
+    groupes = sc.get("groupes", [])
+    cases = [(g, COULEURS.get(g.get("couleur"), list(COULEURS.values())[i % len(COULEURS)])) for i, g in enumerate(groupes)
+             for _ in range(int(g.get("n", 0)))]
+    y = HAUT + 10
+    if sc.get("titre"):
+        y = cinetique(c, sc["titre"], 64, langue, y, tl, 0, 0.06) + 30
+    n = len(cases)
+    if not n:
+        return
+    cols = 5 if n <= 20 else 6 if n <= 36 else 8
+    lignes = math.ceil(n / cols)
+    bas = SOUS_TITRE_Y - 110 - 54 * len(groupes) - 40  # place de la légende et du sous-titre
+    cote = min((DROITE - GAUCHE) / cols, (bas - y) / lignes)
+    x0 = CX - cote * cols / 2
+    debut, pas = temps_icones(sc, dur)
+    d = ImageDraw.Draw(c)
+    for k, (g, couleur) in enumerate(cases):
+        col, lig = k % cols, k // cols
+        if langue == "ar":
+            col = cols - 1 - col  # l'arabe se remplit de droite à gauche
+        x, yy = x0 + col * cote + cote / 2, y + lig * cote + cote / 2
+        d.rounded_rectangle([x - cote * 0.44, yy - cote * 0.44, x + cote * 0.44, yy + cote * 0.44], round(cote * 0.14),
+                            fill=(255, 255, 255, 18), outline=(255, 255, 255, 60), width=3)
+        p = avance(tl, debut + k * pas, 0.25)
+        if p > 0:
+            coller(c, icone(sc.get("icone", "trophee"), round(cote * 0.72), couleur), x, yy, echelle=0.3 + 0.7 * rebond(p))
+    # légende : chaque groupe avec son compteur, qui apparaît quand il commence à se remplir
+    yl, k0 = y + lignes * cote + 40, 0
+    for i, g in enumerate(groupes):
+        couleur = COULEURS.get(g.get("couleur"), list(COULEURS.values())[i % len(COULEURS)])
+        faits = max(0, min(int(g.get("n", 0)), math.floor((tl - debut) / pas) + 1 - k0)) if pas else 0
+        if faits:
+            texte = f"{g.get('label', '')} {faits}"
+            coller(c, image_mot(texte, 44, couleur, langue, contour=3), CX, yl + 54 * i, alpha=avance(tl, debut + k0 * pas, 0.2))
+        k0 += int(g.get("n", 0))
+    if sc.get("texte"):
+        sous_titre(c, sc["texte"], langue, tl, 0.3, sc.get("_pas"))
+
+
+def lignes_tableau(sc, langue):
+    """[(image du texte, couleur, ligne)] : chaque ligne écrite au feutre, coupée si elle dépasse la largeur du tableau."""
+    police_main = ARABE.replace("segoeuib", "majallab") if langue == "ar" else r"C:\Windows\Fonts\segoeprb.ttf"
+    out = []
+    for ligne in sc.get("lignes", []):
+        ligne = {"texte": ligne} if isinstance(ligne, str) else ligne
+        couleur, taille = FEUTRES.get(ligne.get("couleur", "noir"), FEUTRES["noir"]), ligne.get("taille", 76 if langue == "ar" else 62)
+        cur = []
+        for mot in ligne.get("texte", "").split():  # coupe gloutonne au mot
+            essai = " ".join(cur + [mot])
+            if cur and image_mot(essai, taille, couleur, langue, police_main).width > DROITE - GAUCHE - 60:
+                out.append((image_mot(" ".join(cur), taille, couleur, langue, police_main), couleur, ligne))
+                cur = [mot]
+            else:
+                cur.append(mot)
+        if cur:
+            out.append((image_mot(" ".join(cur), taille, couleur, langue, police_main), couleur, ligne))
+    return out
+
+
+def temps_lignes(sc, dur, langue):
+    """[(début, durée)] d'écriture de chaque ligne, au prorata de sa largeur ; sur la durée de la voix s'il y en a une."""
+    largeurs = [img.width for img, _, _ in lignes_tableau(sc, langue)]
+    total = sum(largeurs) or 1
+    fenetre = len(sc["_voix"]) / SR * 0.9 if sc.get("_voix") else total / 900  # environ 900 px de texte par seconde
+    t, out = 0.4, []
+    for w in largeurs:
+        out.append((t, fenetre * w / total))
+        t += fenetre * w / total + 0.15
+    return out
+
+
+def s_tableau(c, sc, tl, dur, langue):
+    d = ImageDraw.Draw(c)
+    x0, y0, x1, y1 = GAUCHE - 20, HAUT + 10, DROITE, BAS - 70
+    d.rounded_rectangle([x0 + 10, y0 + 14, x1 + 10, y1 + 14], 36, fill=(0, 0, 0, 90))  # ombre
+    d.rounded_rectangle([x0, y0, x1, y1], 36, fill=(250, 249, 244, 255), outline=(200, 200, 205, 255), width=6)
+    lignes, temps = lignes_tableau(sc, langue), temps_lignes(sc, dur, langue)
+    y = max(y0 + 70, (y0 + y1) / 2 - sum(img.height * 1.12 for img, _, _ in lignes) / 2)  # bloc centré sur le tableau
+    for (img, couleur, ligne), (debut, d_l) in zip(lignes, temps):
+        p = avance(tl, debut, d_l)
+        if p <= 0:
+            break
+        larg = round(img.width * p)
+        xg = CX - img.width / 2
+        if larg:  # révélée comme si elle s'écrivait : de droite à gauche en arabe
+            morceau = img.crop((img.width - larg, 0, img.width, img.height)) if langue == "ar" else img.crop((0, 0, larg, img.height))
+            c.alpha_composite(morceau, (round(xg + (img.width - larg if langue == "ar" else 0)), round(y)))
+        h = img.height
+        if ligne.get("souligne") and p >= 1:
+            ps = avance(tl, debut + d_l, 0.35)
+            d.line([xg, y + h * 0.92, xg + img.width * ps, y + h * 0.92 + 4], fill=FEUTRES["rouge"] + (255,), width=9)
+        if ligne.get("entoure") and p >= 1:
+            pe = avance(tl, debut + d_l, 0.5)
+            d.arc([xg - 30, y - 6, xg + img.width + 30, y + h + 6], -100, -100 + 370 * pe, fill=FEUTRES["rouge"] + (255,), width=8)
+        if p < 1:  # le feutre, au bout du trait
+            px = xg + (img.width - larg if langue == "ar" else larg)
+            py = y + h * 0.62 + 6 * math.sin(tl * 40)
+            d.polygon([(px, py), (px + 22, py - 30), (px + 128, py - 190), (px + 168, py - 160), (px + 62, py)], fill=(60, 60, 68, 255))
+            d.polygon([(px, py), (px + 22, py - 30), (px + 62, py)], fill=couleur + (255,))
+            d.polygon([(px + 128, py - 190), (px + 168, py - 160), (px + 185, py - 186), (px + 146, py - 214)], fill=couleur + (255,))
+        y += h * 1.12
+    if sc.get("texte"):
+        sous_titre(c, sc["texte"], langue, tl, 0.3, sc.get("_pas"))
+
+
 STYLES = {"cinetique": s_cinetique, "compteur": s_compteur, "barres": s_barres, "duel": s_duel, "tactique": s_tactique,
-          "titres": s_titres, "presse": s_presse}
+          "titres": s_titres, "presse": s_presse, "portrait": s_portrait, "trophees": s_trophees, "tableau": s_tableau}
 
 
 def duree(sc):
@@ -542,8 +875,14 @@ def duree(sc):
     if st == "tactique" and sc.get("etapes"):
         debut, d, _ = etapes_temps(sc)[-1]
         return round(max(4.0, debut + d + 0.8), 1)
+    if st == "trophees":
+        n = sum(int(g.get("n", 0)) for g in sc.get("groupes", []))
+        return round(min(9.0, max(3.5, 1.6 + n * 0.12)), 1)
+    if st == "tableau":
+        debut, d_l = (temps_lignes(sc, 0, sc.get("_langue", "ar")) or [(0.4, 1.0)])[-1]
+        return round(max(3.0, debut + d_l + 1.4), 1)
     return round({"compteur": 3.0, "barres": 1.8 + 0.6 * n, "duel": 1.8 + 0.7 * n, "tactique": max(4.0, 1.6 + 0.8 * n),
-                  "titres": 1.0 + 1.3 * n, "presse": 2.4 * n}.get(st, 3.0), 1)
+                  "titres": 1.0 + 1.3 * n, "presse": 2.4 * n, "portrait": 3.2}.get(st, 3.0), 1)
 
 
 # ---------- bruitages ----------
@@ -569,6 +908,13 @@ def son(nom, alea):
             phase += 2 * math.pi * (40 + 70 * math.exp(-t * 18)) / SR
             out.append(0.7 * math.exp(-t * k) * math.sin(phase) + (alea.uniform(-0.25, 0.25) if t < 0.008 else 0))
         return out
+    if nom == "feutre":  # bruit aigu et irrégulier : un feutre qui frotte le tableau
+        out, prec = [], 0.0
+        for i in range(int(0.5 * SR)):
+            x = alea.uniform(-1, 1)
+            out.append(0.07 * (x - prec) * (0.6 + 0.4 * math.sin(i / SR * 2 * math.pi * 9)) * math.sin(math.pi * i / (0.5 * SR)))
+            prec = x
+        return out
     if nom == "pop":
         return [0.3 * math.exp(-i / SR * 45) * math.sin(2 * math.pi * (950 - 4000 * i / SR) * i / SR) for i in range(int(0.08 * SR))]
     return [0.22 * math.exp(-i / SR * 220) * math.sin(2 * math.pi * 2600 * i / SR) for i in range(int(0.025 * SR))]  # tic
@@ -591,6 +937,15 @@ def evenements(sb, durees):
             for k in range(1, 12):  # tics de plus en plus espacés, comme le chiffre qui ralentit
                 ev.append((debut + 0.1 + course * (1 - (1 - k / 12) ** (1 / 3)), "tic"))
             ev.append((debut + 0.1 + course, "impact"))
+        elif st == "trophees":
+            t0, pas = temps_icones(sc, dur)
+            n = sum(int(g.get("n", 0)) for g in sc.get("groupes", []))
+            ev += [(debut + t0 + k * pas, "tic") for k in range(n)]
+        elif st == "tableau":
+            for t0, d_l in temps_lignes(sc, dur, sc.get("_langue", "ar")):  # frottement du feutre pendant l'écriture
+                ev += [(debut + t0 + j * 0.5, "feutre") for j in range(max(1, round(d_l / 0.5)))]
+        elif st == "portrait":
+            ev.append((debut + 0.05, "pop"))
         elif st == "tactique":
             for t, _, e in etapes_temps(sc):  # frappe quand le ballon part, « pop » à l'arrêt sur image
                 if e.get("ballon") is not None or e.get("pause"):
@@ -641,7 +996,8 @@ def preparer_voix(sb, dossier):
     voix = sb["voix"] if isinstance(sb["voix"], str) else VOIX.get(langue, VOIX["ar"])
 
     def lire(el, debut, dur_min):
-        dit = el.get("dit") or el.get("texte") or el.get("titre") or ""
+        dit = (el.get("dit") or el.get("texte") or el.get("titre")
+               or " ".join(l if isinstance(l, str) else l.get("texte", "") for l in el.get("lignes", [])))
         if not dit.strip():
             return 0.0
         el["_voix"] = voix_echantillons(a_dire(dit, langue), voix, dossier)
@@ -658,7 +1014,10 @@ def preparer_voix(sb, dossier):
             for e in sc["etapes"]:
                 e["duree"] = round(lire(e, 0, float(e.get("duree", 2.0 if e.get("pause") else 1.4))), 2)
         else:
-            sc["duree"] = round(lire(sc, 0.9 if st == "compteur" else 0.15, duree(sc)), 2)
+            lu = lire(sc, 0.9 if st == "compteur" else 0.15, duree(sc))
+            # tableau et grille s'étalent sur la voix : leur durée se recalcule une fois la voix connue (sauf durée imposée)
+            refait = duree({k: v for k, v in sc.items() if k != "duree"}) if not sc.get("duree") else 0
+            sc["duree"] = round(max(lu, refait), 2)
 
 
 def voix_evenements(sb, durees):
@@ -730,6 +1089,8 @@ def image(sb, fonds, i, tl, durees, zones=False):
 def rendre(chemin, musique=None, apercu=None, zones=False, muet=False):
     chemin = Path(chemin)
     sb = json.loads(chemin.read_text(encoding="utf-8"))
+    for sc in sb["scenes"]:
+        sc["_langue"] = sb.get("langue", "ar")  # pour duree() : la largeur des lignes du tableau dépend de la police
     preparer_voix(sb, chemin.parent / "voix")
     durees = [duree(sc) for sc in sb["scenes"]]
     total = sum(durees)

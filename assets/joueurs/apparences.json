@@ -1,0 +1,17 @@
+{
+  "Valverde": {"aussi": ["فالفيردي", "Fede Valverde"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "brun", "barbe": "courte"},
+  "Vinícius": {"aussi": ["فينيسيوس", "Vinicius", "Vinícius Júnior"], "peau": "foncee", "cheveux": "boucles", "couleur_cheveux": "noir", "barbe": "aucune"},
+  "Mbappé": {"aussi": ["مبابي", "Mbappe"], "peau": "foncee", "cheveux": "rase", "couleur_cheveux": "noir", "barbe": "aucune"},
+  "Bellingham": {"aussi": ["بيلينغهام"], "peau": "mate", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "courte"},
+  "Courtois": {"aussi": ["كورتوا"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "brun", "barbe": "courte"},
+  "Camavinga": {"aussi": ["كامافينغا"], "peau": "foncee", "cheveux": "tresses", "couleur_cheveux": "noir", "barbe": "aucune"},
+  "Güler": {"aussi": ["غولر", "Guler", "Arda Güler"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "aucune"},
+  "Tchouaméni": {"aussi": ["تشواميني", "Tchouameni"], "peau": "foncee", "cheveux": "rase", "couleur_cheveux": "noir", "barbe": "courte"},
+  "Rodrygo": {"aussi": ["رودريغو"], "peau": "mate", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "aucune"},
+  "Alexander-Arnold": {"aussi": ["ألكسندر-أرنولد", "Trent"], "peau": "mate", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "courte"},
+  "Mourinho": {"aussi": ["مورينيو", "José Mourinho", "Mou"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "blanc", "barbe": "aucune", "maillot": [30, 36, 56], "col": [20, 20, 28]},
+  "Dumfries": {"aussi": ["دومفريس", "Denzel Dumfries"], "peau": "foncee", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "courte"},
+  "Rüdiger": {"aussi": ["روديغر", "Rudiger", "Antonio Rüdiger"], "peau": "foncee", "cheveux": "rase", "couleur_cheveux": "noir", "barbe": "pleine"},
+  "Bernardo-Silva": {"aussi": ["Bernardo Silva", "Bernardo", "برناردو سيلفا", "برناردو"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "pleine"},
+  "Endrick": {"aussi": ["إندريك", "اندريك"], "peau": "foncee", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "aucune"}
+}

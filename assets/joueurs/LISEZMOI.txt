@@ -1,0 +1,1 @@
+Portraits 2D des joueurs pour la scène « portrait » de video.py : un PNG par joueur, nommé comme dans le storyboard (ex. فالفيردي.png ou Valverde.png), détouré de préférence (fond transparent).
