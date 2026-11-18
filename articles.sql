@@ -6503,4 +6503,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7577446490809749328-maroc
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115568/gulers-teammates-celebrate-his-contract-extension','Güler’s teammates celebrate his contract extension','2026-11-18T19:20:46');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/el-united-estudia-acciones-legales-por-la-salida-de-jj-gabriel-f202611-n/','El United estudia acciones legales por la salida de JJ Gabriel','2026-11-18T19:31:09');
 INSERT INTO "vus" VALUES('https://cadenaser.com/galicia/2026/11/18/la-noche-en-la-que-paco-herrera-le-gano-la-partida-a-jose-mourino-radio-vigo/','La noche en la que Paco Herrera le ganó la partida a José Mouriño','2026-11-18T19:31:09');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/beerensteyn-helpt-real-madrid-aan-zege-in-vrouwen-champions-league','Beerensteyn helpt Real Madrid aan zege in vrouwen-Champions League','2026-11-18T19:50:45');
 COMMIT;
