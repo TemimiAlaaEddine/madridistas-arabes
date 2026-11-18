@@ -6481,4 +6481,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a4654358020710271963-jt-fo
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/endrick-sale-reforzado-en-su-aniversario-f202611-n/','Endrick sale reforzado en su aniversario','2026-11-18T16:41:14');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/antonio-adan-se-retira-f202611-n/','Antonio Adán se retira','2026-11-18T16:41:14');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Bresil-adjoint-de-carlo-ancelotti-au-bresil-francesco-mauri-salue-le-comportement-de-vinicius-lors-du-rassemblement-son-attitude-a-ete-fantastique/20245807#at_medium=RSS_feeds','Mauri : «L''attitude de Vinicius a été fantastique»','2026-11-18T16:51:02');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115562/madrid-daily-guler-renews-as-jj-gabriel-edges-closer-to-real-madrid','Madrid Daily: Güler renews as JJ Gabriel edges closer to Real Madrid','2026-11-18T17:10:47');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-afirmacion-de-ferdinand-sobre-bellingham-y-el-madrid-que-es-un-clamor-en-inglaterra-presten-atencion-f202611-v/','La afirmación de Ferdinand sobre Bellingham y el Madrid que es un clamor en Inglaterra: presten atención','2026-11-18T17:10:51');
 COMMIT;
