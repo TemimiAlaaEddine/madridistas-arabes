@@ -6126,4 +6126,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a5571423696181997136-lalge
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6806180019759517308-le-champion-du-monde-espagnol-juan-mata-prend-sa-retraite','Le champion du monde espagnol Juan Mata prend sa retraite','2026-11-18T09:20:54');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/18/6afd6c3721efa0ad588b459d.html','Juan Mata, campeón del mundo y de Europa con la selección, anuncia su retirada del fútbol profesional: "A veces, amar... es dejar ir. Gracias fútbol"','2026-11-18T09:20:54');
 INSERT INTO "vus" VALUES('https://cadenaser.com/andalucia/2026/11/18/el-real-jaen-visitara-al-real-madrid-castilla-el-5-de-diciembre-a-las-1600-horas-radio-jaen/','El Real Jaén visitará al Real Madrid Castilla el 5 de diciembre a las 16.00 horas','2026-11-18T09:40:52');
+INSERT INTO "vus" VALUES('https://www.lagalerna.com/portadas-si-documental-no/','Portadas sí, documental no','2026-11-18T09:50:52');
 COMMIT;
