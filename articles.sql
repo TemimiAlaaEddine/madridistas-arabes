@@ -6084,4 +6084,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a6303974775749275931-jerom
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/por-que-todos-quieren-a-scott-real-madrid-barca-chelsea-liverpool-f202611-v/','¿Por qué todos quieren a Scott: Real Madrid, Barça, Chelsea, Liverpool...?','2026-11-18T07:51:20');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3013637655072022533-le-bayern-munich-est-pret-a-refuser-300-meur-du-real-madrid-pour-michael-olise','Le Bayern Munich est prêt à refuser 300 M€ du Real Madrid pour Michael Olise','2026-11-18T07:51:20');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3886130403645177280-real-madrid-jose-mourinho-soppose-au-depart-dendrick-cet-hiver','Real Madrid : José Mourinho s’oppose au départ d’Endrick cet hiver','2026-11-18T08:31:32');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mijatovic-y-alvaro-benito-se-mojan-con-vinicius-y-su-estado-de-forma-madridistas-escuchen-f202611-v/','Mijatovic y Álvaro Benito se mojan con Vinicius y su estado de forma: madridistas, escuchen','2026-11-18T08:40:46');
 COMMIT;
