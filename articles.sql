@@ -6340,4 +6340,6 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/ru
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Arda-guler-prolonge-son-contrat-avec-le-real-madrid-jusqu-en-2032/1744417#at_medium=RSS_feeds','Arda Güler prolonge son contrat avec le Real Madrid jusqu''en 2032','2026-11-18T11:31:09');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/rudiger-mourinho-cuenta-chistes-pero-solo-en-el-vestuario-cadena-ser/','Rüdiger: "Mourinho cuenta chistes... pero solo en el vestuario"','2026-11-18T11:31:49');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8019239570882605988-real-madrid-la-reaction-amusante-de-kylian-mbappe-apres-la-prolongation-darda-guler','Real Madrid : la réaction amusante de Kylian Mbappé après la prolongation d’Arda Güler','2026-11-18T11:31:49');
+INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/real-madrid-blinda-arda-guler-junio-2032-20261118121753-nt.html','El Real Madrid blinda a Arda Güler hasta junio de 2032','2026-11-18T11:41:12');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115548/official-arda-guler-signs-contract-extension-with-real-madrid','OFFICIAL: Arda Güler signs contract extension with Real Madrid','2026-11-18T11:41:12');
 COMMIT;
