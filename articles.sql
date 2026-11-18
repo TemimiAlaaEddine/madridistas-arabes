@@ -6373,4 +6373,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a1445612119121367946-real-
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50519617/arda-guler-signs-new-real-madrid-contract','Güler, after scoring epic free-kick, pens new Real Madrid contract','2026-11-18T13:31:27');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/mbappe-real-madrid-rudiger-nao-faz-sentido-fazer-meu-trabalho/','‘Eu devo dizer para Mbappé fazer meu trabalho? Não faz sentido’, diz veterano do Real Madrid','2026-11-18T13:41:02');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6232213532487218562-le-message-dadieu-de-jj-gabriel-a-mu-fait-scandale-en-espagne','Le message d’adieu de JJ Gabriel à MU fait scandale en Espagne','2026-11-18T13:51:21');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115550/open-thread-18-november-2026','Open Thread: 18 November 2026','2026-11-18T14:10:56');
 COMMIT;
