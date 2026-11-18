@@ -6123,4 +6123,6 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mijatovic-y-alvaro-benito
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/no-conteis-conmigo-para-maltratar-a-vinicius/','No contéis conmigo para maltratar a Vinícius','2026-11-18T08:51:46');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/sociedad/20261118/emilio-butragueno-nuevo-socio-real-madrid-compartimos-valores-liderazgo-superacion/1003744460213_0.html','Emilio Butragueño, sobre el nuevo socio del Real Madrid: "Compartimos con ellos valores como el liderazgo y la superación"','2026-11-18T08:51:46');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5571423696181997136-lalgerie-nen-croit-pas-ses-yeux-et-cartonne-son-nouveau-selectionneur','L’Algérie n’en croit pas ses yeux et cartonne son nouveau sélectionneur','2026-11-18T09:11:04');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6806180019759517308-le-champion-du-monde-espagnol-juan-mata-prend-sa-retraite','Le champion du monde espagnol Juan Mata prend sa retraite','2026-11-18T09:20:54');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/18/6afd6c3721efa0ad588b459d.html','Juan Mata, campeón del mundo y de Europa con la selección, anuncia su retirada del fútbol profesional: "A veces, amar... es dejar ir. Gracias fútbol"','2026-11-18T09:20:54');
 COMMIT;
