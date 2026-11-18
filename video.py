@@ -157,8 +157,10 @@ def lignes_mots(texte, taille, langue, largeur=DROITE - GAUCHE):
     return lignes + ([cur] if cur else []), espace
 
 
-def cinetique(c, texte, taille, langue, y, tl, debut=0.0, pas=0.12, couleur=BLANC, cx=CX, largeur=DROITE - GAUCHE, centre=False):
-    """Typographie cinétique : chaque mot arrive l'un après l'autre (pop et montée), centré ; retourne le y sous le bloc."""
+def cinetique(c, texte, taille, langue, y, tl, debut=0.0, pas=0.12, couleur=BLANC, cx=CX, largeur=DROITE - GAUCHE, centre=False,
+              temps=None):
+    """Typographie cinétique : chaque mot arrive l'un après l'autre (pop et montée), centré ; retourne le y sous le bloc.
+    temps : instant de chaque mot dans la voix (s, depuis debut) ; sinon un mot tous les `pas`."""
     lignes, espace = lignes_mots(texte, taille, langue, largeur)
     while len(lignes) > 6 and taille > 40:  # trop long : on réduit
         taille *= 0.9
@@ -171,7 +173,7 @@ def cinetique(c, texte, taille, langue, y, tl, debut=0.0, pas=0.12, couleur=BLAN
         total = sum(w for _, _, w in ligne) + espace * (len(ligne) - 1)
         x = cx + total / 2 if langue == "ar" else cx - total / 2  # l'arabe se pose de droite à gauche
         for mot, fort, w in ligne:
-            p = avance(tl, debut + k * pas, 0.28)
+            p = avance(tl, debut + (temps[k] - 0.05 if temps and k < len(temps) else k * pas), 0.28)
             centre_x = x - w / 2 if langue == "ar" else x + w / 2
             contour = max(3, round(taille * 0.06))
             coller(c, image_mot(mot, taille, OR if fort else couleur, langue, contour=contour), centre_x, y + i * hl + hl / 2 + 34 * (1 - sortie_douce(p)),
@@ -184,9 +186,11 @@ def cinetique(c, texte, taille, langue, y, tl, debut=0.0, pas=0.12, couleur=BLAN
 SOUS_TITRE_Y = BAS - 130  # toujours au même endroit, juste au-dessus de la source : l'œil ne cherche pas le texte
 
 
-def sous_titre(c, texte, langue, tl, debut=0.0, pas=None):
-    """La phrase de récit d'une scène : même place, même taille, contour noir, quelle que soit la scène."""
-    cinetique(c, texte, 58, langue, SOUS_TITRE_Y, tl, debut, pas or 0.07, centre=True)
+def sous_titre(c, texte, langue, tl, debut=0.0, el=None):
+    """La phrase de récit d'une scène : même place, même taille, contour noir, quelle que soit la scène.
+    el : la scène ou l'étape qui porte la phrase (rythme _pas ou instants _mots de sa voix)."""
+    el = el or {}
+    cinetique(c, texte, 58, langue, SOUS_TITRE_Y, tl, debut, el.get("_pas") or 0.07, centre=True, temps=el.get("_mots"))
 
 
 def translucide(c, dessin):
@@ -265,7 +269,7 @@ def s_cinetique(c, sc, tl, dur, langue):
         haut_bloc = y - len(lignes) * sc.get("taille", 104) * 1.25 / 2
         p = avance(tl, 0, 0.3)
         pastille(c, sc["etiquette"], langue, CX + (1 - sortie_douce(p)) * (200 if langue == "ar" else -200), haut_bloc - 70, alpha=p)
-    cinetique(c, sc.get("texte", ""), sc.get("taille", 104), langue, y, tl, 0.15, pas_cinetique(sc, dur), centre=True)
+    cinetique(c, sc.get("texte", ""), sc.get("taille", 104), langue, y, tl, 0.15, pas_cinetique(sc, dur), centre=True, temps=sc.get("_mots"))
 
 
 def pas_cinetique(sc, dur):  # avec voix : le rythme de la parole (_pas, posé par preparer_voix)
@@ -291,7 +295,7 @@ def s_compteur(c, sc, tl, dur, langue):
     coller(c, img, CX, y - 10, echelle=0.8 + 0.2 * rebond(avance(tl, 0, 0.35)))
     if sc.get("unite"):
         coller(c, image_mot(sc["unite"], 64, BLANC, langue), CX, y + f.size * 0.62, alpha=avance(tl, 0.6, 0.3))
-    sous_titre(c, sc.get("texte", ""), langue, tl, 0.9, sc.get("_pas"))
+    sous_titre(c, sc.get("texte", ""), langue, tl, 0.9, sc)
 
 
 def s_barres(c, sc, tl, dur, langue):
@@ -403,14 +407,14 @@ def positions(sc, tl):
 def s_tactique(c, sc, tl, dur, langue):
     x0, x1, y0, y1 = 210, 790, 330, 1170  # remonté : le bas est réservé au sous-titre
     etapes = etapes_temps(sc)
-    texte, t_texte, pas, en_cours = sc.get("texte"), 0.15, sc.get("_pas"), None
+    texte, t_texte, porteur, en_cours = sc.get("texte"), 0.15, sc, None
     for debut, d_e, e in etapes:  # le sous-titre suit l'étape en cours
         if tl >= debut:
             en_cours = (debut, d_e, e)
             if e.get("texte"):
-                texte, t_texte, pas = e["texte"], debut, e.get("_pas")
+                texte, t_texte, porteur = e["texte"], debut, e
     if texte:
-        sous_titre(c, texte, langue, tl, t_texte, pas)
+        sous_titre(c, texte, langue, tl, t_texte, porteur)
     p = sortie_douce(avance(tl, 0, 0.35))
     calque = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     terrain(calque, x0, y0, x1, y1)
@@ -743,7 +747,7 @@ def s_portrait(c, sc, tl, dur, langue):
     if sc.get("joueur"):
         pastille(c, sc["joueur"], langue, CX, cy + 400, taille=52, alpha=avance(tl, 0.4, 0.3))
     if sc.get("texte"):
-        sous_titre(c, sc["texte"], langue, tl, 0.6, sc.get("_pas"))
+        sous_titre(c, sc["texte"], langue, tl, 0.15, sc)
 
 
 def temps_icones(sc, dur):
@@ -790,32 +794,43 @@ def s_trophees(c, sc, tl, dur, langue):
             coller(c, image_mot(texte, 44, couleur, langue, contour=3), CX, yl + 54 * i, alpha=avance(tl, debut + k0 * pas, 0.2))
         k0 += int(g.get("n", 0))
     if sc.get("texte"):
-        sous_titre(c, sc["texte"], langue, tl, 0.3, sc.get("_pas"))
+        sous_titre(c, sc["texte"], langue, tl, 0.15, sc)
 
 
 def lignes_tableau(sc, langue):
-    """[(image du texte, couleur, ligne)] : chaque ligne écrite au feutre, coupée si elle dépasse la largeur du tableau."""
+    """[(image du texte, couleur, ligne, nombre de mots)] : chaque ligne écrite au feutre, coupée si elle dépasse la largeur du tableau."""
     police_main = ARABE.replace("segoeuib", "majallab") if langue == "ar" else r"C:\Windows\Fonts\segoeprb.ttf"
     out = []
     for ligne in sc.get("lignes", []):
         ligne = {"texte": ligne} if isinstance(ligne, str) else ligne
         couleur, taille = FEUTRES.get(ligne.get("couleur", "noir"), FEUTRES["noir"]), ligne.get("taille", 76 if langue == "ar" else 62)
+        while taille > 44 and image_mot(ligne.get("texte", ""), taille, couleur, langue, police_main).width > DROITE - GAUCHE - 140:
+            taille -= 2  # une idée par ligne : on rétrécit avant de couper (sinon « entoure » entourerait chaque morceau)
         cur = []
         for mot in ligne.get("texte", "").split():  # coupe gloutonne au mot
             essai = " ".join(cur + [mot])
-            if cur and image_mot(essai, taille, couleur, langue, police_main).width > DROITE - GAUCHE - 60:
-                out.append((image_mot(" ".join(cur), taille, couleur, langue, police_main), couleur, ligne))
+            if cur and image_mot(essai, taille, couleur, langue, police_main).width > DROITE - GAUCHE - 140:  # marge pour l'entourage
+                out.append((image_mot(" ".join(cur), taille, couleur, langue, police_main), couleur, ligne, len(cur)))
                 cur = [mot]
             else:
                 cur.append(mot)
         if cur:
-            out.append((image_mot(" ".join(cur), taille, couleur, langue, police_main), couleur, ligne))
+            out.append((image_mot(" ".join(cur), taille, couleur, langue, police_main), couleur, ligne, len(cur)))
     return out
 
 
 def temps_lignes(sc, dur, langue):
-    """[(début, durée)] d'écriture de chaque ligne, au prorata de sa largeur ; sur la durée de la voix s'il y en a une."""
-    largeurs = [img.width for img, _, _ in lignes_tableau(sc, langue)]
+    """[(début, durée)] d'écriture de chaque ligne : quand la voix lit les lignes, chacune commence à l'instant de son premier
+    mot ; sinon au prorata de sa largeur, sur la durée de la voix s'il y en a une."""
+    lignes = lignes_tableau(sc, langue)
+    if sc.get("_mots"):
+        debuts, k = [], 0
+        for *_, n in lignes:
+            debuts.append(0.15 + sc["_mots"][min(k, len(sc["_mots"]) - 1)])
+            k += n
+        fin = 0.15 + sc["_mots"][-1] + 0.6  # dernier mot prononcé (le MP3 finit par un silence)
+        return [(t, max(0.3, (suivant - t - 0.1) * 0.9)) for t, suivant in zip(debuts, debuts[1:] + [fin])]
+    largeurs = [img.width for img, *_ in lignes]
     total = sum(largeurs) or 1
     fenetre = len(sc["_voix"]) / SR * 0.9 if sc.get("_voix") else total / 900  # environ 900 px de texte par seconde
     t, out = 0.4, []
@@ -831,8 +846,8 @@ def s_tableau(c, sc, tl, dur, langue):
     d.rounded_rectangle([x0 + 10, y0 + 14, x1 + 10, y1 + 14], 36, fill=(0, 0, 0, 90))  # ombre
     d.rounded_rectangle([x0, y0, x1, y1], 36, fill=(250, 249, 244, 255), outline=(200, 200, 205, 255), width=6)
     lignes, temps = lignes_tableau(sc, langue), temps_lignes(sc, dur, langue)
-    y = max(y0 + 70, (y0 + y1) / 2 - sum(img.height * 1.12 for img, _, _ in lignes) / 2)  # bloc centré sur le tableau
-    for (img, couleur, ligne), (debut, d_l) in zip(lignes, temps):
+    y = max(y0 + 70, (y0 + y1) / 2 - sum(img.height * 1.4 for img, *_ in lignes) / 2)  # bloc centré sur le tableau
+    for (img, couleur, ligne, _), (debut, d_l) in zip(lignes, temps):
         p = avance(tl, debut, d_l)
         if p <= 0:
             break
@@ -854,9 +869,9 @@ def s_tableau(c, sc, tl, dur, langue):
             d.polygon([(px, py), (px + 22, py - 30), (px + 128, py - 190), (px + 168, py - 160), (px + 62, py)], fill=(60, 60, 68, 255))
             d.polygon([(px, py), (px + 22, py - 30), (px + 62, py)], fill=couleur + (255,))
             d.polygon([(px + 128, py - 190), (px + 168, py - 160), (px + 185, py - 186), (px + 146, py - 214)], fill=couleur + (255,))
-        y += h * 1.12
+        y += h * 1.4
     if sc.get("texte"):
-        sous_titre(c, sc["texte"], langue, tl, 0.3, sc.get("_pas"))
+        sous_titre(c, sc["texte"], langue, tl, 0.15, sc)
 
 
 STYLES = {"cinetique": s_cinetique, "compteur": s_compteur, "barres": s_barres, "duel": s_duel, "tactique": s_tactique,
@@ -930,7 +945,8 @@ def evenements(sb, durees):
             avant = False
             for k, (_, fort) in enumerate(mots_marques(sc.get("texte", ""))):
                 if fort and not avant and (i or k):  # début d'un groupe en or (pas au même instant que le choc)
-                    ev.append((debut + 0.15 + k * pas_cinetique(sc, dur), "pop"))
+                    t = sc["_mots"][k] if k < len(sc.get("_mots") or []) else k * pas_cinetique(sc, dur)
+                    ev.append((debut + 0.15 + t, "pop"))
                 avant = fort
         elif st == "compteur":
             course = course_compteur(dur)
@@ -973,18 +989,30 @@ def a_dire(texte, langue="ar"):
 
 
 def voix_echantillons(texte, voix, dossier):
-    """Échantillons (floats) de la phrase lue ; le MP3 est gardé en cache dans dossier/voix/ (rendu rejoué sans réseau)."""
+    """(échantillons, instants) de la phrase lue : floats de -1 à 1, et début de chaque mot prononcé en secondes.
+    MP3 et instants gardés en cache dans dossier/voix/ (rendu rejoué sans réseau)."""
     import array
     import asyncio
     import hashlib
     dossier.mkdir(exist_ok=True)
-    mp3 = dossier / (hashlib.sha1(f"{voix}|{texte}".encode()).hexdigest()[:16] + ".mp3")
-    if not mp3.exists():
+    base = dossier / hashlib.sha1(f"{voix}|{texte}".encode()).hexdigest()[:16]
+    mp3, mots = base.with_suffix(".mp3"), base.with_suffix(".json")
+    if not (mp3.exists() and mots.exists()):
         import edge_tts
-        asyncio.run(edge_tts.Communicate(texte, voix, rate="+5%").save(str(mp3)))
+
+        async def lire():
+            instants = []
+            with open(mp3, "wb") as f:
+                async for morceau in edge_tts.Communicate(texte, voix, rate="+5%", boundary="WordBoundary").stream():
+                    if morceau["type"] == "audio":
+                        f.write(morceau["data"])
+                    elif morceau["type"] == "WordBoundary":
+                        instants.append(morceau["offset"] / 1e7)  # unités de 100 ns
+            return instants
+        mots.write_text(json.dumps(asyncio.run(lire())), encoding="utf-8")
     brut = subprocess.run([FFMPEG, "-v", "error", "-i", str(mp3), "-f", "s16le", "-ac", "1", "-ar", str(SR), "-"],
                           capture_output=True, check=True).stdout
-    return [v / 32768 for v in array.array("h", brut)]
+    return [v / 32768 for v in array.array("h", brut)], json.loads(mots.read_text(encoding="utf-8"))
 
 
 def preparer_voix(sb, dossier):
@@ -996,14 +1024,18 @@ def preparer_voix(sb, dossier):
     voix = sb["voix"] if isinstance(sb["voix"], str) else VOIX.get(langue, VOIX["ar"])
 
     def lire(el, debut, dur_min):
-        dit = (el.get("dit") or el.get("texte") or el.get("titre")
-               or " ".join(l if isinstance(l, str) else l.get("texte", "") for l in el.get("lignes", [])))
+        # tableau : les lignes lues l'une après l'autre (un point entre deux : la voix marque la pause)
+        affiche = el.get("texte") or ". ".join(l if isinstance(l, str) else l.get("texte", "") for l in el.get("lignes", []))
+        dit = el.get("dit") or affiche or el.get("titre") or ""
         if not dit.strip():
             return 0.0
-        el["_voix"] = voix_echantillons(a_dire(dit, langue), voix, dossier)
+        el["_voix"], instants = voix_echantillons(a_dire(dit, langue), voix, dossier)
         long = len(el["_voix"]) / SR
-        # shortcut: mots répartis régulièrement sur la durée de la phrase ; passer aux WordBoundary d'edge-tts si le décalage se voit
-        el["_pas"] = long * 0.85 / max(len(mots_marques(el.get("texte") or dit)), 1)
+        n = max(len(mots_marques(affiche or dit)), 1)
+        el["_pas"] = long * 0.85 / n  # repli : mots répartis sur la phrase
+        if instants and affiche and not el.get("dit"):  # l'écran montre ce qui est lu : chaque mot à son instant
+            # le k-ième mot affiché prend l'instant du mot prononcé de même rang (au prorata si les nombres diffèrent)
+            el["_mots"] = [instants[min(len(instants) - 1, k * len(instants) // n)] for k in range(n)]
         el["_debut_voix"] = debut
         return max(dur_min, debut + long + 0.35)
 

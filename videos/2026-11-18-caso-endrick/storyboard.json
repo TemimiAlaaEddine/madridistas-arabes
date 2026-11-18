@@ -1,0 +1,14 @@
+{"langue": "es", "voix": true, "source": "AS (Marco Ruiz), Cadena SER", "compte": "@ElMadridistAlaa", "boucle": true,
+ "scenes": [
+  {"style": "cinetique", "etiquette": "Mercado", "texte": "¿Se irá *Endrick* del Madrid en enero?"},
+  {"style": "portrait", "joueur": "Endrick", "texte": "Titular y gol con *Brasil*, pero en Madrid apenas juega"},
+  {"style": "trophees", "titre": "Los 16 partidos del *Madrid*", "icone": "etoile",
+   "groupes": [{"label": "Titular", "n": 1, "couleur": "or"}, {"label": "Suplente", "n": 6, "couleur": "blanc"},
+               {"label": "Sin jugar", "n": 9, "couleur": "rouge"}],
+   "dit": "De los dieciséis partidos del Madrid, Endrick fue titular una vez, suplente seis, y nueve no jugó."},
+  {"style": "compteur", "valeur": "140", "unite": "minutos", "texte": "*140 minutos* en toda la temporada"},
+  {"style": "portrait", "joueur": "Mourinho", "texte": "Endrick: «Es una decisión de *Mourinho*»"},
+  {"style": "tableau", "lignes": [{"texte": "Mourinho no quiere perderlo", "souligne": true},
+     {"texte": "Roma, la favorita", "couleur": "rouge", "entoure": true},
+     {"texte": "Milan: 60 millones, según Italia", "couleur": "bleu"}]},
+  {"style": "cinetique", "texte": "Si pide salir, *Mourinho no lo retendrá*. ¿Debe quedarse?"}]}
