@@ -6231,4 +6231,7 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/piensas-que-las-ac
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-nuevo-huijsen-f202611-n/','El nuevo Huijsen','2026-11-18T10:31:49');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/real-madrid-slaat-belangrijke-slag-en-bindt-sterspeler-tot-2032','Real Madrid slaat belangrijke slag en bindt Güler tot 2032','2026-11-18T10:41:29');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bayern-president-vertrouwt-perez-in-kwestie-olise-ken-hem-al-meer-dan-25-jaar','Bayern-president vertrouwt Pérez in kwestie-Olise: ''Ken hem al meer dan 25 jaar''','2026-11-18T10:41:29');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/gueler-renueva-2032.html','Güler renueva hasta 2032','2026-11-18T10:50:50');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7129937270769527622-le-real-madrid-blinde-arda-guler','Le Real Madrid blinde Arda Güler','2026-11-18T10:50:50');
+INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261118/real-madrid-blinda-arda-guler-anuncia-renovacion/1003744462627_0.html','El Real Madrid ''blinda'' a Arda Güler y anuncia su renovación hasta 2032','2026-11-18T10:50:50');
 COMMIT;
