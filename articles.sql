@@ -6596,4 +6596,6 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/en
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/alvaro-vega-el-cambio-de-bando-que-ilusiona-al-atletico-f202611-n/','Álvaro Vega, el cambio de bando que ilusiona al Atlético','2026-11-18T22:50:53');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-madrid-golpea-primero-f202611-n/','El Madrid golpea primero','2026-11-18T23:02:18');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/kiyans-observations/115567/its-ok-to-be-critical-of-superstars-it-just-needs-to-be-fair','It’s ok to be critical of superstars — it just needs to be fair.','2026-11-18T23:21:34');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/de-jong-se-agarra-a-la-silla-f202611-n/','De Jong se agarra a la silla','2026-11-18T23:40:57');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50523924/real-madrid-women-champions-league-best','Real Madrid need more sharpness in order to compete with UWCL''s best','2026-11-18T23:40:57');
 COMMIT;
