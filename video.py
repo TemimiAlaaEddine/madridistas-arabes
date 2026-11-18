@@ -600,19 +600,20 @@ def evenements(sb, durees):
 
 
 # ---------- voix ----------
-# edge-tts (voix neuronales de Microsoft). Choix de l'utilisateur (2026-11-17) : la voix qatarie pour l'arabe, noms écrits avec
-# leurs voyelles via prononciation.json (l'écran garde l'écriture normale). Autres langues : voix par défaut, pas encore validées.
-VOIX = {"ar": "ar-QA-MoazNeural", "fr": "fr-CA-ThierryNeural", "en": "en-US-AndrewNeural", "es": "es-ES-AlvaroNeural"}
+# edge-tts (voix neuronales de Microsoft), choisies par l'utilisateur à l'écoute (2026-11-17/18). Les noms mal prononcés sont
+# réécrits pour la voix seulement via prononciation.json, un dictionnaire par langue (l'écran garde l'écriture normale).
+VOIX = {"ar": "ar-QA-MoazNeural", "fr": "fr-FR-RemyMultilingualNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural"}
 PRONONCIATION = Path(__file__).with_name("prononciation.json")
 
 
-def a_dire(texte):
-    """Texte lu par la voix : sans étoiles, noms remplacés par leur écriture prononçable (préfixes و ف ب ل gardés)."""
+def a_dire(texte, langue="ar"):
+    """Texte lu par la voix : sans étoiles, noms remplacés par leur écriture prononçable (en arabe, préfixes و ف ب ل gardés)."""
     texte = EMOJI.sub("", texte.replace("*", ""))
-    noms = json.loads(PRONONCIATION.read_text(encoding="utf-8")) if PRONONCIATION.exists() else {}
+    noms = json.loads(PRONONCIATION.read_text(encoding="utf-8")).get(langue, {}) if PRONONCIATION.exists() else {}
+    # bornes : en arabe lettres et voyelles seulement (« ، » et « ؟ » sont dans le même bloc Unicode), ailleurs lettres et chiffres
+    lettre, prefixe = (r"[ء-ْ]", "[وفبل]?") if langue == "ar" else (r"\w", "")
     for nom in sorted(noms, key=len, reverse=True):  # le plus long d'abord : « ألكسندر-أرنولد » avant « أرنولد »
-        # bornes : lettres et voyelles arabes seulement (« ، » et « ؟ » sont dans le même bloc Unicode)
-        texte = re.sub(rf"(?<![ء-ْ])([وفبل]?){re.escape(nom)}(?![ء-ْ])", rf"\g<1>{noms[nom]}", texte)
+        texte = re.sub(rf"(?<!{lettre})({prefixe}){re.escape(nom)}(?!{lettre})", rf"\g<1>{noms[nom]}", texte)
     return texte
 
 
@@ -636,13 +637,14 @@ def preparer_voix(sb, dossier):
     puis allonge durées et rythme des mots pour suivre la parole. Les échantillons restent dans les scènes (_voix)."""
     if not sb.get("voix"):
         return
-    voix = sb["voix"] if isinstance(sb["voix"], str) else VOIX.get(sb.get("langue", "ar"), VOIX["ar"])
+    langue = sb.get("langue", "ar")
+    voix = sb["voix"] if isinstance(sb["voix"], str) else VOIX.get(langue, VOIX["ar"])
 
     def lire(el, debut, dur_min):
         dit = el.get("dit") or el.get("texte") or el.get("titre") or ""
         if not dit.strip():
             return 0.0
-        el["_voix"] = voix_echantillons(a_dire(dit), voix, dossier)
+        el["_voix"] = voix_echantillons(a_dire(dit, langue), voix, dossier)
         long = len(el["_voix"]) / SR
         # shortcut: mots répartis régulièrement sur la durée de la phrase ; passer aux WordBoundary d'edge-tts si le décalage se voit
         el["_pas"] = long * 0.85 / max(len(mots_marques(el.get("texte") or dit)), 1)
