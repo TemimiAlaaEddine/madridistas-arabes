@@ -8,7 +8,7 @@
   "Güler": {"aussi": ["غولر", "Guler", "Arda Güler", "guler"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "aucune"},
   "Tchouaméni": {"aussi": ["تشواميني", "Tchouameni", "tchouameni"], "peau": "foncee", "cheveux": "rase", "couleur_cheveux": "noir", "barbe": "courte"},
   "Rodrygo": {"aussi": ["رودريغو", "rodrygo"], "peau": "mate", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "aucune"},
-  "Alexander-Arnold": {"aussi": ["ألكسندر-أرنولد", "Trent", "trent"], "peau": "mate", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "courte"},
+  "Alexander-Arnold": {"aussi": ["ألكسندر-أرنولد", "Trent", "trent", "Arnold", "أرنولد"], "peau": "mate", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "courte"},
   "Mourinho": {"aussi": ["مورينيو", "José Mourinho", "Mou", "mourinho"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "blanc", "barbe": "aucune", "maillot": [30, 36, 56], "col": [20, 20, 28]},
   "Dumfries": {"aussi": ["دومفريس", "Denzel Dumfries", "dumfries"], "peau": "foncee", "cheveux": "court", "couleur_cheveux": "noir", "barbe": "courte"},
   "Rüdiger": {"aussi": ["روديغر", "Rudiger", "Antonio Rüdiger", "rudiger"], "peau": "foncee", "cheveux": "rase", "couleur_cheveux": "noir", "barbe": "pleine"},
@@ -23,5 +23,8 @@
   "Carreras": {"aussi": ["carreras", "Álvaro Carreras", "كاريراس"]},
   "Mendy": {"aussi": ["Ferland Mendy", "mendy", "ميندي"]},
   "Asencio": {"aussi": ["Raúl Asencio", "asencio", "أسينسيو"]},
-  "Brahim": {"aussi": ["Brahim Díaz", "brahim", "إبراهيم"]}
+  "Brahim": {"aussi": ["Brahim Díaz", "brahim", "إبراهيم"]},
+  "Pitarch": {"aussi": ["Thiago Pitarch", "pitarch", "تياغو بيتارش", "بيتارش"]},
+  "Espí": {"aussi": ["Carlos Espí", "Espi", "espi", "إسبي"]},
+  "Florentino": {"aussi": ["Florentino Pérez", "florentino", "Pérez", "Perez", "فلورنتينو بيريز", "فلورنتينو"]}
 }
