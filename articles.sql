@@ -6342,4 +6342,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/rudiger-mour
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8019239570882605988-real-madrid-la-reaction-amusante-de-kylian-mbappe-apres-la-prolongation-darda-guler','Real Madrid : la réaction amusante de Kylian Mbappé après la prolongation d’Arda Güler','2026-11-18T11:31:49');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/real-madrid-blinda-arda-guler-junio-2032-20261118121753-nt.html','El Real Madrid blinda a Arda Güler hasta junio de 2032','2026-11-18T11:41:12');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115548/official-arda-guler-signs-contract-extension-with-real-madrid','OFFICIAL: Arda Güler signs contract extension with Real Madrid','2026-11-18T11:41:12');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/el-presidente-del-bayern-reconoce-haber-hablado-con-florentino-perez-sobre-olise-estamos-tranquilos-cadena-ser/','El presidente del Bayern reconoce haber hablado con Florentino Pérez sobre Olise: "Estamos tranquilos..."','2026-11-18T11:50:54');
 COMMIT;
