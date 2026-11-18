@@ -6444,4 +6444,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/tresoldi-roba-protagonismo-a-endrick-en-la-busqueda-de-gol-del-ac-milan-para-invierno-cadena-ser/','Tresoldi roba protagonismo a Endrick en la búsqueda de gol del AC Milan para invierno','2026-11-18T15:41:04');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/dormire-mejor-esta-noche-el-agradecimiento-de-mbappe-a-guler-despues-de-su-renovacion-con-el-real-madrid-hasta-2032-cadena-ser/','"Dormiré mejor esta noche": el agradecimiento de Mbappé a Güler por su renovación con el Real Madrid hasta 2032','2026-11-18T15:50:49');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/amo-a-mijatovic-pero/','Amo a Mijatovic, pero…','2026-11-18T15:51:24');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7056476904288963188-losc-equipe-de-france-espoirs-ethan-mbappe-continue-de-bluffer-son-monde','LOSC, Équipe de France Espoirs : Ethan Mbappé continue de bluffer son monde','2026-11-18T16:10:57');
 COMMIT;
