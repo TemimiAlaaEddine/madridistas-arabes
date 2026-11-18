@@ -6418,4 +6418,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115550/open-thr
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a9219452668018220834-jude-bellingham-impose-2-grosses-conditions-au-real-madrid-pour-prolonger','Jude Bellingham impose 2 grosses conditions au Real Madrid pour prolonger','2026-11-18T14:21:19');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/mbappe-celebra-renovacion-gueler-dormire-mejor-noche.html','Mbappé celebra la renovación de Güler: "Dormiré mejor esta noche"','2026-11-18T14:50:59');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-players/115559/antonio-rudiger-we-need-vinicius-at-his-best-physically-and-mentally','Antonio Rüdiger: “We need Vinicius at his best, physically and mentally”','2026-11-18T15:02:04');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/tresoldi-roba-protagonismo-a-endrick-en-la-busqueda-de-gol-del-ac-milan-para-invierno-cadena-ser/','Tresoldi roba protagonismo a Endrick en la búsqueda de gol del AC Milan para invierno','2026-11-18T15:41:04');
 COMMIT;
