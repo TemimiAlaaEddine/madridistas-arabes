@@ -6139,4 +6139,5 @@ INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/18/6afd
 INSERT INTO "vus" VALUES('https://cadenaser.com/andalucia/2026/11/18/el-real-jaen-visitara-al-real-madrid-castilla-el-5-de-diciembre-a-las-1600-horas-radio-jaen/','El Real Jaén visitará al Real Madrid Castilla el 5 de diciembre a las 16.00 horas','2026-11-18T09:40:52');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/portadas-si-documental-no/','Portadas sí, documental no','2026-11-18T09:50:52');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2631971060675653371-real-madrid-un-surprenant-courtisan-veut-recuperer-rodrygo-en-pret-cet-hiver','Real Madrid : un surprenant courtisan veut récupérer Rodrygo en prêt cet hiver','2026-11-18T10:01:46');
+INSERT INTO "vus" VALUES('https://trivela.com.br/inglaterra/dowman-quebra-recorde-bellingham-joia-arsenal-especial/','Dowman quebra recorde de Bellingham: O que faz a joia do Arsenal ser tão especial?','2026-11-18T10:10:48');
 COMMIT;
