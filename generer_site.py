@@ -53,8 +53,14 @@ class Paragraphes(HTMLParser):
         self.dans_p, self.ignore = "", 0
         self.courant, self.morceaux = [], []
         self.image = self.intertitre = ""
+        self.galerie = []
 
     def handle_starttag(self, tag, attrs):
+        if tag == "img" and "rm-gallery__img" in (dict(attrs).get("class") or ""):
+            # shortcut: galerie du seul site du club (miniatures de 148 px, agrandies par ?wid=1200), à généraliser si un autre site en a une
+            src = (dict(attrs).get("src") or "").split("?")[0]
+            if src and src + "?wid=1200" not in self.galerie:
+                self.galerie.append(src + "?wid=1200")
         if tag == "meta" and not self.image:
             d = dict(attrs)
             if (d.get("property") or d.get("name") or "").lower() in ("og:image", "twitter:image"):
@@ -96,6 +102,7 @@ def texte_complet(it):
         image = urllib.parse.urljoin(it["lien"], p.image) if p.image else ""
         if image.startswith(("http://", "https://")):  # celle de la page, plus grande, sinon on garde celle du flux
             it["image"] = image
+        it["galerie"] = [u for u in (urllib.parse.urljoin(it["lien"], s) for s in p.galerie) if u.startswith(("http://", "https://"))]
     except Exception as err:  # noqa: BLE001 - page bloquée (403, abonnement...) : on garde le flux
         print(f"  ! page illisible ({err}) : {it['lien'][:70]}")
         it["illisible"] = True
@@ -117,6 +124,7 @@ Pour chaque article ci-dessous :
    - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).
    - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents, et même si leurs titres mettent en avant des angles différents, ex. deux articles sur la même conférence de presse), fusionne-les en un seul article : réponds avec l'id du plus complet, et complète son texte avec les éléments nouveaux des autres en citant leur média. Si ce fait ou ces propos sont déjà dans la liste « DÉJÀ PUBLIÉ » plus bas, ignore-les.
+   - Source officielle prioritaire : si l'un des doublons vient du site officiel du Real Madrid, réponds avec son id et présente le fait comme annoncé officiellement par le club (أعلن ريال مدريد رسميًا...). Un communiqué officiel du club (« Comunicado oficial ») se publie même si la presse a déjà rapporté le fait dans « DÉJÀ PUBLIÉ » : c'est la confirmation officielle, que tu présentes comme telle.
 2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, dans la langue vivante de la bonne presse sportive arabe : celle d'un journaliste qui raconte à des supporters, pas celle d'un compte rendu ni d'une traduction.
 {style}
@@ -287,7 +295,7 @@ def connexion(chemin=DB):
         citation TEXT, chiffres TEXT, titres_fb TEXT, image TEXT)""")
     # faits durables notés par Claude à la rédaction, relus et validés par /script vers connaissance.md
     con.execute("CREATE TABLE IF NOT EXISTS faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT)")
-    for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres", "titres_fb", "image"):  # bases créées avant l'ajout de ces colonnes
+    for colonne in ("via", "rapporteur", "sujet", "citation", "chiffres", "titres_fb", "image", "galerie"):  # bases créées avant l'ajout de ces colonnes
         try:
             con.execute(f"ALTER TABLE articles ADD COLUMN {colonne} TEXT")
         except sqlite3.OperationalError:
@@ -356,15 +364,16 @@ def enregistrer(reponses, items, chemin=DB):
         titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
         cur = con.execute(
             "INSERT OR IGNORE INTO articles (date, section, titre, chapeau, texte, auteur, auteur_ar, journal, pays,"
-            " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb, image)"
-            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+            " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb, image, galerie)"
+            " VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
             # date : celle de l'article d'origine, sinon celle du passage
             (it.get("publie") or now, section, r["titre"], r.get("chapeau", ""), r["texte"], auteur, auteur_ar,
              journal(it), it.get("pays"), it["lien"], it["titre"], "traduction" if it.get("autorise") else "conference" if it.get("type") == "conference"
              else "info" if it.get("type") == "info" else "resume",
              json.dumps(personnes), via, rapporteur, r.get("sujet") if r.get("sujet") in PERSONNES else "",
              str(r.get("citation") or "")[:200], json.dumps(chiffres_valides(r.get("chiffres")), ensure_ascii=False),
-             json.dumps(titres_fb, ensure_ascii=False) if titres_fb else "", str(it.get("image") or "")[:500]),
+             json.dumps(titres_fb, ensure_ascii=False) if titres_fb else "", str(it.get("image") or "")[:500],
+             json.dumps(it.get("galerie") or [])),
         )
         n += cur.rowcount
         if cur.rowcount:
@@ -883,8 +892,9 @@ def alterner_pays(items):
 
 
 def ordonner(items):
-    """Rubriques d'opinion d'abord (meilleur rendement), puis le reste ; pays alternés dans chaque groupe."""
-    return alterner_pays([it for it in items if it.get("opinion")]) + alterner_pays([it for it in items if not it.get("opinion")])
+    """Site officiel du club d'abord, puis rubriques d'opinion (meilleur rendement), puis le reste ; pays alternés dans chaque groupe."""
+    return ([it for it in items if it.get("officiel")] + alterner_pays([it for it in items if it.get("opinion")])
+            + alterner_pays([it for it in items if not it.get("opinion") and not it.get("officiel")]))
 
 
 def a_reessayer(it):

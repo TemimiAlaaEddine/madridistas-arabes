@@ -122,11 +122,14 @@
       "nom": "Real Madrid CF (site officiel)",
       "url": "https://www.realmadrid.com/sitemap-latest-news-es-ES.xml",
       "sitemap": true,
+      "officiel": true,
       "filtre_lien": [
         "/futbol/primer-equipo/cronicas/",
         "/futbol/primer-equipo/ruedas-de-prensa/",
         "/futbol/primer-equipo/actualidad/once-inicial",
-        "/futbol/primer-equipo/actualidad/mourinho-"
+        "/futbol/primer-equipo/actualidad/mourinho-",
+        "/club/comunicados/",
+        "/futbol/primer-equipo/entrenamientos/"
       ]
     },
     {
@@ -415,6 +418,7 @@
   "age_max_heures_site": 24,
   "max_lots_site": 5,
   "max_threads": 10,
+  "max_images_tweet": 20,
   "typefully_social_set": 360421,
   "typefully_publish_at": "next-free-slot",
   "typefully_publish_at_actus": "now",

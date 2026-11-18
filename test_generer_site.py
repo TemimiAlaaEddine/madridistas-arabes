@@ -62,7 +62,12 @@ print("OK alternance + auteur")
 # rubriques d'opinion d'abord
 lot = [{"pays": "es", "n": 1}, {"pays": "gb", "n": 2, "opinion": True}, {"pays": "es", "n": 3, "opinion": True}]
 assert [x["n"] for x in g.ordonner(lot)] == [2, 3, 1]
-print("OK priorité opinion")
+assert [x["n"] for x in g.ordonner(lot + [{"n": 4, "officiel": True}])] == [4, 2, 3, 1]
+# même info dans la presse et sur le site du club : le communiqué officiel est gardé, même arrivé après
+gardes, retires = g.dedoublonner([{"titre": "Renovación de Arda Güler hasta 2032"},
+                                  {"titre": "Comunicado oficial: renovación de Arda Güler hasta 2032", "officiel": True}])
+assert [x.get("officiel") for x in gardes] == [True] and len(retires) == 1
+print("OK priorité officiel + opinion")
 
 # avis d'un commentateur rapporté par un journaliste (Radio Marca)
 with tempfile.TemporaryDirectory() as tmp:
@@ -365,6 +370,17 @@ print("OK faits durables")
 p = g.Paragraphes()
 p.feed('<head><meta property="og:image" content="/img/une.jpg"><meta name="twitter:image" content="/autre.jpg"></head><p>x</p>')
 assert p.image == "/img/une.jpg"
+# galerie d'une séance d'entraînement du club : photos agrandies, la principale en tête, sans doublon, plafond de config.json
+g.threads.CONFIG["max_images_tweet"] = 4
+p = g.Paragraphes()
+r = "https://assets.realmadrid.com/is/image/realmadrid/"
+p.feed("".join(f'<img class="rm-gallery__img x" src="{r}{n}?$Desktop$&amp;wid=148">' for n in ("12_DB1", "13_DB2", "13_DB2", "14_DB3", "15_DB4", "16_DB5")))
+assert p.galerie == [f"{r}{n}?wid=1200" for n in ("12_DB1", "13_DB2", "14_DB3", "15_DB4", "16_DB5")]
+assert g.threads.images_thread({"image": f"{r}ND_ENTRENAMIENTO_DB2?wid=1200", "galerie": json.dumps(p.galerie)}) == \
+    [f"{r}ND_ENTRENAMIENTO_DB2?wid=1200", f"{r}12_DB1?wid=1200", f"{r}14_DB3?wid=1200", f"{r}15_DB4?wid=1200"]
+assert g.threads.images_thread({"image": "https://as.com/une.jpg", "galerie": None}) == ["https://as.com/une.jpg"]
+g.threads.CONFIG["max_images_tweet"] = 20
+assert len(g.threads.images_thread({"image": f"{r}ND_ENTRENAMIENTO_DB2?wid=1200", "galerie": json.dumps(p.galerie)})) == 5
 img = g.image_article({"image": "https://ex.com/img/une.jpg"}, "couv", "c.png")
 assert 'src="https://ex.com/img/une.jpg"' in img and "couvertures/c.png" in img and 'referrerpolicy="no-referrer"' in img
 assert 'src="couvertures/c.png"' in g.image_article({"image": ""}, "couv", "c.png") and g.image_article({}, "couv", None) == ""
@@ -436,7 +452,7 @@ with tempfile.TemporaryDirectory() as tmp:
     (chemin, corps), = appels
     posts = corps["platforms"]["x"]["posts"]
     assert corps["publish_at"] == "next-free-slot"  # file d'attente : publié seul au prochain créneau
-    assert chemin == "drafts" and corps["draft_title"] == "جديد" and posts[0]["media_ids"] == ["article-2.jpg"] and len(posts) == 2
+    assert chemin == "drafts" and corps["draft_title"] == "جديد" and posts[0]["media_ids"] == ["article-2-0.jpg"] and len(posts) == 2
     assert dict(con.execute("SELECT article_id, typefully FROM threads").fetchall()) == {1: "avant", 2: "77"}
     # photo de l'article refusée (pas une image, trop lourde, 403) : la couverture à la place
     con.execute("UPDATE threads SET typefully = NULL WHERE article_id = 2")

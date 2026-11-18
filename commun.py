@@ -188,7 +188,7 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
             trouves.append({"cle": cle, "titre": titre, "resume": resume, "source": source, "lien": lien, "auteur": auteur,
                             "texte_flux": texte_flux, "image": image if image.startswith(("http://", "https://")) else "",
                             "pays": flux.get("pays"), "autorise": flux.get("autorisation", False),
-                            "opinion": flux.get("opinion", False),
+                            "opinion": flux.get("opinion", False), "officiel": flux.get("officiel", False),
                             "publie": datetime.fromtimestamp(calendar.timegm(pub), timezone.utc).replace(tzinfo=None).isoformat(timespec="seconds") if pub else None})
             n += 1
         print(f"  {flux['nom']} : {n} nouveau(x)")
@@ -197,9 +197,9 @@ def collecter(chemin=DB_PATH, age_max_heures=24):
 
 
 def dedoublonner(items, seuil=0.72):
-    """Retire les titres quasi identiques dans le lot (même info, plusieurs médias)."""
+    """Retire les titres quasi identiques dans le lot (même info, plusieurs médias) ; la source officielle l'emporte."""
     gardes, retires = [], []
-    for it in items:
+    for it in sorted(items, key=lambda it: not it.get("officiel")):  # tri stable : l'ordre de config.json reste sinon
         nt = normaliser_titre(it["titre"])
         if any(SequenceMatcher(None, nt, normaliser_titre(g["titre"])).ratio() > seuil for g in gardes):
             retires.append(it)  # marqué comme vu, mais pas envoyé à Claude

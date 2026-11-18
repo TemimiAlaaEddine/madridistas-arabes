@@ -488,6 +488,19 @@ def telecharger_image(url, article_id):
     return f"article-{article_id}.{ext}", contenu
 
 
+def images_thread(t):
+    """Photo principale puis galerie (séances d'entraînement du club), sans doublon, au plus "max_images_tweet" (20 sur X
+    depuis le 12 nov. 2026, essai via Typefully réussi le 18 nov.)."""
+    galerie = json.loads((t["galerie"] if "galerie" in t.keys() else "") or "[]")
+    urls, vues = [], set()
+    for u in [t["image"], *galerie]:
+        cle = (u or "").split("?")[0].rsplit("_", 1)[-1]  # même photo sous deux noms : ND_ENTRENAMIENTO_03_DB11662 = 13_DB11662
+        if u and cle not in vues:
+            vues.add(cle)
+            urls.append(u)
+    return urls[:CONFIG.get("max_images_tweet", 4)]
+
+
 def typefully_image(nom, contenu):
     """Envoie une image ; retourne son media_id, ou None si elle n'est pas prête à temps."""
     m = typefully_api("media/upload", {"file_name": nom})
@@ -536,23 +549,24 @@ def vers_typefully(con, couvertures, dossier_couv):
             plafond = True  # reporté au passage suivant, sans être bloqué
             continue
         try:
-            media = None
-            if t["image"]:  # photo de l'article source, à remplacer dans Typefully avant la publication
+            medias = []
+            for i, url in enumerate(images_thread(t)):  # photos de l'article source, à remplacer dans Typefully avant la publication
                 try:
-                    media = typefully_image(*telecharger_image(t["image"], t["article_id"]))
+                    medias.append(typefully_image(*telecharger_image(url, f"{t['article_id']}-{i}")))
                 except (OSError, ValueError) as err:
-                    print(f"  ! Typefully : image de l'article refusée ({err}), couverture à la place")
+                    print(f"  ! Typefully : image de l'article refusée ({err})")
+            medias = [m for m in medias if m]
             couv = couvertures.get(t["article_id"])
-            if not media and not couv:  # pas de couverture d'avance pour un article avec image : faite à la demande
+            if not medias and not couv:  # pas de couverture d'avance pour un article avec image : faite à la demande
                 from couvertures import generer_couvertures
                 couv = generer_couvertures([t], dossier_couv.parent, menage=False).get(t["article_id"])
-            if not media and couv:
-                media = typefully_image(couv, (dossier_couv / couv).read_bytes())
+            if not medias and couv:
+                medias = [m for m in [typefully_image(couv, (dossier_couv / couv).read_bytes())] if m]
             if quand == "now" and not motifs:
                 tweets, quand = sans_tweet_de_lien(tweets)
             posts = [{"text": tw} for tw in tweets]
-            if media:
-                posts[0]["media_ids"] = [media]
+            if medias:
+                posts[0]["media_ids"] = medias
             titre = (f"⛔ {', '.join(motifs)} | " if motifs else "") + t["titre"]
             corps = {"draft_title": titre[:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
             if not motifs and (quand or CONFIG.get("typefully_publish_at")):  # bloqué : simple brouillon, publié à la main
