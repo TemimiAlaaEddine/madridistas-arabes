@@ -284,12 +284,13 @@ def commenter_source(post, a, jeton):
         print(f"  ! Page Facebook : lien de la source non commenté sous le post {post} ({err}) {detail}")
 
 
-PROMPT_RESUME = """Tu prépares pour le compte X « المدريديستا علاء » le résumé quotidien « صحافة مدريد اليوم » du {jour}, à partir des articles
+PROMPT_RESUME = """Tu prépares pour le compte X « المدريديستا علاء » le résumé quotidien « حصاد ريال مدريد » du {jour}, à partir des articles
 publiés ce jour-là sur son site (liste plus bas).
 Choisis les 3 sujets qui comptent le plus pour un supporter (blessure, composition, résultat, transfert, polémique, opinion forte) ;
-un sujet traité par plusieurs articles ne compte qu'une fois.
+un sujet traité par plusieurs articles ne compte qu'une fois. Varie les médias : à importance comparable, préfère un sujet d'un
+autre journal que les sujets déjà retenus, pour que le résumé ne cite pas trois fois le même.
 Thread de 4 tweets en arabe :
-- Tweet 1 : « 🗞️ صحافة مدريد اليوم | » suivi de la date en arabe (ex. 17 نوفمبر), une ligne vide, une phrase qui annonce les 3 sujets, une ligne vide, « #ريال_مدريد ».
+- Tweet 1 : « 📌 حصاد ريال مدريد | » suivi de la date en arabe (ex. 17 نوفمبر), une ligne vide, une phrase qui annonce les 3 sujets, une ligne vide, « #ريال_مدريد ».
 - Tweets 2 à 4, un sujet chacun : « ▪️ » puis le fait ou l'avis en une ou deux phrases courtes, une ligne vide, puis la source entre parenthèses :
   (ماركا) pour une information, (اسم الكاتب - ماركا) pour une opinion signée.
 Chaque tweet fait AU MAXIMUM 240 caractères. Pas de lien, aucun autre émoji ni hashtag, pas de point d'exclamation, aucun fait absent des articles.
@@ -310,7 +311,7 @@ def heure_madrid(utc):
 
 
 def resume_du_jour(con, utc=None):
-    """Thread « صحافة مدريد اليوم » : au premier passage entre minuit et 3 h (heure de Madrid), les 3 sujets de la veille, choisis
+    """Thread « حصاد ريال مدريد » (pas « صحافة » : il était confondu avec les unes de presse) : au premier passage entre minuit et 3 h (heure de Madrid), les 3 sujets de la veille, choisis
     par Claude parmi les articles du site, publiés tout de suite dans Typefully (pas de lien). Une fois par jour."""
     utc = utc or maintenant()
     madrid = heure_madrid(utc)
@@ -336,7 +337,7 @@ def resume_du_jour(con, utc=None):
         if not 2 <= len(tweets) <= 5 or any(not x or longueur(x) > LIMITE - 6 for x in tweets):  # 6 : place du « i/n »
             raise ValueError(f"thread inutilisable ({len(tweets)} tweets)")
         posts = [{"text": f"{x}\n\n{i}/{len(tweets)}"} for i, x in enumerate(tweets, 1)]
-        d = typefully_api("drafts", {"draft_title": f"صحافة مدريد اليوم {jour}", "publish_at": "now",
+        d = typefully_api("drafts", {"draft_title": f"حصاد ريال مدريد {jour}", "publish_at": "now",
                                      "platforms": {"x": {"enabled": True, "posts": posts}}})
     except (OSError, ValueError, KeyError, ErreurClaude) as err:  # repris au passage suivant, tant qu'on est avant 3 h
         detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""

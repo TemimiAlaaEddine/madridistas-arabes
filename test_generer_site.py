@@ -278,7 +278,7 @@ con.executemany("INSERT INTO articles VALUES (?, 'actus', 'info', ?, 'c', 'Marca
                 [("2026-11-15T22:30:00", "avant-veille"), ("2026-11-16T10:00:00", "veille"), ("2026-11-16T23:05:00", "aujourd'hui")])
 prompts, envois = [], []
 vrai = (t.appeler_claude, t.typefully_api, t.reglage)
-t.appeler_claude = lambda p, *a: (prompts.append(p), '["🗞️ صحافة مدريد اليوم | 16 نوفمبر", "▪️ خبر\\n\\n(ماركا)"]')[1]
+t.appeler_claude = lambda p, *a: (prompts.append(p), '["📌 حصاد ريال مدريد | 16 نوفمبر", "▪️ خبر\\n\\n(ماركا)"]')[1]
 t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": 7})[1]
 t.reglage = lambda cle: "k"
 t.CONFIG["typefully_social_set"] = t.CONFIG.get("typefully_social_set") or 1

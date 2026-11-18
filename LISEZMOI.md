@@ -78,7 +78,7 @@ Les articles n'affichent plus de photo de joueur ; les photos restent sur les pa
 
 À chaque passage, `threads.py` découpe les articles des 2 derniers jours en threads X. Au plus `max_threads` par passage, nouvelles d'abord. Un tweet fait au plus 280 caractères comptés comme X. Le dernier tweet crédite le journaliste et le journal, avec le lien de la source ; il n'est pas numéroté (« i/n » ne compte que les autres tweets).
 
-**Résumé du jour** : au premier passage entre minuit et 3 h (heure de Madrid), Claude choisit les 3 sujets de la veille parmi les articles du site et publie tout de suite le thread « 🗞️ صحافة مدريد اليوم » (4 tweets, sans lien) via Typefully. Une fois par jour (table `resumes`).
+**Résumé du jour** : au premier passage entre minuit et 3 h (heure de Madrid), Claude choisit les 3 sujets de la veille parmi les articles du site et publie tout de suite le thread « 📌 حصاد ريال مدريد » (4 tweets, sans lien, en variant les journaux) via Typefully. Une fois par jour (table `resumes`).
 
 **Unes de Marca et AS** : entre minuit et midi (heure de Madrid ; kiosko met les unes en ligne vers 6 h 30), chaque une du jour (image de kiosko.net) est lue par Claude, qui traduit les titres sur le Real Madrid ; elle part en publication à part sur X (titres en arabe, via Typefully) et sur la Page Facebook (titres en français, anglais et espagnol). Une une sans le Real n'est pas publiée (table `unes`).
 
