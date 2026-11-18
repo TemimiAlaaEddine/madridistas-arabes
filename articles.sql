@@ -6011,4 +6011,5 @@ INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-18/laia-lop
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/me-comer-bellingham-patear-le-escupir-mierda-le-hare.html','"Me tengo que comer a Bellingham y lo tengo que patear, le voy a escupir... no sé qué mierda le haré"','2026-11-18T04:41:16');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/opinion/2026/11/18/bellingham-me-recordar-di-stefano.html','Bellingham me hace recordar a Di Stéfano','2026-11-18T05:41:33');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/valverde-cambia-a-uruguay-f202611-n/','Valverde cambia a Uruguay','2026-11-18T05:41:33');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/recado-mijatovic-vinicius-excusas-despues-futbol-hay-vida-ganar-tanto-dinero.html','Recado de Mijatovic a Vinicius tras sus excusas: "Después del fútbol hay vida... y no va a ganar tanto dinero"','2026-11-18T05:50:54');
 COMMIT;
