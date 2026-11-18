@@ -6518,4 +6518,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/beerensteyn-helpt-real-madrid
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-equipo-se-esta-entrenando-18-11-2026','Nueva sesión en la Ciudad Real Madrid','2026-11-18T20:01:15');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-equipo-se-esta-entrenando-17-11-2026','Primer entrenamiento de la semana','2026-11-18T20:01:15');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/club/comunicados/comunicado-oficial-renovacion-arda-guler-18-11-2026','Comunicado Oficial renovación de Arda Güler','2026-11-18T20:01:34');
+INSERT INTO "vus" VALUES('https://trivela.com.br/europa/rudiger-mbappe-recorde-dowman-arsenal-confira-resumo-dia/','Rüdiger defende Mbappé, recorde de futura estrela da Premier League e mais: Confira o resumo do dia','2026-11-18T21:10:52');
 COMMIT;
