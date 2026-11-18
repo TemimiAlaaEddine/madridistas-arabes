@@ -4461,6 +4461,7 @@ INSERT INTO "liens_x" VALUES('12018266','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12018851','https://x.com/ElMadridistAlaa/status/2123059025080352933','2026-11-18T14:21:39.650Z');
 INSERT INTO "liens_x" VALUES('12019672','https://x.com/ElMadridistAlaa/status/2123069280573177876','2026-11-18T15:02:38.482Z');
 INSERT INTO "liens_x" VALUES('12020702','https://x.com/ElMadridistAlaa/status/2123082558368006635','2026-11-18T15:55:21.535Z');
+INSERT INTO "liens_x" VALUES('12021404','https://x.com/ElMadridistAlaa/status/2123089229899309117','2026-11-18T16:21:52.026Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -6467,4 +6468,6 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/dormire-mejo
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/amo-a-mijatovic-pero/','Amo a Mijatovic, pero…','2026-11-18T15:51:24');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7056476904288963188-losc-equipe-de-france-espoirs-ethan-mbappe-continue-de-bluffer-son-monde','LOSC, Équipe de France Espoirs : Ethan Mbappé continue de bluffer son monde','2026-11-18T16:10:57');
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/18/elevan-liston-gueler-leyenda-real-madrid-camino-superar.html','Elevan el listón de Güler al de una leyenda del Real Madrid: "Está en camino de superar a..."','2026-11-18T16:21:23');
+INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/real-madrid-jj-gabriel-joia-manchester-united-valor/','Quanto o Real Madrid pagou para contratar JJ Gabriel, a maior promessa recente do Manchester United?','2026-11-18T16:31:52');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a4654358020710271963-jt-foot-mercato-jude-bellingham-met-un-coup-de-pression-au-real-madrid','JT Foot Mercato : Jude Bellingham met un coup de pression au Real Madrid','2026-11-18T16:31:52');
 COMMIT;
