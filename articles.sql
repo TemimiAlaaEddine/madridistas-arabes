@@ -4295,6 +4295,7 @@ INSERT INTO "liens_x" VALUES('12013868','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12014091','https://x.com/ElMadridistAlaa/status/2123002026946883735','2026-11-18T10:35:21.314Z');
 INSERT INTO "liens_x" VALUES('12014252','https://x.com/ElMadridistAlaa/status/2123003681515950449','2026-11-18T10:41:41.710Z');
 INSERT INTO "liens_x" VALUES('12014253','https://x.com/ElMadridistAlaa/status/2123003699043901723','2026-11-18T10:41:45.860Z');
+INSERT INTO "liens_x" VALUES('12014585','https://x.com/ElMadridistAlaa/status/2123008783073132871','2026-11-18T11:02:03.540Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -6253,4 +6254,5 @@ INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261118/rea
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/el-real-madrid-ata-a-arda-guler-con-una-renovacion-hasta-2032-cadena-ser/','El Real Madrid ata a Arda Güler con una renovación hasta 2032','2026-11-18T11:01:21');
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/seleccion/la-palabra-los-futbolistas-la-seleccion-uruguaya-la-goleada-contra-dominicana-la-noche-magica-valverde-y-la-alegria-estar-la-altura-josema-n6064263','La palabra de los futbolistas de la selección uruguaya tras la goleada contra Dominicana: la "noche mágica" de Valverde y la "alegría de estar a la altura" de Josema','2026-11-18T11:01:46');
 INSERT INTO "vus" VALUES('https://www.vi.nl/pro/fc-bankzaken-begroting-van-real-madrid-is-een-special-one','FC Bankzaken: begroting van Real Madrid is een Special One','2026-11-18T11:01:46');
+INSERT INTO "vus" VALUES('https://trivela.com.br/brasil/luiz-yano-palmeiras-figueiredo-endrick-estevao/','‘Muito fora da curva’: Jovem ex-Palmeiras exalta outra cria da base fora Endrick e Estêvão','2026-11-18T11:10:51');
 COMMIT;
