@@ -15,3 +15,5 @@ videos/*/apercu-*.png
 videos/*/couverture.png
 videos/*/rendu.log
 statut/
+videos/*/son.wav
+videos/*/voix/

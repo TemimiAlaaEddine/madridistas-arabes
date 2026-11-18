@@ -1,5 +1,7 @@
 """Vidéos verticales 1080×1920 (TikTok, YouTube Shorts, Reels, X), en scènes rythmées, à partir d'un storyboard JSON écrit par
-la commande /video. Sans voix ; muette par défaut (son ajouté à la publication) ou avec une musique libre de droits fournie.
+la commande /video. Voix off facultative ("voix": true : edge-tts, noms lus d'après prononciation.json), bruitages
+synthétisés (souffles, chocs, tics) calés sur les animations, plus une musique libre de droits si elle est fournie.
+--muet : sans bruitages.
 
     python video.py videos/<sujet>/storyboard.json                    -> videos/<sujet>/<sujet>.mp4 et couverture.png
     python video.py videos/<sujet>/storyboard.json --apercu 2          -> apercu-02.png (scène 2 aux trois quarts)
@@ -7,15 +9,19 @@ la commande /video. Sans voix ; muette par défaut (son ajouté à la publicatio
     python video.py videos/<sujet>/storyboard.json --musique son.mp3
 
 Storyboard : {"langue": "ar|fr|en|es", "photo": {"article": 437} | {"url": "..."} | null, "source": "ماركا",
-"compte": "@ElMadridistAlaa", "boucle": true, "scenes": [...]}. Chaque scène a un "style", une "duree" facultative
-(sinon calculée) et "fond": "photo" pour la photo de l'article en fond (assombrie) au lieu du fond uni.
+"compte": "@ElMadridistAlaa", "boucle": true, "voix": true | "<voix edge-tts>", "scenes": [...]}. Chaque scène a un
+"style", une "duree" facultative (sinon calculée, allongée pour la voix), "dit" facultatif (ce que lit la voix, sinon
+"texte" ou "titre"), et "fond": "photo" pour la photo de l'article en fond (assombrie) au lieu du fond uni.
   cinetique : "texte" (mots entre *étoiles* en or), "etiquette" facultative. Accroche et chute.
   compteur  : "valeur" (ex. "1,06"), "unite", "texte", "max" facultatif (anneau rempli à valeur/max).
   barres    : "titre", "elements": [{"label", "valeur"}] (2 à 5), la plus grande en or.
   duel      : "joueurs": [A, B], "criteres": [{"label", "a", "b"}] (2 à 4).
   tactique  : "texte", "joueurs": [{"nom", "x", "y", "camp": "real|adverse"}], "fleches": [{"de": [x, y], "a": [x, y],
               "type": "course|passe"}], "zones": [{"x", "y", "l", "h"}] ; x de 0 (gauche) à 1, y de 0 (but du Real, en bas)
-              à 1 ; chaque élément peut fixer son "t" d'apparition en secondes.
+              à 1 ; chaque élément peut fixer son "t" d'apparition en secondes. Action animée : "ballon": [x, y] (départ)
+              et "etapes": [{"joueurs": {"<nom>": [x, y]}, "ballon": [x, y] | "<nom du receveur>", "texte": sous-titre,
+              "duree": 1.4}] jouées l'une après l'autre (badge ▶) ; {"pause": true, "focus": "<nom>", "texte": ...}
+              fige l'action (badge ⏸, anneau doré autour du joueur, 2 s par défaut).
   titres    : "cartes": [{"journal", "titre"}] (1 à 3) : gros titres de presse traduits.
   presse    : "citations": [{"journal", "texte"}] (2 à 4) : « ce que dit la presse ».
 Les émojis ne s'affichent pas (police sans émojis) : ils vont dans la légende.
@@ -93,15 +99,17 @@ def latin(s):
     return not re.search(r"[\u0600-\u06FF]", s)
 
 
-def image_mot(mot, taille, couleur, langue, fichier=None):
-    """Un mot dessiné seul (RGBA), mis en cache : la typographie cinétique anime chaque mot séparément."""
+def image_mot(mot, taille, couleur, langue, fichier=None, contour=0):
+    """Un mot dessiné seul (RGBA), mis en cache : la typographie cinétique anime chaque mot séparément.
+    contour : épaisseur en pixels d'un contour noir (lisible sur n'importe quel fond)."""
     fichier = fichier or (NOIR if latin(mot) and langue != "ar" else ARABE)
-    cle = (mot, round(taille), couleur, langue, fichier)
+    cle = (mot, round(taille), couleur, langue, fichier, contour)
     if cle not in _mots:
         f, v = police(taille, fichier), visuel(mot, langue)
         g, h_, d, b = f.getbbox(v)
-        img = Image.new("RGBA", (max(1, d - g + 8), round(taille * 1.45)), (0, 0, 0, 0))
-        ImageDraw.Draw(img).text((4 - g, round(taille * 0.12)), v, font=f, fill=couleur + (255,))
+        img = Image.new("RGBA", (max(1, d - g + 8 + 2 * contour), round(taille * 1.45) + 2 * contour), (0, 0, 0, 0))
+        ImageDraw.Draw(img).text((4 - g + contour, round(taille * 0.12) + contour), v, font=f, fill=couleur + (255,),
+                                 stroke_width=contour, stroke_fill=(0, 0, 0, 255))
         _mots[cle] = img
     return _mots[cle]
 
@@ -118,15 +126,20 @@ def coller(c, img, x, y, alpha=1.0, echelle=1.0):
     c.alpha_composite(img, (round(x - img.width / 2), round(y - img.height / 2)))
 
 
-def lignes_mots(texte, taille, langue, largeur=DROITE - GAUCHE):
-    """Mots répartis en lignes (ordre logique) ; un mot entre *étoiles* est marqué pour l'or."""
+def mots_marques(texte):
+    """[(mot, en_or)] dans l'ordre ; un mot entre *étoiles* est marqué pour l'or."""
     mots, dedans = [], False
     for m in EMOJI.sub("", texte).split():
         if m.replace("*", ""):
             mots.append((m.replace("*", ""), dedans or "*" in m))
         dedans ^= m.count("*") % 2 == 1  # une étoile ouvre ou ferme le groupe en or
+    return mots
+
+
+def lignes_mots(texte, taille, langue, largeur=DROITE - GAUCHE):
+    """Mots répartis en lignes (ordre logique)."""
     espace, lignes, cur, l = taille * 0.32, [], [], 0
-    for mot, fort in mots:
+    for mot, fort in mots_marques(texte):
         w = image_mot(mot, taille, BLANC, langue).width
         if cur and l + espace + w > largeur:
             lignes.append(cur)
@@ -152,11 +165,20 @@ def cinetique(c, texte, taille, langue, y, tl, debut=0.0, pas=0.12, couleur=BLAN
         for mot, fort, w in ligne:
             p = avance(tl, debut + k * pas, 0.28)
             centre_x = x - w / 2 if langue == "ar" else x + w / 2
-            coller(c, image_mot(mot, taille, OR if fort else couleur, langue), centre_x, y + i * hl + hl / 2 + 34 * (1 - sortie_douce(p)),
+            contour = max(3, round(taille * 0.06))
+            coller(c, image_mot(mot, taille, OR if fort else couleur, langue, contour=contour), centre_x, y + i * hl + hl / 2 + 34 * (1 - sortie_douce(p)),
                    alpha=borne(p * 2), echelle=0.55 + 0.45 * rebond(p))
             x += -(w + espace) if langue == "ar" else w + espace
             k += 1
     return y + len(lignes) * hl
+
+
+SOUS_TITRE_Y = BAS - 130  # toujours au même endroit, juste au-dessus de la source : l'œil ne cherche pas le texte
+
+
+def sous_titre(c, texte, langue, tl, debut=0.0, pas=None):
+    """La phrase de récit d'une scène : même place, même taille, contour noir, quelle que soit la scène."""
+    cinetique(c, texte, 58, langue, SOUS_TITRE_Y, tl, debut, pas or 0.07, centre=True)
 
 
 def translucide(c, dessin):
@@ -235,13 +257,20 @@ def s_cinetique(c, sc, tl, dur, langue):
         haut_bloc = y - len(lignes) * sc.get("taille", 104) * 1.25 / 2
         p = avance(tl, 0, 0.3)
         pastille(c, sc["etiquette"], langue, CX + (1 - sortie_douce(p)) * (200 if langue == "ar" else -200), haut_bloc - 70, alpha=p)
-    n = len(sc.get("texte", "").split())
-    cinetique(c, sc.get("texte", ""), sc.get("taille", 104), langue, y, tl, 0.15, min(0.16, dur * 0.45 / max(n, 1)), centre=True)
+    cinetique(c, sc.get("texte", ""), sc.get("taille", 104), langue, y, tl, 0.15, pas_cinetique(sc, dur), centre=True)
+
+
+def pas_cinetique(sc, dur):  # avec voix : le rythme de la parole (_pas, posé par preparer_voix)
+    return sc.get("_pas") or min(0.16, dur * 0.45 / max(len(sc.get("texte", "").split()), 1))
+
+
+def course_compteur(dur):  # le chiffre défile de 0,1 s à 0,1 s + cette durée
+    return min(1.4, dur * 0.5)
 
 
 def s_compteur(c, sc, tl, dur, langue):
     v, dec, sep = nombre(sc.get("valeur", 0))
-    p = sortie_douce(avance(tl, 0.1, min(1.4, dur * 0.5)))
+    p = sortie_douce(avance(tl, 0.1, course_compteur(dur)))
     y = HAUT + (BAS - HAUT) * 0.38
     if sc.get("max"):  # anneau qui se remplit
         d = ImageDraw.Draw(c)
@@ -254,7 +283,7 @@ def s_compteur(c, sc, tl, dur, langue):
     coller(c, img, CX, y - 10, echelle=0.8 + 0.2 * rebond(avance(tl, 0, 0.35)))
     if sc.get("unite"):
         coller(c, image_mot(sc["unite"], 64, BLANC, langue), CX, y + f.size * 0.62, alpha=avance(tl, 0.6, 0.3))
-    cinetique(c, sc.get("texte", ""), 66, langue, y + 400 if sc.get("max") else y + 260, tl, 0.9, 0.09)
+    sous_titre(c, sc.get("texte", ""), langue, tl, 0.9, sc.get("_pas"))
 
 
 def s_barres(c, sc, tl, dur, langue):
@@ -333,10 +362,47 @@ def terrain(c, x0, y0, x1, y1):
         d.rectangle([x0 + w * 0.37, min(yb, yb + sens * h * 0.06), x0 + w * 0.63, max(yb, yb + sens * h * 0.06)], outline=LIGNE, width=4)
 
 
+def etapes_temps(sc):
+    """[(début, durée, étape)] des étapes animées d'une scène tactique, après l'apparition des joueurs et des flèches."""
+    t = max(0.8 + 0.05 * len(sc.get("joueurs", [])) + 0.65 * len(sc.get("fleches", [])), sc.get("_debut_etapes", 0))
+    out = []
+    for e in sc.get("etapes", []):
+        d = float(e.get("duree", 2.0 if e.get("pause") else 1.4))
+        out.append((t, d, e))
+        t += d
+    return out
+
+
+def positions(sc, tl):
+    """Positions (x, y) des joueurs (par nom) et du ballon à l'instant tl, une fois appliqués les déplacements des étapes."""
+    pos = {j.get("nom", str(k)): (float(j["x"]), float(j["y"])) for k, j in enumerate(sc.get("joueurs", []))}
+    ballon = tuple(map(float, sc["ballon"])) if sc.get("ballon") else None
+    for debut, _, e in etapes_temps(sc):
+        if tl < debut:
+            break
+        p = sortie_douce(avance(tl, debut, 0.8))
+        cibles = {n: tuple(map(float, xy)) for n, xy in e.get("joueurs", {}).items() if n in pos}
+        b = e.get("ballon")
+        if b is not None:  # une position, ou le nom du joueur qui reçoit (à sa position d'arrivée)
+            cible = (cibles.get(b) or pos.get(b)) if isinstance(b, str) else tuple(map(float, b))
+            if cible:
+                ballon = cible if ballon is None else tuple(a + (z - a) * p for a, z in zip(ballon, cible))
+        for n, cible in cibles.items():
+            pos[n] = tuple(a + (z - a) * p for a, z in zip(pos[n], cible))
+    return pos, ballon
+
+
 def s_tactique(c, sc, tl, dur, langue):
-    x0, x1, y0, y1 = 210, 790, 470, 1310
-    if sc.get("texte"):
-        cinetique(c, sc["texte"], 54, langue, HAUT + 5, tl, 0, 0.06)
+    x0, x1, y0, y1 = 210, 790, 330, 1170  # remonté : le bas est réservé au sous-titre
+    etapes = etapes_temps(sc)
+    texte, t_texte, pas, en_cours = sc.get("texte"), 0.15, sc.get("_pas"), None
+    for debut, d_e, e in etapes:  # le sous-titre suit l'étape en cours
+        if tl >= debut:
+            en_cours = (debut, d_e, e)
+            if e.get("texte"):
+                texte, t_texte, pas = e["texte"], debut, e.get("_pas")
+    if texte:
+        sous_titre(c, texte, langue, tl, t_texte, pas)
     p = sortie_douce(avance(tl, 0, 0.35))
     calque = Image.new("RGBA", (W, H), (0, 0, 0, 0))
     terrain(calque, x0, y0, x1, y1)
@@ -373,16 +439,33 @@ def s_tactique(c, sc, tl, dur, langue):
         ang = math.atan2(qy - py, qx - px)
         d.polygon([(qx + 26 * math.cos(ang), qy + 26 * math.sin(ang)), (qx + 18 * math.cos(ang + 2.4), qy + 18 * math.sin(ang + 2.4)),
                    (qx + 18 * math.cos(ang - 2.4), qy + 18 * math.sin(ang - 2.4))], fill=couleur + (255,))
+    pos, ballon = positions(sc, tl)
+    pause = en_cours and en_cours[2].get("pause") and tl < en_cours[0] + en_cours[1]
+    if en_cours and tl < en_cours[0] + en_cours[1] + 0.5:  # lecture ▶ ou pause ⏸, en haut à gauche du terrain
+        translucide(c, lambda dd: dd.rounded_rectangle([x0 + 14, y0 + 14, x0 + 96, y0 + 74], 16, fill=NAVY + (220,)))
+        if pause:
+            d.rectangle([x0 + 40, y0 + 28, x0 + 50, y0 + 60], fill=OR + (255,))
+            d.rectangle([x0 + 60, y0 + 28, x0 + 70, y0 + 60], fill=OR + (255,))
+        else:
+            d.polygon([(x0 + 44, y0 + 26), (x0 + 44, y0 + 62), (x0 + 74, y0 + 44)], fill=BLANC + (255,))
+    if pause and en_cours[2].get("focus") in pos:  # anneau doré qui pulse autour du joueur mis en avant
+        fx, fy = pt(*pos[en_cours[2]["focus"]])
+        r = 50 + 8 * math.sin((tl - en_cours[0]) * 8)
+        d.ellipse([fx - r, fy - r, fx + r, fy + r], outline=OR + (255,), width=7)
     for k, j in enumerate(joueurs):  # joueurs : apparaissent en cascade
         pj = avance(tl, j.get("t", 0.3 + 0.05 * k), 0.3)
         if pj <= 0:
             continue
-        x, y = pt(j["x"], j["y"])
+        x, y = pt(*pos[j.get("nom", str(k))])
         r = 27 * (0.4 + 0.6 * rebond(pj))
         real = j.get("camp", "real") == "real"
         d.ellipse([x - r, y - r, x + r, y + r], fill=(BLANC if real else ROUGE) + (255,), outline=OR + (255,) if j.get("cle") else None, width=6)
         if j.get("nom"):
             coller(c, image_mot(j["nom"], 28, BLANC, langue), x, y + 48, alpha=pj)
+    if ballon:
+        bx, by = pt(*ballon)
+        translucide(c, lambda dd: dd.ellipse([bx - 13, by - 9, bx + 17, by + 15], fill=(0, 0, 0, 110)))  # ombre
+        d.ellipse([bx - 15, by - 15, bx + 15, by + 15], fill=BLANC + (255,), outline=NAVY + (255,), width=4)
 
 
 def carte_journal(journal, titre, langue):
@@ -456,8 +539,158 @@ def duree(sc):
          "presse": len(sc.get("citations", [])), "tactique": len(sc.get("fleches", [])) + len(sc.get("zones", []))}.get(st, 0)
     if st == "cinetique":
         return round(min(4.0, max(1.8, len(sc.get("texte", "").split()) * 0.3 + 1.0)), 1)
+    if st == "tactique" and sc.get("etapes"):
+        debut, d, _ = etapes_temps(sc)[-1]
+        return round(max(4.0, debut + d + 0.8), 1)
     return round({"compteur": 3.0, "barres": 1.8 + 0.6 * n, "duel": 1.8 + 0.7 * n, "tactique": max(4.0, 1.6 + 0.8 * n),
                   "titres": 1.0 + 1.3 * n, "presse": 2.4 * n}.get(st, 3.0), 1)
+
+
+# ---------- bruitages ----------
+# Synthétisés ici (pas de fichier son, donc pas de droits) : souffle aux transitions, choc sur l'accroche,
+# « pop » sur chaque groupe de mots en or, cliquetis du compteur puis impact quand le chiffre s'arrête.
+SR = 44100
+
+
+def son(nom, alea):
+    """Échantillons (floats de -1 à 1) d'un bruitage."""
+    if nom == "souffle":  # bruit filtré dont le filtre s'ouvre puis se referme
+        n, y, out = int(0.42 * SR), 0.0, []
+        for i in range(n):
+            t = i / n
+            y += (0.02 + 0.3 * math.sin(math.pi * t) ** 2) * (alea.uniform(-1, 1) - y)
+            out.append(y * 0.9 * math.sin(math.pi * t) ** 2)
+        return out
+    if nom in ("choc", "impact", "frappe"):  # basse qui chute, avec un clic d'attaque
+        d, k = {"choc": (0.7, 6), "impact": (0.35, 11), "frappe": (0.15, 30)}[nom]
+        phase, out = 0.0, []
+        for i in range(int(d * SR)):
+            t = i / SR
+            phase += 2 * math.pi * (40 + 70 * math.exp(-t * 18)) / SR
+            out.append(0.7 * math.exp(-t * k) * math.sin(phase) + (alea.uniform(-0.25, 0.25) if t < 0.008 else 0))
+        return out
+    if nom == "pop":
+        return [0.3 * math.exp(-i / SR * 45) * math.sin(2 * math.pi * (950 - 4000 * i / SR) * i / SR) for i in range(int(0.08 * SR))]
+    return [0.22 * math.exp(-i / SR * 220) * math.sin(2 * math.pi * 2600 * i / SR) for i in range(int(0.025 * SR))]  # tic
+
+
+def evenements(sb, durees):
+    """[(instant en s, bruitage)] calés sur les animations de chaque scène."""
+    ev, debut = [], 0.0
+    for i, (sc, dur) in enumerate(zip(sb["scenes"], durees)):
+        st = sc.get("style", "cinetique")
+        ev.append((debut, "choc" if i == 0 else "souffle"))
+        if st == "cinetique":
+            avant = False
+            for k, (_, fort) in enumerate(mots_marques(sc.get("texte", ""))):
+                if fort and not avant and (i or k):  # début d'un groupe en or (pas au même instant que le choc)
+                    ev.append((debut + 0.15 + k * pas_cinetique(sc, dur), "pop"))
+                avant = fort
+        elif st == "compteur":
+            course = course_compteur(dur)
+            for k in range(1, 12):  # tics de plus en plus espacés, comme le chiffre qui ralentit
+                ev.append((debut + 0.1 + course * (1 - (1 - k / 12) ** (1 / 3)), "tic"))
+            ev.append((debut + 0.1 + course, "impact"))
+        elif st == "tactique":
+            for t, _, e in etapes_temps(sc):  # frappe quand le ballon part, « pop » à l'arrêt sur image
+                if e.get("ballon") is not None or e.get("pause"):
+                    ev.append((debut + t, "pop" if e.get("pause") else "frappe"))
+        debut += dur
+    return ev
+
+
+# ---------- voix ----------
+# edge-tts (voix neuronales de Microsoft). Choix de l'utilisateur (2026-11-17) : la voix qatarie pour l'arabe, noms écrits avec
+# leurs voyelles via prononciation.json (l'écran garde l'écriture normale). Autres langues : voix par défaut, pas encore validées.
+VOIX = {"ar": "ar-QA-MoazNeural", "fr": "fr-CA-ThierryNeural", "en": "en-US-AndrewNeural", "es": "es-ES-AlvaroNeural"}
+PRONONCIATION = Path(__file__).with_name("prononciation.json")
+
+
+def a_dire(texte):
+    """Texte lu par la voix : sans étoiles, noms remplacés par leur écriture prononçable (préfixes و ف ب ل gardés)."""
+    texte = EMOJI.sub("", texte.replace("*", ""))
+    noms = json.loads(PRONONCIATION.read_text(encoding="utf-8")) if PRONONCIATION.exists() else {}
+    for nom in sorted(noms, key=len, reverse=True):  # le plus long d'abord : « ألكسندر-أرنولد » avant « أرنولد »
+        # bornes : lettres et voyelles arabes seulement (« ، » et « ؟ » sont dans le même bloc Unicode)
+        texte = re.sub(rf"(?<![ء-ْ])([وفبل]?){re.escape(nom)}(?![ء-ْ])", rf"\g<1>{noms[nom]}", texte)
+    return texte
+
+
+def voix_echantillons(texte, voix, dossier):
+    """Échantillons (floats) de la phrase lue ; le MP3 est gardé en cache dans dossier/voix/ (rendu rejoué sans réseau)."""
+    import array
+    import asyncio
+    import hashlib
+    dossier.mkdir(exist_ok=True)
+    mp3 = dossier / (hashlib.sha1(f"{voix}|{texte}".encode()).hexdigest()[:16] + ".mp3")
+    if not mp3.exists():
+        import edge_tts
+        asyncio.run(edge_tts.Communicate(texte, voix, rate="+5%").save(str(mp3)))
+    brut = subprocess.run([FFMPEG, "-v", "error", "-i", str(mp3), "-f", "s16le", "-ac", "1", "-ar", str(SR), "-"],
+                          capture_output=True, check=True).stdout
+    return [v / 32768 for v in array.array("h", brut)]
+
+
+def preparer_voix(sb, dossier):
+    """Si "voix" : synthétise la phrase de chaque scène (champ "dit", sinon "texte" ou "titre") et de chaque étape tactique,
+    puis allonge durées et rythme des mots pour suivre la parole. Les échantillons restent dans les scènes (_voix)."""
+    if not sb.get("voix"):
+        return
+    voix = sb["voix"] if isinstance(sb["voix"], str) else VOIX.get(sb.get("langue", "ar"), VOIX["ar"])
+
+    def lire(el, debut, dur_min):
+        dit = el.get("dit") or el.get("texte") or el.get("titre") or ""
+        if not dit.strip():
+            return 0.0
+        el["_voix"] = voix_echantillons(a_dire(dit), voix, dossier)
+        long = len(el["_voix"]) / SR
+        # shortcut: mots répartis régulièrement sur la durée de la phrase ; passer aux WordBoundary d'edge-tts si le décalage se voit
+        el["_pas"] = long * 0.85 / max(len(mots_marques(el.get("texte") or dit)), 1)
+        el["_debut_voix"] = debut
+        return max(dur_min, debut + long + 0.35)
+
+    for sc in sb["scenes"]:
+        st = sc.get("style", "cinetique")
+        if st == "tactique" and sc.get("etapes"):
+            sc["_debut_etapes"] = lire(sc, 0.15, 0)  # les étapes attendent la fin de la phrase d'introduction
+            for e in sc["etapes"]:
+                e["duree"] = round(lire(e, 0, float(e.get("duree", 2.0 if e.get("pause") else 1.4))), 2)
+        else:
+            sc["duree"] = round(lire(sc, 0.9 if st == "compteur" else 0.15, duree(sc)), 2)
+
+
+def voix_evenements(sb, durees):
+    """[(instant en s, échantillons)] de toutes les phrases lues."""
+    ev, debut = [], 0.0
+    for sc, dur in zip(sb["scenes"], durees):
+        if "_voix" in sc:
+            ev.append((debut + sc["_debut_voix"], sc["_voix"]))
+        if sc.get("style") == "tactique":
+            ev += [(debut + t, e["_voix"]) for t, _, e in etapes_temps(sc) if "_voix" in e]
+        debut += dur
+    return ev
+
+
+def piste_audio(sb, durees, sortie, bruitages=True):
+    """Écrit la piste son (WAV 16 bits mono) de la durée exacte de la vidéo : voix et bruitages (plus discrets sous la voix)."""
+    import array
+    import random
+    import wave
+    alea, cache = random.Random(7), {}
+    piste = [0.0] * int(sum(durees) * SR)
+    paroles = voix_evenements(sb, durees)
+    gain = 0.5 if paroles else 1.0
+    sons = [(t, [v * gain for v in cache.setdefault(nom, son(nom, alea))]) for t, nom in evenements(sb, durees)] if bruitages else []
+    for t, echant in sons + paroles:
+        d = int(t * SR)
+        for j, v in enumerate(echant[:max(0, len(piste) - d)]):
+            piste[d + j] += v
+    with wave.open(str(sortie), "wb") as w:
+        w.setnchannels(1)
+        w.setsampwidth(2)
+        w.setframerate(SR)
+        w.writeframes(array.array("h", (round(max(-1.0, min(1.0, v)) * 32000) for v in piste)).tobytes())
+    return sortie
 
 
 # ---------- assemblage ----------
@@ -492,9 +725,10 @@ def image(sb, fonds, i, tl, durees, zones=False):
     return c.convert("RGB")
 
 
-def rendre(chemin, musique=None, apercu=None, zones=False):
+def rendre(chemin, musique=None, apercu=None, zones=False, muet=False):
     chemin = Path(chemin)
     sb = json.loads(chemin.read_text(encoding="utf-8"))
+    preparer_voix(sb, chemin.parent / "voix")
     durees = [duree(sc) for sc in sb["scenes"]]
     total = sum(durees)
     fonds = {"uni": fond_uni()}
@@ -509,8 +743,19 @@ def rendre(chemin, musique=None, apercu=None, zones=False):
         return sortie
     sortie = chemin.parent / f"{chemin.parent.name}.mp4"
     cmd = [FFMPEG, "-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgb24", "-s", f"{W}x{H}", "-r", str(FPS), "-i", "-"]
+    fondu = f"afade=t=out:st={max(total - 1.5, 0):.2f}:d=1.5"
+    wav = None if muet and not sb.get("voix") else piste_audio(sb, durees, chemin.parent / "son.wav", bruitages=not muet)
+    if wav:
+        cmd += ["-i", str(wav)]
     if musique:
-        cmd += ["-i", str(musique), "-af", f"afade=t=out:st={max(total - 1.5, 0):.2f}:d=1.5", "-c:a", "aac", "-b:a", "160k", "-shortest"]
+        cmd += ["-i", str(musique)]
+    if wav and musique:
+        cmd += ["-filter_complex", f"[2:a]{fondu},volume=0.55[m];[1:a][m]amix=inputs=2:duration=first:normalize=0[a]",
+                "-map", "0:v", "-map", "[a]"]
+    elif musique:
+        cmd += ["-af", fondu]
+    if wav or musique:
+        cmd += ["-c:a", "aac", "-b:a", "160k", "-shortest"]
     cmd += ["-c:v", "libx264", "-preset", "medium", "-crf", "19", "-pix_fmt", "yuv420p", "-movflags", "+faststart", str(sortie)]
     proc = subprocess.Popen(cmd, stdin=subprocess.PIPE)
     premiere = None
@@ -540,5 +785,6 @@ if __name__ == "__main__":
     ap.add_argument("--apercu", type=int)
     ap.add_argument("--zones", action="store_true", help="avec --apercu : zones masquées par TikTok et Shorts en rouge")
     ap.add_argument("--musique")
+    ap.add_argument("--muet", action="store_true", help="sans bruitages (vidéo muette, ou musique seule)")
     args = ap.parse_args()
-    print(rendre(args.storyboard, args.musique, args.apercu, args.zones))
+    print(rendre(args.storyboard, args.musique, args.apercu, args.zones, args.muet))

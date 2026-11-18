@@ -7,7 +7,7 @@ description: Réalisateur vidéo : produit à la demande une vidéo verticale 10
 
 La demande suit la commande, par exemple : `/video Vinícius revient : sa place est-elle garantie ?`. Sans sujet, propose-en 3 comme `/script` (étape 0 de `/script`). Tu prépares et génères ; l'utilisateur publie lui-même : rien n'est mis en ligne par toi.
 
-Choix de l'utilisateur (2026-11-17) : **sans voix**, **langue choisie à chaque vidéo**, la **photo de l'article** peut servir de fond (risque de droits assumé par l'utilisateur, comme pour les posts : ne le signale pas). Objectif : des vidéos qui ressemblent aux meilleurs comptes tactiques et data, pas à des diaporamas.
+Choix de l'utilisateur (2026-11-17) : **voix off qatarie en arabe** (`"voix": true`, voix `ar-QA-MoazNeural`) ; **sans voix dans les autres langues** tant qu'une voix n'y a pas été validée ; **langue choisie à chaque vidéo**, la **photo de l'article** peut servir de fond (risque de droits assumé par l'utilisateur, comme pour les posts : ne le signale pas). Objectif : des vidéos qui ressemblent aux meilleurs comptes tactiques et data, pas à des diaporamas.
 
 ## 1. Comprendre la demande
 - Sujet, et **langue** : arabe (TikTok, Shorts et X, public arabe), français, anglais ou espagnol (Facebook Reels, public de Montréal). Si elle n'est pas précisée, demande-la en une ligne avant d'écrire.
@@ -38,22 +38,33 @@ Styles (voir l'en-tête de `video.py` pour tous les champs) :
 - `barres` : 2 à 5 barres comparées ; la plus grande en or.
 - `duel` : joueur contre joueur, 1 à 4 critères en barres miroir.
 - `tactique` : terrain stylisé ; joueurs (`x` de 0 à 1 de gauche à droite, `y` de 0 au but du Real en bas à 1 au but adverse ; `cle` pour les entourer d'or ; `camp: "adverse"` en rouge), zones surlignées, flèches `course` (or, courbe) et `passe` (pointillés). Positions d'après la composition publiée, jamais inventées.
+  **Action animée** (préférée pour raconter une action, comme Tifo) : `ballon` (position de départ) et `etapes`, jouées l'une après l'autre avec un badge ▶ ; chaque étape déplace des joueurs (`"joueurs": {"<nom>": [x, y]}`), le ballon (`[x, y]` ou le nom du receveur) et peut changer le sous-titre (`texte`). Une étape `{"pause": true, "focus": "<nom>", "texte": "..."}` fige l'action (⏸, anneau doré autour du joueur) pour expliquer le moment clé. Déroulé d'après les comptes rendus de match de la base, jamais inventé ; 3 à 6 étapes, deux joueurs pas plus proches que 0,1 pour que les noms restent lisibles.
 - `titres` : 1 à 3 gros titres de presse traduits, en cartes « une de journal ».
 - `presse` : 2 à 4 citations courtes, journal par journal (« ce que dit la presse »).
 
+**Structure : une histoire, pas une suite de cartes.** Modèle : les vidéos de Tifo Football (The Athletic). Toute la vidéo tient sur **une seule question** dont la réponse n'arrive qu'à la fin ; chaque scène doit rapprocher de cette réponse, sinon elle sort.
+1. **Question** (0 à 3 s) : la question ou l'énigme du sujet (« Pourquoi Valverde court-il plus que tout le monde ? »), jamais la réponse.
+2. **Contexte** : pourquoi la question se pose, en 1 ou 2 scènes.
+3. **Repère** : un point de comparaison connu qui donne l'échelle (la moyenne de la Liga, l'ancien titulaire, la saison dernière), pour que le chiffre ou le fait final impressionne.
+4. **Déroulé** : les faits dans l'ordre où ils répondent à la question, de préférence en `tactique` ou en chiffres.
+5. **Réponse** : le chiffre ou le fait qui répond, en `compteur` ou en `cinetique`, avec la plus forte mise en valeur de la vidéo ; puis, si `boucle`, une relance aux lecteurs.
+Les textes s'enchaînent comme une phrase racontée (« Parce qu'en 2011… », « Mais ce n'est rien à côté de… ») : on doit pouvoir lire la vidéo d'un bout à l'autre comme un récit.
+
 Règles du cahier des charges :
-- **Accroche dans les 2 premières secondes** (chiffre choc, question, affirmation forte) : 1re scène courte (1,8 à 3,5 s), 6 à 12 mots.
+- **Accroche dans les 2 premières secondes** (la question, un chiffre choc, une affirmation forte) : 1re scène courte (1,8 à 3,5 s), 6 à 12 mots.
+- **Voix** (arabe) : chaque scène et chaque étape tactique lit son `texte` (ou `titre`) ; `dit` remplace ce qui est lu quand l'écrit ne se lit pas tel quel (chiffres « 11,4 » → « أحد عشر فاصلة أربعة », sigles) ou pour les scènes `presse`, `titres`, `duel` qui n'ont pas de `texte`. Les durées s'allongent toutes seules pour laisser finir la phrase : vise 8 à 12 mots par phrase. Les noms propres passent par `prononciation.json` (nom tel qu'écrit à l'écran → même nom avec ses voyelles) : avant de générer, ajoute-y chaque joueur ou entraîneur du storyboard absent du fichier, et signale-les à l'utilisateur pour qu'il écoute.
+- **Sous-titre** : le `texte` des scènes `tactique` (et de chaque étape) et `compteur` s'affiche toujours au même endroit, en bas, avec un contour noir. 10 mots au plus (2 lignes), sinon il déborde sur le terrain.
 - **Un changement visuel toutes les 1 à 3 secondes** : enchaîne des scènes courtes et variées plutôt qu'une longue ; une scène longue (tactique, presse) a déjà ses propres temps forts.
 - **Chute ou boucle** : la dernière scène répond à l'accroche ou pose la question aux lecteurs ; `"boucle": true` fond la dernière image dans la première.
 - Une citation entre guillemets existe mot pour mot dans l'article ; pas d'exagération, pas de point d'exclamation (`STYLE`, `REGLES`).
 - **Aucun émoji dans le storyboard** (la police n'en a pas) : ils vont dans la légende. Jamais d'images de match (droits télé).
 - `source` : le média d'origine (graphie de `noms_ar` dans config.json pour l'arabe).
 
-Montre le storyboard sous forme lisible (une ligne par scène, style et durée) et attends l'accord ou les corrections.
+Montre le storyboard sous forme lisible (une ligne par scène : rôle dans la structure, style, durée) et attends l'accord ou les corrections.
 
 ## 4. Générer
 1. Aperçus des scènes clés, avec les zones masquées par TikTok et Shorts : `python video.py videos/<dossier>/storyboard.json --apercu 1 --zones` (puis les autres numéros). Ouvre les images : rien d'important dans les zones rouges, texte lisible. Corrige le storyboard si besoin.
-2. Vidéo : `python video.py videos/<dossier>/storyboard.json` → `videos/<dossier>/<dossier>.mp4` et `couverture.png` (environ 3 s de rendu par seconde de vidéo). Muette par défaut : le son s'ajoute à la publication, depuis la bibliothèque de TikTok ou de YouTube (sons sous licence ; les sons tendance aident la diffusion). Avec une musique libre de droits fournie par l'utilisateur : `--musique <fichier>`.
+2. Vidéo : `python video.py videos/<dossier>/storyboard.json` → `videos/<dossier>/<dossier>.mp4` et `couverture.png` (environ 3 s de rendu par seconde de vidéo). Avec `"voix": true`, la voix est synthétisée par edge-tts (réseau nécessaire la première fois ; phrases gardées dans `videos/<dossier>/voix/`). Avec des bruitages synthétisés calés sur les animations (souffle à chaque transition, choc sur l'accroche, « pop » au début de chaque groupe en or, tics du compteur puis impact) : pas de droits. La musique s'ajoute à la publication, depuis la bibliothèque de TikTok ou de YouTube (sons sous licence ; les sons tendance aident la diffusion), par-dessus les bruitages. Avec une musique libre de droits fournie par l'utilisateur : `--musique <fichier>` (mélangée aux bruitages) ; `--muet` retire les bruitages.
 
 ## 5. Légendes
 Écris `videos/<dossier>/legende.md`, dans la langue de la vidéo :

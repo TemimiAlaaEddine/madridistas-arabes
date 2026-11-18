@@ -196,7 +196,7 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
               panne("Page Facebook"), actif=pfa > 0),
         agent("resume", "🗞️", "Résumé du jour", "Thread « صحافة مدريد اليوم » : les 3 sujets de la veille, après minuit", "pipeline",
               [("Hier", r_hier or "aucune trace"), ("Aujourd'hui", r_auj)], panne("Résumé du jour"), actif=r_auj == "publié sur X"),
-        agent("unes", "📰", "Revue des unes", "Traduit et publie les unes de Marca et AS, entre minuit et 6 h", "pipeline",
+        agent("unes", "📰", "Revue des unes", "Traduit et publie les unes de Marca et AS, entre minuit et midi", "pipeline",
               [("Hier", unes(madrid.date() - timedelta(days=1))), ("Aujourd'hui", u_auj)], actif="X" in u_auj),
         agent("archiviste", "🔗", "Archiviste X", "Relève l'adresse X de chaque publication, pour les statistiques", "pipeline",
               [("Hier", pluriel(xh, "adresse", "relevée")), ("Aujourd'hui", pluriel(xa, "adresse", "relevée"))], actif=xa > 0),

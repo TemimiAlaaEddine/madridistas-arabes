@@ -5,7 +5,7 @@ on:
   workflow_dispatch: # bouton « Run workflow » (aussi dans l'app GitHub) : passage à la demande, ex. avant un match
     inputs:
       unes_maintenant:
-        description: "Publier tout de suite les unes de Marca et AS du jour (hors de la fenêtre minuit-6 h)"
+        description: "Publier tout de suite les unes de Marca et AS du jour (hors de la fenêtre minuit-midi)"
         type: boolean
         default: false
 

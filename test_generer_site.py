@@ -306,7 +306,7 @@ t.typefully_api = lambda chemin, corps=None: (x.append(corps), {"id": 9})[1]
 t.reglage = lambda cle: "k"
 t.urllib.request.urlopen = lambda req, timeout=None: (fb.append((req.full_url, urllib.parse.parse_qs(req.data.decode()))), io.BytesIO(b'{"id": "5"}'))[1]
 try:
-    assert t.unes_du_jour(con, datetime(2026, 11, 17, 8)) == 0 and not lus  # 9 h à Madrid : hors fenêtre
+    assert t.unes_du_jour(con, datetime(2026, 11, 17, 12)) == 0 and not lus  # 13 h à Madrid : hors fenêtre
     assert t.unes_du_jour(con, datetime(2026, 11, 16, 23, 30)) == 2  # 0 h 30 le 17 : Marca sur X et Facebook, AS sans le Real
     assert t.unes_du_jour(con, datetime(2026, 11, 16, 23, 40)) == 0 and len(lus) == 2  # rien en double, chaque une lue une fois
 finally:
