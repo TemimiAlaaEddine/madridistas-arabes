@@ -6359,4 +6359,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-mensaje-de-mbappe-a-gu
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/18/real-madrid-renova-contrato-de-joia-turca-ate-2032.ghtml','Real Madrid renova contrato de joia turca até 2032','2026-11-18T12:11:01');
 INSERT INTO "vus" VALUES('https://turkish-football.com/real-madrid-lock-down-arda-guler-until-2032-to-ward-off-premier-league-interest/','Real Madrid Lock Down Arda Güler Until 2032 to Ward Off Premier League Interest','2026-11-18T12:11:01');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8835961529989800300-le-real-madrid-commence-a-reflechir-a-un-prix-de-vente-de-vinicius-junior','Le Real Madrid commence à réfléchir à un prix de vente de Vinicius Junior','2026-11-18T13:02:02');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1445612119121367946-real-madrid-antonio-rudiger-refuse-de-demander-a-kylian-mbappe-de-defendre','Real Madrid : Antonio Rüdiger refuse de demander à Kylian Mbappé de défendre','2026-11-18T13:10:46');
 COMMIT;
