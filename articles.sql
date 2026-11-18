@@ -6122,4 +6122,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3886130403645177280-real-
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mijatovic-y-alvaro-benito-se-mojan-con-vinicius-y-su-estado-de-forma-madridistas-escuchen-f202611-v/','Mijatovic y Álvaro Benito se mojan con Vinicius y su estado de forma: madridistas, escuchen','2026-11-18T08:40:46');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/no-conteis-conmigo-para-maltratar-a-vinicius/','No contéis conmigo para maltratar a Vinícius','2026-11-18T08:51:46');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/sociedad/20261118/emilio-butragueno-nuevo-socio-real-madrid-compartimos-valores-liderazgo-superacion/1003744460213_0.html','Emilio Butragueño, sobre el nuevo socio del Real Madrid: "Compartimos con ellos valores como el liderazgo y la superación"','2026-11-18T08:51:46');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a5571423696181997136-lalgerie-nen-croit-pas-ses-yeux-et-cartonne-son-nouveau-selectionneur','L’Algérie n’en croit pas ses yeux et cartonne son nouveau sélectionneur','2026-11-18T09:11:04');
 COMMIT;
