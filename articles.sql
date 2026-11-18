@@ -6062,4 +6062,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/valverde-cambia-a-
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/18/recado-mijatovic-vinicius-excusas-despues-futbol-hay-vida-ganar-tanto-dinero.html','Recado de Mijatovic a Vinicius tras sus excusas: "Después del fútbol hay vida... y no va a ganar tanto dinero"','2026-11-18T05:50:54');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/hay-caso-endrick-f202611-n/','Hay caso Endrick','2026-11-18T06:01:55');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/18/mijatovic-senala-el-gran-problema-de-vinicius-en-el-real-madrid-le-veo-muchisimo-mas-feliz-jugando-con-su-seleccion-cadena-ser/','Mijatovic señala el gran problema de Vinicius en el Real Madrid: "Le veo muchísimo más feliz jugando con su selección"','2026-11-18T06:51:32');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6303974775749275931-jerome-rothen-se-paye-kylian-mbappe','Jérôme Rothen se paye Kylian Mbappé','2026-11-18T07:31:18');
 COMMIT;
