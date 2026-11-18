@@ -1,6 +1,9 @@
 """Recherche dans la base d'articles (articles.db) tout ce qui touche un match, un joueur ou un sujet.
 
 Usage : python connaissance.py "valence" "mbappe" --jours 14 --max 15
+        python connaissance.py "valence" --court     -> une ligne par article (numéro, date, journal, titre, chapeau)
+        python connaissance.py --id 466 471          -> ces articles en entier
+--court puis --id : on ne lit en entier que les articles retenus (le texte complet en arabe coûte cher en tokens).
 Chaque mot est cherché dans le titre, le titre d'origine, le chapeau, le texte et les joueurs cités (clés de config.json,
 ex. mbappe, guler) ; un article est retenu s'il contient au moins un mot, les plus pertinents d'abord.
 Sert à la commande /script (.claude/skills/script) avec le fichier connaissance.md.
@@ -39,19 +42,32 @@ def chercher(mots, jours=30, maximum=15, chemin=BASE / "articles.db"):
 
 def afficher(a):
     auteur = f" | {a['auteur']}" if a["auteur"] else ""
-    return (f"### [{a['date'][:10]}] {a['titre']}\n{a['journal']}{auteur} | rubrique {a['section']} | {a['lien']}\n"
+    return (f"### n° {a['id']} [{a['date'][:10]}] {a['titre']}\n{a['journal']}{auteur} | rubrique {a['section']} | {a['lien']}\n"
             f"Titre d'origine : {a['titre_original']}\nJoueurs : {', '.join(json.loads(a['personnes'] or '[]'))}\n\n{a['texte']}\n")
 
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     ap = argparse.ArgumentParser()
-    ap.add_argument("mots", nargs="+")
+    ap.add_argument("mots", nargs="*")
     ap.add_argument("--jours", type=int, default=30)
     ap.add_argument("--max", type=int, default=15)
+    ap.add_argument("--court", action="store_true", help="une ligne par article au lieu du texte complet")
+    ap.add_argument("--id", type=int, nargs="+", help="afficher ces articles en entier")
     args = ap.parse_args()
     from commun import restaurer_base  # base à jour après un git pull (gardée en texte dans git)
     restaurer_base(BASE / "articles.db")
+    if args.id:
+        con = sqlite3.connect(BASE / "articles.db")
+        con.row_factory = sqlite3.Row
+        print("\n".join(afficher(a) for i in args.id for a in con.execute("SELECT * FROM articles WHERE id = ?", (i,))))
+        sys.exit()
+    if not args.mots:
+        sys.exit("Donne des mots à chercher, ou --id <numéros>.")
     trouves = chercher(args.mots, args.jours, args.max)
     print(f"{len(trouves)} article(s) trouvé(s) sur {args.jours} jours pour : {' '.join(args.mots)}\n")
-    print("\n".join(afficher(a) for a in trouves))
+    if args.court:
+        print("\n".join(f"n° {a['id']} [{a['date'][:10]}] {a['journal']}{' | ' + a['auteur'] if a['auteur'] else ''} : "
+                        f"{a['titre']} ({a['titre_original']}){' [photo]' if a['image'] else ''} — {a['chapeau'] or ''}" for a in trouves))
+    else:
+        print("\n".join(afficher(a) for a in trouves))

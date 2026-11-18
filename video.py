@@ -6,9 +6,10 @@ synthétisés (souffles, chocs, tics) calés sur les animations, plus une musiqu
     python video.py videos/<sujet>/storyboard.json                    -> videos/<sujet>/<sujet>.mp4 et couverture.png
     python video.py videos/<sujet>/storyboard.json --apercu 2          -> apercu-02.png (scène 2 aux trois quarts)
     python video.py videos/<sujet>/storyboard.json --apercu 2 --zones  -> idem, zones masquées par TikTok et Shorts en rouge
+    python video.py videos/<sujet>/storyboard.json --planche           -> apercu-planche.png : toutes les scènes sur une image
     python video.py videos/<sujet>/storyboard.json --musique son.mp3
 
-Storyboard : {"langue": "ar|fr|en|es", "photo": {"article": 437} | {"url": "..."} | null, "source": "ماركا",
+Storyboard : {"langue": "ar|fr|en|es", "photo": {"article": 437} | {"url": "..."} | null, "source": "ماركا" (légendes seulement, pas affichée),
 "compte": "@ElMadridistAlaa", "boucle": true, "voix": true | "<voix edge-tts>", "scenes": [...]}. Chaque scène a un
 "style", une "duree" facultative (sinon calculée, allongée pour la voix), "dit" facultatif (ce que lit la voix, sinon
 "texte" ou "titre"), et "fond": "photo" pour la photo de l'article en fond (assombrie) au lieu du fond uni.
@@ -183,7 +184,7 @@ def cinetique(c, texte, taille, langue, y, tl, debut=0.0, pas=0.12, couleur=BLAN
     return y + len(lignes) * hl
 
 
-SOUS_TITRE_Y = BAS - 130  # toujours au même endroit, juste au-dessus de la source : l'œil ne cherche pas le texte
+SOUS_TITRE_Y = BAS - 130  # toujours au même endroit, en bas de la zone sûre : l'œil ne cherche pas le texte
 
 
 def sous_titre(c, texte, langue, tl, debut=0.0, el=None):
@@ -1180,10 +1181,6 @@ def image(sb, fonds, i, tl, durees, zones=False):
         translucide(c, lambda dd: dd.polygon([(x - 120, 0), (x + 40, 0), (x + 220, H), (x + 60, H)], fill=OR + (70,)))
     if sb.get("compte"):
         coller(c, image_mot(sb["compte"], 32, DOUX, "fr", NORMAL), CX, HAUT - 40, alpha=0.85)
-    if sb.get("source"):
-        mots = {"ar": "المصدر", "fr": "Source", "en": "Source", "es": "Fuente"}.get(langue, "Source")
-        texte = f"{mots}: {sb['source']}" if langue != "ar" else f"{mots}: {sb['source']}"
-        coller(c, image_mot(texte, 30, DOUX, langue, ARABE if langue == "ar" else NORMAL), CX, BAS - 30, alpha=0.85)
     if zones:  # zones masquées par les interfaces, pour vérifier la composition
         def masques(dd):
             for r in ([0, 0, W, HAUT], [0, BAS, W, H], [DROITE, HAUT, W, BAS]):
@@ -1192,7 +1189,7 @@ def image(sb, fonds, i, tl, durees, zones=False):
     return c.convert("RGB")
 
 
-def rendre(chemin, musique=None, apercu=None, zones=False, muet=False):
+def rendre(chemin, musique=None, apercu=None, zones=False, muet=False, planche=False):
     chemin = Path(chemin)
     sb = json.loads(chemin.read_text(encoding="utf-8"))
     for sc in sb["scenes"]:
@@ -1205,6 +1202,14 @@ def rendre(chemin, musique=None, apercu=None, zones=False, muet=False):
         photo = photo_article(sb)
         if photo:
             fonds["photo"] = fond_photo(photo)
+    if planche:  # une seule image à regarder (zones masquées comprises) plutôt qu'une par scène
+        vues = [image(sb, fonds, k, 0.78 * durees[k], durees, True).resize((360, 640)) for k in range(len(durees))]
+        img = Image.new("RGB", (360 * min(4, len(vues)), 640 * math.ceil(len(vues) / 4)), (0, 0, 0))
+        for k, v in enumerate(vues):
+            img.paste(v, (k % 4 * 360, k // 4 * 640))
+        sortie = chemin.parent / "apercu-planche.png"
+        img.save(sortie)
+        return sortie
     if apercu is not None:
         k = apercu - 1
         sortie = chemin.parent / f"apercu-{apercu:02d}.png"
@@ -1255,5 +1260,6 @@ if __name__ == "__main__":
     ap.add_argument("--zones", action="store_true", help="avec --apercu : zones masquées par TikTok et Shorts en rouge")
     ap.add_argument("--musique")
     ap.add_argument("--muet", action="store_true", help="sans bruitages (vidéo muette, ou musique seule)")
+    ap.add_argument("--planche", action="store_true", help="toutes les scènes en aperçu sur une seule image")
     args = ap.parse_args()
-    print(rendre(args.storyboard, args.musique, args.apercu, args.zones, args.muet))
+    print(rendre(args.storyboard, args.musique, args.apercu, args.zones, args.muet, args.planche))

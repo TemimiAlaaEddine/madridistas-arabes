@@ -14,7 +14,7 @@ Choix de l'utilisateur (2026-11-17) : **voix off** (`"voix": true`) dans les qua
 - Durée cible selon le sujet : 15 à 25 s pour une information, 25 à 45 s pour une analyse, 60 s au plus.
 
 ## 2. Rassembler la matière
-Comme `/script` (étape 2) : `connaissance.md`, puis `python connaissance.py <mots> --jours <n>`. Seulement des faits présents dans la base ou dans connaissance.md ; une opinion est attribuée à son auteur, une rumeur dite rumeur ; aucune statistique inventée (DataMB et WhoScored : chiffres relevés par l'utilisateur). Note le numéro d'un article avec image si la photo doit servir de fond.
+`connaissance.md`, puis `python connaissance.py <mots> --jours <n> --court` (une ligne par article : numéro, journal, titre, chapeau, [photo]) ; lis ensuite en entier seulement les 1 à 3 articles retenus avec `python connaissance.py --id <numéros>` (le texte complet de tous les articles coûte des dizaines de milliers de tokens). Seulement des faits présents dans la base ou dans connaissance.md ; une opinion est attribuée à son auteur, une rumeur dite rumeur ; aucune statistique inventée (DataMB et WhoScored : chiffres relevés par l'utilisateur). Note le numéro d'un article avec image si la photo doit servir de fond.
 
 ## 3. Écrire le storyboard
 Fichier `videos/AAAA-MM-JJ-sujet-court/storyboard.json` :
@@ -61,12 +61,12 @@ Règles du cahier des charges :
 - **Chute ou boucle** : la dernière scène répond à l'accroche ou pose la question aux lecteurs ; `"boucle": true` fond la dernière image dans la première.
 - Une citation entre guillemets existe mot pour mot dans l'article ; pas d'exagération, pas de point d'exclamation (`STYLE`, `REGLES`).
 - **Aucun émoji dans le storyboard** (la police n'en a pas) : ils vont dans la légende. Jamais d'images de match (droits télé).
-- `source` : le média d'origine (graphie de `noms_ar` dans config.json pour l'arabe).
+- `source` : le média d'origine, pour les légendes seulement ; **jamais affichée sur la vidéo** (choix de l'utilisateur, 2026-11-18 : la mention des sources relève de sa responsabilité).
 
 Montre le storyboard sous forme lisible (une ligne par scène : rôle dans la structure, style, durée) et attends l'accord ou les corrections.
 
 ## 4. Générer
-1. Aperçus des scènes clés, avec les zones masquées par TikTok et Shorts : `python video.py videos/<dossier>/storyboard.json --apercu 1 --zones` (puis les autres numéros). Ouvre les images : rien d'important dans les zones rouges, texte lisible. Corrige le storyboard si besoin.
+1. Planche de toutes les scènes, zones masquées par TikTok et Shorts comprises : `python video.py videos/<dossier>/storyboard.json --planche` → `apercu-planche.png`, une seule image à ouvrir (chaque image lue coûte des tokens). Rien d'important dans les zones rouges, texte lisible. Pour examiner une scène de près seulement : `--apercu <n> --zones`. Corrige le storyboard si besoin.
 2. Vidéo : `python video.py videos/<dossier>/storyboard.json` → `videos/<dossier>/<dossier>.mp4` et `couverture.png` (environ 3 s de rendu par seconde de vidéo). Avec `"voix": true`, la voix est synthétisée par edge-tts (réseau nécessaire la première fois ; phrases gardées dans `videos/<dossier>/voix/`). Avec des bruitages synthétisés calés sur les animations (souffle à chaque transition, choc sur l'accroche, « pop » au début de chaque groupe en or, tics du compteur puis impact) : pas de droits. La musique s'ajoute à la publication, depuis la bibliothèque de TikTok ou de YouTube (sons sous licence ; les sons tendance aident la diffusion), par-dessus les bruitages. Avec une musique libre de droits fournie par l'utilisateur : `--musique <fichier>` (mélangée aux bruitages) ; `--muet` retire les bruitages.
 
 ## 5. Légendes
