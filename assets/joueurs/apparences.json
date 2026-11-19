@@ -26,5 +26,6 @@
   "Brahim": {"aussi": ["Brahim Díaz", "brahim", "إبراهيم"]},
   "Pitarch": {"aussi": ["Thiago Pitarch", "pitarch", "تياغو بيتارش", "بيتارش"]},
   "Espí": {"aussi": ["Carlos Espí", "Espi", "espi", "إسبي"]},
-  "Florentino": {"aussi": ["Florentino Pérez", "florentino", "Pérez", "Perez", "فلورنتينو بيريز", "فلورنتينو"]}
+  "Florentino": {"aussi": ["Florentino Pérez", "florentino", "Pérez", "Perez", "فلورنتينو بيريز", "فلورنتينو"]},
+  "Nico-Paz": {"aussi": ["Nico Paz", "Nico", "Paz", "nico paz", "نيكو باث", "نيكو باز", "نيكو"], "peau": "claire", "cheveux": "court", "couleur_cheveux": "blond"}
 }
