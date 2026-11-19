@@ -545,6 +545,8 @@ envoye(10, "📰 خبر | مبابي يعود إلى التدريبات الجم
 envoye(11, "📰 خبر | كورتوا يغيب عن مباراة السبت بسبب الإصابة", "bloqué : test")
 assert t.controler_thread(con, 12, ["🚨 عاجل | مبابي يعود إلى التدريبات الجماعية مع الفريق\n\n(آس)"]) == ["doublon du thread de l'article 10"]
 assert t.controler_thread(con, 12, ["📰 خبر | كورتوا يغيب عن مباراة السبت بسبب الإصابة\n\n(آس)"]) == []  # le bloqué ne compte pas
+assert t.controler_thread(con, 12, ["✅ رسميًا | مبابي يعود إلى التدريبات الجماعية مع الفريق\n\n(ريال مدريد)"], officiel=True) == []  # confirmation du club
+assert t.est_officiel({"lien": "https://www.realmadrid.com/es-ES/noticias/club/comunicados/x"}) and not t.est_officiel({"lien": "https://www.marca.com/x"})
 # faux doublons du 19 nov. : autre joueur, ou mêmes lettres sans les mêmes mots
 assert not t.proche(t.accroche("🔄 ميركاتو | تشواميني يمدد عقده مع ريال مدريد حتى 2032"), t.accroche("🔄 ميركاتو | غولر يمدد عقده مع ريال مدريد حتى 2032"))
 assert not t.proche(t.accroche("🔥 نقاش | هل أخطأ فينيسيوس حين اعترف من البرازيل بأنه لم يعتنِ بنفسه؟"), t.accroche("🔥 نقاش | هل فينيسيوس أسعد مع البرازيل منه في مدريد؟"))

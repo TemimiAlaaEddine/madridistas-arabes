@@ -151,8 +151,13 @@ def proche(a, b):
             and SequenceMatcher(None, a.split(), b.split()).ratio() >= 0.4)
 
 
-def controler_thread(con, article_id, tweets):
-    """Motifs de blocage d'un thread avant envoi ([] : il peut partir)."""
+def est_officiel(a):
+    return "://www.realmadrid.com/" in (a["lien"] or "")
+
+
+def controler_thread(con, article_id, tweets, officiel=False):
+    """Motifs de blocage d'un thread avant envoi ([] : il peut partir). officiel : article du site du club, jamais un doublon
+    (la confirmation officielle part même si la presse a donné la nouvelle avant, ex. Tchouaméni le 19 nov.)."""
     motifs = []
     if any(longueur(x) > LIMITE for x in tweets):
         motifs.append("tweet trop long")
@@ -169,7 +174,7 @@ def controler_thread(con, article_id, tweets):
     nouvelle = accroche(tweets[0])
     for r in con.execute(f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
                          " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-48 hours')", (article_id,)):
-        if proche(nouvelle, accroche(json.loads(r[1])[0])):
+        if not officiel and proche(nouvelle, accroche(json.loads(r[1])[0])):
             motifs.append(f"doublon du thread de l'article {r[0]}")
             break
     return motifs
@@ -250,7 +255,7 @@ def vers_page(con, heures=24):
         if PROBABLE.search(a["titre_original"] or ""):
             continue
         titre = normaliser_titre(json.loads(a["titres_fb"]).get("fr", ""))
-        double = next((r[0] for r in con.execute(
+        double = None if est_officiel(a) else next((r[0] for r in con.execute(
             "SELECT a.id, a.titres_fb FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE coalesce(p.post, '') NOT LIKE 'bloqu%'"
             " AND p.date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)", (f"-{heures * 2} hours",))
             if proche(titre, normaliser_titre(json.loads(r[1] or "{}").get("fr", "")))), None)
@@ -562,7 +567,7 @@ def vers_typefully(con, couvertures, dossier_couv):
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
-        motifs = controler_thread(con, t["article_id"], tweets)
+        motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
         # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
         quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
