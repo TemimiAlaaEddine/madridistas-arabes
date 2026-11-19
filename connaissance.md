@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 17
+Dernier fait relu : 18
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -28,6 +28,7 @@ Dernier fait relu : 17
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
 - 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (site officiel), AS (Tomás Roncero), Foot Mercato (Jordan Pardon), Voetbal International.
+- 2026-11-19 : Arda Güler a été nommé Jeune joueur révélation de la Ligue des champions 2025-2026 par l'UEFA. Source : ABC (Miguel Zarza).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
