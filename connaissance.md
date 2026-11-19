@@ -10,6 +10,8 @@ Dernier fait relu : 17
 - Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ selon SI, environ 107 M£ selon TEAMtalk), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Source : Sports Illustrated.
 - Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Source : TEAMtalk.
 - Été 2026 : Nico Paz passe la saison à Côme, avec une option de rachat pour le Real. Source : Les Nouvelles du Foot.
+- Nico Paz : le Real a vendu 100 % de ses droits à Côme pour environ 60 M€ et garde une option de rachat de 80 M€, activable seulement du 1er au 15 juillet 2027. Le directeur sportif de Côme, Lodi, confirme l'option. Sources : Defensa Central (Diego Vargas, 2026-10-21), OneFootball, Marca (Alberto Rubio, 2026-11-11) ; validé par l'utilisateur le 2026-11-18.
+- Nico Paz, Serie A 2026-27 (début novembre) : environ 3 buts et 3 passes décisives en 824 minutes, 10 titularisations. Source : FotMob ; validé par l'utilisateur le 2026-11-18.
 - Été 2026, cible manquée : Rodri a choisi Barcelone. Le milieu reste la question ouverte du mercato. Source : The Hard Tackle.
 - Vinícius est resté au club : il a marqué contre la Real Sociedad (26 août) et Mourinho en parle en conférence le 6 novembre (ABC, Pablo Sierra). Le 6 août 2026, le Real Madrid a annoncé sa prolongation jusqu'en juin 2032 (Trivela, Guilherme Ramos).
 - 2026-11-07 : Vinícius disponible pour la J13 ; Diomandé titulaire à gauche à sa place pour le 5e match de suite à Valence. Sources : Marca (José Vicente Hernáez), Foot Mercato (Aurélien Bayard).
@@ -24,6 +26,7 @@ Dernier fait relu : 17
 - 2026-11-17 : Bellingham, Coupe du monde 2026 : 7 buts (seuls Mbappé, 10, et Messi, 8, ont fait mieux), Soulier de bronze, Angleterre 3e. Saison 2025-26 : 111 jours d'absence pour blessures, après avoir joué de novembre 2023 (chute contre le Rayo, labrum de l'épaule gauche) jusqu'à l'opération de l'été 2025 sans se faire opérer (« j'ai décidé de continuer sans me faire opérer, et c'était une erreur »). Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (J. L. Calderón, José María Rodríguez).
 - 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
+- 2026-11-18 : le Real Madrid annonce officiellement la prolongation d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (communiqué officiel), Voetbal International, AS, Foot Mercato.
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
 - 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (site officiel), AS (Tomás Roncero), Foot Mercato (Jordan Pardon), Voetbal International.
 
@@ -40,6 +43,15 @@ Dernier fait relu : 17
 - Lecture d'ensemble (LECTURE, à challenger) : le onze idéal de l'été (Dumfries ou Trent, et Vinícius titulaires ; Diomande en concurrence à droite) a explosé. À chaque problème sa réponse : Bernardo et Tchouaméni pour la construction, Diomande à gauche pour l'attaque placée, Valverde arrière droit pour la transition défensive. Le prix à payer : Valverde quitte le milieu, et Madrid dépend de Bernardo pour sortir le ballon.
 - Prudence : les raisons tactiques viennent surtout de la presse spécialisée et de Fichajes.net, et les dates de certains matchs varient selon les sources.
 - 2026-11-08 : Mourinho joue en 4-2-3-1 (Valence 0-3) : Courtois ; Valverde, Konaté, Huijsen, Cucurella ; Tchouaméni, Bernardo ; Güler (droite), Bellingham (axe), Diomandé (gauche) ; Mbappé. Source : validé par l'utilisateur, confirmé par WhoScored ; Foot Mercato annonçait un 4-3-3.
+- 2026-10-30 (FAIT) : avec Bernardo titulaire, le Real a 57 % de possession en moyenne, contre 47 % sans lui (52 % sur la saison), hors Clásico (37 %). Mourinho l'a reculé pour clarifier la construction quand le pivot était Valverde-Tchouaméni. Source : Marca (Pablo Polo).
+- 2026-11-13 (FAIT) : Bernardo, recruté pour gérer les fins de match, est devenu le pilier du jeu. Il est 1er de l'équipe en passes par match (62, dont 57 réussies) et en participation aux actions de but, 2e en duels défensifs gagnés. Güler est 1er en passes décisives (7), en centres et en passes verticales et clés. Mourinho ne voit pas encore Güler au milieu : « le poste de milieu est le plus difficile ». Source : AS (Marco Ruiz).
+- 2026-11-04 (LECTURE) : à Athènes, sans Tchouaméni ni Güler, Bernardo s'est retrouvé « largely isolated in playmaking duties ». Source : Todo Alicante (José Manuel Andrés, 2026-11-05).
+- Antécédent (FAIT) : au Mondial des clubs 2025, Xabi Alonso recentre Güler. Il passe de 5,63 à 6,97 ballons récupérés par match et de 43,98 à 68,08 passes réussies (BeSoccer, chiffres validés par l'utilisateur le 2026-11-18). Driblab mesure aussi plus de progressions, une meilleure précision de passe, plus de tacles et d'interceptions (El Desmarque, Diego Páez de Roque, 2025-07-07). Alonso : « jugamos mejor con él, pero tiene que aprender » (El Independiente, 2025-07-05).
+- 2026-11-18, centiles DataMB face aux 7 grands championnats (relevés par l'utilisateur) :
+  - Nico Paz 2026-27, 871 min : duels gagnés 48,9 ; ballons récupérés 45,2 ; courses progressives 81,2 ; passes vers l'avant 72,0 ; réussite vers l'avant 66,9 ; passes clés 42,0 ; passes progressives 85,6.
+  - Bellingham 2026-27, 1031 min : 86,8 ; 87,9 ; 88,7 ; 57,3 ; 80,3 ; 80,3 ; 54,2.
+  - Güler 2025-26, 2160 min : 70,8 ; 30,8 ; 84,2 ; 76,4 ; 86,6 ; 96,7 ; 82,6.
+  - Attention : Güler est mesuré sur la saison passée et sur la fiche « Winger ».
 - 2026-11-08 : l'attaque tourne très bien, mais la défense encaisse beaucoup en Europe (7 buts en 4 matchs de LDC). Les deux seules défaites sont venues à l'extérieur (Betis, Atlético). Source : validé par l'utilisateur.
 
 ## Matchs de la saison (score, buteurs, faits marquants)
