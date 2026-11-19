@@ -7018,4 +7018,5 @@ INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/fut
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6877513353408379870-nico-paz-met-vraiment-le-real-madrid-dans-lembarras','Nico Paz met vraiment le Real Madrid dans l’embarras','2026-11-19T16:11:41');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115584/madrid-daily-ferdinand-backs-bellingham-for-captaincy-as-madrid-regroup-for-celta','Madrid Daily: Ferdinand backs Bellingham for captaincy as Madrid regroup for Celta','2026-11-19T16:20:53');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115576/open-thread-19-november-2026','Open Thread: 19 November 2026','2026-11-19T16:20:53');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2448961150591562098-jt-foot-mercato-lannonce-surprise-du-real-madrid','JT Foot Mercato : l’annonce surprise du Real Madrid','2026-11-19T16:50:48');
 COMMIT;
