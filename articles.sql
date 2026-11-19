@@ -6976,4 +6976,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-milieu-d
 INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/de-duurste-is-64-miljoen-euro-waard-twee-belgische-keepers-bij-meest-waardevolle-ter-wereld-maar-thibaut-courtois-is-er-niet-bij~a2dd70aa5/','De duurste is 64 miljoen euro waard: twee Belgische keepers bij meest waardevolle ter wereld, maar Thibaut Courtois is er niet bij','2026-11-19T13:01:51');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5226210480648948160-le-real-madrid-va-payer-beaucoup-plus-cher-que-prevu-pour-recruter-jj-gabriel','Le Real Madrid va payer beaucoup plus cher que prévu pour recruter JJ Gabriel','2026-11-19T14:32:09');
 INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/19/sique-rodriguez-jose-mourinho-te-la-cara-molt-dura-sercat/','Sique Rodríguez: "José Mourinho té la cara molt dura"','2026-11-19T14:41:39');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-tiernisimo-video-del-hijo-de-cucurella-sobre-los-jugadores-del-madrid-f202611-v/','El tiernísimo vídeo del hijo de Cucurella sobre los jugadores del Madrid','2026-11-19T15:01:28');
 COMMIT;
