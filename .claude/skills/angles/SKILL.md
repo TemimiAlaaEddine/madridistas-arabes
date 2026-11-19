@@ -14,6 +14,7 @@ Tu prépares, l'utilisateur choisit, `/script` rédige. Tu n'écris pas le threa
    Pour un sujet précis : `python connaissance.py <mots> --jours 30`.
 3. La liste des fichiers de `scripts/` : ne repropose pas un angle déjà traité.
 4. Les faits notés automatiquement et pas encore validés (table `faits`) peuvent servir, présentés comme non confirmés ; `/script` les fera valider.
+5. **Recherche web, à chaque fois** (choix de l'utilisateur, 2026-11-19) : plusieurs recherches sur le sujet dans le même tour (WebSearch, en espagnol et en anglais au moins). Cherche les statistiques, antécédents et avis qui renforcent ou contredisent chaque thèse. Vérifie sur la page elle-même chaque chiffre retenu (agent `web-fetch`, ou Bright Data si le site bloque), et sépare le **vérifié** du **non vérifié**, comme dans `/script`, étape 2.5.
 
 ## 2. Proposer 3 angles, en français, en moins de 400 mots
 Pour chacun :
@@ -26,5 +27,5 @@ Pour chacun :
 Termine par : « Lequel on développe avec /script ? »
 
 ## Règles
-- Comme fait, seulement ce qui est dans connaissance.md ou dans les articles. Une HYPOTHÈSE reste présentée comme telle.
+- Comme fait, seulement ce qui est dans connaissance.md, dans les articles ou dans une recherche web vérifiée sur la page. Une HYPOTHÈSE reste présentée comme telle.
 - N'invente aucune statistique. DataMB et WhoScored interdisent la lecture automatique : si un chiffre manque, donne à l'utilisateur le lien DataMB du joueur (champ `datamb` de sa fiche dans config.json, ou `datamb_club`) et demande-lui de le relever ; pour un match, demande la page WhoScored enregistrée (voir `/script`).
