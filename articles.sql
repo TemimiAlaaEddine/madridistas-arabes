@@ -4714,6 +4714,7 @@ INSERT INTO "liens_x" VALUES('12035054','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12035201','https://x.com/ElMadridistAlaa/status/2123326668949577892','2026-11-19T08:05:21.922Z');
 INSERT INTO "liens_x" VALUES('12035492','https://x.com/ElMadridistAlaa/status/2123330796232822792','2026-11-19T08:21:32.079Z');
 INSERT INTO "liens_x" VALUES('12036916','https://x.com/ElMadridistAlaa/status/2123351203958677691','2026-11-19T09:42:37.601Z');
+INSERT INTO "liens_x" VALUES('12036919','https://x.com/ElMadridistAlaa/status/2123351836782629004','2026-11-19T09:45:19.482Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -6796,4 +6797,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3354608527500699305-mauri
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/19/nuevo-10-argentina-gastarte-80-millones.html','"El nuevo 10 de Argentina no puede estar en el Como y no gastarte 80 millones de él"','2026-11-19T09:42:24');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/19/figo-vinicius-volvera-nivel-estatus-calidad.html','Figo: “Vinicius volverá a su nivel y a su estatus por la calidad que tiene”','2026-11-19T09:42:24');
 INSERT INTO "vus" VALUES('https://cadenaser.com/video/nacional/2026/11/19/vuelve-laliga-con-el-barca-lider-y-vinicius-regresa-tras-sancion-cadena-ser/','Vuelve LaLiga con el Barça líder y Vinicius regresa tras sanción','2026-11-19T09:42:24');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/19/ex-real-madrid-critica-volta-de-ronaldinho-ao-futebol-farsa-ridicula.ghtml','Ex-Real Madrid critica volta de Ronaldinho ao futebol: "Farsa ridícula"','2026-11-19T09:51:06');
 COMMIT;
