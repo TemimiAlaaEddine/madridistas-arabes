@@ -7103,4 +7103,5 @@ INSERT INTO "vus" VALUES('https://fr.hespress.com/497117-brahim-diaz-aurait-prol
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8472271541429659146-ldc-f-le-paris-fc-decroche-son-premier-succes-contre-koge','LdC (F) : le Paris FC décroche son premier succès contre Køge','2026-11-19T20:10:53');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3000182303508803695-le-real-madrid-va-activer-la-clause-de-rachat-de-nico-paz','Le Real Madrid va activer la clause de rachat de Nico Paz','2026-11-19T21:11:18');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115591/jude-bellingham-wins-the-mahou-five-star-player-for-october','Jude Bellingham wins the Mahou Five-Star Player for October','2026-11-19T21:21:53');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a5269957563618705310-real-madrid-thibaut-courtois-prolonge-a-son-tour','Real Madrid : Thibaut Courtois prolonge à son tour !','2026-11-19T21:51:33');
 COMMIT;
