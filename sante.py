@@ -1,5 +1,5 @@
 """Santé technique, ajoutée chaque lundi à l'issue « Revue des sources » : jeton de la Page Facebook, quota Typefully
-(projection à la fin du mois) et envois en échec en ce moment. Ne modifie rien.
+(projection à la fin du mois), lecture des pages du site du club et envois en échec en ce moment. Ne modifie rien.
 
     python sante.py
 """
@@ -7,12 +7,45 @@ import calendar
 import sqlite3
 import sys
 
+import commun
 import threads as t
 from commun import DB_PATH, maintenant, restaurer_base
 
 
 def detail(err):
     return err.read().decode("utf-8", "replace")[:200] if hasattr(err, "read") else ""
+
+
+def pages_club():
+    """Structure des pages du club lues en plus du sitemap : si le site change, leur lecture ne trouve plus rien, sans erreur,
+    et seul le sitemap (jusqu'à 10 h de retard) reste. On vérifie donc qu'elles ont encore des liens d'articles (sur 30 jours,
+    pour ne pas dépendre de l'actualité) et qu'un article donne encore titre et date."""
+    lignes = []
+    for flux in (f for f in t.CONFIG["flux"] if f.get("pages")):
+        problemes, exemple = [], None
+        for url in flux["pages"]:
+            try:
+                liens = commun.liens_page(commun.lire_page(url), ["/"], jours=30)
+            except OSError as err:
+                problemes.append(f"`{url}` illisible ({err})")
+                continue
+            if not liens:
+                problemes.append(f"`{url}` : aucun lien d'article trouvé")
+            exemple = exemple or (liens[0] if liens else None)
+        if exemple:
+            try:
+                e = commun.meta_article(exemple, commun.lire_page(exemple))
+                if not e["title"] or not e["published_parsed"]:
+                    problemes.append(f"article sans {'titre' if not e['title'] else 'date'} (`{exemple}`)")
+            except OSError as err:
+                problemes.append(f"article illisible ({err})")
+        if problemes:
+            lignes.append(f"- ❌ Pages de **{flux['nom']}** : " + " ; ".join(problemes)
+                          + ". Structure du site changée ? Seul le sitemap est lu (retards de plusieurs heures) : "
+                          "`liens_page` et `meta_article` de commun.py à adapter.")
+        else:
+            lignes.append(f"- ✅ Pages de {flux['nom']} lisibles ({len(flux['pages'])} rubriques, titre et date des articles).")
+    return lignes
 
 
 def sante(con):
@@ -43,6 +76,8 @@ def sante(con):
                           + (" : plus de 80 % du quota, à surveiller." if alerte else "."))
         except (OSError, ValueError) as err:
             lignes.append(f"- ❌ Typefully injoignable ({err} {detail(err)}).")
+
+    lignes += pages_club()
 
     try:
         pannes = con.execute("SELECT envoi, n, depuis, message FROM echecs ORDER BY n DESC").fetchall()

@@ -627,17 +627,25 @@ t.telecharger_image, t.reglage = vrai
 assert {r[0]: r[1] for r in con.execute("SELECT envoi, n FROM echecs WHERE envoi LIKE 'Une%'")} == {"Une de Marca": 1, "Une de AS": 1}
 # santé : projection du quota Typefully à la fin du mois
 import sante
-vrai = (t.reglage, t.typefully_api, t.graph_lire, sante.maintenant)
+vrai = (t.reglage, t.typefully_api, t.graph_lire, sante.maintenant, sante.commun.lire_page)
 t.reglage = lambda cle: "k"
 t.graph_lire = lambda chemin, **p: {"name": "Peña"}
 t.typefully_api = lambda chemin, corps=None: {"publishing_quota": {"used": 450, "remaining": 550}}
 sante.maintenant = lambda: datetime(2026, 11, 16, 0)  # 15 jours écoulés : 30 par jour, 900 sur 30 jours
+_jour = datetime.now().strftime("%d-%m-%Y")
+_bonnes = {"article": '<meta property="og:title" content="Comunicado" />{"datePublished":"2026-11-19T11:36:00.000Z"}',
+           "rubrique": f'<a href="/es-ES/noticias/club/comunicados/comunicado-{_jour}">'}
+sante.commun.lire_page = lambda url: _bonnes["article" if url.endswith(_jour) else "rubrique"]
 try:
     rapport = sante.sante(con)
+    sante.commun.lire_page = lambda url: "<html>nouveau site</html>"  # structure changée : plus aucun lien d'article
+    casse = sante.pages_club()
 finally:
-    t.reglage, t.typefully_api, t.graph_lire, sante.maintenant = vrai
+    t.reglage, t.typefully_api, t.graph_lire, sante.maintenant, sante.commun.lire_page = vrai
 assert "✅ Jeton Facebook valide" in rapport and "⚠️ Quota Typefully : 450 publications sur 1000" in rapport and "environ 900" in rapport
 assert "**Page Facebook** : 3 passage(s)" in rapport
+assert "✅ Pages de Real Madrid CF (site officiel) lisibles" in rapport, rapport
+assert casse[0].startswith("- ❌ Pages de **Real Madrid CF (site officiel)**") and "aucun lien d'article" in casse[0], casse
 con.close()
 print("OK alertes et santé")
 

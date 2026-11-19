@@ -153,10 +153,13 @@ def meta_article(lien, page):
 def lire_pages(flux):
     """Pages de rubriques du site du club : leur sitemap n'est régénéré que par à-coups (communiqué Güler vu 10 h après sa
     mise en ligne le 18 nov., Tchouaméni 35 min le 19), alors que ces pages sont à jour. Seuls les liens récents sont ouverts."""
-    lire = lambda url: urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}),
-                                              timeout=20).read().decode("utf-8", "replace")
-    liens = list(dict.fromkeys(l for p in flux["pages"] for l in liens_page(lire(p), flux.get("filtre_lien", ["/"]))))
-    return [meta_article(l, lire(l)) for l in liens]
+    liens = list(dict.fromkeys(l for p in flux["pages"] for l in liens_page(lire_page(p), flux.get("filtre_lien", ["/"]))))
+    return [meta_article(l, lire_page(l)) for l in liens]
+
+
+def lire_page(url):
+    with urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}), timeout=20) as r:
+        return r.read().decode("utf-8", "replace")
 
 
 def lire_flux(flux):
