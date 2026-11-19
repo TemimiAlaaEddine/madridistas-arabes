@@ -6937,4 +6937,6 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/aurelien-tch
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-real-madrid-se-esta-entrenando-19-11-2026','Mourinho recupera a los internacionales','2026-11-19T12:11:09');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/transfers-buitenland-geruchten-en-nieuws','''Real Madrid wil Bellingham evenveel laten verdienen als Vinícius''','2026-11-19T12:40:55');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115573/official-tchouameni-signs-real-madrid-contract-extension','OFFICIAL: Tchouameni signs Real Madrid contract extension','2026-11-19T12:50:49');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-milieu-de-terrain-francais-aurelien-tchouameni-prolonge-jusqu-en-2032-avec-le-real-madrid/1744622#at_medium=RSS_feeds','Le milieu de terrain français Aurélien Tchouaméni prolonge jusqu''en 2032 avec le Real Madrid','2026-11-19T13:01:51');
+INSERT INTO "vus" VALUES('https://www.hln.be/voetbal/de-duurste-is-64-miljoen-euro-waard-twee-belgische-keepers-bij-meest-waardevolle-ter-wereld-maar-thibaut-courtois-is-er-niet-bij~a2dd70aa5/','De duurste is 64 miljoen euro waard: twee Belgische keepers bij meest waardevolle ter wereld, maar Thibaut Courtois is er niet bij','2026-11-19T13:01:51');
 COMMIT;
