@@ -25,7 +25,7 @@ Storyboard : {"langue": "ar|fr|en|es", "photo": {"article": 437} | {"url": "..."
               fige l'action (badge ⏸, anneau doré autour du joueur, 2 s par défaut).
   titres    : "cartes": [{"journal", "titre"}] (1 à 3) : gros titres de presse traduits.
   presse    : "citations": [{"journal", "texte"}] (2 à 4) : « ce que dit la presse ».
-  portrait  : "joueur", "image" facultative (sinon assets/joueurs/<joueur>.png, sinon silhouette dessinée avec "numero"),
+  portrait  : "joueur", "clip" facultatif (vidéo du portrait animé sur fond vert, figée sur sa dernière image), "image" facultative (sinon assets/joueurs/<joueur>.png, sinon silhouette dessinée avec "numero"),
               "couleur" facultative (sans elle : couleurs du Real, rayons bleu marine, anneau et étincelles dorés ; sinon nom de
               COULEURS ou [r, g, b] pour un autre club), "texte" : le joueur entre en rebond, zoom lent.
   trophees  : "titre", "icone" (trophee|ballon|etoile|carton), "groupes": [{"label", "n", "couleur"}] : grille qui se remplit,
@@ -613,7 +613,7 @@ def etincelles(c, cx, cy, rayon, tl, n=7, couleur=BLANC):
                        (x - r * 0.25, y + r * 0.25), (x - r, y), (x - r * 0.25, y - r * 0.25)], fill=couleur + (230,))
 
 
-def sans_fond_vert(img):
+def sans_fond_vert(img, rogner=True):
     """Détourage chromatique : si les coins du haut sont verts (illustrations générées sur fond vert), tout ce qui est proche
     de ce vert devient transparent, en fondu sur les bords, et le reflet vert des contours est neutralisé. La couleur du fond
     est mesurée dans l'image : vert vif ou vert plus terne. Une image sans fond vert est rendue telle quelle."""
@@ -626,34 +626,63 @@ def sans_fond_vert(img):
     distance = ImageChops.lighter(ImageChops.lighter(ecart[0], ecart[1]), ecart[2])  # écart au vert du fond, canal par canal
     alpha = ImageChops.multiply(a, distance.point(lambda v: 0 if v < 45 else min(255, (v - 45) * 4)))
     g = ImageChops.darker(g, ImageChops.lighter(r, b))  # bords : plus de reflet vert
-    return Image.merge("RGBA", (r, g, b, alpha)).crop(alpha.getbbox())
+    img = Image.merge("RGBA", (r, g, b, alpha))
+    return img.crop(alpha.getbbox()) if rogner else img
 
 
-def image_portrait(sc, hauteur):
-    """Portrait du joueur, détouré avec un contour noir épais (effet autocollant) ; sinon une silhouette dessinée."""
+def images_clip(chemin):
+    """Toutes les images d'un clip vidéo (portrait animé), à 30 i/s."""
+    if chemin not in _images:
+        dims = subprocess.run([FFMPEG, "-i", chemin], capture_output=True, text=True).stderr
+        l, h = map(int, re.search(r"Video:.*?(\d{2,5})x(\d{2,5})", dims).groups())
+        brut = subprocess.run([FFMPEG, "-v", "error", "-i", chemin, "-r", str(FPS), "-f", "rawvideo", "-pix_fmt", "rgb24", "-"],
+                              capture_output=True, check=True).stdout
+        n = l * h * 3
+        _images[chemin] = [Image.frombytes("RGB", (l, h), brut[i:i + n]) for i in range(0, len(brut) - n + 1, n)]
+    return _images[chemin]
+
+
+def image_portrait(sc, hauteur, tl=0.0):
+    """Portrait du joueur, détouré avec un contour noir épais (effet autocollant) ; sinon une silhouette dessinée.
+    Avec "clip" (vidéo du portrait animé, fond vert), l'image du clip à l'instant tl, figée sur la dernière à la fin."""
+    if sc.get("clip"):
+        images = images_clip(sc["clip"])
+        i = min(int(tl * FPS), len(images) - 1)
+        cle = (sc["clip"], hauteur, i)
+        if cle not in _images:
+            if (sc["clip"], "cadre") not in _images:  # même cadre pour tout le clip (celui de la 1re image, avec marge) : pas de tremblement
+                x0, y0, x1, y1 = sans_fond_vert(images[0].convert("RGBA"), False).getchannel("A").getbbox()
+                m = (y1 - y0) // 20
+                _images[sc["clip"], "cadre"] = (max(0, x0 - m), max(0, y0 - m), min(images[0].width, x1 + m), y1)
+            _images[cle] = autocollant(sans_fond_vert(images[i].convert("RGBA"), False).crop(_images[sc["clip"], "cadre"]), hauteur)
+        return _images[cle]
     chemin = Path(sc["image"]) if sc.get("image") else ASSETS / "joueurs" / f"{nom_canonique(sc.get('joueur', ''))}.png"
     cle = (str(chemin), hauteur, sc.get("numero"), json.dumps(sc.get("apparence"), sort_keys=True))
     if cle in _images:
         return _images[cle]
     if chemin.is_file():
-        img = sans_fond_vert(Image.open(chemin).convert("RGBA"))
-        img = img.resize((round(img.width * hauteur / img.height), hauteur), Image.LANCZOS)
-        bord = 14
-        fond = Image.new("RGBA", (img.width + 2 * bord, img.height + 2 * bord), (0, 0, 0, 0))
-        if img.getchannel("A").getextrema()[0] < 250:  # détouré : contour qui suit la silhouette
-            masque = Image.new("L", fond.size, 0)
-            masque.paste(img.getchannel("A"), (bord, bord))
-            fond.paste((15, 15, 20, 255), (0, 0), masque.filter(ImageFilter.MaxFilter(2 * bord - 1)))
-            fond.alpha_composite(img, (bord, bord))
-        else:  # image pleine : carte aux coins arrondis, bord noir
-            ImageDraw.Draw(fond).rounded_rectangle([0, 0, fond.width - 1, fond.height - 1], 40, fill=(15, 15, 20, 255))
-            coins = Image.new("L", img.size, 0)
-            ImageDraw.Draw(coins).rounded_rectangle([0, 0, img.width - 1, img.height - 1], 30, fill=255)
-            fond.paste(img, (bord, bord), coins)
-        _images[cle] = fond
-        return fond
+        _images[cle] = autocollant(sans_fond_vert(Image.open(chemin).convert("RGBA")), hauteur)
+        return _images[cle]
     _images[cle] = silhouette(apparence(sc), hauteur, sc.get("numero"))
     return _images[cle]
+
+
+def autocollant(img, hauteur):
+    """Image mise à la hauteur voulue, avec un contour noir épais (détourée) ou en carte aux coins arrondis (pleine)."""
+    img = img.resize((round(img.width * hauteur / img.height), hauteur), Image.LANCZOS)
+    bord = 14
+    fond = Image.new("RGBA", (img.width + 2 * bord, img.height + 2 * bord), (0, 0, 0, 0))
+    if img.getchannel("A").getextrema()[0] < 250:  # détouré : contour qui suit la silhouette
+        masque = Image.new("L", fond.size, 0)
+        masque.paste(img.getchannel("A"), (bord, bord))
+        fond.paste((15, 15, 20, 255), (0, 0), masque.filter(ImageFilter.MaxFilter(2 * bord - 1)))
+        fond.alpha_composite(img, (bord, bord))
+    else:  # image pleine : carte aux coins arrondis, bord noir
+        ImageDraw.Draw(fond).rounded_rectangle([0, 0, fond.width - 1, fond.height - 1], 40, fill=(15, 15, 20, 255))
+        coins = Image.new("L", img.size, 0)
+        ImageDraw.Draw(coins).rounded_rectangle([0, 0, img.width - 1, img.height - 1], 30, fill=255)
+        fond.paste(img, (bord, bord), coins)
+    return fond
 
 
 PEAUX = {"claire": (238, 198, 168), "mate": (200, 150, 110), "foncee": (120, 82, 58)}
@@ -742,7 +771,7 @@ def s_portrait(c, sc, tl, dur, langue):
     else:
         rayons(c, CX, cy, tl, NAVY, (17, 42, 82))
         halo(c, CX, cy - 40, 330, tl)
-    img = image_portrait(sc, 760)
+    img = image_portrait(sc, 760, tl)
     p = avance(tl, 0.05, 0.45)
     zoom = 1 + 0.05 * borne(tl / max(dur, 0.1))  # zoom lent, comme une caméra qui s'approche
     coller(c, img, CX, cy + 160 * (1 - sortie_douce(p)), alpha=borne(p * 3), echelle=(0.7 + 0.3 * rebond(p)) * zoom)
@@ -1050,6 +1079,26 @@ def evenements(sb, durees):
 # réécrits pour la voix seulement via prononciation.json, un dictionnaire par langue (l'écran garde l'écriture normale).
 VOIX = {"ar": "ar-QA-MoazNeural", "fr": "fr-FR-RemyMultilingualNeural", "en": "en-US-GuyNeural", "es": "es-ES-AlvaroNeural"}
 PRONONCIATION = Path(__file__).with_name("prononciation.json")
+# "voix": "moi" : la voix de l'utilisateur, clonée en local par Chatterbox depuis ma_voix.wav (hors git), via voix_moi.py
+VOIX_MOI = Path(__file__).with_name("ma_voix.wav")
+CHATTERBOX = Path(os.environ.get("LOCALAPPDATA", "")) / "chatterbox-env" / "Scripts" / "python.exe"
+_chatterbox = []
+
+
+def synthese_moi(texte, langue, wav):
+    """Écrit wav : texte lu avec la voix clonée. Le processus (et son modèle, long à charger) reste ouvert pour toute la vidéo."""
+    if not _chatterbox:
+        _chatterbox.append(subprocess.Popen([str(CHATTERBOX), str(Path(__file__).with_name("voix_moi.py"))],
+                                            stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, encoding="utf-8"))
+    p = _chatterbox[0]
+    propre = VOIX_MOI.with_name(f"ma_voix_{langue}.wav")  # échantillon dans la langue lue s'il existe : accent plus juste
+    echantillon = propre if propre.exists() else VOIX_MOI
+    p.stdin.write(json.dumps({"texte": texte, "langue": langue, "echantillon": str(echantillon), "sortie": str(wav)}) + "\n")
+    p.stdin.flush()
+    for ligne in p.stdout:
+        if ligne.strip() == "__fini__":
+            return
+    raise RuntimeError("voix_moi.py s'est arrêté : voir ses messages ci-dessus")
 
 
 def a_dire(texte, langue="ar"):
@@ -1071,8 +1120,11 @@ def voix_echantillons(texte, voix, dossier):
     import hashlib
     dossier.mkdir(exist_ok=True)
     base = dossier / hashlib.sha1(f"{voix}|{texte}".encode()).hexdigest()[:16]
-    mp3, mots = base.with_suffix(".mp3"), base.with_suffix(".json")
-    if not (mp3.exists() and mots.exists()):
+    mp3, mots = base.with_suffix(".wav" if voix.startswith("moi:") else ".mp3"), base.with_suffix(".json")
+    if not (mp3.exists() and mots.exists()) and voix.startswith("moi:"):
+        synthese_moi(texte, voix[4:], mp3)
+        mots.write_text("[]", encoding="utf-8")  # pas d'instants par mot : l'écran répartit les mots sur la phrase
+    elif not (mp3.exists() and mots.exists()):
         import edge_tts
 
         async def lire():
@@ -1097,6 +1149,8 @@ def preparer_voix(sb, dossier):
         return
     langue = sb.get("langue", "ar")
     voix = sb["voix"] if isinstance(sb["voix"], str) else VOIX.get(langue, VOIX["ar"])
+    if voix == "moi":
+        voix = f"moi:{langue}"  # la langue fait partie de la clé du cache
 
     def lire(el, debut, dur_min):
         # tableau : les lignes lues l'une après l'autre (un point entre deux : la voix marque la pause)

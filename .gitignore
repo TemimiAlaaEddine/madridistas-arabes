@@ -17,3 +17,6 @@ videos/*/rendu.log
 statut/
 videos/*/son.wav
 videos/*/voix/
+
+# voix clonée de l'utilisateur (un échantillon par langue) : reste sur ce PC
+ma_voix*.wav

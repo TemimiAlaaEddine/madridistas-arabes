@@ -1,4 +1,4 @@
-{"langue": "es", "voix": true, "source": "AS (Marco Ruiz), Cadena SER", "compte": "@ElMadridistAlaa", "boucle": true,
+{"langue": "es", "voix": "moi", "source": "AS (Marco Ruiz), Cadena SER", "compte": "@ElMadridistAlaa", "boucle": true,
  "scenes": [
   {"style": "cinetique", "etiquette": "Mercado", "texte": "¿Se irá *Endrick* del Madrid en enero?"},
   {"style": "portrait", "joueur": "Endrick", "texte": "Titular y gol con *Brasil*, pero en Madrid apenas juega"},
