@@ -4596,6 +4596,8 @@ INSERT INTO "liens_x" VALUES('12028389','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12033032','https://x.com/ElMadridistAlaa/status/2123290540804592036','2026-11-19T05:41:28.730Z');
 INSERT INTO "liens_x" VALUES('12033028','https://x.com/ElMadridistAlaa/status/2123290471552479323','2026-11-19T05:41:12.248Z');
 INSERT INTO "liens_x" VALUES('12028386','https://x.com/ElMadridistAlaa/status/2123295247694442741','2026-11-19T06:00:27.975Z');
+INSERT INTO "liens_x" VALUES('12028590','https://x.com/ElMadridistAlaa/status/2123296467461059068','2026-11-19T06:05:21.720Z');
+INSERT INTO "liens_x" VALUES('12029328','https://x.com/ElMadridistAlaa/status/2123297725357949020','2026-11-19T06:10:21.261Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -6647,4 +6649,5 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50523924/real-m
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/alvaro-benito-contundente-sobre-la-titularidad-de-vinicius-la-realidad-es-que-el-equipo-ha-jugado-mejor-sin-el-cadena-ser/','Álvaro Benito, contundente sobre la titularidad de Vinícius: "La realidad es que el equipo ha jugado mejor sin él..."','2026-11-19T00:21:51');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/arda-guler-perla-turca-faro-real-madrid-20261118012555-nt.html','Arda Güler, faro del Real Madrid tres años después sin salir de casa','2026-11-19T00:41:30');
 INSERT INTO "vus" VALUES('https://www.hln.be/buitenlands-voetbal/real-madrid-hoopt-met-jj-gabriel-16-zijn-eigen-lamine-yamal-beet-te-hebben-waarom-zijn-afscheid-bij-manchester-united-voor-gefronste-wenkbrauwen-zorgt~ad870fa7/','Real Madrid hoopt met JJ Gabriel (16) zijn eigen Lamine Yamal beet te hebben: waarom zijn afscheid bij Manchester United voor gefronste wenkbrauwen zorgt','2026-11-19T05:10:55');
+INSERT INTO "vus" VALUES('https://www.hln.be/buitenlands-voetbal/een-jongen-van-16-die-met-een-patserige-video-afscheid-neemt-van-man-united-real-madrid-hoopt-met-jj-gabriel-16-zijn-eigen-lamine-yamal-beet-te-hebben~ad870fa7/','Een jongen van 16 die met een patserige video afscheid neemt van Man United: Real Madrid hoopt met JJ Gabriel (16) zijn eigen Lamine Yamal beet te hebben','2026-11-19T06:10:47');
 COMMIT;
