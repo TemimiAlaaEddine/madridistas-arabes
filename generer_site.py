@@ -124,7 +124,7 @@ Pour chaque article ci-dessous :
    - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).
    - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents, et même si leurs titres mettent en avant des angles différents, ex. deux articles sur la même conférence de presse), fusionne-les en un seul article : réponds avec l'id du plus complet, et complète son texte avec les éléments nouveaux des autres en citant leur média. Si ce fait ou ces propos sont déjà dans la liste « DÉJÀ PUBLIÉ » plus bas, ignore-les.
-   - Source officielle prioritaire : si l'un des doublons vient du site officiel du Real Madrid, réponds avec son id et présente le fait comme annoncé officiellement par le club (أعلن ريال مدريد رسميًا...). Un communiqué officiel du club (« Comunicado oficial ») se publie même si la presse a déjà rapporté le fait dans « DÉJÀ PUBLIÉ » : c'est la confirmation officielle, que tu présentes comme telle.
+   - Source officielle prioritaire : si l'un des doublons vient du site officiel du Real Madrid, réponds avec son id et présente le fait comme annoncé officiellement par le club (أعلن ريال مدريد رسميًا...), sauf pour une séance d'entraînement : c'est un compte rendu, pas une annonce, donc ni « رسميًا » ni « أعلن ». Un communiqué officiel du club (« Comunicado oficial ») se publie même si la presse a déjà rapporté le fait dans « DÉJÀ PUBLIÉ » : c'est la confirmation officielle, que tu présentes comme telle.
 2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, dans la langue vivante de la bonne presse sportive arabe : celle d'un journaliste qui raconte à des supporters, pas celle d'un compte rendu ni d'une traduction.
 {style}
@@ -275,6 +275,8 @@ def trier(items, deja=()):
     for i, it in enumerate(items, 1):
         if it.get("opinion"):  # rubriques d'opinion et compositions probables Marca/AS : gardées d'office
             choix[i] = "opinion"
+        elif it.get("officiel"):  # site du club, déjà filtré par rubrique : le tri a écarté le communiqué Tchouaméni (19 nov.)
+            choix[i] = choix.get(i) or "info"
         elif journal(it) in ("Marca", "AS") and PROBABLE.search(it["titre"]):
             choix[i] = "info"
         if i in choix:

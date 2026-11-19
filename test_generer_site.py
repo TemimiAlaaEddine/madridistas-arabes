@@ -197,6 +197,7 @@ print("OK directs et doublons d'opinion")
 # threads X : longueur comptée comme X, crédit + numérotation, thread refusé si un tweet dépasse 280
 import sqlite3
 import threads as t
+TELECHARGER = t.telecharger_image  # vraie fonction : des tests plus bas la remplacent sans la remettre
 assert t.longueur("ريال مدريد") == 10 and t.longueur("https://www.marca.com/" + "x" * 200) == 23 and t.longueur("🔥") == 2
 art = {"auteur_ar": "خوانما كاستانيو", "auteur": "Juanma Castaño", "journal": "Marca", "lien": "https://marca.com/a"}
 th = t.assembler(art, ["فكرة أولى", "فكرة ثانية"])
@@ -393,9 +394,10 @@ print("OK liens DataMB")
 g.appeler_claude = lambda prompt, *a: "[]"
 office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},
           {"titre": "Viejos rockeros", "resume": "", "source": "AS - Opinion", "lien": "b", "opinion": True},
-          {"titre": "Predicted lineups", "resume": "", "source": "Managing Madrid", "lien": "c"}]
+          {"titre": "Predicted lineups", "resume": "", "source": "Managing Madrid", "lien": "c"},
+          {"titre": "Comunicado Oficial renovación de Tchouameni", "resume": "", "source": "Real Madrid CF", "lien": "d", "officiel": True}]
 gardes, ecartes = g.trier(office)
-assert [it["type"] for it in gardes] == ["info", "opinion"] and ecartes == [office[2]]
+assert [it["type"] for it in gardes] == ["info", "opinion", "info"] and ecartes == [office[2]]
 print("OK gardés d'office")
 # conférences de presse : type gardé par le tri, texte lu en entier, mode « conférence » dans le prompt et la base
 g.appeler_claude = lambda prompt, *a: '[{"id": 1, "type": "conference"}]'
@@ -587,6 +589,22 @@ assert con.execute("SELECT count(*) FROM echecs").fetchone()[0] == 0
 for _ in range(3):
     t.noter(con, "Page Facebook", "de nouveau")
 assert "de nouveau" in t.alertes(con)
+# image de plus de 5 Mo (PNG de COPE) : recompressée en JPEG au lieu d'être refusée
+import os as _os
+from PIL import Image as _Image
+_tampon = io.BytesIO()
+_Image.frombytes("RGB", (1600, 1200), _os.urandom(1600 * 1200 * 3)).save(_tampon, "PNG")
+assert len(_tampon.getvalue()) > 5_000_000
+class _Rep(io.BytesIO):
+    headers = type("H", (), {"get_content_type": lambda self: "image/png"})()
+    def __enter__(self): return self
+    def __exit__(self, *a): pass
+_vrai_open = t.urllib.request.urlopen
+t.urllib.request.urlopen = lambda *a, **k: _Rep(_tampon.getvalue())
+_nom, _octets = TELECHARGER("https://www.cope.es/x.png", 1)
+t.urllib.request.urlopen = _vrai_open
+assert _nom == "article-1.jpg" and len(_octets) <= 5_000_000 and _octets[:2] == b"\xff\xd8"
+print("OK image recompressée")
 # une de journal pas encore sortie (404) : pas une panne ; autre erreur : comptée
 import urllib.error
 vrai = (t.telecharger_image, t.reglage)
