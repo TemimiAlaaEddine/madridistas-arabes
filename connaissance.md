@@ -26,7 +26,6 @@ Dernier fait relu : 17
 - 2026-11-17 : Bellingham, Coupe du monde 2026 : 7 buts (seuls Mbappé, 10, et Messi, 8, ont fait mieux), Soulier de bronze, Angleterre 3e. Saison 2025-26 : 111 jours d'absence pour blessures, après avoir joué de novembre 2023 (chute contre le Rayo, labrum de l'épaule gauche) jusqu'à l'opération de l'été 2025 sans se faire opérer (« j'ai décidé de continuer sans me faire opérer, et c'était une erreur »). Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (J. L. Calderón, José María Rodríguez).
 - 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
-- 2026-11-18 : le Real Madrid annonce officiellement la prolongation d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (communiqué officiel), Voetbal International, AS, Foot Mercato.
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
 - 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (site officiel), AS (Tomás Roncero), Foot Mercato (Jordan Pardon), Voetbal International.
 
