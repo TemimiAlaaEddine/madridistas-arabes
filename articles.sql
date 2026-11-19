@@ -4886,6 +4886,7 @@ INSERT INTO "liens_x" VALUES('12039714','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12042932','https://x.com/ElMadridistAlaa/status/2123424122453782629','2026-11-19T14:32:22.738Z');
 INSERT INTO "liens_x" VALUES('12043116','https://x.com/ElMadridistAlaa/status/2123427334326018492','2026-11-19T14:45:22.437Z');
 INSERT INTO "liens_x" VALUES('12044072','https://x.com/ElMadridistAlaa/status/2123436503963726055','2026-11-19T15:21:34.654Z');
+INSERT INTO "liens_x" VALUES('12045088','https://x.com/ElMadridistAlaa/status/2123449167536394478','2026-11-19T16:12:05.118Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7015,4 +7016,6 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/esperando-a-valverde-f202611-n/'
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/liga-dos-campeoes/jogo/24-11-2026/realmadrid-psveindhoven.ghtml','Real Madrid x PSV Eindhoven - Liga dos Campeões 2026/2027 - globoesporte.com','2026-11-19T15:41:21');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/jogo/28-11-2026/realmadrid-alaves.ghtml','Real Madrid x Alavés - Campeonato Espanhol 2026/27 - globoesporte.com','2026-11-19T15:51:05');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6877513353408379870-nico-paz-met-vraiment-le-real-madrid-dans-lembarras','Nico Paz met vraiment le Real Madrid dans l’embarras','2026-11-19T16:11:41');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115584/madrid-daily-ferdinand-backs-bellingham-for-captaincy-as-madrid-regroup-for-celta','Madrid Daily: Ferdinand backs Bellingham for captaincy as Madrid regroup for Celta','2026-11-19T16:20:53');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115576/open-thread-19-november-2026','Open Thread: 19 November 2026','2026-11-19T16:20:53');
 COMMIT;
