@@ -9,6 +9,7 @@ import os
 import http.client
 import re
 import sqlite3
+import unicodedata
 import time
 import urllib.error
 import urllib.parse
@@ -131,9 +132,23 @@ def accroche(texte):
     return normaliser_titre(ETIQUETTE.sub("", NUMERO.sub("", texte).strip().split("\n")[0]))
 
 
+def personnes_citees(texte):
+    """Joueurs nommés dans une accroche : nom de famille arabe (غولر pour أردا غولر) ou clé latine sans accents (guler)."""
+    plat = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode()
+    return {k for k, p in CONFIG.get("personnes", {}).items()
+            if normaliser_titre(p["nom"]).split()[-1] in texte.split() or k in plat.split()}
+
+
 def proche(a, b):
     # moins de 4 mots : trop court pour juger (comme l'anti-doublon de generer_site) ; seuil mesuré sur 184 threads et 86 posts
-    return len(a.split()) >= 4 and len(b.split()) >= 4 and SequenceMatcher(None, a, b).ratio() >= CONFIG.get("seuil_doublon", 0.6)
+    if len(a.split()) < 4 or len(b.split()) < 4:
+        return False
+    pa, pb = personnes_citees(a), personnes_citees(b)
+    if pa and pb and not pa & pb:  # « تشواميني يمدد عقده... » ≠ « غولر يمدد عقده... » (bloqué à tort le 19 nov.)
+        return False
+    # lettres ET mots : en arabe, deux accroches sans rapport partagent beaucoup de lettres (ريال مدريد، فينيسيوس...)
+    return (SequenceMatcher(None, a, b).ratio() >= CONFIG.get("seuil_doublon", 0.6)
+            and SequenceMatcher(None, a.split(), b.split()).ratio() >= 0.4)
 
 
 def controler_thread(con, article_id, tweets):
