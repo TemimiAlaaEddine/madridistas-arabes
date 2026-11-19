@@ -6989,4 +6989,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/19/sique-rodrig
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-tiernisimo-video-del-hijo-de-cucurella-sobre-los-jugadores-del-madrid-f202611-v/','El tiernísimo vídeo del hijo de Cucurella sobre los jugadores del Madrid','2026-11-19T15:01:28');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/pero-usted-quien-es/','¿Pero usted quién es?','2026-11-19T15:11:02');
 INSERT INTO "vus" VALUES('https://as.com/futbol/esperando-a-valverde-f202611-n/','Esperando a Valverde','2026-11-19T15:21:22');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/liga-dos-campeoes/jogo/24-11-2026/realmadrid-psveindhoven.ghtml','Real Madrid x PSV Eindhoven - Liga dos Campeões 2026/2027 - globoesporte.com','2026-11-19T15:41:21');
 COMMIT;
