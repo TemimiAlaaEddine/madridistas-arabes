@@ -4622,6 +4622,7 @@ INSERT INTO "liens_x" VALUES('12028386','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12028590','https://x.com/ElMadridistAlaa/status/2123296467461059068','2026-11-19T06:05:21.720Z');
 INSERT INTO "liens_x" VALUES('12029328','https://x.com/ElMadridistAlaa/status/2123297725357949020','2026-11-19T06:10:21.261Z');
 INSERT INTO "liens_x" VALUES('12029518','https://x.com/ElMadridistAlaa/status/2123298984945226182','2026-11-19T06:15:21.564Z');
+INSERT INTO "liens_x" VALUES('12033921','https://x.com/ElMadridistAlaa/status/2123306534075785455','2026-11-19T06:45:18.555Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -6679,4 +6680,5 @@ INSERT INTO "vus" VALUES('https://www.hln.be/buitenlands-voetbal/een-jongen-van-
 INSERT INTO "vus" VALUES('https://www.hln.be/buitenlands-voetbal/een-jongen-van-16-die-met-een-patserige-video-afscheid-neemt-van-man-united-real-madrid-hoopt-met-jj-gabriel-zijn-eigen-lamine-yamal-beet-te-hebben~ad870fa7/','Een jongen van 16 die met een patserige video afscheid neemt van Man United: Real Madrid hoopt met JJ Gabriel zijn eigen Lamine Yamal beet te hebben','2026-11-19T06:21:00');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/19/alvaro-benito-retrata-nueva-realidad-vinicius-madrid-le-senala-camino-recorrer.html','Álvaro Benito retrata la nueva realidad de Vinicius en el Madrid y le señala su "camino" a recorrer','2026-11-19T06:40:55');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/es-un-superclase-pero-luces-y-sombras-del-fichaje-de-jj-gabriel-por-el-real-madrid-cadena-ser/','"Es un superclase, pero...": luces y sombras del fichaje de J.J. Gabriel por el Real Madrid con tan solo 16 años','2026-11-19T06:41:37');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/opinion/2026/11/19/mea-culpa-vinicius-clave-volver.html','El ''mea culpa'' de Vinicius es clave para volver','2026-11-19T06:50:58');
 COMMIT;
