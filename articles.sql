@@ -6909,4 +6909,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/la-semana-mas-dificil-de-flick-f
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/aspiro-a-ser-pesado-como-cucurella-f202611-n/','“Aspiro a ser pesado como Cucurella”','2026-11-19T11:10:55');
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/federico-valverde-y-penarol-fueron-nominados-los-globe-soccer-awards-que-se-trata-que-premios-compiten-y-como-votar-n6064406','Federico Valverde y Peñarol fueron nominados a los Globe Soccer Awards: de qué se trata, por qué premios compiten y cómo votar','2026-11-19T11:11:15');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/a-que-se-refiere-vinicius-cuando-dice-que-este-verano-no-se-ha-cuidado-cadena-ser/','¿A qué se refiere Vinicius cuando dice que este verano no se ha cuidado?','2026-11-19T11:41:41');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a4937198473284910006-jj-gabriel-est-deja-a-madrid','JJ Gabriel est déjà à Madrid','2026-11-19T11:50:55');
 COMMIT;
