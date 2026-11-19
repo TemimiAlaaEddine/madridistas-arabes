@@ -1241,7 +1241,7 @@ def rendre(chemin, musique=None, apercu=None, zones=False, muet=False, planche=F
                 img = Image.blend(img, premiere, (f - (n - 9)) / 9)  # fin fondue dans la première image : la boucle repart
             if i == 0 and f == 0:
                 premiere = img
-            if i == 0 and f == min(n - 1, round(1.2 * FPS)):
+            if i == 0 and f == min(n - 1, round(0.78 * n)):  # comme les aperçus : la voix a fini, tout le texte est affiché
                 img.save(chemin.parent / "couverture.png")
             proc.stdin.write(img.tobytes())
         print(f"  scène {i + 1}/{len(durees)} : {sb['scenes'][i].get('style', 'cinetique')} ({dur:.1f} s)")
