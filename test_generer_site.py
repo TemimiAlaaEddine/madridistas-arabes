@@ -817,6 +817,18 @@ with tempfile.TemporaryDirectory() as d:
     assert e["title"] == "El Madrid golea" and e["link"].endswith("/cronicas/x")
     assert e["published_parsed"][:5] == (2026, 11, 8, 8, 13), "date en UTC"
 print("OK sitemap")
+# pages de rubriques du club (sitemap en retard) : liens récents des rubriques voulues, puis titre, date et image de l'article
+from datetime import timedelta, timezone
+_auj = datetime.now(timezone.utc)
+_d = lambda j: (_auj - timedelta(days=j)).strftime("%d-%m-%Y")
+_page = (f'<a href="/es-ES/noticias/club/comunicados/comunicado-oficial-{_d(0)}">x</a><a href="/es-ES/noticias/club/comunicados/comunicado-oficial-{_d(0)}">'
+         f'<a href="/es-ES/noticias/baloncesto/primer-equipo/cronicas/c-{_d(0)}"><a href="/es-ES/noticias/club/comunicados/vieux-{_d(5)}"><a href="/es-ES/noticias/club">')
+assert commun.liens_page(_page, ["/club/comunicados/"]) == [f"https://www.realmadrid.com/es-ES/noticias/club/comunicados/comunicado-oficial-{_d(0)}"]
+_e = commun.meta_article("https://x", '<meta property="og:title" content="Comunicado Oficial: renovaci&oacute;n" />'
+                         '<meta property="og:image" content="https://a/i.jpg?wid=1200&amp;hei=675" />{"datePublished":"2026-11-19T11:36:00.000Z"}')
+assert _e["title"] == "Comunicado Oficial: renovación" and _e["media_content"] == [{"url": "https://a/i.jpg?wid=1200&hei=675"}]
+assert _e["published_parsed"][:5] == (2026, 11, 19, 11, 36)
+print("OK pages du club")
 
 # base gardée en texte dans git : copie puis reconstruction à l'identique, et jamais d'écrasement par une base absente
 import os

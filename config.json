@@ -123,6 +123,11 @@
       "url": "https://www.realmadrid.com/sitemap-latest-news-es-ES.xml",
       "sitemap": true,
       "officiel": true,
+      "pages": [
+        "https://www.realmadrid.com/es-ES/noticias",
+        "https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo",
+        "https://www.realmadrid.com/es-ES/noticias/club/comunicados"
+      ],
       "filtre_lien": [
         "/futbol/primer-equipo/cronicas/",
         "/futbol/primer-equipo/ruedas-de-prensa/",

@@ -131,13 +131,49 @@ def lire_wordpress(url):
              "content": [{"value": p.get("content", {}).get("rendered", "")}]} for p in posts]
 
 
+def liens_page(page, filtre, jours=2):
+    """Liens d'articles d'une page de rubrique de realmadrid.com : rubriques voulues, date du lien (…-19-11-2026) récente."""
+    liens, limite = [], datetime.now(timezone.utc).date().toordinal() - jours
+    for chemin in dict.fromkeys(re.findall(r'href="(/[a-z]{2}-[A-Z]{2}/noticias/[^"#?]+)"', page)):
+        d = re.search(r"-(\d{2})-(\d{2})-(\d{4})$", chemin)
+        if d and any(f in chemin for f in filtre) and datetime(int(d[3]), int(d[2]), int(d[1])).toordinal() >= limite:
+            liens.append("https://www.realmadrid.com" + chemin)
+    return liens
+
+
+def meta_article(lien, page):
+    """Entrée au format de feedparser depuis les balises d'une page d'article (og:title, datePublished, og:image)."""
+    meta = lambda nom: html.unescape((re.search(rf'<meta property="og:{nom}" content="([^"]*)"', page) or [None, ""])[1])
+    date = re.search(r'"datePublished":"([^"]+)"', page)
+    return {"title": meta("title"), "link": lien, "summary": meta("description"),
+            "media_content": [{"url": meta("image")}] if meta("image") else [],
+            "published_parsed": datetime.fromisoformat(date[1].replace("Z", "+00:00")).utctimetuple() if date else None}
+
+
+def lire_pages(flux):
+    """Pages de rubriques du site du club : leur sitemap n'est régénéré que par à-coups (communiqué Güler vu 10 h après sa
+    mise en ligne le 18 nov., Tchouaméni 35 min le 19), alors que ces pages sont à jour. Seuls les liens récents sont ouverts."""
+    lire = lambda url: urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "Mozilla/5.0"}),
+                                              timeout=20).read().decode("utf-8", "replace")
+    liens = list(dict.fromkeys(l for p in flux["pages"] for l in liens_page(lire(p), flux.get("filtre_lien", ["/"]))))
+    return [meta_article(l, lire(l)) for l in liens]
+
+
 def lire_flux(flux):
     """Entrées d'un flux (RSS, sitemap ou API WordPress), ou l'erreur rencontrée."""
     try:
-        return (lire_sitemap(flux["url"]) if flux.get("sitemap") else lire_wordpress(flux["url"]) if flux.get("wordpress")
-                else feedparser.parse(flux["url"]).entries)
+        entrees = (lire_sitemap(flux["url"]) if flux.get("sitemap") else lire_wordpress(flux["url"]) if flux.get("wordpress")
+                   else feedparser.parse(flux["url"]).entries)
     except Exception as err:  # noqa: BLE001 - un flux en panne ne bloque pas les autres
-        return err
+        entrees = err
+    if flux.get("pages"):
+        try:  # pages en premier : titre, chapeau et image en plus ; le sitemap reste le repli si elles tombent
+            pages = lire_pages(flux)
+            vus = {e["link"] for e in pages}
+            return pages + [e for e in (entrees if isinstance(entrees, list) else []) if e["link"] not in vus]
+        except Exception as err:  # noqa: BLE001
+            print(f"  ! {flux['nom']} : pages illisibles ({err}), sitemap seul")
+    return entrees
 
 
 def garde(flux, titre, resume, lien, mots):

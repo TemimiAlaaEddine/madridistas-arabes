@@ -40,7 +40,7 @@ et le passage se termine en erreur : rien n'est perdu, les articles sont repris 
 
 Réglages dans `config.json` :
 - `pays` de chaque flux (`es`, `gb`, `fr`, `br`, `ma`, `ci`...) : étiquette « presse de tel pays ».
-- Options d'un flux : `"opinion": true` (rubrique d'opinion, gardée d'office au tri), `"sitemap": true` (sitemap Google News, site sans RSS), `"wordpress": true` (API WordPress `…/wp-json/wp/v2/posts`, site au RSS coupé), `"que_le_real": true` (site entièrement consacré au Real : pas de filtre par mots-clés), `"filtre_lien"` (ne garder que certaines rubriques), `"officiel": true` (site du club : ses articles passent toujours le tri et l'emportent sur les doublons de la presse).
+- Options d'un flux : `"opinion": true` (rubrique d'opinion, gardée d'office au tri), `"sitemap": true` (sitemap Google News, site sans RSS), `"wordpress": true` (API WordPress `…/wp-json/wp/v2/posts`, site au RSS coupé), `"que_le_real": true` (site entièrement consacré au Real : pas de filtre par mots-clés), `"filtre_lien"` (ne garder que certaines rubriques), `"officiel": true` (site du club : ses articles passent toujours le tri et l'emportent sur les doublons de la presse), `"pages"` (pages de rubriques de realmadrid.com lues en plus du sitemap, qui n'est régénéré que par à-coups : jusqu'à 10 h de retard mesurées en novembre 2026).
 - `"autorisation": true` sur un flux **seulement si le journal ou l'auteur t'a donné son accord** :
   ses articles sont alors traduits intégralement.
 - `personnes` : une fiche par joueur ou entraîneur (à mettre à jour à chaque mercato), par exemple
