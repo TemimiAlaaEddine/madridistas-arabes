@@ -6936,4 +6936,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7950390565777956148-le-re
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/aurelien-tchouameni-renueva-con-el-real-madrid-hasta-2032-cadena-ser/','Aurélien Tchouaméni renueva con el Real Madrid hasta 2032','2026-11-19T12:10:52');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-real-madrid-se-esta-entrenando-19-11-2026','Mourinho recupera a los internacionales','2026-11-19T12:11:09');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/transfers-buitenland-geruchten-en-nieuws','''Real Madrid wil Bellingham evenveel laten verdienen als Vinícius''','2026-11-19T12:40:55');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115573/official-tchouameni-signs-real-madrid-contract-extension','OFFICIAL: Tchouameni signs Real Madrid contract extension','2026-11-19T12:50:49');
 COMMIT;
