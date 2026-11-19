@@ -7080,4 +7080,5 @@ INSERT INTO "vus" VALUES('https://www.cope.es/programas/el-partidazo-de-cope/not
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mou-tiene-la-vacuna-f202611-n/','Mou tiene la vacuna','2026-11-19T18:51:53');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/gonzalo-garcia-revela-por-que-se-marcho-del-real-madrid-arbeloa-me-dijo-que-me-necesitaba-cadena-ser/','Gonzalo García revela por qué se marchó del Real Madrid: "Arbeloa me dijo que me necesitaba"','2026-11-19T19:51:16');
 INSERT INTO "vus" VALUES('https://fr.hespress.com/497117-brahim-diaz-aurait-prolonge-au-real-madrid-mais-reclamerait-davantage-de-temps-de-jeu.html','Brahim Diaz aurait prolongé au Real Madrid, mais réclamerait davantage de temps de jeu','2026-11-19T19:51:16');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a8472271541429659146-ldc-f-le-paris-fc-decroche-son-premier-succes-contre-koge','LdC (F) : le Paris FC décroche son premier succès contre Køge','2026-11-19T20:10:53');
 COMMIT;
