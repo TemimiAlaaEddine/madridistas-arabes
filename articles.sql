@@ -6681,4 +6681,5 @@ INSERT INTO "vus" VALUES('https://www.hln.be/buitenlands-voetbal/een-jongen-van-
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/19/alvaro-benito-retrata-nueva-realidad-vinicius-madrid-le-senala-camino-recorrer.html','Álvaro Benito retrata la nueva realidad de Vinicius en el Madrid y le señala su "camino" a recorrer','2026-11-19T06:40:55');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/19/es-un-superclase-pero-luces-y-sombras-del-fichaje-de-jj-gabriel-por-el-real-madrid-cadena-ser/','"Es un superclase, pero...": luces y sombras del fichaje de J.J. Gabriel por el Real Madrid con tan solo 16 años','2026-11-19T06:41:37');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/opinion/2026/11/19/mea-culpa-vinicius-clave-volver.html','El ''mea culpa'' de Vinicius es clave para volver','2026-11-19T06:50:58');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a8340947309531204234-jerome-rothen-appelle-mbappe-a-faire-greve-pour-renverser-infantino','Jérôme Rothen appelle Mbappé à faire grève pour renverser Infantino','2026-11-19T07:31:20');
 COMMIT;
