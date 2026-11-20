@@ -7138,4 +7138,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3000182303508803695-le-re
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115591/jude-bellingham-wins-the-mahou-five-star-player-for-october','Jude Bellingham wins the Mahou Five-Star Player for October','2026-11-19T21:21:53');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5269957563618705310-real-madrid-thibaut-courtois-prolonge-a-son-tour','Real Madrid : Thibaut Courtois prolonge à son tour !','2026-11-19T21:51:33');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/futuro-nico-paz-nunca-volvera-madrid-revendan-20261119015104-nt.html','El futuro de Nico Paz: «Nunca volverá al Real Madrid para que lo revendan»','2026-11-20T01:21:31');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/Fin-du-calvaire-au-real-madrid-et-equipe-de-france-en-ligne-de-mire-ferland-mendy-voit-le-bout-du-tunnel/1744691#at_medium=RSS_feeds','Ferland Mendy voit le bout du tunnel','2026-11-20T03:01:36');
 COMMIT;
