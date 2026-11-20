@@ -432,6 +432,19 @@ def facebook_photo(page, jeton, image, legende):
         return json.load(rep)
 
 
+def tweets_une(entete, lignes):
+    """Titres d'une une répartis en thread : le 1er tweet (en-tête, image, hashtag) prend ce qui tient dans la limite de X,
+    la suite va dans des réponses, sans retirer de titre."""
+    tweets, courant = [], []
+    texte = lambda l: entete + "\n".join(l) + "\n\n#ريال_مدريد" if not tweets else "\n".join(l)
+    for ligne in lignes:
+        if courant and longueur(texte(courant + [ligne])) > LIMITE:
+            tweets.append(texte(courant))
+            courant = []
+        courant.append(ligne)
+    return tweets + [texte(courant)]
+
+
 def unes_du_jour(con, utc=None):
     """Unes de Marca et AS (frontpages.com, sinon kiosko.net), une publication par journal sur X (Typefully, tout de suite) et sur
     la Page Facebook, de 23 h la veille à midi (heure de Madrid) : Claude lit l'image et traduit les titres sur le Real Madrid.
@@ -473,18 +486,15 @@ def unes_du_jour(con, utc=None):
                 con.commit()
                 continue
             if reste_x:
-                garder = list(titres)
-                while True:  # titres du bas retirés tant que le tweet dépasse la limite de X
-                    texte = (f"📰 غلاف {nom_ar} | {JOURS_AR[jour.weekday()]} {jour.day} {MOIS_AR[jour.month - 1]}\n\n"
-                             + "\n".join(f"▪️ {t['ar']}" for t in garder) + "\n\n#ريال_مدريد")
-                    if longueur(texte) <= LIMITE or len(garder) == 1:
-                        break
-                    garder.pop()
+                tweets = tweets_une(f"📰 غلاف {nom_ar} | {JOURS_AR[jour.weekday()]} {jour.day} {MOIS_AR[jour.month - 1]}\n\n",
+                                    [f"▪️ {t['ar']}" for t in titres])
                 media = typefully_image(*image)
                 if not media:
                     raise ValueError("image pas prête dans Typefully")
+                posts = [{"text": tw} for tw in tweets]
+                posts[0]["media_ids"] = [media]
                 d = typefully_api("drafts", {"draft_title": f"غلاف {nom_ar} {jour}", "publish_at": "now",
-                                             "platforms": {"x": {"enabled": True, "posts": [{"text": texte, "media_ids": [media]}]}}})
+                                             "platforms": {"x": {"enabled": True, "posts": posts}}})
                 con.execute("UPDATE unes SET x = ? WHERE jour = ? AND journal = ?", (str(d["id"]), *cle))
                 con.commit()
                 n += 1

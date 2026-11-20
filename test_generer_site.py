@@ -324,6 +324,11 @@ assert all(k == {"outils": "Read"} for _, k in lus) and "2026-11-17" in lus[0][0
 assert telecharges[0] == "https://img.kiosko.net/2026/11/17/es/marca.750.jpg"  # frontpages injoignable : kiosko
 post = x[0]["platforms"]["x"]["posts"][0]
 assert len(x) == 1 and post["media_ids"] == ["m1"] and post["text"].startswith("📰 غلاف ماركا | الثلاثاء 17 نوفمبر") and "▪️ حتى زيدان" in post["text"]
+# titres trop longs pour un tweet : réponses en thread, aucun titre perdu, image et hashtag sur le 1er seulement
+_tw = t.tweets_une("📰 غلاف ماركا | الجمعة 20 نوفمبر\n\n", [f"▪️ {'ب' * 120} {i}" for i in range(4)])
+assert len(_tw) == 3 and all(t.longueur(x) <= t.LIMITE for x in _tw) and sum(x.count("▪️") for x in _tw) == 4
+assert _tw[0].startswith("📰") and _tw[0].endswith("#ريال_مدريد") and not _tw[1].endswith("#ريال_مدريد")
+assert t.tweets_une("E\n\n", ["▪️ a"]) == ["E\n\n▪️ a\n\n#ريال_مدريد"]
 assert len(fb) == 1 and fb[0][0].endswith("/photos") and 'name="source"; filename="une-marca.jpg"' in fb[0][1]  # image envoyée en fichier
 assert "📰 Marca · la une du 17 novembre" in fb[0][1] and "🇪🇸 Hasta Zidane" in fb[0][1]
 con.close()
