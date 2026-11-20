@@ -7696,4 +7696,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/por-que-renovacao-brahi
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/20/6b0069e3fc6c8346278b45a2.html','La cantera, la religión que ha transformado al Celta: "El que no crea en esto, no puede estar aquí"','2026-11-20T19:41:05');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/20/mourinho-pedro-leon-reencuentro-morbo-palco-di-stefano.html','Mourinho y Pedro León, un reencuentro con mucho morbo en el palco Di Stéfano','2026-11-20T20:51:24');
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/baloncesto/2026-11-20/el-olympiacos-pasa-por-encima-del-real-madrid-92-76.html','El Olympiacos pasa por encima del Real Madrid (92-76)','2026-11-20T21:32:04');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/20/la-curiosa-imagen-del-castilla-murcia-jose-mourinho-se-reencuentra-con-pedro-leon-cadena-ser/','La curiosa imagen del Castilla-Murcia: José Mourinho se reencuentra con Pedro León','2026-11-20T22:31:20');
 COMMIT;
