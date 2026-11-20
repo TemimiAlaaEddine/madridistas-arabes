@@ -7693,4 +7693,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115614/brahim-diazs-con
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/por-que-renovacao-brahim-real-madrid-ruim-ele-endrick/','Por que renovação de Brahim com o Real Madrid é ruim para ele e Endrick ao mesmo tempo','2026-11-20T19:11:50');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/20/6b0069e3fc6c8346278b45a2.html','La cantera, la religión que ha transformado al Celta: "El que no crea en esto, no puede estar aquí"','2026-11-20T19:41:05');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/20/mourinho-pedro-leon-reencuentro-morbo-palco-di-stefano.html','Mourinho y Pedro León, un reencuentro con mucho morbo en el palco Di Stéfano','2026-11-20T20:51:24');
+INSERT INTO "vus" VALUES('https://elpais.com/deportes/baloncesto/2026-11-20/el-olympiacos-pasa-por-encima-del-real-madrid-92-76.html','El Olympiacos pasa por encima del Real Madrid (92-76)','2026-11-20T21:32:04');
 COMMIT;
