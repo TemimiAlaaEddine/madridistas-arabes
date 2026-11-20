@@ -7245,4 +7245,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/drieklapper-voor-slagvaardig-
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/valverde-2031-f202611-n/','Valverde, 2031','2026-11-20T08:11:19');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/quisimos-fichar-a-diomande-f202611-n/','“Quisimos fichar a Diomande”','2026-11-20T08:11:41');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mendy-podria-entrar-en-la-lista-contra-el-celta-f202611-n/','Mendy podría entrar en la lista contra el Celta','2026-11-20T08:11:41');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/20/radio-espanhola-preve-incendio-no-real-madrid-caso-vini-jr-nao-volte-como-titular.ghtml','Rádio espanhola prevê "incêndio" no Real Madrid caso Vini Jr. não volte como titular','2026-11-20T08:41:13');
 COMMIT;
