@@ -21,5 +21,3 @@ videos/*/voix/
 # voix clonée de l'utilisateur (un échantillon par langue) : reste sur ce PC
 ma_voix*.wav
 
-# conférence en direct (mode test) : tranches audio et résultats
-direct/
