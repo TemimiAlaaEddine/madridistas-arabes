@@ -5166,6 +5166,7 @@ INSERT INTO "articles" VALUES(554,'2026-11-20T18:18:11','actus','تشوامين�
 
 التشكيلة المحتملة لسيلتا: رادو؛ خافي رودريغيز، يويل لاغو، ماركوس ألونسو؛ خافي رويدا، أليكس فيباس، موريبا، كاريرا؛ سويدبرغ، يوتغلا وهوغو ألفاريز.','RAFA VALERO','رافا فاليرو','Marca','es','https://www.marca.com/futbol/real-madrid/2026/11/20/alineaciones-probables-real-madrid-celta.html','Alineaciones probables del Real Madrid-Celta','info','["tchouameni", "bernardo", "vinicius", "rodrygo", "mendy", "asencio", "courtois", "valverde", "militao", "rudiger", "cucurella", "bellingham", "guler", "diomande", "mbappe", "mourinho"]','','','','مورينيو يستعيد تشواميني وبرناردو سيلفا في التشكيلة المحتملة أمام سيلتا، مع غياب رودريغو وميندي وأسينسيو.','[]','{"fr": "Tchouaméni et Bernardo Silva de retour : le onze probable du Real contre le Celta", "en": "Tchouaméni and Bernardo Silva return: Real Madrid''s probable XI against Celta", "es": "Vuelven Tchouaméni y Bernardo Silva: el once probable del Real Madrid ante el Celta"}','https://objetos-xlk.estaticos-marca.com/files/article_main_microformat/uploads/2026/11/20/6b008a3a1b241.jpeg','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
+INSERT INTO "echecs" VALUES('Typefully',1,'2026-11-20T18:41:13','HTTP Error 403: Forbidden {"error": {"code": "FORBIDDEN", "message": "This is not allowed by X policy. You can create reply drafts, but publishing or scheduling replies via the API is blocked."}}',0);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
 INSERT INTO "faits" VALUES(2,350,'2026-11-13T05:41:10','Asencio, atteint d''une fracture de stress au tibia droit, a été opéré le 1er octobre.');
@@ -5369,6 +5370,7 @@ INSERT INTO "liens_x" VALUES('12069294','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12069639','https://x.com/ElMadridistAlaa/status/2123811526431871427','2026-11-20T16:11:44.199Z');
 INSERT INTO "liens_x" VALUES('12071300','https://x.com/ElMadridistAlaa/status/2123832501621895399','2026-11-20T17:35:19.030Z');
 INSERT INTO "liens_x" VALUES('12071455','https://x.com/ElMadridistAlaa/status/2123834178886332487','2026-11-20T17:41:47.771Z');
+INSERT INTO "liens_x" VALUES('12072287','https://x.com/ElMadridistAlaa/status/2123846852542189879','2026-11-20T18:32:09.390Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
