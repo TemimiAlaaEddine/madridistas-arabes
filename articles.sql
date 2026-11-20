@@ -5110,6 +5110,7 @@ INSERT INTO "articles" VALUES(548,'2026-11-20T12:51:30','debats','«القرار
 
 ولا يعترض الموقع على أن يتحدث فليك الإسبانية أو الكتالانية أو الألمانية أو الإسبرانتو. ما يلفته هو الكيل بمكيالين. فهو يذكّر بغاريث بيل، الذي صُلب يوميًا لأنه لم يستعمل الإسبانية. والحقيقة، كما يقول، أن اللاعب الويلزي كان يتحدث إسبانية مقبولة ويرفض استعمالها مع الصحافة كي لا تحرّف كلامه. أما فليك فلم ينطق بكلمة بها أمام الإعلام، ويرى الجميع ذلك أمرًا ممتازًا.','','','La Galerna','es','https://www.lagalerna.com/la-verdadera-gran-decision/','La verdadera gran decisión','resume','["mourinho", "vinicius"]','','','mourinho','لا قرارات كبرى بشأن فينيسيوس، فالجدل صنعته ماركا، والقرار الحقيقي بيد تيباس وحكامه العشرين','[{"valeur": "8/8", "libelle": "انتصارات قبل التوقف الدولي"}, {"valeur": "20", "libelle": "حكمًا تربّوا في عهد نيغريرا"}]','{"fr": "Le vrai « grand choix » n''est pas celui dont parle Marca, selon La Galerna", "en": "The real \"big decision\" isn''t the one Marca is talking about, says La Galerna", "es": "La verdadera \"gran decisión\" no es la que plantea Marca, según La Galerna"}','https://www.lagalerna.com/wp-content/uploads/2025/01/portanalisis-viernes-Hitchcock.jpg','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
+INSERT INTO "echecs" VALUES('Typefully',1,'2026-11-20T13:11:12','HTTP Error 403: Forbidden {"error": {"code": "FORBIDDEN", "message": "This is not allowed by X policy. You can create reply drafts, but publishing or scheduling replies via the API is blocked."}}',0);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
 INSERT INTO "faits" VALUES(2,350,'2026-11-13T05:41:10','Asencio, atteint d''une fracture de stress au tibia droit, a été opéré le 1er octobre.');
@@ -5306,6 +5307,7 @@ INSERT INTO "liens_x" VALUES('12063408','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12063624','https://x.com/ElMadridistAlaa/status/2123741132660371516','2026-11-20T11:32:00.977Z');
 INSERT INTO "liens_x" VALUES('12064033','https://x.com/ElMadridistAlaa/status/2123746053182931083','2026-11-20T11:51:34.161Z');
 INSERT INTO "liens_x" VALUES('12064989','https://x.com/ElMadridistAlaa/status/2123758707414794749','2026-11-20T12:41:53.982Z');
+INSERT INTO "liens_x" VALUES('12065448','https://x.com/ElMadridistAlaa/status/2123764553066655935','2026-11-20T13:05:21.603Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7550,4 +7552,6 @@ INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/courtois-hara-
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-20/el-real-madrid-amplia-el-contrato-de-thibaut-courtois-hasta-2028.html','El Real Madrid amplía el contrato de Thibaut Courtois hasta 2028','2026-11-20T12:41:09');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/20/vinicius-vuelve-lista-sancion-entran-tocados.html','Vinicius vuelve a la lista tras su sanción y entran los ''tocados''','2026-11-20T12:41:28');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/la-verdadera-gran-decision/','La verdadera gran decisión','2026-11-20T13:01:58');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115602/official-courtois-signs-real-madrid-contract-extension','OFFICIAL: Courtois signs Real Madrid contract extension','2026-11-20T13:11:00');
+INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-20/espana-se-medira-ante-francia-en-los-cuartos-de-final-de-la-nations-league.html','España se cita otra vez con Francia en los cuartos de final de la Nations League','2026-11-20T13:11:00');
 COMMIT;
