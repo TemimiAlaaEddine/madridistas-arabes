@@ -5122,6 +5122,7 @@ INSERT INTO "articles" VALUES(550,'2026-11-20T13:39:58','actus','جيرالدي�
 
 على مستوى القائمة، عاد جونز العبد اللاوي بعد حصوله على الإذن الطبي ظهر اليوم، وكذلك ألفارو نونيز وإيلايكس. في المقابل يواصل بورخا إغليسياس وميغيل رومان وكارل ستارفيلت غيابهم للإصابة. وكان غياب بورخا مؤثرًا، فهو صاحب دور أساسي في فوز سيلتا الموسم الماضي في البرنابيو. لكنّ جيرالديز يذكّر بأن فريقه لعب مباريات كبرى دون لاعبين مميزين، وأن المباريات لا تُلعب بشكل فردي.','Abraham Martínez','أبراهام مارتينيز','AS','es','https://as.com/futbol/primera/el-real-madrid-no-es-tan-diferente-al-del-ano-pasado-f202611-n/','“El Real Madrid no es tan diferente al del año pasado”','conference','["mourinho"]','','','mourinho','مدرب سيلتا جيرالديز يرى أن ريال مدريد ليس مختلفًا كثيرًا عن الموسم الماضي ويصف مورينيو بأنه من أفضل المدربين في التاريخ','[]','{"fr": "Giráldez (Celta) : « Le Real Madrid n''est pas si différent de l''an dernier »", "en": "Giráldez (Celta): \"Real Madrid are not that different from last year\"", "es": "Giráldez (Celta): «El Real Madrid no es tan diferente al del año pasado»"}','https://img.asmedia.epimg.net/resizer/v2/EAGAKVVE4BBI5OXKJLAWLVIPEA.JPG?auth=68204323c0fdc74215caa6a92c925fb297fe91a51a4924ce0e890f3e055f7ef0&width=1472&height=828&focal=1283%2C1556','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
+INSERT INTO "echecs" VALUES('Typefully',1,'2026-11-20T16:02:01','HTTP Error 403: Forbidden {"error": {"code": "FORBIDDEN", "message": "This is not allowed by X policy. You can create reply drafts, but publishing or scheduling replies via the API is blocked."}}',0);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
 INSERT INTO "faits" VALUES(2,350,'2026-11-13T05:41:10','Asencio, atteint d''une fracture de stress au tibia droit, a été opéré le 1er octobre.');
@@ -5321,6 +5322,7 @@ INSERT INTO "liens_x" VALUES('12064989','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12065448','https://x.com/ElMadridistAlaa/status/2123764553066655935','2026-11-20T13:05:21.603Z');
 INSERT INTO "liens_x" VALUES('12067581','https://x.com/ElMadridistAlaa/status/2123786428417298689','2026-11-20T14:32:00.419Z');
 INSERT INTO "liens_x" VALUES('12068580','https://x.com/ElMadridistAlaa/status/2123798957948387673','2026-11-20T15:21:50.436Z');
+INSERT INTO "liens_x" VALUES('12069294','https://x.com/ElMadridistAlaa/status/2123806401403498865','2026-11-20T15:51:39.010Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7584,4 +7586,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a9134545543837461660-losc-
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-real-madrid-no-es-tan-diferente-al-del-ano-pasado-f202611-n/','“El Real Madrid no es tan diferente al del año pasado”','2026-11-20T15:21:24');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mourinho-aqui-no-hay-privilegios-jugadores-que-tengan-que-jugar-por-decreto-f202611-n/','“Aquí no hay privilegios, jugadores que tengan que jugar por decreto”','2026-11-20T15:31:23');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115605/open-thread-20-november-2026','Open Thread: 20 November 2026','2026-11-20T15:31:23');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a8095690466663361925-real-madrid-le-transfert-de-jj-gabriel-attend-le-feu-vert-de-la-fifa','Real Madrid : le transfert de JJ Gabriel attend le feu vert de la FIFA','2026-11-20T16:01:52');
 COMMIT;
