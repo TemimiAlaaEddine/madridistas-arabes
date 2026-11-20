@@ -647,7 +647,8 @@ t.telecharger_image, t.reglage, t.lire_page = vrai
 assert {r[0]: r[1] for r in con.execute("SELECT envoi, n FROM echecs WHERE envoi LIKE 'Une%'")} == {"Une de Marca": 1, "Une de AS": 1}
 # santé : projection du quota Typefully à la fin du mois
 import sante
-vrai = (t.reglage, t.typefully_api, t.graph_lire, sante.maintenant, sante.commun.lire_page)
+vrai = (t.reglage, t.typefully_api, t.graph_lire, sante.maintenant, sante.commun.lire_page, t.telecharger_image)
+t.telecharger_image = lambda url, nom: (f"{nom}.webp", b"img")
 t.reglage = lambda cle: "k"
 t.graph_lire = lambda chemin, **p: {"name": "Peña"}
 t.typefully_api = lambda chemin, corps=None: {"publishing_quota": {"used": 450, "remaining": 550}}
@@ -655,17 +656,21 @@ sante.maintenant = lambda: datetime(2026, 11, 16, 0)  # 15 jours écoulés : 30 
 _jour = datetime.now().strftime("%d-%m-%Y")
 _bonnes = {"article": '<meta property="og:title" content="Comunicado" />{"datePublished":"2026-11-19T11:36:00.000Z"}',
            "rubrique": f'<a href="/es-ES/noticias/club/comunicados/comunicado-{_jour}">'}
-sante.commun.lire_page = lambda url: _bonnes["article" if url.endswith(_jour) else "rubrique"]
+_une = """<img alt="Cover Marca 20/11/2026"><script>atob('L2cvMjAyNi8xMS8xOS9tYXJjYS0yMzM3MDl5MXc1eHQxLndlYnA=')</script>"""
+sante.commun.lire_page = lambda url: _une if "frontpages" in url else _bonnes["article" if url.endswith(_jour) else "rubrique"]
 try:
     rapport = sante.sante(con)
     sante.commun.lire_page = lambda url: "<html>nouveau site</html>"  # structure changée : plus aucun lien d'article
     casse = sante.pages_club()
+    casse_unes = sante.unes_frontpages()
 finally:
-    t.reglage, t.typefully_api, t.graph_lire, sante.maintenant, sante.commun.lire_page = vrai
+    t.reglage, t.typefully_api, t.graph_lire, sante.maintenant, sante.commun.lire_page, t.telecharger_image = vrai
 assert "✅ Jeton Facebook valide" in rapport and "⚠️ Quota Typefully : 450 publications sur 1000" in rapport and "environ 900" in rapport
 assert "**Page Facebook** : 3 passage(s)" in rapport
 assert "✅ Pages de Real Madrid CF (site officiel) lisibles" in rapport, rapport
 assert casse[0].startswith("- ❌ Pages de **Real Madrid CF (site officiel)**") and "aucun lien d'article" in casse[0], casse
+assert "✅ Unes de Marca et AS lisibles sur frontpages.com" in rapport, rapport
+assert casse_unes[0].startswith("- ❌ Unes sur frontpages.com : Marca : date de la une introuvable"), casse_unes
 con.close()
 print("OK alertes et santé")
 

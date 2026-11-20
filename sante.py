@@ -48,6 +48,25 @@ def pages_club():
     return lignes
 
 
+def unes_frontpages():
+    """Unes de frontpages.com (vers 23 h 30 la veille) : si la page change, on retombe sans erreur sur kiosko (6 h 30). On
+    vérifie que chaque page donne encore la date de sa une et l'adresse de la grande image, et que l'image se télécharge."""
+    problemes = []
+    for code, nom, _ in t.UNES:
+        try:
+            date, url = t.lire_frontpages(commun.lire_page(f"https://www.frontpages.com/{code}/"))
+            if not date or not url:
+                problemes.append(f"{nom} : {'date de la une' if not date else 'adresse de la grande image'} introuvable")
+            else:
+                t.telecharger_image(url, f"sante-{code}")
+        except (OSError, ValueError) as err:
+            problemes.append(f"{nom} : {err}")
+    if problemes:
+        return [f"- ❌ Unes sur frontpages.com : {' ; '.join(problemes)}. Les unes partent vers 6 h 30 (kiosko) au lieu de "
+                "23 h 30 la veille : `lire_frontpages` de threads.py à adapter."]
+    return ["- ✅ Unes de Marca et AS lisibles sur frontpages.com (date et grande image)."]
+
+
 def sante(con):
     lignes = ["", "## Santé technique", ""]
 
@@ -78,6 +97,7 @@ def sante(con):
             lignes.append(f"- ❌ Typefully injoignable ({err} {detail(err)}).")
 
     lignes += pages_club()
+    lignes += unes_frontpages()
 
     try:
         pannes = con.execute("SELECT envoi, n, depuis, message FROM echecs ORDER BY n DESC").fetchall()

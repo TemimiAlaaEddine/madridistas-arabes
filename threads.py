@@ -390,14 +390,17 @@ def une_frontpages(code, jour):
     vers 23 h 30 la veille (20 nov. 2026 : Marca à 23 h 37), contre 6 h 30 chez kiosko. La page cache l'adresse en base64 (atob) ;
     récupération autorisée explicitement par l'utilisateur le 20 nov. 2026."""
     try:
-        page = lire_page(f"https://www.frontpages.com/{code}/")
+        date, url = lire_frontpages(lire_page(f"https://www.frontpages.com/{code}/"))
     except OSError:
         return None
+    return url if date == f"{jour:%d/%m/%Y}" else None  # sinon encore la une de la veille
+
+
+def lire_frontpages(page):
+    """(date de la une « jj/mm/aaaa », adresse de la grande image) lues dans une page de frontpages.com, None pour ce qui manque."""
     date, adresse = re.search(r'alt="Cover [^"]*?(\d{2}/\d{2}/\d{4})"', page), re.search(r"atob\('([A-Za-z0-9+/=]+)'\)", page)
-    if not date or not adresse or date[1] != f"{jour:%d/%m/%Y}":  # encore la une de la veille
-        return None
-    chemin = base64.b64decode(adresse[1]).decode()
-    return "https://www.frontpages.com" + chemin if chemin.startswith("/g/") else None
+    chemin = base64.b64decode(adresse[1]).decode() if adresse else ""
+    return date[1] if date else None, "https://www.frontpages.com" + chemin if chemin.startswith("/g/") else None
 
 
 def en_jpeg(image):
