@@ -152,7 +152,7 @@ Pour chaque article ci-dessous :
 8. "chiffres" : seulement si l'article repose sur des chiffres marquants (statistiques, montants, records), jusqu'à 3 objets {{"valeur": "100", "libelle": "هدف بقميص ريال مدريد"}} : valeur courte (ex. "61,3%", "180 م€"), libellé arabe de 2 à 6 mots, tirés du texte. Sinon [].
 9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا علاء » :
 {regles_tweets}
-10. "titres_fb" : ton titre arabe traduit pour un groupe Facebook de supporters à Montréal, une phrase courte et naturelle en français, en anglais et en espagnol, noms propres dans leur graphie latine usuelle.
+10. "titres_fb" : ton titre arabe traduit pour un groupe Facebook de supporters à Montréal, une phrase courte et naturelle en français, en anglais et en espagnol, noms propres dans leur graphie latine usuelle. Pour une conférence de presse publiée par le site officiel du Real Madrid, ajoute dans "titres_fb" les clés "conf_fr" et "conf_en" : la conférence pour la Page Facebook, en français et en anglais, ses 5 à 8 déclarations principales dans l'ordre, une par ligne commençant par « ▪️ », chacune avec le thème en quelques mots puis la déclaration entre guillemets, fidèle au texte, 1 500 caractères au plus.
 11. "faits" : au plus 2 faits durables établis par le texte, utiles à une mémoire de la saison, en français, une phrase courte chacun avec la date quand elle est connue. Seulement : score final et buteurs d'un match du Real Madrid, blessure ou absence de plus de deux semaines, transfert ou prolongation officiels, changement de système ou de poste d'un joueur, record ou distinction. Jamais de rumeur, d'avis ni de déclaration. Sinon [].
 
 FORMAT DE RÉPONSE
@@ -368,6 +368,7 @@ def enregistrer(reponses, items, chemin=DB):
             auteur_ar = noms.get(slug(auteur), auteur_ar)  # graphie de référence, même si Claude en a écrit une autre
         fb = r.get("titres_fb") if isinstance(r.get("titres_fb"), dict) else {}
         titres_fb = {k: str(fb[k])[:200] for k in ("fr", "en", "es") if fb.get(k)}
+        titres_fb |= {k: str(fb[k])[:2000] for k in ("conf_fr", "conf_en") if fb.get(k)}  # conférence du site du club
         cur = con.execute(
             "INSERT OR IGNORE INTO articles (date, section, titre, chapeau, texte, auteur, auteur_ar, journal, pays,"
             " lien, titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb, image, galerie)"

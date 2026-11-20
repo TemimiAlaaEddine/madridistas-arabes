@@ -257,7 +257,13 @@ def vers_page(con, heures=24):
                          (f"-{heures} hours", CONFIG.get("max_threads", 10))).fetchall():
         if PROBABLE.search(a["titre_original"] or ""):
             continue
-        titre = normaliser_titre(json.loads(a["titres_fb"]).get("fr", ""))
+        fb_titres = json.loads(a["titres_fb"])
+        if conference_entraineur(con, a) and not est_officiel(a):  # la Page attend la page complète du site du club
+            con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)",
+                        (a["id"], maintenant().isoformat(timespec="seconds"), "sans : conférence publiée depuis le site du club"))
+            con.commit()
+            continue
+        titre = normaliser_titre(fb_titres.get("fr", ""))
         double = None if est_officiel(a) else next((r[0] for r in con.execute(
             "SELECT a.id, a.titres_fb FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE coalesce(p.post, '') NOT LIKE 'bloqu%'"
             " AND p.date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)", (f"-{heures * 2} hours",))
@@ -268,10 +274,12 @@ def vers_page(con, heures=24):
                         (a["id"], maintenant().isoformat(timespec="seconds"), f"bloqué : doublon de {double}"))
             con.commit()
             continue
+        # conférence du site du club : tout d'un coup, en français, l'anglais en commentaire
+        texte = f"🎙️ {fb_titres.get('fr', '')}\n\n{fb_titres['conf_fr']}" if fb_titres.get("conf_fr") else titres_facebook(a)
         if a["image"]:  # liens des médias bloqués au Canada (loi C-18) : photo de l'article + titres, retouchée à la main sur Facebook
-            envoi, champs = "photos", {"url": a["image"], "caption": f"{titres_facebook(a)}\n\nSource : {a['journal']}"}
+            envoi, champs = "photos", {"url": a["image"], "caption": f"{texte}\n\nSource : {a['journal']}"}
         else:
-            envoi, champs = "feed", {"message": titres_facebook(a), "link": a["lien"]}
+            envoi, champs = "feed", {"message": texte, "link": a["lien"]}
         corps = urllib.parse.urlencode({**champs, "access_token": jeton}).encode()
         try:
             with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/{envoi}", corps), timeout=60) as rep:
@@ -286,6 +294,8 @@ def vers_page(con, heures=24):
         con.execute("INSERT INTO page_facebook VALUES (?, ?, ?)", (a["id"], maintenant().isoformat(timespec="seconds"), post))
         con.commit()
         noter(con, "Page Facebook")
+        if post and fb_titres.get("conf_en"):
+            commenter(post, f"🇬🇧 {fb_titres.get('en', '')}\n\n{fb_titres['conf_en']}", jeton)
         if envoi == "photos" and post and CONFIG.get("facebook_lien_en_commentaire", True):
             commenter_source(post, a, jeton)
         n += 1
@@ -297,14 +307,26 @@ def commenter_source(post, a, jeton):
     publié : un échec est seulement signalé. Au Canada, Meta bloque aussi ces liens de médias (loi C-18) : ils ne servent
     qu'aux lecteurs hors du Canada ; "facebook_lien_en_commentaire": false dans config.json les arrête."""
     nom = a["auteur"] if a["auteur"] else ""
-    texte = f"🔗 Source : {a['journal']}" + (f" ({nom})" if nom else "") + f"\n{a['lien']}"
+    commenter(post, f"🔗 Source : {a['journal']}" + (f" ({nom})" if nom else "") + f"\n{a['lien']}", jeton)
+
+
+def commenter(post, texte, jeton):
+    """Commentaire de la Page sous un de ses posts ; le post est déjà publié : un échec est seulement signalé."""
     corps = urllib.parse.urlencode({"message": texte, "access_token": jeton}).encode()
     try:
         with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{post}/comments", corps), timeout=60) as rep:
             json.load(rep)
     except OSError as err:
         detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
-        print(f"  ! Page Facebook : lien de la source non commenté sous le post {post} ({err}) {detail}")
+        print(f"  ! Page Facebook : commentaire non publié sous le post {post} ({err}) {detail}")
+
+
+def conference_entraineur(con, a):
+    """Conférence de presse de l'entraîneur ("entraineur" dans config.json, mourinho par défaut), d'après l'étiquette du 1er
+    tweet de son thread : le club la publie en entier sur son site, seule cette version va sur la Page Facebook."""
+    nom = CONFIG.get("personnes", {}).get(CONFIG.get("entraineur", "mourinho"), {}).get("nom")
+    r = con.execute("SELECT tweets FROM threads WHERE article_id = ?", (a["id"],)).fetchone() if a["mode"] == "conference" else None
+    return bool(nom and r and orateur(json.loads(r[0])[0]) == nom)
 
 
 PROMPT_RESUME = """Tu prépares pour le compte X « المدريديستا علاء » le résumé quotidien « حصاد ريال مدريد » du {jour}, à partir des articles

@@ -270,6 +270,30 @@ with tempfile.TemporaryDirectory() as tmp:
     assert len(appels) == 2 and appels[1][0].endswith("/42_9/comments")
     assert commentaire["message"] == ["🔗 Source : AS\nhttps://ex.com/fb"]
     assert con.execute("SELECT post FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE a.lien = 'https://ex.com/fb'").fetchone()[0] == "42_9"
+    # conférence de l'entraîneur : la presse ne va pas sur la Page ; la page du club part d'un coup, en français, l'anglais en commentaire
+    _club = "https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/mourinho-20-11-2026"
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "مورينيو عن فينيسيوس", "texte": "ن", "tweets": ["🎙️ مؤتمر مورينيو | «أ»\n\n(ماركا)"],
+                    "titres_fb": {"fr": "Mourinho sur Vinicius", "en": "Mourinho on Vinicius", "es": "Mourinho sobre Vinicius"}},
+                   {"id": 2, "section": "actus", "titre": "مؤتمر مورينيو قبل سيلتا", "texte": "ن", "tweets": ["🎙️ مؤتمر مورينيو | «ب»\n\n(ريال مدريد)"],
+                    "titres_fb": {"fr": "La conférence de Mourinho avant le Celta", "en": "Mourinho's press conference before Celta",
+                                  "es": "La rueda de prensa de Mourinho", "conf_fr": "▪️ Vinicius : « Il jouera »", "conf_en": "▪️ Vinicius: \"He will play\""}}],
+                  [{"lien": "https://www.marca.com/mou-vini", "titre": "Mou: Vinicius", "auteur": "", "source": "Marca", "pays": "es", "type": "conference"},
+                   {"lien": _club, "titre": "Mourinho", "auteur": "", "source": "Real Madrid CF (site officiel)", "pays": "es", "type": "conference", "officiel": True}], db)
+    appels.clear()
+    t.CONFIG["facebook_page_token"] = "j"
+    t.urllib.request.urlopen = lambda req, timeout=None: (appels.append((req.full_url, req.data.decode())),
+                                                         io.BytesIO(b'{"id": "8", "post_id": "42_10"}'))[1]
+    try:
+        assert t.vers_page(con) == 1
+    finally:
+        t.urllib.request.urlopen = vrai_urlopen
+        t.CONFIG.pop("facebook_page_token")
+    assert con.execute("SELECT post FROM page_facebook p JOIN articles a ON a.id = p.article_id WHERE a.lien = 'https://www.marca.com/mou-vini'").fetchone()[0].startswith("sans : conférence")
+    _post = urllib.parse.parse_qs(appels[0][1])
+    _texte = (_post.get("caption") or _post.get("message"))[0]
+    assert _texte.startswith("🎙️ La conférence de Mourinho avant le Celta\n\n▪️ Vinicius : « Il jouera »") and "🇪🇸" not in _texte and "⚜️" not in _texte
+    _en = urllib.parse.parse_qs(appels[1][1])["message"][0]
+    assert appels[1][0].endswith("/42_10/comments") and _en.startswith("🇬🇧 Mourinho's press conference before Celta") and '"He will play"' in _en
     con.close()
 print("OK threads")
 
