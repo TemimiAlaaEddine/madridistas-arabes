@@ -379,6 +379,11 @@ MOIS_AR = ("يناير", "فبراير", "مارس", "أبريل", "مايو", "
 MOIS_FR = ("janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre")
 PROMPT_UNE = """Lis le fichier {fichier} : la une du journal sportif espagnol {nom} du {jour}.
 Relève les sujets qui concernent le Real Madrid (joueurs, entraîneur, club, matchs), du plus grand titre au plus petit, au plus 4.
+Commence toujours par le titre imprimé en plus gros caractères s'il touche le Real Madrid, même quand c'est une personne extérieure
+qui parle d'un joueur du Real (ex. l'entraîneur adverse : « Quisimos fichar a Diomande ») ; dans ce cas, dis qui parle.
+Effectif du Real Madrid (clé latine = graphie arabe à reprendre telle quelle) : {personnes}.
+Un nom imprimé proche d'un de ces noms est ce joueur (une lettre mal lue sur l'image : « DIAMANDE » est Diomande) : écris-le
+correctement dans toutes les langues, avec sa graphie arabe de cette liste.
 Pour chaque sujet, un seul élément : le titre tel qu'il est imprimé (avec son sous-titre seulement s'il est indispensable pour
 comprendre), et sa traduction fidèle en arabe, en français et en anglais, noms propres dans leur graphie usuelle.
 Réponds UNIQUEMENT avec un tableau JSON, sans texte avant ni après : [{{"es": "...", "ar": "...", "fr": "...", "en": "..."}}],
@@ -453,7 +458,8 @@ def unes_du_jour(con, utc=None):
                 fichier = BASE / f"une-{code}.jpg"
                 fichier.write_bytes(image[1])
                 try:
-                    titres = extraire_json(appeler_claude(PROMPT_UNE.format(fichier=fichier, nom=nom, jour=jour.isoformat()),
+                    titres = extraire_json(appeler_claude(PROMPT_UNE.format(fichier=fichier, nom=nom, jour=jour.isoformat(), personnes=", ".join(
+                        f"{k} = {p['nom']}" for k, p in CONFIG.get("personnes", {}).items())),
                                                           CONFIG.get("modele_redaction", "sonnet"), outils="Read"))
                 finally:
                     fichier.unlink(missing_ok=True)
