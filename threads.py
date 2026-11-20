@@ -4,6 +4,8 @@ Le texte vient de l'article du site (déjà un résumé commenté), le dernier t
 journal avec le lien de la source (X affiche alors la carte de l'article, avec sa photo principale).
 Réglages : clés dans secrets.json sur le PC (variables d'environnement sur GitHub), "max_threads" dans config.json (threads et publications au plus par passage).
 """
+import base64
+import io
 import json
 import os
 import http.client
@@ -14,11 +16,12 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+import uuid
 from datetime import datetime, timedelta, timezone
 
 from difflib import SequenceMatcher
 
-from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, maintenant, normaliser_titre
+from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, lire_page, maintenant, normaliser_titre
 
 LIMITE = 280
 SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHub : variables d'environnement
@@ -382,14 +385,53 @@ Réponds UNIQUEMENT avec un tableau JSON, sans texte avant ni après : [{{"es": 
 ou [] si la une ne parle pas du Real Madrid."""
 
 
+def une_frontpages(code, jour):
+    """Adresse de la grande image (1200 px) de la une du jour sur frontpages.com, ou None si elle n'y est pas encore. Elle y est
+    vers 23 h 30 la veille (20 nov. 2026 : Marca à 23 h 37), contre 6 h 30 chez kiosko. La page cache l'adresse en base64 (atob) ;
+    récupération autorisée explicitement par l'utilisateur le 20 nov. 2026."""
+    try:
+        page = lire_page(f"https://www.frontpages.com/{code}/")
+    except OSError:
+        return None
+    date, adresse = re.search(r'alt="Cover [^"]*?(\d{2}/\d{2}/\d{4})"', page), re.search(r"atob\('([A-Za-z0-9+/=]+)'\)", page)
+    if not date or not adresse or date[1] != f"{jour:%d/%m/%Y}":  # encore la une de la veille
+        return None
+    chemin = base64.b64decode(adresse[1]).decode()
+    return "https://www.frontpages.com" + chemin if chemin.startswith("/g/") else None
+
+
+def en_jpeg(image):
+    """(nom, octets) en JPEG : frontpages ne sert que du WebP, que Facebook n'accepte pas officiellement."""
+    nom, contenu = image
+    if nom.endswith(".jpg"):
+        return image
+    from PIL import Image  # importé ici : le workflow de la revue n'installe pas Pillow
+    tampon = io.BytesIO()
+    with Image.open(io.BytesIO(contenu)) as im:
+        im.convert("RGB").save(tampon, "JPEG", quality=90)
+    return nom.rsplit(".", 1)[0] + ".jpg", tampon.getvalue()
+
+
+def facebook_photo(page, jeton, image, legende):
+    """Photo envoyée en fichier à la Page (multipart) : Facebook n'a pas à aller la chercher chez le kiosque."""
+    b = uuid.uuid4().hex
+    champs = b"".join(f'--{b}\r\nContent-Disposition: form-data; name="{k}"\r\n\r\n{v}\r\n'.encode()
+                      for k, v in (("caption", legende), ("access_token", jeton)))
+    corps = (champs + f'--{b}\r\nContent-Disposition: form-data; name="source"; filename="{image[0]}"\r\n'
+             f"Content-Type: image/jpeg\r\n\r\n".encode() + image[1] + f"\r\n--{b}--\r\n".encode())
+    req = urllib.request.Request(f"{GRAPH}{page}/photos", corps, {"Content-Type": f"multipart/form-data; boundary={b}"})
+    with urllib.request.urlopen(req, timeout=60) as rep:
+        return json.load(rep)
+
+
 def unes_du_jour(con, utc=None):
-    """Unes de Marca et AS (images de kiosko.net), une publication par journal sur X (Typefully, tout de suite) et sur la Page
-    Facebook, entre minuit et midi à Madrid : Claude lit l'image et traduit les titres sur le Real Madrid. Une une sans le Real
-    n'est pas publiée. Chaque envoi est noté à part (table unes) : un échec n'est repris que là où il a eu lieu."""
+    """Unes de Marca et AS (frontpages.com, sinon kiosko.net), une publication par journal sur X (Typefully, tout de suite) et sur
+    la Page Facebook, de 23 h la veille à midi (heure de Madrid) : Claude lit l'image et traduit les titres sur le Real Madrid.
+    Une une sans le Real n'est pas publiée. Chaque envoi est noté à part (table unes) : un échec n'est repris que là où il a eu lieu."""
     madrid = heure_madrid(utc or maintenant())
-    if madrid.hour >= 12 and not os.environ.get("FORCER_UNES"):  # kiosko les met en ligne vers 6 h 30 ; FORCER_UNES : lancé à la main
+    if 12 <= madrid.hour < 23 and not os.environ.get("FORCER_UNES"):  # FORCER_UNES : lancé à la main
         return 0
-    jour = madrid.date()
+    jour = madrid.date() + timedelta(days=1 if madrid.hour >= 23 else 0)  # dès 23 h : la une du lendemain
     con.execute("CREATE TABLE IF NOT EXISTS unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT, PRIMARY KEY (jour, journal))")
     x_ok = reglage("typefully_api_key") and CONFIG.get("typefully_social_set")
     jeton, page = reglage("facebook_page_token"), reglage("facebook_page_id")
@@ -401,9 +443,9 @@ def unes_du_jour(con, utc=None):
         reste_x, reste_fb = x_ok and u["x"] is None, jeton and page and u["facebook"] is None
         if not (reste_x or reste_fb):
             continue
-        url = f"https://img.kiosko.net/{jour:%Y/%m/%d}/es/{code}.750.jpg"
+        url = une_frontpages(code, jour) or f"https://img.kiosko.net/{jour:%Y/%m/%d}/es/{code}.750.jpg"
         try:
-            image = telecharger_image(url, f"une-{code}")  # 404 tant que la une n'est pas sortie : repris au passage suivant
+            image = en_jpeg(telecharger_image(url, f"une-{code}"))  # kiosko : 404 tant que la une n'est pas sortie
             if u["titres"] is None:  # Claude ne lit chaque une qu'une fois, même si un envoi échoue ensuite
                 fichier = BASE / f"une-{code}.jpg"
                 fichier.write_bytes(image[1])
@@ -440,9 +482,7 @@ def unes_du_jour(con, utc=None):
             if reste_fb:
                 legende = f"📰 {nom} · la une du {jour.day} {MOIS_FR[jour.month - 1]}\n\n" + "\n\n".join(
                     "\n".join(f"{d} {t[k]}" for d, k in (("⚜️", "fr"), ("🇨🇦", "en"), ("🇪🇸", "es")) if t.get(k)) for t in titres)
-                corps = urllib.parse.urlencode({"url": url, "caption": legende, "access_token": jeton}).encode()
-                with urllib.request.urlopen(urllib.request.Request(f"{GRAPH}{page}/photos", corps), timeout=60) as rep:
-                    fb = json.load(rep)
+                fb = facebook_photo(page, jeton, image, legende)
                 con.execute("UPDATE unes SET facebook = ? WHERE jour = ? AND journal = ?", (str(fb.get("id", "ok")), *cle))
                 con.commit()
                 n += 1

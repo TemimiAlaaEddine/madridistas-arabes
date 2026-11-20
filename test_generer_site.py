@@ -303,26 +303,45 @@ print("OK résumé du jour")
 con = sqlite3.connect(":memory:")
 con.row_factory = sqlite3.Row
 lus, x, fb = [], [], []
-vrai = (t.appeler_claude, t.typefully_api, t.typefully_image, t.telecharger_image, t.reglage, t.urllib.request.urlopen)
-t.telecharger_image = lambda url, nom: (f"{nom}.jpg", b"img")
+vrai = (t.appeler_claude, t.typefully_api, t.typefully_image, t.telecharger_image, t.reglage, t.urllib.request.urlopen, t.lire_page)
+telecharges = []
+t.telecharger_image = lambda url, nom: (telecharges.append(url), (f"{nom}.jpg", b"img"))[1]
+t.lire_page = lambda url: (_ for _ in ()).throw(OSError("frontpages injoignable"))  # repli sur kiosko
 t.appeler_claude = lambda p, *a, **k: (lus.append((p, k)), '[{"es": "Hasta Zidane se rinde a Güler", "ar": "حتى زيدان يستسلم لغولر", "fr": "Même Zidane", "en": "Even Zidane"}]'
                                        if "Marca" in p else "[]")[1]
 t.typefully_image = lambda nom, contenu: "m1"
 t.typefully_api = lambda chemin, corps=None: (x.append(corps), {"id": 9})[1]
 t.reglage = lambda cle: "k"
-t.urllib.request.urlopen = lambda req, timeout=None: (fb.append((req.full_url, urllib.parse.parse_qs(req.data.decode()))), io.BytesIO(b'{"id": "5"}'))[1]
+t.urllib.request.urlopen = lambda req, timeout=None: (fb.append((req.full_url, req.data.decode("utf-8", "replace"))), io.BytesIO(b'{"id": "5"}'))[1]
 try:
     assert t.unes_du_jour(con, datetime(2026, 11, 17, 12)) == 0 and not lus  # 13 h à Madrid : hors fenêtre
-    assert t.unes_du_jour(con, datetime(2026, 11, 16, 23, 30)) == 2  # 0 h 30 le 17 : Marca sur X et Facebook, AS sans le Real
+    assert t.unes_du_jour(con, datetime(2026, 11, 16, 21, 50)) == 0 and not lus  # 22 h 50 : pas encore
+    assert t.unes_du_jour(con, datetime(2026, 11, 16, 22, 10)) == 2  # 23 h 10 le 16 : la une du 17, Marca sur X et Facebook, AS sans le Real
     assert t.unes_du_jour(con, datetime(2026, 11, 16, 23, 40)) == 0 and len(lus) == 2  # rien en double, chaque une lue une fois
 finally:
-    t.appeler_claude, t.typefully_api, t.typefully_image, t.telecharger_image, t.reglage, t.urllib.request.urlopen = vrai
+    t.appeler_claude, t.typefully_api, t.typefully_image, t.telecharger_image, t.reglage, t.urllib.request.urlopen, t.lire_page = vrai
 assert all(k == {"outils": "Read"} for _, k in lus) and "2026-11-17" in lus[0][0]
+assert telecharges[0] == "https://img.kiosko.net/2026/11/17/es/marca.750.jpg"  # frontpages injoignable : kiosko
 post = x[0]["platforms"]["x"]["posts"][0]
 assert len(x) == 1 and post["media_ids"] == ["m1"] and post["text"].startswith("📰 غلاف ماركا | الثلاثاء 17 نوفمبر") and "▪️ حتى زيدان" in post["text"]
-assert len(fb) == 1 and fb[0][0].endswith("/photos") and fb[0][1]["url"] == ["https://img.kiosko.net/2026/11/17/es/marca.750.jpg"]
-assert fb[0][1]["caption"][0].startswith("📰 Marca · la une du 17 novembre") and "🇪🇸 Hasta Zidane" in fb[0][1]["caption"][0]
+assert len(fb) == 1 and fb[0][0].endswith("/photos") and 'name="source"; filename="une-marca.jpg"' in fb[0][1]  # image envoyée en fichier
+assert "📰 Marca · la une du 17 novembre" in fb[0][1] and "🇪🇸 Hasta Zidane" in fb[0][1]
 con.close()
+# frontpages.com : grande image de la une du jour, adresse cachée en base64 ; encore la une de la veille : None
+_fp = '<img id="giornale-img" alt="Cover Marca 20/11/2026"><script>var u=atob(\'L2cvMjAyNi8xMS8xOS9tYXJjYS0yMzM3MDl5MXc1eHQxLndlYnA=\');</script>'
+vrai = t.lire_page
+t.lire_page = lambda url: _fp
+from datetime import date
+try:
+    assert t.une_frontpages("marca", date(2026, 11, 20)) == "https://www.frontpages.com/g/2026/11/19/marca-233709y1w5xt1.webp"
+    assert t.une_frontpages("marca", date(2026, 11, 21)) is None
+finally:
+    t.lire_page = vrai
+from datetime import date
+from PIL import Image as _Im
+_t = io.BytesIO(); _Im.new("RGB", (4, 4)).save(_t, "WEBP")
+_nom, _oct = t.en_jpeg(("une-marca.webp", _t.getvalue()))
+assert _nom == "une-marca.jpg" and _oct[:2] == b"\xff\xd8"
 print("OK unes Marca et AS")
 
 # économies de Claude : filtre gratuit, tri sur titre, textes coupés, thread écrit avec l'article
@@ -615,15 +634,16 @@ assert _nom == "article-1.jpg" and len(_octets) <= 5_000_000 and _octets[:2] == 
 print("OK image recompressée")
 # une de journal pas encore sortie (404) : pas une panne ; autre erreur : comptée
 import urllib.error
-vrai = (t.telecharger_image, t.reglage)
+vrai = (t.telecharger_image, t.reglage, t.lire_page)
 t.reglage = lambda cle: "k"
+t.lire_page = lambda url: ""  # frontpages sans la une : kiosko
 for code in (404, 500):
     def refus(url, nom, code=code):
         raise urllib.error.HTTPError(url, code, "x", {}, io.BytesIO(b""))
     t.telecharger_image = refus
     with contextlib.redirect_stdout(io.StringIO()):
         t.unes_du_jour(con, datetime(2026, 11, 16, 23, 30))
-t.telecharger_image, t.reglage = vrai
+t.telecharger_image, t.reglage, t.lire_page = vrai
 assert {r[0]: r[1] for r in con.execute("SELECT envoi, n FROM echecs WHERE envoi LIKE 'Une%'")} == {"Une de Marca": 1, "Une de AS": 1}
 # santé : projection du quota Typefully à la fin du mois
 import sante
