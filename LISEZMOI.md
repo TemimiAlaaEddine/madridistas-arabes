@@ -47,7 +47,7 @@ Réglages dans `config.json` :
   `"mbappe": {"nom": "مبابي", "wikipedia": "Kylian Mbappé", "photo": "File:….jpg"}`.
 - `noms_ar` : graphie arabe de chaque média (`"Marca": "ماركا"`), reprise telle quelle dans tous les textes. Pour un journaliste, la graphie la plus fréquente en base est utilisée d'office ; ajoute son nom latin ici pour en imposer une autre.
 - `max_articles_site` : articles envoyés à Claude par passage.
-- `attente_page_heures` (6 par défaut) : quand un journal refuse la lecture d'une page (AS, L'Équipe, par moments) et que son flux est trop court, l'article est réessayé à chaque passage pendant ce délai, puis rédigé à partir du flux.
+- `attente_page_heures` (6 par défaut) : quand un journal refuse la lecture d'une page (AS, L'Équipe, par moments) et que son flux est trop court, l'article est réessayé à chaque passage pendant ce délai, puis rédigé à partir du flux. Même attente pour une conférence de presse du site du club (page créée avant la conférence et complétée pendant) : elle n'est rédigée qu'une fois longue d'au moins 3 000 caractères et plus modifiée depuis 15 minutes.
 - `articles_par_page` (30 par défaut) : articles par page de rubrique, de journaliste, de joueur ou de pays ; au-delà, pages suivantes `actus--2.html`...
 
 Les articles déjà traités sont dans `articles.db`. Dans git, elle est gardée en texte (`articles.sql`, seules les nouvelles lignes s'ajoutent à chaque passage) et reconstruite automatiquement après un `git pull`.

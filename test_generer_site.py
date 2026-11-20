@@ -1061,6 +1061,14 @@ bloque = {"illisible": True, "texte": "x" * 700, "publie": recent}
 assert g.a_reessayer(bloque) and not g.a_reessayer({**bloque, "publie": vieux})  # 7 h plus tard : on se contente du flux
 assert not g.a_reessayer({**bloque, "texte": "x" * 1500}) and not g.a_reessayer({**bloque, "illisible": False})
 assert not g.a_reessayer({**bloque, "publie": None})
+# conférence sur le site du club : page créée avant et complétée pendant ; attend d'être longue et stable depuis 15 min
+_conf = {"officiel": True, "lien": "https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/mourinho-20-11-2026",
+         "texte": "x" * 6000, "publie": recent, "modifie": commun.maintenant() - timedelta(minutes=20)}
+assert not g.a_reessayer(_conf)  # complète et stable : rédigée
+assert g.a_reessayer({**_conf, "texte": "x" * 800})  # presque vide
+assert g.a_reessayer({**_conf, "modifie": commun.maintenant() - timedelta(minutes=5)})  # encore complétée
+assert not g.a_reessayer({**_conf, "texte": "x" * 800, "publie": vieux})  # au bout de 6 h : rédigée telle quelle
+assert not g.a_reessayer({**_conf, "lien": "https://www.realmadrid.com/es-ES/noticias/club/comunicados/x", "texte": "x" * 800})  # communiqué : tout de suite
 appels, marques = [], []
 vrais = g.appeler_claude, g.marquer_vus, g.texte_complet
 g.appeler_claude, g.marquer_vus = (lambda *a: appels.append(1) or "[]"), (lambda items, db: marques.extend(items))

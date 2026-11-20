@@ -24,7 +24,7 @@ import urllib.request
 from collections import Counter, defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from itertools import zip_longest
-from datetime import datetime
+from datetime import datetime, timezone
 from difflib import SequenceMatcher
 from html.parser import HTMLParser
 
@@ -97,8 +97,12 @@ def texte_complet(it):
         req = urllib.request.Request(it["lien"], headers={"User-Agent": "Mozilla/5.0"})
         with urllib.request.urlopen(req, timeout=20) as r:
             p = Paragraphes()
-            p.feed(r.read().decode(r.headers.get_content_charset() or "utf-8", "replace"))  # ex. presse turque en windows-1254
+            brut = r.read().decode(r.headers.get_content_charset() or "utf-8", "replace")  # ex. presse turque en windows-1254
+            p.feed(brut)
         page = "\n".join(p.morceaux)
+        modifie = re.search(r'"dateModified"\s*:\s*"([^"]+)"', brut)  # page du club complétée au fil d'une conférence
+        if modifie:
+            it["modifie"] = datetime.fromisoformat(modifie[1].replace("Z", "+00:00")).astimezone(timezone.utc).replace(tzinfo=None)
         image = urllib.parse.urljoin(it["lien"], p.image) if p.image else ""
         if image.startswith(("http://", "https://")):  # celle de la page, plus grande, sinon on garde celle du flux
             it["image"] = image
@@ -902,10 +906,20 @@ def ordonner(items):
 def a_reessayer(it):
     """Page refusée et flux trop court pour en tirer un article : on retente aux passages suivants tant que l'article est
     récent, puis on se contente du flux. Le refus est passager (AS, L'Équipe : 5 refus chacun en 60 passages, nov. 2026)."""
-    if not it.get("illisible") or len(it["texte"]) >= 1500 or not it.get("publie"):
+    if not it.get("publie"):
         return False
     age = (maintenant() - datetime.fromisoformat(it["publie"])).total_seconds() / 3600
-    return age < CONFIG.get("attente_page_heures", 6)
+    if age >= CONFIG.get("attente_page_heures", 6):
+        return False
+    if it.get("officiel") and CONFERENCE_CLUB.search(it["lien"]):
+        # le club crée la page avant la conférence et la complète pendant : lue trop tôt, le thread serait presque vide
+        # (page complète : ~6 300 caractères le 6 nov.) ; on attend qu'elle soit longue et plus modifiée depuis 15 min
+        en_cours = it.get("modifie") and (maintenant() - it["modifie"]).total_seconds() < 15 * 60
+        return len(it["texte"]) < 3000 or bool(en_cours)
+    return it.get("illisible") and len(it["texte"]) < 1500
+
+
+CONFERENCE_CLUB = re.compile(r"/ruedas-de-prensa/|/actualidad/mourinho-")
 
 
 def traiter_lot(lot):
@@ -915,7 +929,8 @@ def traiter_lot(lot):
             it["texte"] = texte
     reportes = [it for it in lot if a_reessayer(it)]  # pas marqués comme vus : repris au prochain passage
     for it in reportes:
-        print(f"  page refusée, nouvel essai au prochain passage : {journal(it)} | {it['titre'][:80]}")
+        motif = "page du club encore en cours de rédaction" if it.get("officiel") else "page refusée"
+        print(f"  {motif}, nouvel essai au prochain passage : {journal(it)} | {it['titre'][:80]}")
     lot = [it for it in lot if it not in reportes]
     if not lot:
         return 0
