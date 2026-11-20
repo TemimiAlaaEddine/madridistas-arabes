@@ -4977,6 +4977,7 @@ INSERT INTO "articles" VALUES(539,'2026-11-20T10:24:00','actus','«ريال مد
 
 مورينيو: «ريال مدريد أهم من إندريك. أحب إندريك كثيرًا، فهو طفل رائع، لكن ريال مدريد أهم. ها قد حصلت على الجواب، وكذلك وكلاؤه، والأندية التي ترسل الأخبار إلى الصحف. بعد ذلك، إذا قرر ريال مدريد، بوصفه الهيكل الأعلى، شيئًا مختلفًا، فعلينا احترام ذلك. لكنني كمدرب، والهيكل الأعلى يعرف ذلك، أرى أن إندريك مهم بالنسبة لي.»','','','El Observador','uy','https://www.elobservador.com.uy/futbol-internacional/jose-mourinho-destaco-la-seleccion-uruguaya-diego-forlan-porque-federico-valverde-fue-muy-bien-gestionado-la-ultima-fecha-fifa-n6064538','José Mourinho destacó a la selección uruguaya de Diego Forlán porque Federico Valverde fue "muy bien gestionado" en la última Fecha FIFA','conference','["mourinho", "valverde", "guler", "endrick"]','','','mourinho','مورينيو: الجميع جاهز للعب أمام سيلتا، وريال مدريد أهم من إندريك الذي يبقى مهمًا بالنسبة لي','[]','{"fr": "« Le Real Madrid est plus important qu''Endrick » : Mourinho avant le match contre le Celta", "en": "\"Real Madrid is more important than Endrick\": Mourinho ahead of the Celta Vigo match", "es": "«El Real Madrid es más importante que Endrick»: Mourinho antes del partido ante el Celta"}','https://media.elobservador.com.uy/p/53f25b2d4656e432b4bc1e7bcea411d6/adjuntos/362/imagenes/100/787/0100787869/1200x675/866x151:886x171/20261117-federico-valverde-campus-maldonado-seleccion-uruguaya-uruguay-republica-dominicana-foto-gaston-britos-focouy-20.jpeg','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
+INSERT INTO "echecs" VALUES('Typefully',1,'2026-11-20T10:43:14','HTTP Error 403: Forbidden {"error": {"code": "FORBIDDEN", "message": "This is not allowed by X policy. You can create reply drafts, but publishing or scheduling replies via the API is blocked."}}',0);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
 INSERT INTO "faits" VALUES(2,350,'2026-11-13T05:41:10','Asencio, atteint d''une fracture de stress au tibia droit, a été opéré le 1er octobre.');
@@ -5166,6 +5167,7 @@ INSERT INTO "liens_x" VALUES('12060123','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12061227','https://x.com/ElMadridistAlaa/status/2123705888922100183','2026-11-20T09:12:09.377Z');
 INSERT INTO "liens_x" VALUES('12061230','https://x.com/ElMadridistAlaa/status/2123705907171508533','2026-11-20T09:12:05.335Z');
 INSERT INTO "liens_x" VALUES('12061753','https://x.com/ElMadridistAlaa/status/2123713331760685096','2026-11-20T09:41:46.758Z');
+INSERT INTO "liens_x" VALUES('12062603','https://x.com/ElMadridistAlaa/status/2123726805580529841','2026-11-20T10:35:19.040Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7367,4 +7369,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/sabia-de-sobra-por-donde-
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-pesadilla-sueca-vuelve-al-bernabeu-f202611-v/','La pesadilla sueca vuelve al Bernabéu','2026-11-20T10:11:05');
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/opinion/2026/11/20/vinicius-julian-mano.html','"Vinícius y Julián van de la mano"','2026-11-20T10:32:26');
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/jose-mourinho-destaco-la-seleccion-uruguaya-diego-forlan-porque-federico-valverde-fue-muy-bien-gestionado-la-ultima-fecha-fifa-n6064538','José Mourinho destacó a la selección uruguaya de Diego Forlán porque Federico Valverde fue "muy bien gestionado" en la última Fecha FIFA','2026-11-20T10:32:26');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-la-liga/115599/jose-mourinho-there-are-no-players-here-with-privileges','Jose Mourinho: “There are no players here with privileges”','2026-11-20T10:41:13');
 COMMIT;
