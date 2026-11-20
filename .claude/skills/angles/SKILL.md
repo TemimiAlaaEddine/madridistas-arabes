@@ -8,7 +8,7 @@ description: Analyste tactique : prépare 3 angles d'analyse sur le Real Madrid 
 Tu prépares, l'utilisateur choisit, `/script` rédige. Tu n'écris pas le thread. Un sujet peut suivre la commande (`/angles Vinícius à gauche`) ; sans sujet, propose des angles sur l'actualité tactique des 14 derniers jours.
 
 ## 1. Rassembler
-1. Lis `connaissance.md` en entier : faits validés, classés FAIT, LECTURE ou HYPOTHÈSE, et préférences de l'utilisateur (sa méthode d'analyse).
+1. Lis `connaissance.md` en entier : faits validés, classés FAIT, LECTURE ou HYPOTHÈSE, et préférences de l'utilisateur (sa méthode d'analyse). Si un angle gagne à une comparaison historique, lis `histoire.md` (saisons repères) ; une analogie reste une LECTURE.
 2. Articles récents de la rubrique tactique (et du sujet demandé, s'il y en a un) :
    `python -c "import sqlite3,sys,commun; commun.restaurer_base(commun.BASE/'articles.db'); sys.stdout.reconfigure(encoding='utf-8'); [print(*r, sep=' | ') for r in sqlite3.connect('articles.db').execute(\"SELECT id, date(date), journal, coalesce(nullif(auteur_ar,''), auteur), titre, chapeau FROM articles WHERE section = 'tactique' AND date >= date('now','-14 days') ORDER BY date DESC\")]"`
    Pour un sujet précis : `python connaissance.py <mots> --jours 30`.

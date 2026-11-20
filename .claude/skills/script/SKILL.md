@@ -33,7 +33,7 @@ Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
   - publication Facebook (Page « Peña Madridista de Montréal ») : celle qui est demandée. Si elle n'est pas précisée, demande-la en une ligne (français, anglais, espagnol, ou les trois à la suite).
 
 ## 2. Rassembler la matière
-1. Lis `connaissance.md` (faits validés et préférences de l'utilisateur, dont sa méthode d'analyse).
+1. Lis `connaissance.md` (faits validés et préférences de l'utilisateur, dont sa méthode d'analyse). Pour une comparaison ou une analogie historique, lis aussi `histoire.md` (saisons repères, avec leurs pistes de comparaison).
 2. Cherche dans la base : `python connaissance.py <mots> --jours <n> --court` (une ligne par article), puis lis en entier les articles retenus avec `python connaissance.py --id <numéros>`. Essaie plusieurs mots : noms latins (« valencia », « guler »), clés de joueurs de config.json (« mbappe »), noms arabes (« فالنسيا »). Élargis `--jours` si c'est trop maigre.
 3. Pour un match, demande la page WhoScored enregistrée (Ctrl+S) dans le dossier du projet, puis lance `python whoscored.py "<fichier>.html"` : systèmes, notes et stats par joueur, à citer comme « WhoScored ».
 4. Pour des stats de saison d'un joueur ou du club (par 90 minutes, en percentiles face aux 7 grands championnats : xG, PPDA, duels, passes...), utilise DataMB : lien du joueur dans le champ `datamb` de sa fiche dans `config.json`, lien du club dans `datamb_club`. Ses chiffres sont chargés en JavaScript, et le site interdit la lecture automatique de ses fichiers de données : donne le lien à l'utilisateur et demande-lui les chiffres utiles, ou une capture d'écran. Cite toujours « DataMB » avec la saison, et ne reproduis jamais ses graphiques (radars, nuages de points).

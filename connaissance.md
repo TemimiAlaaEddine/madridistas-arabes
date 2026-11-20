@@ -6,7 +6,7 @@ Dernier fait relu : 18
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
-- Saison 2025-26 : aucun titre, avec Xabi Alonso puis Álvaro Arbeloa. Ensuite : José Mourinho nommé entraîneur, Florentino Pérez réélu. Source : validé par l'utilisateur (2026-11-08).
+- Saison 2025-26 : aucun titre, avec Xabi Alonso puis Álvaro Arbeloa (promu de la Castilla en cours de saison ; validé par l'utilisateur le 2026-11-20). Ensuite : José Mourinho nommé entraîneur, Florentino Pérez réélu. Source : validé par l'utilisateur (2026-11-08).
 - Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ selon SI, environ 107 M£ selon TEAMtalk), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Source : Sports Illustrated.
 - Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Source : TEAMtalk.
 - Été 2026 : Nico Paz passe la saison à Côme, avec une option de rachat pour le Real. Source : Les Nouvelles du Foot.
@@ -82,6 +82,27 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 - 2026-11-07, J12 : Güler meilleure note du match (9,2 : 1 but, 1 passe décisive, 3 passes clés) ; tirs 19 contre 4 (11 cadrés contre 2). Source : WhoScored.
 
 ## Journalistes et médias (qui pense quoi)
+Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après les titres et chapeaux de la base (n° = article) ; validé par l'utilisateur le 2026-11-20. Sert à relativiser une opinion selon la ligne habituelle de son auteur, pas à la disqualifier.
+- Débat Vinícius, camp « il doit jouer » : Roberto Gómez (radio Marca) juge « hallucinante » l'idée de le vendre en janvier et veut le voir titulaire contre le Celta (144, 506, 531) ; La Galerna refuse de « maltraiter » Vinícius et répond à Mijatović (478, 495).
+- Débat Vinícius, camp « le banc d'abord » : Jesús Gallego (AS, 171), Javi Tintó (radio Marca, 157), Manuel Jabois (SER, 373), Pablo Villa et Pepe Brasín (radio Marca, 143, 145) ; Juan Casillas Bayo (ABC) évoque même une vente (153).
+- Débat Vinícius, entre les deux : Álvaro Benito (SER) : l'équipe a mieux joué sans lui, mais son retour dépend de son travail défensif (439, 503) ; Kiyan Sobhani (Managing Madrid) : critiquer une star, oui, mais avec justesse (502) ; Rubén Rodríguez (El Confidencial) : ancienneté contre mérite (239, 470).
+- Joel del Río (Marca) : chroniqueur du « Madrid de Mourinho », convaincu par le projet (« Eau de Mourinho »), Bernardo clé de l'équilibre, gestion physique planifiée ; riche en coulisses (96, 198, 212, 221, 359).
+- Miguel Ángel Lara (Marca) : pro-Diomande, Vinícius doit regagner sa place (90) ; Bellingham meilleur joueur de l'équipe (67, 137) ; Mbappé intouchable (15, 122).
+- Sergio Rodríguez C. (Marca) : analyse par les chiffres ; critique de l'efficacité de Vinícius depuis 2024 (3, 141) ; Diomande mérite de rester à gauche (219).
+- Santiago Siguero et Pablo Polo (Marca) : analyse tactique plutôt neutre. Siguero : Valverde latéral « joueur-système », Trent grand perdant (17, 215, 512). Polo : Bernardo améliore la possession (16).
+- Raúl Varela (Marca, directeur de « La Tribu ») : enthousiaste, Madrid meilleur de la Liga (224, 231), prudent après le Clásico (7). David Sánchez (même émission), contrepoids : freine l'euphorie, voit le Barça favori, dit que Madrid a été aidé par l'arbitrage contre le Racing, critique Mbappé (5, 24, 85).
+- Alfredo Relaño (Marca, ancien directeur) : salue le choix offensif de Mourinho dans le Clásico, compare Bellingham à Di Stéfano (27, 472).
+- Marco Ruiz (AS) : la référence tactique ; a décrit le modèle Bernardo–Güler–Diomande et les quatre changements de Mourinho (57, 275, 367).
+- Javier Sillés et Mario de la Riva (AS) : analyse chiffrée, plutôt positive (58, 454 ; 84, 483, 501).
+- Frédéric Hermel (AS) : pro-Mbappé, le meilleur joueur mérite des privilèges (101, 375) ; prudent sur le réveil de Vinícius (434). Réponse dans le même journal de Manuel Matamoros : « de l'exigence, pas des privilèges » (441).
+- Tomás Roncero (AS) : la voix du madridisme enthousiaste (55).
+- Rubén Cañizares (ABC) : très dur avec Vinícius (« en route vers nulle part »), convaincu par l'identité de jeu de Mourinho (12, 102, 149, 206).
+- Santi Cañizares (Marca, ancien gardien) : propose Vinícius en avant-centre à la place de Mbappé (165, 250).
+- Pedja Mijatović (Marca, SER) : voit Vinícius « souffrir » à Madrid, plus heureux en sélection (164, 475).
+- La Galerna : site madridiste militant, sans auteur nommé dans la base ; attaque le Barça (affaire Negreira), Tebas et la presse « anti-Madrid », sur un ton satirique (332, 361, 398). Parti pris assumé.
+- Max Franco Sanchez (Foot Mercato) : pro-Diomande, sévère avec Vinícius (« le cauchemar continue ») et avec Mbappé en équipe de France (97, 135, 412).
+- Emre Sarigul (Turkish Football) : présente toujours Güler en héros, biais national (22, 33, 46). Trivela : angle brésilien sur Vinícius et Endrick (364, 388).
+- Presse et radio catalanes : dénoncent un arbitrage favorable au Real (393, Foot Mercato d'après la presse catalane) ; attaquent Mourinho (Sique Rodríguez, SER Catalunya, 520).
 
 ## Sujets récurrents (débats, mercato, club)
 - Le milieu de terrain, question ouverte depuis l'échec du dossier Rodri (été 2026). Source : The Hard Tackle.
