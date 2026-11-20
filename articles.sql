@@ -7282,4 +7282,6 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mendy-podria-entrar-en-l
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/20/radio-espanhola-preve-incendio-no-real-madrid-caso-vini-jr-nao-volte-como-titular.ghtml','Rádio espanhola prevê "incêndio" no Real Madrid caso Vini Jr. não volte como titular','2026-11-20T08:41:13');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-madrid-asegura-su-futuro-f202611-n/','El Madrid asegura su futuro','2026-11-20T09:11:48');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a69444336487947006-du-lourd-attend-la-france-en-ligue-des-nations-le-plan-de-jose-mourinho-avec-arda-guler','Du lourd attend la France en Ligue des Nations, le plan de José Mourinho avec Arda Güler','2026-11-20T09:11:48');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/noticia/2026/11/20/mourinho-afasta-pressao-sobre-titularidade-de-vini-jr-ninguem-deve-jogar-por-decreto.ghtml','Mourinho afasta pressão sobre titularidade de Vini Jr.: "Ninguém deve jogar por decreto"','2026-11-20T09:31:11');
+INSERT INTO "vus" VALUES('https://www.lagalerna.com/caso-negreira-el-documental-que-nunca-debimos-tener-que-hacer/','Caso Negreira: el documental que nunca debimos tener que hacer','2026-11-20T09:31:16');
 COMMIT;
