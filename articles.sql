@@ -5123,6 +5123,7 @@ INSERT INTO "liens_x" VALUES('12059830','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12060123','https://x.com/ElMadridistAlaa/status/2123690834315067851','2026-11-20T08:12:11.719Z');
 INSERT INTO "liens_x" VALUES('12061227','https://x.com/ElMadridistAlaa/status/2123705888922100183','2026-11-20T09:12:09.377Z');
 INSERT INTO "liens_x" VALUES('12061230','https://x.com/ElMadridistAlaa/status/2123705907171508533','2026-11-20T09:12:05.335Z');
+INSERT INTO "liens_x" VALUES('12061753','https://x.com/ElMadridistAlaa/status/2123713331760685096','2026-11-20T09:41:46.758Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7313,4 +7314,8 @@ INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/fut
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/caso-negreira-el-documental-que-nunca-debimos-tener-que-hacer/','Caso Negreira: el documental que nunca debimos tener que hacer','2026-11-20T09:31:16');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/ni-20-de-rueda-de-prensa-y-ya-se-la-cuela-a-los-periodistas-la-pulla-de-mou-tras-la-primera-pregunta-f202611-v/','Ni 20″ de rueda de prensa y ya se la cuela a los periodistas: la ‘pulla’ de Mou tras la primera pregunta','2026-11-20T09:40:55');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/20/6b001388fdddffcf178b45a1.html','Mensaje de Mourinho sobre Vinicius: "Aquí no tenemos jugadores con privilegios o que tienen que jugar por decreto"','2026-11-20T09:41:24');
+INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/mourinho-avisa-vinicius-invierno-verano-juega-decreto-20261119103732-nt.html','Mourinho avisa a Vinicius: «Ya estamos en invierno, no en verano, y aquí nadie juega por decreto ni hay privilegios»','2026-11-20T09:51:19');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/20/mourinho-aqui-hay-privilegios-nadie-juega-decreto.html','Mourinho: "Aquí no hay privilegios y nadie juega por decreto','2026-11-20T09:51:19');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/20/jose-mourinho-no-descarta-que-el-regreso-de-vinicius-a-laliga-sea-como-suplente-aqui-no-tenemos-jugadores-con-privilegios-cadena-ser/','José Mourinho no descarta que el regreso de Vinicius a LaLiga sea como suplente: "Aquí no tenemos jugadores con privilegios"','2026-11-20T09:51:19');
+INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/mourinho-avisa-antes-del-celta-no-hay-jugadores-aqui-con-privilegios.html','Mourinho avisa antes del Celta: «No hay jugadores aquí con privilegios»','2026-11-20T09:51:19');
 COMMIT;
