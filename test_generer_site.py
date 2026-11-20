@@ -583,6 +583,34 @@ assert t.controler_thread(con, 23, ["🚨 عاجل | غولر يمدد عقده 
 con.close()
 print("OK contrôles avant envoi")
 
+# conférence : les déclarations suivantes de la même personne partent en réponse sous le 1er thread des 6 dernières heures
+assert t.orateur("🎙️ مؤتمر مورينيو | «نص»") == t.orateur("🗣️ مورينيو | «نص آخر»") == "مورينيو" and t.orateur("بلا تسمية") == ""
+con = sqlite3.connect(":memory:")
+con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, mode TEXT)")
+con.execute("CREATE TABLE liens_x (typefully TEXT PRIMARY KEY, url TEXT, date TEXT)")
+t.connexion_threads(con)
+from datetime import timedelta
+_m = lambda h: (t.maintenant() - timedelta(hours=h)).isoformat(timespec="seconds")
+for i, mode, tw, st, h in ((1, "conference", "🎙️ مؤتمر مورينيو | «أ»", "immédiat", 1), (2, "conference", "🗣️ مورينيو | «ب»", "immédiat", 0.5),
+                           (3, "conference", "🗣️ روديغر | «ج»", "immédiat", 1), (4, "conference", "🗣️ فالفيردي | «د»", "immédiat", 8),
+                           (5, "conference", "🗣️ كورتوا | «هـ»", "bloqué : test", 1)):
+    con.execute("INSERT INTO articles VALUES (?, ?)", (i, mode))
+    con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully, envoye) VALUES (?, ?, ?, ?, ?, ?)",
+                (i, json.dumps([tw]), st, _m(h), str(100 + i), _m(h)))
+con.execute("INSERT INTO liens_x VALUES ('101', 'https://x.com/a/status/1', '')")
+assert t.fil_conference(con, 9, "🗣️ مورينيو | «جديد»") == "https://x.com/a/status/1"  # le plus ancien thread de Mourinho
+_vrai = t.typefully_api
+t.typefully_api = lambda chemin, corps=None: {"x_published_url": "https://x.com/a/status/3"} if chemin == "drafts/103" else {}
+try:
+    assert t.fil_conference(con, 9, "🎙️ مؤتمر روديغر | «جديد»") == "https://x.com/a/status/3"  # adresse pas encore relevée : demandée
+finally:
+    t.typefully_api = _vrai
+assert t.fil_conference(con, 9, "🗣️ فالفيردي | «جديد»") is None  # il y a 8 h : nouveau thread
+assert t.fil_conference(con, 9, "🗣️ كورتوا | «جديد»") is None  # thread bloqué : ne compte pas
+assert t.fil_conference(con, 9, "📰 خبر | بلا متحدث") is None
+con.close()
+print("OK conférences en réponse")
+
 # retrait : suppression du post Facebook enregistré, adresse du thread X à supprimer à la main
 con = sqlite3.connect(":memory:")
 con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY)")

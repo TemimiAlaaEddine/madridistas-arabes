@@ -614,6 +614,35 @@ def sans_tweet_de_lien(tweets):
     return ([f"{x}\n\n{i}/{len(reste)}" for i, x in enumerate(reste, 1)] if len(reste) > 1 else reste), "now"
 
 
+def orateur(tweet):
+    """Qui parle, d'après l'étiquette du 1er tweet : « 🎙️ مؤتمر مورينيو | » et « 🗣️ مورينيو | » donnent « مورينيو »."""
+    m = ETIQUETTE.match(tweet.strip())
+    return re.sub(r"[^\w\s]", "", m[0]).replace("مؤتمر", "").strip() if m else ""
+
+
+def fil_conference(con, article_id, tweet, heures=6):
+    """Adresse X du 1er thread des dernières heures où la même personne parle (même conférence ou interview) : les
+    déclarations suivantes partent en réponse dessous au lieu de threads séparés (3 threads Rüdiger le 18 nov.). None sinon."""
+    qui = orateur(tweet)
+    if not qui:
+        return None
+    for typefully, tweets in con.execute(
+            f"SELECT t.typefully, t.tweets FROM threads t JOIN articles a ON a.id = t.article_id WHERE {ENVOYES}"
+            " AND a.mode = 'conference' AND t.article_id != ? AND t.envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)"
+            " ORDER BY t.envoye", (article_id, f"-{heures} hours")):
+        if orateur(json.loads(tweets)[0]) != qui:
+            continue
+        url = con.execute("SELECT url FROM liens_x WHERE typefully = ?", (typefully,)).fetchone() if con.execute(
+            "SELECT 1 FROM sqlite_master WHERE name = 'liens_x'").fetchone() else None
+        if url:
+            return url[0]
+        try:  # publié au passage précédent : adresse pas encore relevée
+            return typefully_api(f"drafts/{typefully}").get("x_published_url")
+        except (OSError, ValueError):
+            return None
+    return None
+
+
 def vers_typefully(con, couvertures, dossier_couv):
     """Dépose les nouveaux threads dans Typefully, la photo de l'article source sur le 1er tweet (sinon la couverture) :
     au prochain créneau libre de sa file (publiés seuls, le plus ancien d'abord) si "typefully_publish_at" vaut
@@ -656,6 +685,10 @@ def vers_typefully(con, couvertures, dossier_couv):
                 posts[0]["media_ids"] = medias
             titre = (f"⛔ {', '.join(motifs)} | " if motifs else "") + t["titre"]
             corps = {"draft_title": titre[:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
+            parent = fil_conference(con, t["article_id"], tweets[0]) if t["mode"] == "conference" else None
+            if parent:  # même conférence déjà publiée : en réponse sous son 1er thread
+                corps["platforms"]["x"]["settings"] = {"reply_to_url": parent}
+                print(f"  Typefully : article {t['article_id']} en réponse sous {parent}")
             if not motifs and (quand or CONFIG.get("typefully_publish_at")):  # bloqué : simple brouillon, publié à la main
                 corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)
