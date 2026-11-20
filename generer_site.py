@@ -346,8 +346,11 @@ def enregistrer(reponses, items, chemin=DB):
         if not isinstance(i, int) or not 1 <= i <= len(items) or not r.get("titre") or not r.get("texte"):
             continue
         nt = normaliser_titre(str(r["titre"]))
-        # titres de moins de 4 mots : ressemblance sans valeur
-        if len(nt.split()) >= 4 and any(SequenceMatcher(None, nt, t).ratio() >= SEUIL_DOUBLON for t in recents):
+        # titres de moins de 4 mots : ressemblance sans valeur ; joueurs différents : pas un doublon
+        # (« كورتوا يمدّد عقده... » écarté le 20 nov. comme doublon de « تشواميني يمدد عقده... », 83 %)
+        pn = threads.personnes_citees(nt)
+        if len(nt.split()) >= 4 and any(SequenceMatcher(None, nt, t).ratio() >= SEUIL_DOUBLON
+                                        and not (pn and (pt := threads.personnes_citees(t)) and not pn & pt) for t in recents):
             print(f"  doublon écarté : {r['titre']}")
             continue
         recents.append(nt)
@@ -912,6 +915,8 @@ def a_reessayer(it):
     age = (maintenant() - datetime.fromisoformat(it["publie"])).total_seconds() / 3600
     if age >= CONFIG.get("attente_page_heures", 6):
         return False
+    if it.get("officiel") and "Web Oficial" in it.get("titre", ""):  # titre générique du site : page lue avant d'être prête
+        return True  # (communiqué Courtois du 20 nov. lu à 11:01 sans contenu, jamais relu)
     if it.get("officiel") and CONFERENCE_CLUB.search(it["lien"]):
         # le club crée la page avant la conférence et la complète pendant : lue trop tôt, le thread serait presque vide
         # (page complète : ~6 300 caractères le 6 nov.) ; on attend qu'elle soit longue et plus modifiée depuis 15 min

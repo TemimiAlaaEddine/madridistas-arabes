@@ -403,6 +403,10 @@ with tempfile.TemporaryDirectory() as tmp:
     assert g.enregistrer([{"id": 1, "titre": "ابنا إيكر كاسياس يغادران ريال مدريد إلى ليغانيس", "texte": "ن"},
                           {"id": 2, "titre": "ابنا إيكر كاسياس يغادران أكاديمية ريال مدريد إلى ليغانيس", "texte": "ن"}], src, db) == 1
     assert g.enregistrer([{"id": 3, "titre": "ريال مدريد يجدد عقد المدافع الشاب أليخاندرو كاستانيو حتى 2030", "texte": "ن"}], src, db) == 1
+    # même tournure, autre joueur : pas un doublon (Courtois écarté à tort le 20 nov., 83 % avec Tchouaméni)
+    src2 = [{"lien": f"https://ex.com/p{k}", "titre": "T", "auteur": "", "source": "AS", "pays": "es"} for k in "ab"]
+    assert g.enregistrer([{"id": 1, "titre": "تشواميني يمدد عقده مع ريال مدريد حتى صيف 2032", "texte": "ن"},
+                          {"id": 2, "titre": "كورتوا يمدّد عقده مع ريال مدريد حتى 2028", "texte": "ن"}], src2, db) == 2
 print("OK doublons par titre arabe")
 # faits durables : 2 au plus par article, même fait venu d'un autre journal ignoré, trop court ignoré
 with tempfile.TemporaryDirectory() as tmp:
@@ -1121,6 +1125,8 @@ assert g.a_reessayer({**_conf, "texte": "x" * 800})  # presque vide
 assert g.a_reessayer({**_conf, "modifie": commun.maintenant() - timedelta(minutes=5)})  # encore complétée
 assert not g.a_reessayer({**_conf, "texte": "x" * 800, "publie": vieux})  # au bout de 6 h : rédigée telle quelle
 assert not g.a_reessayer({**_conf, "lien": "https://www.realmadrid.com/es-ES/noticias/club/comunicados/x", "texte": "x" * 800})  # communiqué : tout de suite
+_comm = {**_conf, "lien": "https://www.realmadrid.com/es-ES/noticias/club/comunicados/x", "titre": "Noticias del Real Madrid | Web Oficial"}
+assert g.a_reessayer(_comm) and not g.a_reessayer({**_comm, "publie": vieux})  # page pas encore prête : relue au passage suivant
 appels, marques = [], []
 vrais = g.appeler_claude, g.marquer_vus, g.texte_complet
 g.appeler_claude, g.marquer_vus = (lambda *a: appels.append(1) or "[]"), (lambda items, db: marques.extend(items))
