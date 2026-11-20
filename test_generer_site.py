@@ -611,7 +611,7 @@ assert t.controler_thread(con, 23, ["🚨 عاجل | غولر يمدد عقده 
 con.close()
 print("OK contrôles avant envoi")
 
-# conférence : les déclarations suivantes de la même personne partent en réponse sous le 1er thread des 6 dernières heures
+# conférence : un seul thread par personne sur 6 h (X interdit les réponses par l API)
 assert t.orateur("🎙️ مؤتمر مورينيو | «نص»") == t.orateur("🗣️ مورينيو | «نص آخر»") == "مورينيو" and t.orateur("بلا تسمية") == ""
 con = sqlite3.connect(":memory:")
 con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, mode TEXT)")
@@ -625,19 +625,23 @@ for i, mode, tw, st, h in ((1, "conference", "🎙️ مؤتمر مورينيو 
     con.execute("INSERT INTO articles VALUES (?, ?)", (i, mode))
     con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully, envoye) VALUES (?, ?, ?, ?, ?, ?)",
                 (i, json.dumps([tw]), st, _m(h), str(100 + i), _m(h)))
-con.execute("INSERT INTO liens_x VALUES ('101', 'https://x.com/a/status/1', '')")
-assert t.fil_conference(con, 9, "🗣️ مورينيو | «جديد»") == "https://x.com/a/status/1"  # le plus ancien thread de Mourinho
-_vrai = t.typefully_api
-t.typefully_api = lambda chemin, corps=None: {"x_published_url": "https://x.com/a/status/3"} if chemin == "drafts/103" else {}
-try:
-    assert t.fil_conference(con, 9, "🎙️ مؤتمر روديغر | «جديد»") == "https://x.com/a/status/3"  # adresse pas encore relevée : demandée
-finally:
-    t.typefully_api = _vrai
-assert t.fil_conference(con, 9, "🗣️ فالفيردي | «جديد»") is None  # il y a 8 h : nouveau thread
-assert t.fil_conference(con, 9, "🗣️ كورتوا | «جديد»") is None  # thread bloqué : ne compte pas
-assert t.fil_conference(con, 9, "📰 خبر | بلا متحدث") is None
+assert t.conference_publiee(con, 9, "🗣️ مورينيو | «جديد»") and t.conference_publiee(con, 9, "🎙️ مؤتمر روديغر | «جديد»")
+assert not t.conference_publiee(con, 9, "🗣️ فالفيردي | «جديد»")  # il y a 8 h : nouveau thread
+assert not t.conference_publiee(con, 9, "🗣️ كورتوا | «جديد»")  # thread bloqué : ne compte pas
+assert not t.conference_publiee(con, 9, "📰 خبر | بلا متحدث")
 con.close()
-print("OK conférences en réponse")
+# conférence de l'entraîneur au tri : Marca/AS gardés d'office, les autres journaux écartés
+_vrai = g.appeler_claude
+g.appeler_claude = lambda *a: '[{"id": 2, "type": "conference"}, {"id": 3, "type": "conference"}, {"id": 4, "type": "info"}]'
+try:
+    _g, _e = g.trier([{"source": "Marca - Real Madrid", "titre": "Mourinho: \"Aquí no hay privilegios\"", "resume": ""},
+                      {"source": "El Mundo - Fútbol", "titre": "Mourinho, sobre Vinicius", "resume": ""},
+                      {"source": "Relevo - Fútbol", "titre": "Rüdiger: \"Estamos bien\"", "resume": ""},
+                      {"source": "AS - Futbol", "titre": "Courtois renueva", "resume": ""}])
+finally:
+    g.appeler_claude = _vrai
+assert [x["source"] for x in _g] == ["Marca - Real Madrid", "Relevo - Fútbol", "AS - Futbol"] and _e[0]["source"] == "El Mundo - Fútbol"
+print("OK un seul thread par conférence")
 
 # retrait : suppression du post Facebook enregistré, adresse du thread X à supprimer à la main
 con = sqlite3.connect(":memory:")

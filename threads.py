@@ -642,27 +642,14 @@ def orateur(tweet):
     return re.sub(r"[^\w\s]", "", m[0]).replace("مؤتمر", "").strip() if m else ""
 
 
-def fil_conference(con, article_id, tweet, heures=6):
-    """Adresse X du 1er thread des dernières heures où la même personne parle (même conférence ou interview) : les
-    déclarations suivantes partent en réponse dessous au lieu de threads séparés (3 threads Rüdiger le 18 nov.). None sinon."""
+def conference_publiee(con, article_id, tweet, heures=6):
+    """Un thread des dernières heures où la même personne parle (même conférence ou interview) est déjà parti : un seul
+    thread par conférence. X interdit de publier des réponses par l'API (403, 20 nov.) : les suivantes ne partent plus."""
     qui = orateur(tweet)
-    if not qui:
-        return None
-    for typefully, tweets in con.execute(
-            f"SELECT t.typefully, t.tweets FROM threads t JOIN articles a ON a.id = t.article_id WHERE {ENVOYES}"
-            " AND a.mode = 'conference' AND t.article_id != ? AND t.envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)"
-            " ORDER BY t.envoye", (article_id, f"-{heures} hours")):
-        if orateur(json.loads(tweets)[0]) != qui:
-            continue
-        url = con.execute("SELECT url FROM liens_x WHERE typefully = ?", (typefully,)).fetchone() if con.execute(
-            "SELECT 1 FROM sqlite_master WHERE name = 'liens_x'").fetchone() else None
-        if url:
-            return url[0]
-        try:  # publié au passage précédent : adresse pas encore relevée
-            return typefully_api(f"drafts/{typefully}").get("x_published_url")
-        except (OSError, ValueError):
-            return None
-    return None
+    return bool(qui) and any(orateur(json.loads(tw)[0]) == qui for (tw,) in con.execute(
+        f"SELECT t.tweets FROM threads t JOIN articles a ON a.id = t.article_id WHERE {ENVOYES}"
+        " AND a.mode = 'conference' AND t.article_id != ? AND t.envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)",
+        (article_id, f"-{heures} hours")))
 
 
 def vers_typefully(con, couvertures, dossier_couv):
@@ -677,6 +664,12 @@ def vers_typefully(con, couvertures, dossier_couv):
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
+        if t["mode"] == "conference" and conference_publiee(con, t["article_id"], tweets[0]):
+            print(f"  Typefully : article {t['article_id']} écarté, conférence déjà publiée")
+            con.execute("UPDATE threads SET typefully = 'sans', statut = 'bloqué : conférence déjà publiée', envoye = ? WHERE article_id = ?",
+                        (maintenant().isoformat(timespec="seconds"), t["article_id"]))
+            con.commit()
+            continue
         motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
         # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
@@ -707,10 +700,6 @@ def vers_typefully(con, couvertures, dossier_couv):
                 posts[0]["media_ids"] = medias
             titre = (f"⛔ {', '.join(motifs)} | " if motifs else "") + t["titre"]
             corps = {"draft_title": titre[:500], "platforms": {"x": {"enabled": True, "posts": posts}}}
-            parent = fil_conference(con, t["article_id"], tweets[0]) if t["mode"] == "conference" else None
-            if parent:  # même conférence déjà publiée : en réponse sous son 1er thread
-                corps["platforms"]["x"]["settings"] = {"reply_to_url": parent}
-                print(f"  Typefully : article {t['article_id']} en réponse sous {parent}")
             if not motifs and (quand or CONFIG.get("typefully_publish_at")):  # bloqué : simple brouillon, publié à la main
                 corps["publish_at"] = quand or CONFIG["typefully_publish_at"]
             d = typefully_api("drafts", corps)

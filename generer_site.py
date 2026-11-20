@@ -262,6 +262,7 @@ ARTICLES
 
 
 PROBABLE = threads.PROBABLE
+ENTRAINEUR = CONFIG.get("entraineur", "mourinho")
 
 
 def trier(items, deja=()):
@@ -283,6 +284,14 @@ def trier(items, deja=()):
             choix[i] = choix.get(i) or "info"
         elif journal(it) in ("Marca", "AS") and PROBABLE.search(it["titre"]):
             choix[i] = "info"
+        # conférence de l'entraîneur : un seul thread, tiré de Marca ou AS (choix du 20 nov.) ; gardés d'office pour ne pas
+        # être écartés en doublon d'un autre journal, les autres journaux écartés (sinon « déjà publié » bloquerait Marca/AS)
+        # shortcut: repérée au nom de l'entraîneur dans le titre, à revoir si un titre Marca/AS ne le nomme pas
+        elif ENTRAINEUR in unicodedata.normalize("NFKD", it["titre"]).encode("ascii", "ignore").decode().lower():
+            if journal(it) in ("Marca", "AS"):
+                choix[i] = choix.get(i) or "info"
+            elif choix.get(i) == "conference":
+                del choix[i]
         if i in choix:
             it["type"] = choix[i] if choix[i] in ("opinion", "conference") else "info"
             gardes.append(it)
