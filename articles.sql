@@ -8368,4 +8368,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/el-real-madr
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/real-madrid-celta-valoracion-comentarios.html','Uno a uno del Real Madrid contra el Celta: valoración y comentarios','2026-11-21T19:41:22');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/madrid-homenajea-jesus-miguel-puerta-9-bernabeu.html','El Madrid homenajea a Jesús de Miguel en la puerta 9 del Bernabéu','2026-11-21T19:55:48');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/estadisticas-real-madrid-celta-jornada-liga-20261121204103-di.html','Estadísticas del Real Madrid - Celta de la jornada 13 de la Liga','2026-11-21T19:55:50');
+INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-thibaut-courtois-moet-zich-meteen-omdraaien-pablo-duran-tikt-binnen-op-leeg-doel~a78c62bc/','LIVE. Thibaut Courtois moet zich meteen omdraaien: Pablo Durán tikt binnen op leeg doel','2026-11-21T20:21:04');
 COMMIT;
