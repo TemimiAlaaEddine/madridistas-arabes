@@ -5966,6 +5966,7 @@ INSERT INTO "liens_x" VALUES('12092184','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12092559','https://x.com/ElMadridistAlaa/status/2124222886336692582','2026-11-21T19:26:22.764Z');
 INSERT INTO "liens_x" VALUES('12093575','https://x.com/ElMadridistAlaa/status/2124238016080474277','2026-11-21T20:26:30.047Z');
 INSERT INTO "liens_x" VALUES('12093757','https://x.com/ElMadridistAlaa/status/2124241830602825786','2026-11-21T20:41:39.491Z');
+INSERT INTO "liens_x" VALUES('12093857','https://x.com/ElMadridistAlaa/status/2124245220036604195','2026-11-21T20:55:15.993Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -8417,4 +8418,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/el-emotivo-h
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/flick-nao-me-importo-real-madrid-nao-me-diz-respeito/','Flick: ‘Não me importo com o Real Madrid, o que eles fazem não me diz respeito’','2026-11-21T20:41:28');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/malen-overklast-kane-lamine-yamal-en-mbappe-en-oogst-lof-bij-gasperini','Malen overklast Kane, Lamine Yamal en Mbappé en oogst lof bij Gasperini','2026-11-21T20:45:55');
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/21/gonzalez-fuertes-responde-florentino-perez-mejor-arbitros-indignados-real-madrid-tv.html','González Fuertes responde a Florentino Pérez: "A lo mejor los árbitros tienen que estar indignados con Real Madrid TV"','2026-11-21T20:52:22');
+INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-aanvoerder-thibaut-courtois-en-real-madrid-nog-steeds-op-achterstand-kylian-mbappe-trapt-penalty-huizenhoog-over~a78c62bc/','LIVE. Aanvoerder Thibaut Courtois en Real Madrid nog steeds op achterstand: Kylian Mbappé trapt penalty huizenhoog over','2026-11-21T20:55:48');
 COMMIT;
