@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 18
+Dernier fait relu : 22
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -10,7 +10,7 @@ Dernier fait relu : 18
 - Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ selon SI, environ 107 M£ selon TEAMtalk), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Source : Sports Illustrated.
 - Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Source : TEAMtalk.
 - Été 2026 : Nico Paz passe la saison à Côme, avec une option de rachat pour le Real. Source : Les Nouvelles du Foot.
-- Nico Paz : le Real a vendu 100 % de ses droits à Côme pour environ 60 M€ et garde une option de rachat de 80 M€, activable seulement du 1er au 15 juillet 2027. Le directeur sportif de Côme, Lodi, confirme l'option. Sources : Defensa Central (Diego Vargas, 2026-10-21), OneFootball, Marca (Alberto Rubio, 2026-11-11) ; validé par l'utilisateur le 2026-11-18.
+- Nico Paz : le Real a vendu 100 % de ses droits à Côme pour environ 60 M€ et garde une option de rachat de 80 M€, activable seulement du 1er au 15 juillet 2027. Le directeur sportif de Côme, Lodi, confirme l'option. Sources : Defensa Central (Diego Vargas, 2026-10-21), OneFootball, Marca (Alberto Rubio, 2026-11-11), ABC (Rubén Cañizares, 2026-11-20) ; validé par l'utilisateur le 2026-11-18.
 - Nico Paz, Serie A 2026-27 (début novembre) : environ 3 buts et 3 passes décisives en 824 minutes, 10 titularisations. Source : FotMob ; validé par l'utilisateur le 2026-11-18.
 - Été 2026, cible manquée : Rodri a choisi Barcelone. Le milieu reste la question ouverte du mercato. Source : The Hard Tackle.
 - Vinícius est resté au club : il a marqué contre la Real Sociedad (26 août) et Mourinho en parle en conférence le 6 novembre (ABC, Pablo Sierra). Le 6 août 2026, le Real Madrid a annoncé sa prolongation jusqu'en juin 2032 (Trivela, Guilherme Ramos).
@@ -29,6 +29,8 @@ Dernier fait relu : 18
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
 - 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (site officiel), AS (Tomás Roncero), Foot Mercato (Jordan Pardon), Voetbal International.
 - 2026-11-19 : Arda Güler a été nommé Jeune joueur révélation de la Ligue des champions 2025-2026 par l'UEFA. Source : ABC (Miguel Zarza).
+- 2026-11-19 : Le Real Madrid a officialisé le 19 novembre 2026 la prolongation d'Aurélien Tchouaméni jusqu'au 30 juin 2032, comme Arda Güler (contrat jusqu'en 2032, novembre 2026). Sources : Marca (NACHO LABARGA), AS (Frédéric Hermel).
+- 2026-11-19 : Jude Bellingham a remporté le prix Mahou Five-Star Player d'octobre 2026, mois où le Real Madrid a gagné ses cinq matchs. Source : Managing Madrid (Kiyan Sobhani).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
