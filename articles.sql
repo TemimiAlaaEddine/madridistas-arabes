@@ -8346,4 +8346,6 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Habib-diall
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/endrick-es-el-mejor-en-su-posicion-veremos-que-se-puede-hacer-f202611-n/','“Endrick es el mejor en su posición, veremos qué se puede hacer”','2026-11-21T18:02:02');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/actualidad/once-inicial-del-real-madrid-ante-el-celta-21-11-2026','Once inicial del Real Madrid ante el Celta','2026-11-21T18:51:21');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4365665785846837632-real-madrid-celta-vigo-les-compositions-officielles','Real Madrid - Celta Vigo : les compositions officielles','2026-11-21T18:55:56');
+INSERT INTO "vus" VALUES('https://as.com/futbol/femenino/jensen-asalta-la-segunda-plaza-f202611-n/','Jensen asalta la segunda plaza','2026-11-21T19:01:25');
+INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-21u-houdt-aanvoerder-thibaut-courtois-zijn-netten-bij-real-proper-tegen-celta~a78c62bc/','LIVE (21u). Houdt aanvoerder Thibaut Courtois zijn netten bij Real proper tegen Celta?','2026-11-21T19:01:25');
 COMMIT;
