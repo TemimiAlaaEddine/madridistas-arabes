@@ -41,13 +41,18 @@ def sofascore(chemin):
     try:
         r = subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--virtual-time-budget=10000", "--dump-dom", url],
                            capture_output=True, timeout=90, check=True, creationflags=SANS_FENETRE)
-        return json.loads(html.unescape(re.search(r"<pre[^>]*>(.*)</pre>", r.stdout.decode("utf-8"), re.S).group(1)))
+        d = json.loads(html.unescape(re.search(r"<pre[^>]*>(.*)</pre>", r.stdout.decode("utf-8"), re.S).group(1)))
+        if "error" not in d:  # refus du navigateur (serveurs de GitHub) : Sofascore répond {"error": {"code": 403}} en JSON
+            return d
     except (subprocess.SubprocessError, OSError, TypeError, AttributeError, ValueError):
-        pass  # navigateur absent ou refusé (serveurs de GitHub) : repli sur Bright Data, qui échoue parfois au 1er essai
+        pass  # navigateur absent ou refusé : repli sur Bright Data, qui échoue parfois au 1er essai
     try:
-        return json.loads(bright_data(url))
+        d = json.loads(bright_data(url))
     except (subprocess.SubprocessError, ValueError):
-        return json.loads(bright_data(url))
+        d = json.loads(bright_data(url))
+    if "error" in d:
+        raise ValueError(f"Sofascore : {d['error']}")
+    return d
 
 
 def matchs_joues(calendrier):
