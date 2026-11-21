@@ -8395,4 +8395,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/ho
 INSERT INTO "vus" VALUES('https://as.com/futbol/el-madrid-se-vuelca-en-recuerdo-de-jesus-de-miguel-f202611-n/','El Madrid se vuelca en recuerdo de Jesús de Miguel','2026-11-21T20:35:50');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/el-emotivo-homenaje-del-bernabeu-a-la-familia-de-jesus-de-miguel-con-su-familia-en-el-cesped-cadena-ser/','El emotivo homenaje del Bernabéu a la familia de Jesús de Miguel con su familia en el césped','2026-11-21T20:35:50');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/flick-nao-me-importo-real-madrid-nao-me-diz-respeito/','Flick: ‘Não me importo com o Real Madrid, o que eles fazem não me diz respeito’','2026-11-21T20:41:28');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/malen-overklast-kane-lamine-yamal-en-mbappe-en-oogst-lof-bij-gasperini','Malen overklast Kane, Lamine Yamal en Mbappé en oogst lof bij Gasperini','2026-11-21T20:45:55');
 COMMIT;
