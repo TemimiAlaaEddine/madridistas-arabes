@@ -7875,4 +7875,5 @@ INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261121/mou
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/sultanes-swing-20261121025714-nt.html','Sultanes del swing','2026-11-21T02:11:40');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-21/real-madrid-asamblea-florentino-perez-rafa-nadal-datos-economicos_4468828/','Con Nadal y sin cambio societario: un Madrid de récord (pero menos dinero en caja que Barça y Atleti)','2026-11-21T04:01:17');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/liga/2026-11-21/deportista-seguir-jj-gabriel-real-madrid-juvenil-deseado-peligro_4469044/','El deportista a seguir | Por qué JJ Gabriel es el juvenil más deseado del mundo y el peligro para el Real Madrid','2026-11-21T04:01:53');
+INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-21/rafa-nadal-ocupa-la-escena-en-la-asamblea-de-socios-de-otras-cuentas-record-del-real-madrid.html','Rafa Nadal ocupa la escena en la asamblea de socios de otras cuentas récord del Real Madrid','2026-11-21T04:41:11');
 COMMIT;
