@@ -5882,6 +5882,7 @@ INSERT INTO "liens_x" VALUES('12086059','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12086197','https://x.com/ElMadridistAlaa/status/2124121907507458359','2026-11-21T12:45:21.574Z');
 INSERT INTO "liens_x" VALUES('12087274','https://x.com/ElMadridistAlaa/status/2124137008071389306','2026-11-21T13:45:24.610Z');
 INSERT INTO "liens_x" VALUES('12087536','https://x.com/ElMadridistAlaa/status/2124139890778730988','2026-11-21T13:56:35.118Z');
+INSERT INTO "liens_x" VALUES('12087625','https://x.com/ElMadridistAlaa/status/2124142039378096163','2026-11-21T14:05:21.278Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -8294,4 +8295,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/la-tercera-fase-de-mouri
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/javier-tebas-se-defiende-de-las-acusaciones-de-florentino-perez-laliga-seguira-investigando-el-caso-negreira-hasta-el-final-cadena-ser/','Javier Tebas se defiende de las acusaciones de Florentino Pérez: "LaLiga seguirá investigando el ''caso Negreira'' hasta el final"','2026-11-21T13:56:23');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Rafael-nadal-integre-le-conseil-d-administration-du-real-madrid/1745097#at_medium=RSS_feeds','Rafael Nadal intègre le conseil d''administration du Real Madrid','2026-11-21T14:01:39');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/silencio-consenso-20261121145320-nt.html','El silencio no es consenso','2026-11-21T14:02:17');
+INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-21u-houdt-thibaut-courtois-zijn-netten-bij-real-proper-tegen-celta~a78c62bc/','LIVE (21u). Houdt Thibaut Courtois zijn netten bij Real proper tegen Celta?','2026-11-21T14:05:50');
 COMMIT;
