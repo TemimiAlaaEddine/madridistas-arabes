@@ -8363,4 +8363,5 @@ INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-21u-houdt-aan
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/A-quelle-heure-et-sur-quelle-chaine-voir-real-madrid-celta-vigo-en-liga/1744428#at_medium=RSS_feeds','Où voir Real Madrid-Celta Vigo ?','2026-11-21T19:10:51');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-significativo-gesto-de-florentino-con-endrick-al-saludarle-f202611-v/','El significativo gesto de Florentino con Endrick al saludarle','2026-11-21T19:21:02');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/el-real-madrid-anuncia-su-intencion-de-recuperar-los-conciertos-en-el-santiago-bernabeu-cadena-ser/','El Real Madrid anuncia su intención de recuperar los conciertos en el Santiago Bernabéu','2026-11-21T19:26:09');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/real-madrid-celta-valoracion-comentarios.html','Uno a uno del Real Madrid contra el Celta: valoración y comentarios','2026-11-21T19:41:22');
 COMMIT;
