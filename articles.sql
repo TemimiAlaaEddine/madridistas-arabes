@@ -5626,6 +5626,7 @@ INSERT INTO "liens_x" VALUES('12078495','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12079497','https://x.com/ElMadridistAlaa/status/2124023760059764932','2026-11-21T06:15:21.612Z');
 INSERT INTO "liens_x" VALUES('12080502','https://x.com/ElMadridistAlaa/status/2124025020456521989','2026-11-21T06:20:19.133Z');
 INSERT INTO "liens_x" VALUES('12082317','https://x.com/ElMadridistAlaa/status/2124050213459677458','2026-11-21T08:00:25.778Z');
+INSERT INTO "liens_x" VALUES('12082446','https://x.com/ElMadridistAlaa/status/2124052699981443073','2026-11-21T08:10:21.283Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7951,4 +7952,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vitesse-is-van-de-leg-we-moet
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/el-once-titular-no-existe/','El once titular no existe','2026-11-21T07:56:32');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115622/real-madrid-vs-celta-vigo-2026-la-liga-lineups','Real Madrid vs Celta Vigo, 2026 La Liga: Predicted lineups','2026-11-21T08:05:53');
 INSERT INTO "vus" VALUES('https://as.com/futbol/raphinha-y-vinicius-en-el-planeta-brasil-f202611-n/','Raphinha y Vinicius, en el planeta Brasil','2026-11-21T08:06:27');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-gran-dia-de-rafa-nadal-f202611-n/','El gran día de Rafa Nadal','2026-11-21T08:10:59');
 COMMIT;
