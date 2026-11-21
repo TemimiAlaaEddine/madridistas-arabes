@@ -428,7 +428,6 @@
   "typefully_publish_at": "next-free-slot",
   "typefully_publish_at_actus": "now",
   "max_publications_heure": 8,
-  "max_urgences_jour": 3,
   "seuil_doublon": 0.6,
   "facebook_lien_en_commentaire": true,
   "modele_tri": "sonnet",

@@ -122,7 +122,6 @@ def alertes(con, seuil=3):
 
 
 # contrôles avant envoi : les contenus partent sans relecture, ce qui échoue part en brouillon (X) ou n'est pas publié (Facebook)
-INTERDITS = re.compile(r"[!！]|مفاجأة مدوية|زلزال|قنبلة")  # point d'exclamation et exagérations proscrits par STYLE
 APPATS = re.compile(r"ريتويت|رتويت|أعد التغريد|أعيدوا التغريد|تابعونا|تابع الحساب|فعّلوا التنبيهات")  # appel à l'engagement
 SOURCE = re.compile(r"\([^()\n]{2,80}\)")
 ETIQUETTE = re.compile(r"^[^|\n]{0,30}\|\s*")
@@ -158,6 +157,28 @@ def est_officiel(a):
     return "://www.realmadrid.com/" in (a["lien"] or "")
 
 
+PROMPT_DOUBLON = """Deux tweets d'un compte d'actualité du Real Madrid. Le premier est déjà publié.
+
+Déjà publié :
+{ancien}
+
+Nouveau :
+{nouveau}
+
+Le nouveau apporte-t-il un fait nouveau (résultat d'un vote, d'un match, chiffre, décision, nouvelle déclaration) ou redit-il la même nouvelle ?
+Réponds par un seul mot : NOUVEAU ou DOUBLON."""
+
+
+def meme_nouvelle(ancien, nouveau):
+    """Arbitre de l'anti-doublon textuel : « نادال يدخل مجلس الإدارة » (avant le vote) ≠ « نادال ... بـ99,5% » (le résultat), bloqué à tort le 21 nov.
+    Sans réponse de Claude : doublon, par prudence."""
+    try:
+        return "NOUVEAU" not in appeler_claude(PROMPT_DOUBLON.format(ancien=ancien, nouveau=nouveau),
+                                                CONFIG.get("modele_tri", "haiku"), "low").upper()
+    except ErreurClaude:
+        return True
+
+
 def controler_thread(con, article_id, tweets, officiel=False):
     """Motifs de blocage d'un thread avant envoi ([] : il peut partir). officiel : article du site du club, jamais un doublon
     (la confirmation officielle part même si la presse a donné la nouvelle avant, ex. Tchouaméni le 19 nov.)."""
@@ -166,18 +187,13 @@ def controler_thread(con, article_id, tweets, officiel=False):
         motifs.append("tweet trop long")
     if not SOURCE.search(tweets[0]):
         motifs.append("source absente du 1er tweet")
-    if any(INTERDITS.search(x) for x in tweets):
-        motifs.append("point d'exclamation ou exagération")
     if any(APPATS.search(x) for x in tweets):
         motifs.append("appel à l'engagement")
-    if tweets[0].lstrip().startswith("🚨") and sum(json.loads(r[0])[0].lstrip().startswith("🚨") for r in con.execute(
-            f"SELECT tweets FROM threads WHERE {ENVOYES} AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-24 hours')")
-    ) >= CONFIG.get("max_urgences_jour", 3):  # compté après lecture : le JSON en base peut encoder l'émoji (\ud83d...)
-        motifs.append("trop de 🚨 عاجل en 24 h")
     nouvelle = accroche(tweets[0])
     for r in con.execute(f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
                          " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-48 hours')", (article_id,)):
-        if not officiel and proche(nouvelle, accroche(json.loads(r[1])[0])):
+        ancien = json.loads(r[1])[0]
+        if not officiel and proche(nouvelle, accroche(ancien)) and meme_nouvelle(ancien, tweets[0]):
             motifs.append(f"doublon du thread de l'article {r[0]}")
             break
     return motifs
@@ -671,6 +687,13 @@ def vers_typefully(con, couvertures, dossier_couv):
             con.commit()
             continue
         motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
+        doublon = next((m for m in motifs if m.startswith("doublon")), None)
+        if doublon:  # confirmé par Claude : pas de brouillon à supprimer à la main
+            print(f"  Typefully : article {t['article_id']} écarté ({doublon})")
+            con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
+                        (f"bloqué : {doublon}", maintenant().isoformat(timespec="seconds"), t["article_id"]))
+            con.commit()
+            continue
         # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
         quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None

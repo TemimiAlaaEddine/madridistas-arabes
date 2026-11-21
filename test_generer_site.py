@@ -573,17 +573,18 @@ with tempfile.TemporaryDirectory() as tmp:
         assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 0 and not appels  # une nouvelle est déjà partie il y a moins d'une heure
         # contrôle en échec : simple brouillon, sans date de publication, motif en tête du titre
         t.CONFIG["max_publications_heure"] = 8
-        con.execute("UPDATE threads SET tweets = ? WHERE article_id = ?", (json.dumps(["إصابة جديدة في التدريب! (آس)"]), aid))
+        con.execute("UPDATE threads SET tweets = ? WHERE article_id = ?", (json.dumps(["إصابة جديدة في التدريب! (آس)", "ريتويت"]), aid))
         assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1
     finally:
         t.CONFIG.pop("typefully_publish_at_actus")
         t.CONFIG.pop("max_publications_heure")
-    assert "publish_at" not in appels[0] and appels[0]["draft_title"].startswith("⛔ point d'exclamation")
+    assert "publish_at" not in appels[0] and appels[0]["draft_title"].startswith("⛔ appel à l'engagement")
+    assert appels[0]["platforms"]["x"]["posts"][0]["text"] == "إصابة جديدة في التدريب! (آس)"  # « ! » accepté depuis le 21 nov.
     assert con.execute("SELECT statut FROM threads WHERE article_id = ?", (aid,)).fetchone()[0].startswith("bloqué")
     con.close()
 print("OK Typefully")
 
-# contrôles avant envoi : source, ton, appel à l'engagement, doublon (les threads bloqués ne comptent pas), trop de 🚨
+# contrôles avant envoi : source, appel à l'engagement, doublon (les threads bloqués ne comptent pas)
 con = sqlite3.connect(":memory:")
 t.connexion_threads(con)
 def envoye(i, accroche, statut="immédiat"):
@@ -591,11 +592,26 @@ def envoye(i, accroche, statut="immédiat"):
                 (i, json.dumps([f"{accroche}\n\n(ماركا)"]), statut, *[t.maintenant().isoformat(timespec="seconds")] * 2))
 assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود إلى التدريبات\n\n(ماركا)"]) == []
 assert t.controler_thread(con, 1, ["مبابي يعود إلى التدريبات"]) == ["source absente du 1er tweet"]
-assert t.controler_thread(con, 1, ["📰 خبر | زلزال في برنابيو\n\n(ماركا)"]) == ["point d'exclamation ou exagération"]
+assert t.controler_thread(con, 1, ["📰 خبر | زلزال في برنابيو!\n\n(ماركا)"]) == []  # ton libre depuis le 21 nov.
 assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود\n\n(ماركا)", "ريتويت"]) == ["appel à l'engagement"]
 envoye(10, "📰 خبر | مبابي يعود إلى التدريبات الجماعية مع الفريق")
 envoye(11, "📰 خبر | كورتوا يغيب عن مباراة السبت بسبب الإصابة", "bloqué : test")
+meme_nouvelle = t.meme_nouvelle
+t.meme_nouvelle = lambda ancien, nouveau: True  # Claude confirme le doublon
 assert t.controler_thread(con, 12, ["🚨 عاجل | مبابي يعود إلى التدريبات الجماعية مع الفريق\n\n(آس)"]) == ["doublon du thread de l'article 10"]
+t.meme_nouvelle = lambda ancien, nouveau: False  # Claude y voit un fait nouveau (Nadal élu à 99,5 % le 21 nov.)
+assert t.controler_thread(con, 12, ["🚨 عاجل | مبابي يعود إلى التدريبات الجماعية مع الفريق\n\n(آس)"]) == []
+t.meme_nouvelle = meme_nouvelle
+appeler = t.appeler_claude
+for reponse, attendu in (("NOUVEAU", False), ("DOUBLON", True), (t.ErreurClaude("quota"), True)):
+    def faux(*a, r=reponse):
+        if isinstance(r, Exception):
+            raise r
+        return r
+    t.appeler_claude = faux
+    assert t.meme_nouvelle("أ", "ب") is attendu, reponse
+t.appeler_claude = appeler
+t.meme_nouvelle = lambda ancien, nouveau: True
 assert t.controler_thread(con, 12, ["📰 خبر | كورتوا يغيب عن مباراة السبت بسبب الإصابة\n\n(آس)"]) == []  # le bloqué ne compte pas
 assert t.controler_thread(con, 12, ["✅ رسميًا | مبابي يعود إلى التدريبات الجماعية مع الفريق\n\n(ريال مدريد)"], officiel=True) == []  # confirmation du club
 assert t.est_officiel({"lien": "https://www.realmadrid.com/es-ES/noticias/club/comunicados/x"}) and not t.est_officiel({"lien": "https://www.marca.com/x"})
@@ -607,7 +623,7 @@ assert t.proche(t.accroche("📰 خبر | زيدان يؤكد غياب مباب�
 assert t.proche(t.accroche("ريال مدريد يراقب المدافع البرازيلي فيتاو لاعب مينيرو"), t.accroche("ريال مدريد يتابع المدافع البرازيلي فيتاو لاعب مينيرو"))
 for i, sujet in ((20, "فالفيردي"), (21, "رودريغو"), (22, "تشواميني")):
     envoye(i, f"🚨 عاجل | إصابة {sujet} في الركبة")
-assert t.controler_thread(con, 23, ["🚨 عاجل | غولر يمدد عقده حتى 2031\n\n(آس)"]) == ["trop de 🚨 عاجل en 24 h"]
+assert t.controler_thread(con, 23, ["🚨 عاجل | غولر يمدد عقده حتى 2031\n\n(آس)"]) == []  # plus de plafond de 🚨
 con.close()
 print("OK contrôles avant envoi")
 
