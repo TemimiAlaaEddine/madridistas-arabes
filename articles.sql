@@ -8324,4 +8324,5 @@ INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/silencio-conse
 INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-21u-houdt-thibaut-courtois-zijn-netten-bij-real-proper-tegen-celta~a78c62bc/','LIVE (21u). Houdt Thibaut Courtois zijn netten bij Real proper tegen Celta?','2026-11-21T14:05:50');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50549300/florentino-perez-javier-tebas-laliga-negreira-real-madrid','Madrid chief Pérez: "outrageous" that LaLiga president Tebas hasn''t resigned','2026-11-21T15:11:20');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/por-que-nico-paz-retorno-real-madrid-pode-ser-prejudicial/','Por que retorno de Nico Paz ao Real Madrid por R$ 520 milhões pode ser prejudicial','2026-11-21T15:41:41');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Habib-diallo-et-billal-brahimi-une-nouvelle-fois-pas-convoques-par-patrick-videira-pour-le-match-du-mans-a-marseille/1745158#at_medium=RSS_feeds','Habib Diallo et Billal Brahimi une nouvelle fois pas convoqués par Patrick Videira pour le match du Mans à Marseille','2026-11-21T17:50:59');
 COMMIT;
