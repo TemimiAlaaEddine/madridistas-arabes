@@ -1,53 +1,33 @@
-"""Lancement automatique de /match après chaque match du Real Madrid.
+"""Analyse d'après-match automatique, lancée par GitHub Actions (.github/workflows/apres_match.yml) toutes les 15 minutes.
 
-Usage : python apres_match.py --installer   (une fois : tâche planifiée Windows, toutes les 15 minutes, sans fenêtre)
-        python apres_match.py               (ce que lance la tâche)
-Les matchs viennent de matchs.json (calendrier.py, revue du lundi sur GitHub), lu dans la dernière version du dépôt
-(git fetch, sans toucher aux fichiers du PC). 2 h 30 après le coup d'envoi, Claude Code lance /match en mode automatique
-et le thread arrive en brouillon dans Typefully. Heure pas encore fixée : on attend 23 h 30 UTC le jour du match.
-3 essais par match, un par passage (WhoScored met parfois du temps à publier les stats).
-Suivi local (hors git) : matchs/suivi.json ; journal : matchs/journal.txt. Le PC doit être allumé, session Windows ouverte.
+Usage : python apres_match.py            (analyse le match fini, s'il y en a un)
+        python apres_match.py --a-faire  (affiche le match à analyser, ou rien : le workflow n'installe Claude Code que si besoin)
+Les matchs viennent de matchs.json (calendrier.py, revue du lundi). 2 h 30 après le coup d'envoi, Claude Code lance /match en
+mode automatique et écrit le thread dans scripts/ ; ce script le dépose ensuite en brouillon dans Typefully (API, sans date).
+Heure pas encore fixée : on attend 23 h 30 UTC le jour du match. 3 essais par match, un par passage (WhoScored met parfois du
+temps à publier les stats), rattrapage pendant 2 jours. Suivi dans suivi_matchs.json (enregistré dans le dépôt).
+Secrets GitHub : CLAUDE_CODE_OAUTH_TOKEN, TYPEFULLY_API_KEY, BRIGHTDATA_API_TOKEN.
 """
 import json
+import re
 import shutil
 import subprocess
 import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from match import DOSSIER, SANS_FENETRE
-from threads import heure_madrid
+from threads import CONFIG, LIMITE, heure_madrid, longueur, typefully_api
 
 BASE = Path(__file__).parent
-SUIVI = DOSSIER / "suivi.json"
+SUIVI = BASE / "suivi_matchs.json"
 ATTENTE = timedelta(hours=2, minutes=30)  # coup d'envoi + 2 h 30 : match fini, stats publiées
 ESSAIS = 3
-TACHE = "Madridistas apres-match"
-OUTILS = ["Bash(python *)", "Read", "Grep", "Glob", "Edit(scripts/**)", "WebSearch", "WebFetch",
-          "Agent", "Skill", "mcp__brightdata__scrape_as_markdown", "mcp__claude_ai_Typefully_-_Social_Media_Scheduler__create_draft"]
-CONSIGNE = ("/match --date {date}\n\nMode automatique, lancé par une tâche planifiée : personne ne répond. Lance "
-            "`python match.py --date {date}`. Thread X en arabe, format au choix. Ne pose aucune question, ne modifie pas "
-            "connaissance.md et saute l'étape 6. Termine par le lien du brouillon Typefully.")
-
-
-def journal(texte):
-    DOSSIER.mkdir(exist_ok=True)
-    with open(DOSSIER / "journal.txt", "a", encoding="utf-8") as f:
-        f.write(f"{datetime.now():%Y-%m-%d %H:%M} {texte}\n")
-
-
-def git(*args):
-    return subprocess.run(["git", *args], cwd=BASE, capture_output=True, text=True, encoding="utf-8", timeout=60,
-                          check=True, creationflags=SANS_FENETRE).stdout
-
-
-def calendrier():
-    try:  # la version du dépôt : matchs.json est réécrit chaque lundi par GitHub Actions
-        git("fetch", "-q", "origin", "main")
-        return json.loads(git("show", "origin/main:matchs.json"))
-    except Exception as err:
-        journal(f"! git : {err} ; matchs.json du PC utilisé")
-        return json.loads((BASE / "matchs.json").read_text(encoding="utf-8"))
+OUTILS = ["Bash(python *)", "Read", "Grep", "Glob", "Edit(scripts/**)", "WebSearch", "WebFetch", "Agent", "Skill"]
+CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personne ne répond. Lance `python match.py --date {date}`. "
+            "Thread X en arabe, format au choix. Ne pose aucune question, ne modifie pas connaissance.md, saute l'étape 6 et ne "
+            "dépose rien dans Typefully : écris seulement le fichier dans scripts/ (étape 3). Forme du fichier : le titre « # … » "
+            "et une ligne de contexte, puis une ligne « --- », puis les tweets séparés par des lignes « --- » (sans numérotation), "
+            "puis les sections « ## » (accroches, hashtags, sources). Termine ta réponse par la ligne « FICHIER: scripts/<nom>.md ».")
 
 
 def cle(m):
@@ -71,47 +51,64 @@ def a_analyser(matchs, suivi, utc):
             and not suivi.get(cle(m), {}).get("fait") and suivi.get(cle(m), {}).get("essais", 0) < ESSAIS]
 
 
+def tweets_du_fichier(texte):
+    """Les tweets d'un fichier de scripts/ écrit selon CONSIGNE : entre le premier « --- » et la première section « ## »."""
+    blocs = [t.strip() for t in texte.split("\n## ")[0].split("\n---\n")]
+    tweets = [t for t in blocs[1:] if t]
+    if not 2 <= len(tweets) <= 30:
+        raise ValueError(f"{len(tweets)} tweets lus dans le fichier")
+    trop_longs = [i for i, t in enumerate(tweets, 1) if longueur(t) > LIMITE - 6]  # 6 : place du « i/n »
+    if trop_longs:
+        raise ValueError(f"tweets trop longs : {trop_longs}")
+    return tweets
+
+
 def analyser(m):
+    """Lien du brouillon Typefully, ou ValueError avec la raison de l'échec."""
     exe = shutil.which("claude")
     if not exe:
-        return "Claude Code introuvable"
-    cmd = [exe, "-p", CONSIGNE.format(date=date_madrid(m)), "--allowedTools", *OUTILS]
+        raise ValueError("Claude Code introuvable")
     try:
-        r = subprocess.run(cmd, cwd=BASE, stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", timeout=1800, creationflags=SANS_FENETRE)
+        r = subprocess.run([exe, "-p", CONSIGNE.format(date=date_madrid(m)), "--allowedTools", *OUTILS], cwd=BASE,
+                           stdin=subprocess.DEVNULL, capture_output=True, text=True, encoding="utf-8", timeout=1800)
     except subprocess.TimeoutExpired:
-        return "pas de réponse en 30 minutes"
-    if r.returncode == 0 and "typefully.com" in r.stdout:
-        return None
-    return (r.stderr or r.stdout).strip()[-300:] or f"code {r.returncode}"
+        raise ValueError("pas de réponse de Claude en 30 minutes")
+    print(r.stdout[-3000:])
+    fichier = re.search(r"FICHIER:\s*(scripts/[^\s`*]+\.md)", r.stdout)
+    if r.returncode != 0 or not fichier:
+        raise ValueError((r.stderr or r.stdout).strip()[-300:] or f"code {r.returncode}")
+    tweets = tweets_du_fichier((BASE / fichier.group(1)).read_text(encoding="utf-8"))
+    posts = [{"text": f"{t}\n\n{i}/{len(tweets)}"} for i, t in enumerate(tweets, 1)]
+    d = typefully_api("drafts", {"draft_title": f"تحليل {m['match']} ({date_madrid(m)})",
+                                 "platforms": {"x": {"enabled": True, "posts": posts}}})  # sans publish_at : simple brouillon
+    return f"https://typefully.com/?d={d['id']}&a={CONFIG['typefully_social_set']}"
+
+
+def charger():
+    matchs = json.loads((BASE / "matchs.json").read_text(encoding="utf-8"))
+    suivi = json.loads(SUIVI.read_text(encoding="utf-8")) if SUIVI.exists() else {}
+    return matchs, suivi
 
 
 def passage(utc=None):
     utc = utc or datetime.now(timezone.utc).replace(tzinfo=None)
-    suivi = json.loads(SUIVI.read_text(encoding="utf-8")) if SUIVI.exists() else {}
-    for m in a_analyser(calendrier(), suivi, utc)[:1]:  # un match par passage
+    matchs, suivi = charger()
+    for m in a_analyser(matchs, suivi, utc)[:1]:  # un match par passage
         s = suivi.setdefault(cle(m), {"fait": False, "essais": 0})
         s["essais"] += 1
-        DOSSIER.mkdir(exist_ok=True)
-        SUIVI.write_text(json.dumps(suivi, ensure_ascii=False, indent=2), encoding="utf-8")  # essai compté même si on plante
-        erreur = analyser(m)
-        s["fait"] = erreur is None
-        SUIVI.write_text(json.dumps(suivi, ensure_ascii=False, indent=2), encoding="utf-8")
-        journal(f"{m['match']} ({date_madrid(m)}, essai {s['essais']}) : {'brouillon déposé' if s['fait'] else '! ' + erreur}")
-
-
-def installer():
-    pythonw = Path(sys.executable).with_name("pythonw.exe")
-    commande = f'"{pythonw if pythonw.exists() else sys.executable}" "{Path(__file__).resolve()}"'
-    subprocess.run(["schtasks", "/create", "/tn", TACHE, "/sc", "minute", "/mo", "15", "/tr", commande, "/f"], check=True)
-    print(f"Tâche « {TACHE} » installée (toutes les 15 minutes). Pour l'arrêter : schtasks /delete /tn \"{TACHE}\" /f")
+        try:
+            s["resultat"], s["fait"] = analyser(m), True
+        except (OSError, ValueError, KeyError) as err:
+            detail = err.read().decode("utf-8", "replace")[:300] if hasattr(err, "read") else ""
+            s["resultat"] = f"! {err} {detail}".strip()
+        print(f"{m['match']} ({date_madrid(m)}, essai {s['essais']}) : {s['resultat']}")
+        SUIVI.write_text(json.dumps(suivi, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 if __name__ == "__main__":
-    if sys.argv[1:] == ["--installer"]:
-        installer()
+    sys.stdout.reconfigure(encoding="utf-8")
+    if sys.argv[1:] == ["--a-faire"]:
+        matchs, suivi = charger()
+        print(" ; ".join(m["match"] for m in a_analyser(matchs, suivi, datetime.now(timezone.utc).replace(tzinfo=None))[:1]))
     else:
-        try:
-            passage()
-        except Exception as err:  # lancé sans fenêtre : l'erreur ne se voit que dans le journal
-            journal(f"! passage : {err!r}")
-            raise
+        passage()

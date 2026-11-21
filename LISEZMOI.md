@@ -12,7 +12,7 @@
 | `threads.py` | Threads X (Typefully) et publications sur la Page Facebook |
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
-| `apres_match.py` | Lance `/match` tout seul 2 h 30 après chaque match (tâche planifiée Windows toutes les 15 min, installée par `python apres_match.py --installer`) ; prochains matchs dans `matchs.json`, journal dans `matchs/journal.txt` |
+| `apres_match.py` | Analyse d'après-match automatique, sans le PC : workflow `apres_match.yml` toutes les 15 min ; 2 h 30 après chaque match de `matchs.json`, Claude Code lance `/match` et le thread part en brouillon dans Typefully. Suivi dans `suivi_matchs.json` (résultat de chaque essai, lien du brouillon). Secret GitHub `BRIGHTDATA_API_TOKEN` en plus des autres |
 | `match.py` | Stats du dernier match (WhoScored via Bright Data, Sofascore via Edge) pour la commande /match ; clé `brightdata_api_token` dans `secrets.json` |
 | `sources.py` | Revue des sources : santé des flux, rendement, sources à ajouter ou retirer |
 | `statut.py` | Tableau de bord de l'équipe d'agents, publié sur GitHub Pages après chaque passage |

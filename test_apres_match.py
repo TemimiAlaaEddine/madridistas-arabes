@@ -17,4 +17,14 @@ assert a.a_analyser(matchs, {}, datetime(2026, 11, 23, 22, 45)) == [], "plus de 
 assert a.a_analyser(matchs, {}, datetime(2026, 12, 13, 23, 0)) == [], "heure pas fixée : pas avant 23 h 30 UTC"
 assert a.a_analyser(matchs, {}, datetime(2026, 12, 13, 23, 30)) == [osasuna]
 assert a.date_madrid(celta) == "2026-11-21" and a.date_madrid({**celta, "debut": "2026-11-21T23:30:00"}) == "2026-11-22", "date de Madrid"
-print("OK")
+
+
+fichier = "# ثريد\nسياق\n---\nتغريدة 1\n---\nتغريدة 2\n\n---\n\n## المصادر\n- x"
+assert a.tweets_du_fichier(fichier) == ["تغريدة 1", "تغريدة 2"], "en-tête et sections « ## » écartés"
+for mauvais in ("# ثريد\n---\nوحيدة\n## x", "# ثريد\n---\n" + "ا" * 300 + "\n---\nب"):
+    try:
+        a.tweets_du_fichier(mauvais)
+        raise AssertionError("aurait dû refuser")
+    except ValueError:
+        pass
+print("OK fichier")

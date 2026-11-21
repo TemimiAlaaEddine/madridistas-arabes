@@ -85,12 +85,16 @@ def main():
     whoscored.afficher(d)
 
     # même match côté Sofascore : celui du même jour parmi les derniers matchs du club
-    evts = sofascore(f"team/{SOFA_EQUIPE}/events/last/0")["events"]
-    evt = next((e for e in reversed(evts) if datetime.fromtimestamp(e["startTimestamp"]).date() == date), None)
-    if not evt:
-        print("\n! Sofascore : match introuvable à cette date")
+    try:  # sur GitHub Actions, Sofascore peut refuser les serveurs : l'analyse continue avec WhoScored seul
+        evts = sofascore(f"team/{SOFA_EQUIPE}/events/last/0")["events"]
+        evt = next((e for e in reversed(evts) if datetime.fromtimestamp(e["startTimestamp"]).date() == date), None)
+        if not evt:
+            print("\n! Sofascore : match introuvable à cette date")
+            return
+        stats, compos = sofascore(f"event/{evt['id']}/statistics"), sofascore(f"event/{evt['id']}/lineups")
+    except (subprocess.SubprocessError, OSError, AttributeError, ValueError, KeyError) as err:
+        print(f"\n! Sofascore indisponible ({err!r}) : continue avec WhoScored seul")
         return
-    stats, compos = sofascore(f"event/{evt['id']}/statistics"), sofascore(f"event/{evt['id']}/lineups")
     (dossier / "sofascore.json").write_text(json.dumps({"event": evt, "statistics": stats, "lineups": compos}), encoding="utf-8")
     print("\n######## Sofascore")
     resume_sofascore(stats, compos)

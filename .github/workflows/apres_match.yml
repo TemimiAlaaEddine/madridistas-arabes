@@ -1,0 +1,51 @@
+name: Analyse d'après-match
+
+on:
+  schedule:
+    # la planification GitHub prend parfois du retard : sans gravité ici (3 essais, rattrapage pendant 2 jours)
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # bouton « Run workflow » : vérifier tout de suite s'il y a un match à analyser
+
+concurrency: apres_match # jamais deux analyses en même temps
+
+permissions:
+  contents: write # suivi_matchs.json et le thread (scripts/) enregistrés dans le dépôt
+
+jobs:
+  analyse:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser pillow
+      - name: Un match à analyser ?
+        id: a_faire
+        env:
+          PYTHONIOENCODING: utf-8
+        run: echo "match=$(python apres_match.py --a-faire)" >> "$GITHUB_OUTPUT"
+      - name: Installation de Claude Code (seulement s'il y a un match)
+        if: steps.a_faire.outputs.match != ''
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Stats, rédaction, brouillon Typefully
+        if: steps.a_faire.outputs.match != ''
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+          BRIGHTDATA_API_TOKEN: ${{ secrets.BRIGHTDATA_API_TOKEN }}
+          PYTHONIOENCODING: utf-8
+          PYTHONUNBUFFERED: 1
+        run: python apres_match.py
+      - name: Sauvegarde dans le dépôt
+        if: always() && steps.a_faire.outputs.match != ''
+        env:
+          MATCH: ${{ steps.a_faire.outputs.match }}
+        run: |
+          git config user.name "apres-match"
+          git config user.email "actions@users.noreply.github.com"
+          git add suivi_matchs.json scripts
+          git diff --cached --quiet || (git commit -m "Analyse d'après-match : $MATCH" && git pull --rebase && git push)
