@@ -1296,5 +1296,40 @@ with tempfile.TemporaryDirectory() as d:
     assert "Celta" in regle and "21:00" in regle and "mi-temps" in regle, regle
     assert calendrier.match_en_cours(datetime(2026, 11, 21, 19, 59)) == calendrier.match_en_cours(datetime(2026, 11, 21, 22, 30)) == ""
     assert calendrier.match_en_cours(datetime(2026, 12, 13, 1)) == ""  # heure pas encore fixée : date seule, pas de fenêtre
+    # suivi en direct : état noté à chaque changement, tweet de mi-temps une seule fois, rien hors fenêtre
+    def ligne(statut, sd, se):
+        sc = lambda v: f'"{v}"' if v is not None else "null"  # noqa: E731
+        return (f'"dateTime":"2026-11-21T20:00:00.000Z","dateTxt":null,"isScheduled":true,"status":"{statut}","venue":{{}},'
+                f'"homeTeam":{{"optaId":"x","logo":{{}},"name":"Real Madrid"}},"homeTeamScoreTotal":{sc(sd)},"homeScorers":null,'
+                f'"awayTeam":{{"optaId":"y","logo":{{}},"name":"Celta de Vigo"}},"awayTeamScoreTotal":{sc(se)}')
+    assert calendrier.etat(ligne("pre_match", None, None), "2026-11-21T20:00:00") == ("pre_match", "Real Madrid", None, "Celta de Vigo", None)
+    assert calendrier.etat('"status":"finished","dateTime":"2026-11-04T17:45:00.000Z","competition":{},"homeTeam":{"code":"AEK",'
+                           '"name":"AEK Atenas"},"homeTeamScoreTotal":"2","awayTeam":{"code":"RMA","name":"Real Madrid"},'
+                           '"awayTeamScoreTotal":"3"', "2026-11-04T17:45:00") == ("finished", "AEK Atenas", "2", "Real Madrid", "3")
+    cs = sqlite3.connect(":memory:")
+    page_live, envois = [ligne("pre_match", None, None)], []
+    vrai = (calendrier.lire_page, calendrier.appeler_claude, t.typefully_api, t.reglage)
+    calendrier.lire_page = lambda url: page_live[0]
+    calendrier.appeler_claude = lambda *a: "سيلتا فيغو"
+    t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": 9})[1]
+    t.reglage = lambda cle: "k"
+    try:
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 19, 50)) == 0  # avant le coup d'envoi : page pas lue
+        assert not cs.execute("SELECT name FROM sqlite_master WHERE name = 'suivi_match'").fetchone()
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 5)) == 0
+        page_live[0] = ligne("live", "1", "0")
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 30)) == 0
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 35)) == 0  # même état : pas de nouvelle ligne
+        page_live[0] = ligne("half_time", "1", "0")
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 50)) == 1
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 55)) == 0 and len(envois) == 1  # une seule fois
+        page_live[0] = ligne("finished", "2", "0")
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 55)) == 0
+    finally:
+        calendrier.lire_page, calendrier.appeler_claude, t.typefully_api, t.reglage = vrai
+    suivi = cs.execute("SELECT statut, score, typefully FROM suivi_match ORDER BY rowid").fetchall()
+    assert suivi == [("pre_match", "", None), ("live", "1-0", None), ("half_time", "1-0", "9"), ("finished", "2-0", None)], suivi
+    tw = envois[0]["platforms"]["x"]["posts"][0]["text"]
+    assert envois[0]["publish_at"] == "now" and "نهاية الشوط الأول" in tw and "ريال مدريد 1 - 0 سيلتا فيغو" in tw, tw
     calendrier.FICHIER = ancien
 print("OK calendrier et règle pendant un match")
