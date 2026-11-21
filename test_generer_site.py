@@ -1312,49 +1312,89 @@ with tempfile.TemporaryDirectory() as d:
     assert "Celta" in regle and "21:00" in regle and "mi-temps" in regle, regle
     assert calendrier.match_en_cours(datetime(2026, 11, 21, 19, 59)) == calendrier.match_en_cours(datetime(2026, 11, 21, 22, 30)) == ""
     assert calendrier.match_en_cours(datetime(2026, 12, 13, 1)) == ""  # heure pas encore fixée : date seule, pas de fenêtre
-    # suivi en direct : état noté à chaque changement, tweet de mi-temps une seule fois, rien hors fenêtre
+    # suivi en direct (Sofascore) : état noté à chaque changement ; début, buts, rouges, mi-temps, fin, chacun une seule fois
     import match as mt
     import subprocess
     coup_envoi = datetime(2026, 11, 21, 20, tzinfo=timezone.utc).timestamp()
-    def evt(code, desc, sd=None, se=None, debut=coup_envoi):  # forme des événements de l'API Sofascore
-        e = {"startTimestamp": int(debut), "status": {"code": code, "description": desc},
-             "homeTeam": {"name": "Real Madrid"}, "awayTeam": {"name": "Celta Vigo"}}
+    def evt(code, typ, desc, sd=None, se=None, debut=coup_envoi):  # forme des événements de l'API Sofascore
+        e = {"id": 77, "startTimestamp": int(debut), "status": {"code": code, "type": typ, "description": desc},
+             "homeTeam": {"id": 2829, "name": "Real Madrid"}, "awayTeam": {"id": 2821, "name": "Celta Vigo"}}
         if sd is not None:
             e["homeScore"], e["awayScore"] = {"current": sd}, {"current": se}
         return e
-    sofa, appels_sofa = {"next": [evt(0, "Not started")], "last": []}, []
+    def but(i, minute, nom, h, a, classe="regular", ar=None):
+        p = {"name": nom, **({"fieldTranslations": {"nameTranslation": {"ar": ar}}} if ar else {})}
+        return {"id": i, "incidentType": "goal", "incidentClass": classe, "time": minute, "player": p, "homeScore": h, "awayScore": a}
+    sofa, appels_sofa = {"next": [evt(0, "notstarted", "Not started")], "last": [], "incidents": []}, []
     def faux_sofascore(chemin):
         appels_sofa.append(chemin)
         if sofa.get("panne"):
             raise subprocess.CalledProcessError(22, "curl")
+        if chemin.endswith("/incidents"):
+            assert chemin == "event/77/incidents", chemin
+            return {"incidents": sofa["incidents"]}
         return {"events": sofa[chemin.split("/")[3]]}
+    textes = lambda: [c["platforms"]["x"]["posts"][0]["text"] for c in envois]  # noqa: E731
     cs = sqlite3.connect(":memory:")
     envois = []
     vrai = (mt.sofascore, calendrier.appeler_claude, t.typefully_api, t.reglage)
     mt.sofascore = faux_sofascore
     calendrier.appeler_claude = lambda *a: "سيلتا فيغو"
-    t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": 9})[1]
+    t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": len(envois)})[1]
     t.reglage = lambda cle: "k"
     try:
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 19, 50)) == 0 and not appels_sofa  # avant le coup d'envoi : rien lu
         assert not cs.execute("SELECT name FROM sqlite_master WHERE name = 'suivi_match'").fetchone()
-        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 5)) == 0
-        sofa["next"] = [evt(0, "Not started", debut=coup_envoi + 7 * 86400), evt(6, "1st half", 0, 1)]  # autre match ignoré
-        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 30)) == 0  # « 1st half » n'est pas la mi-temps
-        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 35)) == 0  # même état : pas de nouvelle ligne
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 1)) == 0 and appels_sofa == ["team/2829/events/next/0"]  # pas commencé
+        sofa["next"] = [evt(0, "notstarted", "Not started", debut=coup_envoi + 7 * 86400), evt(6, "inprogress", "1st half", 0, 0)]
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 5)) == 1 and "انطلاق المباراة" in textes()[-1]
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 10)) == 0  # rien de neuf
+        sofa["next"] = [evt(6, "inprogress", "1st half", 0, 1)]
+        sofa["incidents"] = [but(1, 6, "Pablo Durán", 0, 1, ar="بابلو دوران"),
+                             {"id": 5, "incidentType": "card", "incidentClass": "yellow", "time": 20, "isHome": True, "player": {"name": "X"}}]
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 15)) == 1  # carton jaune : pas de tweet
+        assert textes()[-1].startswith("⚽ هدف لـسيلتا فيغو") and "بابلو دوران 6'" in textes()[-1] and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-1]
         sofa["panne"] = True
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 40)) == 0  # Bright Data refuse : repris au passage suivant
         del sofa["panne"]
-        sofa["next"] = [evt(31, "Halftime", 0, 1)]
-        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 50)) == 1
-        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 55)) == 0 and len(envois) == 1  # une seule fois
-        sofa["next"], sofa["last"] = [], [evt(100, "Ended", 2, 1)]  # fini : passé dans events/last
-        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 55)) == 0
+        sofa["next"] = [evt(31, "inprogress", "Halftime", 0, 1)]
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 50)) == 1 and textes()[-1].startswith("⏸️ نهاية الشوط الأول")
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 55)) == 0  # mi-temps une seule fois
+        # deux événements entre deux passages : partent dans l'ordre ; rouge et but de la tête vers le Real
+        sofa["next"] = [evt(7, "inprogress", "2nd half", 1, 1)]
+        sofa["incidents"] += [{"id": 8, "incidentType": "card", "incidentClass": "yellowRed", "time": 60, "isHome": False, "player": {"name": "Starfelt"}},
+                              but(2, 66, "Jude Bellingham", 1, 1)]
+        echec = [True]
+        def typefully_une_panne(chemin, corps=None):
+            if echec.pop() if echec else False:
+                raise OSError("Typefully indisponible")
+            envois.append(corps)
+            return {"id": len(envois)}
+        t.typefully_api = typefully_une_panne
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 20)) == 0  # 1er envoi refusé : rien n'est marqué parti
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 25)) == 2
+        assert textes()[-2].startswith("🟥 بطاقة حمراء") and "Starfelt (سيلتا فيغو) 60' (إنذار ثانٍ)" in textes()[-2]
+        assert textes()[-1].startswith("⚽🔥 هدددف لريال مدريد!") and "Jude Bellingham 66'" in textes()[-1]
+        sofa["next"], sofa["last"] = [], [evt(100, "finished", "Ended", 2, 1)]  # fini : passé dans events/last
+        sofa["incidents"].append(but(3, 85, "Carlos Espí", 2, 1, "penalty", "كارلوس إسبي"))
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 55)) == 2  # dernier but puis fin
+        assert "كارلوس إسبي 85' (ركلة جزاء)" in textes()[-2]
+        assert textes()[-1] == ("🏁 نهاية المباراة\n\nريال مدريد 2 - 1 سيلتا فيغو\n\n⚽ بابلو دوران 6' (سيلتا فيغو)\n⚽ Jude Bellingham 66'"
+                                "\n⚽ كارلوس إسبي 85' (ركلة جزاء)\n\n#ريال_مدريد"), textes()[-1]
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 22, 0)) == 0 and len(envois) == 7  # rien ne part deux fois
+        assert all(c["publish_at"] == "now" for c in envois)
     finally:
         mt.sofascore, calendrier.appeler_claude, t.typefully_api, t.reglage = vrai
-    suivi = cs.execute("SELECT statut, score, typefully FROM suivi_match ORDER BY rowid").fetchall()
-    assert suivi == [("Not started", "", None), ("1st half", "0-1", None), ("Halftime", "0-1", "9"), ("Ended", "2-1", None)], suivi
-    tw = envois[0]["platforms"]["x"]["posts"][0]["text"]
-    assert envois[0]["publish_at"] == "now" and "نهاية الشوط الأول" in tw and "ريال مدريد 0 - 1 سيلتا فيغو" in tw, tw
+    suivi = cs.execute("SELECT statut, score FROM suivi_match ORDER BY rowid").fetchall()
+    assert suivi == [("Not started", ""), ("1st half", "0-0"), ("1st half", "0-1"), ("Halftime", "0-1"), ("2nd half", "1-1"), ("Ended", "2-1")], suivi
+    # match à l'extérieur, but contre son camp de l'adversaire : compté pour le Real d'après le score
+    dehors = evt(7, "inprogress", "2nd half", 0, 1)
+    dehors["homeTeam"], dehors["awayTeam"] = dehors["awayTeam"], dehors["homeTeam"]
+    calendrier.appeler_claude = lambda *a: "سيلتا فيغو"
+    try:
+        tw = dict(calendrier.tweets_du_match(dehors, [but(9, 30, "Starfelt", 0, 1, "ownGoal")]))
+    finally:
+        calendrier.appeler_claude = vrai[1]
+    assert tw["but:9"].startswith("⚽🔥 هدددف لريال مدريد!") and "Starfelt 30' (ضد مرماه)" in tw["but:9"] and "سيلتا فيغو 0 - 1 ريال مدريد" in tw["but:9"]
     calendrier.FICHIER = ancien
 print("OK calendrier et règle pendant un match")
