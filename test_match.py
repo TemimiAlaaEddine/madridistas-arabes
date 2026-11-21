@@ -9,5 +9,6 @@ stats = {"statistics": [{"period": "1ST", "groups": []}, {"period": "ALL", "grou
     {"statisticsItems": [{"name": "Expected goals", "home": "0.18", "away": "2.34"}]}]}]}
 joueur = {"player": {"name": "Arda Güler"}, "statistics": {"minutesPlayed": 90, "rating": 8.4, "expectedGoals": 0.31, "duelWon": 3, "duelLost": 2}}
 banc = {"player": {"name": "Lunin"}, "statistics": {}}
-m.resume_sofascore(stats, {"home": {"formation": "5-3-2", "players": []}, "away": {"formation": "4-2-3-1", "players": [joueur, banc]}})
+entre_1_minute = {"player": {"name": "Espí"}, "statistics": {"minutesPlayed": 1}}
+m.resume_sofascore(stats, {"home": {"formation": "5-3-2", "players": []}, "away": {"formation": "4-2-3-1", "players": [joueur, banc, entre_1_minute]}})
 print("OK")

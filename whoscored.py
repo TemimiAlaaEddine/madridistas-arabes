@@ -44,7 +44,9 @@ def afficher(d):
     for cote in ("home", "away"):
         e = d[cote]
         js = list(joueurs(e))
-        systemes = " -> ".join(f"{f['formationName']} (dès {f.get('startMinuteExpanded')}e)" for f in e["formations"])
+        # WhoScored ajoute une entrée à chaque remplacement : on ne garde que les vrais changements de système
+        fs = [f for i, f in enumerate(e["formations"]) if i == 0 or f["formationName"] != e["formations"][i - 1]["formationName"]]
+        systemes = " -> ".join(f"{f['formationName']} (dès {f.get('startMinuteExpanded')}e)" for f in fs)
         print(f"\n== {e['name']} : {systemes}")
         print(f"   tirs {sum(j['tirs'] for j in js)}, cadrés {sum(j['cadres'] for j in js)}, "
               f"passes clés {sum(j['passes_cles'] for j in js)}")

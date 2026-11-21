@@ -54,7 +54,7 @@ def resume_sofascore(stats, compos):
         for p in e["players"]:
             s = p.get("statistics") or {}
             if s.get("minutesPlayed"):
-                print(f"   {p['player']['name']:<24} {s['minutesPlayed']:>3}' note {s.get('rating')} | xG {s.get('expectedGoals', 0):.2f}"
+                print(f"   {p['player']['name']:<24} {s['minutesPlayed']:>3}' note {s.get('rating') or '-'} | xG {s.get('expectedGoals', 0):.2f}"
                       f" | xA {s.get('expectedAssists', 0):.2f} | duels {s.get('duelWon', 0)}/{s.get('duelWon', 0) + s.get('duelLost', 0)}"
                       f" | ballons récupérés {s.get('ballRecovery', 0)} | pertes {s.get('possessionLostCtrl', 0)}")
 

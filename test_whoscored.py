@@ -3,7 +3,7 @@ import json
 
 import whoscored as w
 
-donnees = {"score": "0 : 3", "home": {"name": "Valencia", "formations": [{"formationName": "532"}], "players": []},
+donnees = {"score": "0 : 3", "home": {"name": "Valencia", "formations": [{"formationName": "532", "startMinuteExpanded": 0}, {"formationName": "4411", "startMinuteExpanded": 49}, {"formationName": "4411", "startMinuteExpanded": 62}], "players": []},
            "away": {"name": "Real Madrid", "formations": [{"formationName": "4231", "startMinuteExpanded": 0}], "players": [
                {"name": "Arda Güler", "position": "AMR", "isFirstEleven": True,
                 "stats": {"ratings": {"0": 6.0, "36": 8.1, "95": 9.2}, "passesKey": {"10": 1.0, "40": 2.0},
@@ -18,5 +18,9 @@ js = list(w.joueurs(d["away"]))
 assert len(js) == 1, "le remplaçant non entré est ignoré"
 assert js[0]["note"] == 9.2, "note de la dernière minute, pas la plus haute clé en texte"
 assert js[0]["passes_cles"] == 3 and js[0]["passes"] == "38/44" and js[0]["tirs"] == 0
-w.afficher(d)
+import contextlib, io
+sortie = io.StringIO()
+with contextlib.redirect_stdout(sortie):
+    w.afficher(d)
+assert "532 (dès 0e) -> 4411 (dès 49e)" + chr(10) in sortie.getvalue(), "remplacement sans changement de système ignoré"
 print("OK")
