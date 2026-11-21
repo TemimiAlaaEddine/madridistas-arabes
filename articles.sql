@@ -8222,4 +8222,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/di
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/La-place-de-vinicius-menacee-par-yan-diomande-un-casse-tete-pour-le-real-madrid-on-a-besoin-de-lui-et-on-va-continuer-de-l-aider/1744977#at_medium=RSS_feeds','Vinicius ou Diomandé, un casse-tête pour Mourinho ?','2026-11-21T12:41:10');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/vini-y-diomande-al-rojo-vivo-f202611-n/','Vini y Diomande, al rojo vivo','2026-11-21T12:41:49');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-21/real-madrid-rafa-nadal-florentino-perez-junta-directivaa_4469807/','Rafa Nadal arrasa con el 99,5% de los votos y entra por la puerta grande en la directiva del Real Madrid','2026-11-21T12:51:34');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/perez-trekt-weer-van-leer-negreira-tebas-en-nepnieuws-passeren-de-revue','Pérez trekt weer van leer: Negreira, Tebas en ''nepnieuws'' passeren de revue','2026-11-21T13:11:05');
 COMMIT;
