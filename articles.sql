@@ -8296,4 +8296,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/javier-tebas
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Rafael-nadal-integre-le-conseil-d-administration-du-real-madrid/1745097#at_medium=RSS_feeds','Rafael Nadal intègre le conseil d''administration du Real Madrid','2026-11-21T14:01:39');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/silencio-consenso-20261121145320-nt.html','El silencio no es consenso','2026-11-21T14:02:17');
 INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-21u-houdt-thibaut-courtois-zijn-netten-bij-real-proper-tegen-celta~a78c62bc/','LIVE (21u). Houdt Thibaut Courtois zijn netten bij Real proper tegen Celta?','2026-11-21T14:05:50');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50549300/florentino-perez-javier-tebas-laliga-negreira-real-madrid','Madrid chief Pérez: "outrageous" that LaLiga president Tebas hasn''t resigned','2026-11-21T15:11:20');
 COMMIT;
