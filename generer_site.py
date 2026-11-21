@@ -29,6 +29,7 @@ from difflib import SequenceMatcher
 from html.parser import HTMLParser
 
 import threads
+from calendrier import match_en_cours
 from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClaude, appeler_claude, collecter, dedoublonner, e,
                     extraire_json, maintenant, marquer_vus, nettoyer, normaliser_titre, restaurer_base)
 from couvertures import generer_couvertures, vignette
@@ -124,8 +125,8 @@ PROMPT = """Tu es le rédacteur d'un site arabophone qui fait découvrir au publ
 Pour chaque article ci-dessous :
 1. Décide de sa nature :
    - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (uno a uno, aprobados y suspensos).
-   - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat final d'un match du Real Madrid (score et buteurs), composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
-   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).
+   - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat de la mi-temps ou final d'un match du Real Madrid (score et buteurs), déclarations d'avant ou d'après-match, composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
+   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).{match}
    - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents, et même si leurs titres mettent en avant des angles différents, ex. deux articles sur la même conférence de presse), fusionne-les en un seul article : réponds avec l'id du plus complet, et complète son texte avec les éléments nouveaux des autres en citant leur média. Si ce fait ou ces propos sont déjà dans la liste « DÉJÀ PUBLIÉ » plus bas, ignore-les.
    - Source officielle prioritaire : si l'un des doublons vient du site officiel du Real Madrid, réponds avec son id et présente le fait comme annoncé officiellement par le club (أعلن ريال مدريد رسميًا...), sauf pour une séance d'entraînement : c'est un compte rendu, pas une annonce, donc ni « رسميًا » ni « أعلن ». Un communiqué officiel du club (« Comunicado oficial ») se publie même si la presse a déjà rapporté le fait dans « DÉJÀ PUBLIÉ » : c'est la confirmation officielle, que tu présentes comme telle.
@@ -226,7 +227,7 @@ def construire_prompt(items, deja=(), noms=None):
                      f"Titre : {it['titre']}\nTexte :\n{it['texte']}")
     personnes = ", ".join(f"{k} ({v})" for k, v in PERSONNES.items())
     deja = "\n".join(f"- {t}" for t in deja) or "(aucune)"
-    return PROMPT.format(personnes=personnes, deja=deja, articles="\n\n".join(blocs), regles_tweets=threads.REGLES, style=STYLE)
+    return PROMPT.format(personnes=personnes, deja=deja, articles="\n\n".join(blocs), regles_tweets=threads.REGLES, style=STYLE, match=match_en_cours())
 
 
 def deja_publies(chemin=DB, jours=2):
@@ -245,8 +246,8 @@ PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le R
 Garde :
 - opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (« uno a uno », « aprobados y suspensos », « player ratings », « notes ») ;
 - conference : conférence de presse d'un entraîneur du Real Madrid, d'un joueur du Real Madrid (avec le club ou en sélection), d'un entraîneur adverse qui parle du Real Madrid, ou d'un sélectionneur national qui parle d'un joueur du Real Madrid (ex. Zidane sur Mbappé, Ancelotti sur Vinícius), déclarations d'avant ou d'après-match ;
-- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, événements organisés dans le stade comme le match de NFL ou un concert) ; compositions probables seulement si le journal est Marca ou AS.
-Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (dont le basket du Real Madrid et la NFL hors du Bernabéu), autres compositions probables.
+- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat de la mi-temps ou final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, événements organisés dans le stade comme le match de NFL ou un concert) ; compositions probables seulement si le journal est Marca ou AS.
+Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (dont le basket du Real Madrid et la NFL hors du Bernabéu), autres compositions probables.{match}
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
 Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
@@ -271,7 +272,7 @@ def trier(items, deja=()):
     blocs = [f"[{i}] {journal(it)}{' (rubrique opinion)' if it.get('opinion') else ''} : {it['titre']}\n{it['resume'][:300]}"
              for i, it in enumerate(items, 1)]
     reponse = appeler_claude(PROMPT_TRI.format(deja="\n".join(f"- {t}" for t in deja) or "(aucun)",
-                                               articles="\n\n".join(blocs)), CONFIG.get("modele_tri", "haiku"), "low")
+                                               articles="\n\n".join(blocs), match=match_en_cours()), CONFIG.get("modele_tri", "haiku"), "low")
     try:
         choix = {r.get("id"): r.get("type") for r in extraire_json(reponse) if isinstance(r, dict)}
     except (ValueError, json.JSONDecodeError):

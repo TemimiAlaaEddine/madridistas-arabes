@@ -1279,3 +1279,22 @@ assert sources.appliquer("rien de coché", conf_t) == (conf_t, [])
 d_rev = "\n".join(sources.modifications({"retirer": [{"flux": sources.CONFIG["flux"][0]["nom"]}]}, []))
 assert sources.appliquer(d_rev.replace("- [ ]", "- [x]"), sources.CONFIG)[0]["flux"] == sources.CONFIG["flux"][1:]  # aller-retour
 print("OK revue des sources : décisions appliquées")
+
+# calendrier : page du site officiel (chaque match deux fois), 5 prochains ; règle « match en cours » de 0 à 2 h 30 après le coup d'envoi
+import calendrier
+obj = lambda nom, d, fixe: (f'"description":{{"plaintext":"{nom}"}},"week":"13","weekAsText":null,"dateTime":"{d}.000Z",'  # noqa: E731
+                            f'"dateTxt":null,"isScheduled":{fixe},"status":"pre_match"')
+page = " ".join([obj("Real Madrid vs PSV", "2026-11-24T20:00:00", "true")] * 2 + [obj("Real Madrid vs Celta de Vigo", "2026-11-21T20:00:00", "true"),
+                 obj("Real Madrid vs Osasuna", "2026-12-13T00:00:00", "false"), obj("Getafe vs Real Madrid", "2026-11-01T20:00:00", "true")])
+pm = calendrier.prochains(page, datetime(2026, 11, 21, 8))
+assert [m["match"] for m in pm] == ["Real Madrid vs Celta de Vigo", "Real Madrid vs PSV", "Real Madrid vs Osasuna"] and not pm[2]["heure_fixee"], pm
+with tempfile.TemporaryDirectory() as d:
+    ancien, calendrier.FICHIER = calendrier.FICHIER, Path(d) / "matchs.json"
+    assert calendrier.match_en_cours(datetime(2026, 11, 21, 20, 30)) == ""  # pas de fichier : pas de règle
+    calendrier.FICHIER.write_text(json.dumps(pm), encoding="utf-8")
+    regle = calendrier.match_en_cours(datetime(2026, 11, 21, 21, 10))
+    assert "Celta" in regle and "21:00" in regle and "mi-temps" in regle, regle
+    assert calendrier.match_en_cours(datetime(2026, 11, 21, 19, 59)) == calendrier.match_en_cours(datetime(2026, 11, 21, 22, 30)) == ""
+    assert calendrier.match_en_cours(datetime(2026, 12, 13, 1)) == ""  # heure pas encore fixée : date seule, pas de fenêtre
+    calendrier.FICHIER = ancien
+print("OK calendrier et règle pendant un match")
