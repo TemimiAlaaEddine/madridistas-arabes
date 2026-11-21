@@ -5995,6 +5995,68 @@ INSERT INTO "articles" VALUES(610,'2026-11-21T22:25:46','actus','مورينيو:
 فينيسيوس وإسبي: ما أهمية أن يكون الجميع حاضرًا في المباراة؟
 
 مورينيو: «هم من فعلوا ذلك، والفضل لهم. هذه قيم إنسانية، وهي أن تدرك أن الفريق أهم منا جميعًا. إن لعبت تسعين دقيقة فهي تسعون، وإن لعبت دقيقة فهي دقيقة. هناك لاعبون لم يشاركوا ولو لدقيقة، وكانوا على الدكة يطلبون من الحكم إطلاق صافرة النهاية، ويقولون لفيني أن ينزل ليدافع... في النهاية لعب الجميع، حتى من كانوا في المدرجات لعبوا. هذه مسؤولية اللاعبين، فهم من يبنون هذه المجموعة القوية وغرفة ملابس رائحتها طيبة.»','Carlos Forjanes','كارلوس فورخانيس','AS','es','https://as.com/futbol/primera/mourinho-despues-del-1-1-fue-una-avalancha-f202611-n/','Mourinho: “Después del 1-1 fue una avalancha”','conference','["mourinho", "vinicius", "espi", "bellingham", "guler", "konate"]','','','mourinho','مورينيو: بعد التعادل 1-1 صار الأمر كالانهيار الجارف، وفي النهاية حصلنا على النقاط وهذا هو الأهم','[]','{"fr": "Mourinho : « Après le 1-1, ce fut une avalanche »", "en": "Mourinho: \"After 1-1 it was an avalanche\"", "es": "Mourinho: \"Después del 1-1 fue una avalancha\""}','https://img.asmedia.epimg.net/resizer/v2/EU3Z5VLQERKNNJCIZJXEKRAONU.jpg?auth=b45a71d065ad270cb13be326504a8bdfa8723812e4e648977d2005401853f261&width=1472&height=828&focal=576%2C620','[]');
+INSERT INTO "articles" VALUES(611,'2026-11-21T22:47:33','actus','إسبي: «كنت منحنيًا لأنهم كانوا يضربونني من كل جانب»','أربعة أهداف في 63 دقيقة، وأول هدف له في البرنابيو. المهاجم الشاب يروي ليلة الحلم، من لقاء نادال إلى ضربات الزملاء في الاحتفال.','تحدّث كارلوس إسبي، مهاجم ريال مدريد، في المنطقة المختلطة بعد الفوز على سيلتا فيغو 2-1 في الجولة 13 من الليغا يوم السبت، وكان قد سجّل هدف الفوز في الدقيقة 85. هذا رابع أهدافه في 63 دقيقة لعب، وأولها في البرنابيو بعد ثلاثة أهداف خارج الديار. وبحسب «ماركا» و«كادينا سير»، قال إسبي:
+
+أول هدف في البرنابيو
+إسبي: «أعتقد أنه الأكثر تميزًا. تخيّلتُ كثيرًا من الأيام التي أسجّل فيها هنا في البرنابيو مع كل المدريديستا، وهو يوم لن أنساه».
+
+الشعور بعد الهدف (كادينا سير)
+إسبي: «أشعر بقشعريرة في جسدي، ومن غير المفهوم أن يحبّني الجميع هكذا. سأقدّم أقصى ما عندي لكل المدريديستا ولهذا النادي. إنه يوم حلمتُ به كثيرًا، وأنا سعيد جدًا. أحاول أن أفعل كل ما يطلبه مني المدرب. سأقدّم الأقصى لهذا النادي، وكل دقيقة يمنحني إياها سأستغلها. وإن استطعتُ مساعدة الفريق فهذا أفضل».
+
+الدخول من دكة البدلاء
+إسبي: «كانت مباراة معقدة اليوم. وكما تقول، كل لاعب خرج من دكة البدلاء ساعد وأضاف شيئًا. وأنا دخلتُ وسأقدّم أقصى ما عندي لهذا النادي ولهذه الجماهير».
+
+وصفة التأثير في دقائق قليلة
+إسبي: «أن أكون جاهزًا، وأن أعمل كل يوم لأكون جاهزًا، كما قلت، كي لا أخذل المدرب، سواء لعبتُ 5 دقائق أو 10 أو 30. وأن أكون جاهزًا لأحظى بمساندة الفريق كما حدث اليوم، وأنا سعيد جدًا».
+
+لقاؤه مع رافا نادال
+إسبي: «بصراحة، عشتُ اللحظة وكأنني أشاهدها من الخارج. كان فخورًا بي، وأسطورة مثل رافا نادال يقف هناك ويتحدث معي، هذا جعلني سعيدًا جدًا».
+
+الرغبة في دقائق أكثر
+إسبي: «أعمل كل يوم لأحصل على دقائق أكثر، وأعتقد أن كل لاعب يريد اللعب أكثر. أنا سعيد جدًا بما قدّمه لي مورينيو، وسأعطي أقصى ما عندي».
+
+الاحتفال بالهدف
+إسبي: «كما قلت في البداية، إنه يوم الأحلام. لا تتخيل كم مرة حلمتُ بالتسجيل هنا وإغلاق المباراة مع كل الجماهير، وفوق ذلك أن ينادوا باسمك. كان الأمر مميزًا جدًا وأنا سعيد جدًا».
+
+محبة غرفة الملابس ومورينيو
+إسبي: «أتمنى أن يكون الأمر هكذا دائمًا. الجميع سعداء جدًا، وكل من في غرفة الملابس فرحان من أجلي. مورينيو أيضًا في قمة الفرح، وعلينا أن نواصل».
+
+كلمات مورينيو بعد الهدف
+إسبي: «هو في قمة الفرح، يصرخ، ونتحدث قليلًا، ونحن سعداء جدًا من أجلي ومن أجل الفوز».
+
+ضربات الزملاء في الاحتفال
+إسبي: «نعم، نحن عائلة كاملة، وهذا ظهر في الاحتفال. الحقيقة أنني كنتُ منحنيًا لأنهم كانوا يضربونني من كل جانب. ورؤية كل اللاعبين على الدكة يأتون إليّ مع الفريق كله جعلتني سعيدًا جدًا».
+
+المباراة المقبلة وروح المجموعة (كادينا سير)
+إسبي: «كانت مباراة معقدة وتمكنّا من حسمها. الأمر لا يتوقف، فيوم الثلاثاء هناك معركة أخرى في دوري الأبطال. بقي يومان لتحضير المباراة، وسنذهب لنحصل عليها. الهدف أن نكون جميعًا معًا. نحن 23 أو 24 لاعبًا، كلنا معًا وعلى الخط نفسه، وهكذا كان الحال اليوم. نحن الذين دخلنا دخلنا بحماس لننتزع الفوز، وهذا ما حدث».
+
+الجماهير
+إسبي: «الجمهور رائع، يدعمنا منذ الدقيقة الأولى، واليوم حملنا حملًا. يجب أن يكون هذا الملعب حصنًا، ولا ينبغي أن نترك النقاط تفلت».
+
+وبحسب «كادينا سير»، إسبي يبلغ 21 عامًا، وقد سجّل أهدافه الأربعة من ست تسديدات على المرمى فقط. كما سجّل من على دكة البدلاء أكثر من أي لاعب آخر في الدوريات الخمسة الكبرى هذا الموسم في كل المسابقات. وساهم هدفه في الفوز التاسع على التوالي للفريق الملكي.','JOEL DEL RÍO','خويل ديل ريو','Marca','es','https://www.marca.com/futbol/real-madrid/2026/11/21/carlos-espi-agachado-me-estaban-dando-todos-lados.html','Carlos Espí: "Estaba agachado porque me estaban dando por todos lados"','conference','["espi", "mourinho"]','','','espi','سجّل إسبي هدف الفوز في الدقيقة 85 أمام سيلتا وقال إنه كان منحنيًا لأن زملاءه يضربونه من كل جانب','[{"valeur": "4", "libelle": "أهداف في 63 دقيقة لعب"}, {"valeur": "6", "libelle": "تسديدات على المرمى فقط"}, {"valeur": "9", "libelle": "انتصارات متتالية للفريق"}]','{"fr": "Espí : « Je me baissais parce qu''ils me frappaient de tous les côtés »", "en": "Espí: \"I was bent over because they were hitting me from every side\"", "es": "Espí: \"Estaba agachado porque me estaban dando por todos lados\""}','https://objetos-xlk.estaticos-marca.com/files/article_main_microformat/uploads/2026/11/21/6b021e0e9305e.jpeg','[]');
+INSERT INTO "articles" VALUES(612,'2026-11-21T22:50:14','debats','سيلتا الرائع يغرق عند شاطئ البرنابيو في الدقيقة 85','خطة خيرالديس أربكت ريال مدريد، لكن الفريق الملكي خرج بالنقاط من هجمتين مرتدتين. وبين الحكم والإصابات ولاعب لم يصل بعد، يرى بوسيتا أن سيلتا يعاني أكثر من مجرد خسارة.','ريال مدريد فاز على سيلتا فيغو بهجمتين مرتدتين، لا أكثر. هذا الانطباع الذي خرج به جاكوبو بوسيتا من مباراة البرنابيو في مقاله على «كادينا سير»: لا سيطرة واضحة على اللعب، ولا حصار لمرمى رادو. جاء الهدفان بعد تسديدة لدوران في الأولى، وانطلاقة طويلة لبيلينغهام في الثانية.
+
+وفي نظره، كارلوس إسبي من أفضل صفقات الفريق الملكي هذا الموسم، لأن وجود مهاجم صريح بديل يمنح الفريق شكلًا مختلفًا. يشبّهه بماريانو في ألافيس، وكيكي غارسيا في إسبانيول، وراوول غارسيا دي هارو في أوساسونا. وهذا بالضبط ما يفتقده سيلتا مرتين: بسبب إصابة بورخا، ولأنه لا يملك مهاجمًا صريحًا آخر في التشكيلة.
+
+## بداية مثالية
+
+يصف بوسيتا دخول سيلتا إلى المباراة بأنه لا تشوبه شائبة، وسبورة كلاوديو خيرالديس بأنها نعمة لفريق محدود الموارد. تقدّم الضيوف بعد خمس دقائق بهجمة بُنيت على مهل من منطقتهم: غالان يجري على الجناح، ثم يمرر ويلي كرة مثالية إلى القائم البعيد فيسجل بابلو دوران.
+
+واستمرت الخطة في إرباك الريال بالكرات الطويلة من رادو إلى دوران في مواجهة هاوسن، وبتحرك هوغو ألفاريز بين الخطوط، واختراقات غالان من جهة ترينت. أضاع سيلتا فرصتين جيدتين للهدف الثاني لقلة التركيز، وكاد ويلي يسجل بتسديدة لم يصل إليها كورتوا.
+
+## الحكم في الواجهة
+
+لكن الحكم كورديرو فيغا، بحسب بوسيتا، كان بطلًا آخر في المباراة. أول خطأ احتسبه لسيلتا جاء في الدقيقة 41، واحتسب ركلة جزاء للريال بعد إمساك يرى الكاتب أنه كان سيُحرج حتى في الدوري الإسباني لكرة السلة. وحكم الفار لم يشأ التدخل، فسدّد مبابي الركلة وأضاعها بعد «تأثير رادو».
+
+ويضيف أن الحكم قرر ألا يعاقب التمثيل بالبطاقة الصفراء، وأنه كان يطلب الهدوء من لاعبي الريال المحتجين وهو يضع إصبعه على سماعة أذنه. لا مفر عنده من أن الأفضل ألا يتدخل أحد في السياسة.
+
+## ضربة قاسية
+
+طالت المباراة على سيلتا في الشوط الثاني لقلة الأقدام الطازجة. ثم أنقذ كورتوا هدفًا ثانيًا لدوران بتصدٍّ رائع بيد سفلى، وانطلق الريال في هجمة سريعة سجّل منها بيلينغهام مستغلًا واحدة من قلة الثغرات الدفاعية. وقبل النهاية، عرضية يائسة من فينيسيوس نحو إسبي الذي سدد في الوسط، فأبعدها رادو بشكل سيئ وتابعها لاعب ليفانتي السابق في الشباك. 2-1، وانتهت المباراة تقريبًا عند هذه النقطة.
+
+مشكلة سيلتا في التشكيلة واضحة، بحسب بوسيتا: إصابات ستارفيلت وميغيل رومان وبورخا تقتله. والتبديلات لم تحسّن شيئًا، أما حالة دريوش فيراها لغزًا يحتاج من يشرحه في النادي، فقد دُفع فيه أكثر من 7.5 ملايين يورو ولا يزال الجميع ينتظره. أما يوتغلا في مركز المهاجم الصريح فلا يحل المشكلة، وتنقص الفريق بدائل بالجودة المطلوبة.
+
+والأقسى أن الخسارة تأتي بعد سلسلة بلا فوز في الليغا منذ 18 أكتوبر، وقبل مباراة فياريال يستقبل الفريق الأكثر تألقًا حاليًا في البريميرليغ، بتشكيلة شابة وقصيرة تخوض ثلاث بطولات. وكان مورينيو قد قال قبل اللقاء إن سيلتا يملك نقاطًا أقل مما يستحق لأن الجمع بين الخميس ونهاية الأسبوع يرهقه. لا أسئلة أخرى.','Jacobo Buceta','جاكوبو بوسيتا','Cadena SER','es','https://cadenaser.com/galicia/2026/11/21/un-gran-celta-muere-en-la-orilla-del-bernabeu-radio-vigo/','Un gran Celta muere en la orilla del Bernabéu','resume','["espi", "mbappe", "courtois", "bellingham", "vinicius", "huijsen", "trent", "mourinho"]','','','','فاز ريال مدريد على سيلتا بهجمتين مرتدتين، بلا سيطرة واضحة على اللعب ولا حصار لمرمى رادو','[]','{"fr": "Un grand Celta coule à quelques minutes de la fin au Bernabéu", "en": "A great Celta sinks at the Bernabéu shore in the 85th minute", "es": "Un gran Celta muere en la orilla del Bernabéu"}','https://cadenaser.com/resizer/v2/JRLKU363EZPMRJFVJHZFVR74XI.jpg?auth=b490cde69706f58826289d3aa767be52a218c9b8812beb34cff9a83b67a83823&quality=70&width=1200&height=675&smart=true','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
@@ -6023,6 +6085,7 @@ INSERT INTO "faits" VALUES(23,579,'2026-11-21T11:21:28','Été 2026 : Yan Dioman
 INSERT INTO "faits" VALUES(24,601,'2026-11-21T22:14:11','Le Real Madrid bat le Celta de Vigo 2-1 au Bernabéu (buts de Bellingham et de Carlos Espí), sa neuvième victoire consécutive.');
 INSERT INTO "faits" VALUES(25,604,'2026-11-21T22:24:08','Le 21 novembre 2026, le Real Madrid bat le Celta de Vigo 2-1 au Bernabéu : Pablo Durán ouvre le score, Bellingham égalise, Carlos Espí donne la victoire ; Mbappé a manqué un penalty.');
 INSERT INTO "faits" VALUES(26,610,'2026-11-21T22:51:57','Le Real Madrid enchaîne une neuvième victoire consécutive après son succès contre le Celta.');
+INSERT INTO "faits" VALUES(27,611,'2026-11-21T23:02:54','21/11/2026 : Real Madrid bat le Celta Vigo 2-1 en Liga (J13) ; buts de Bellingham et de Carlos Espí (85e), Pablo Durán pour le Celta.');
 CREATE TABLE liens_x (typefully TEXT PRIMARY KEY, url TEXT, date TEXT);
 INSERT INTO "liens_x" VALUES('11921647','https://x.com/ElMadridistAlaa/status/2121554993568440794','2026-11-14T10:45:21.616Z');
 INSERT INTO "liens_x" VALUES('11921645','https://x.com/ElMadridistAlaa/status/2121554172197916795','2026-11-14T10:41:51.772Z');
@@ -6258,6 +6321,9 @@ INSERT INTO "liens_x" VALUES('12095014','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12095410','https://x.com/ElMadridistAlaa/status/2124272165570933180','2026-11-21T22:42:09.150Z');
 INSERT INTO "liens_x" VALUES('12095110','https://x.com/ElMadridistAlaa/status/2124272901402837273','2026-11-21T22:45:21.227Z');
 INSERT INTO "liens_x" VALUES('12095417','https://x.com/ElMadridistAlaa/status/2124274159782174990','2026-11-21T22:50:24.064Z');
+INSERT INTO "liens_x" VALUES('12095594','https://x.com/ElMadridistAlaa/status/2124275417867751793','2026-11-21T22:55:21.310Z');
+INSERT INTO "liens_x" VALUES('12095592','https://x.com/ElMadridistAlaa/status/2124274670887407858','2026-11-21T22:52:28.667Z');
+INSERT INTO "liens_x" VALUES('12095795','https://x.com/ElMadridistAlaa/status/2124277427648242117','2026-11-21T23:03:23.120Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -6792,11 +6858,13 @@ INSERT INTO "page_facebook" VALUES(600,'2026-11-21T22:14:44','1443899325477551_1
 INSERT INTO "page_facebook" VALUES(601,'2026-11-21T22:14:52','1443899325477551_122111896989544862');
 INSERT INTO "page_facebook" VALUES(608,'2026-11-21T22:42:15','1443899325477551_122111907081544862');
 INSERT INTO "page_facebook" VALUES(610,'2026-11-21T22:52:10','sans : conférence publiée depuis le site du club');
+INSERT INTO "page_facebook" VALUES(611,'2026-11-21T23:03:08','1443899325477551_122111915661544862');
 CREATE TABLE resumes (jour TEXT PRIMARY KEY, typefully TEXT);
 INSERT INTO "resumes" VALUES('2026-11-17','12003066');
 INSERT INTO "resumes" VALUES('2026-11-18','12028389');
 INSERT INTO "resumes" VALUES('2026-11-19','12052126');
 INSERT INTO "resumes" VALUES('2026-11-20','12076325');
+INSERT INTO "resumes" VALUES('2026-11-21','12095801');
 CREATE TABLE suivi_match (debut TEXT, vu TEXT, statut TEXT, score TEXT, typefully TEXT);
 INSERT INTO "suivi_match" VALUES('2026-11-21T20:00:00','2026-11-21T20:01:32','live','0-0',NULL);
 CREATE TABLE threads (article_id INTEGER PRIMARY KEY, tweets TEXT, statut TEXT, date TEXT, typefully TEXT, envoye TEXT);
@@ -7268,6 +7336,8 @@ INSERT INTO "threads" VALUES(607,'["🧠 قراءة | فينيسيوس دخل ف
 INSERT INTO "threads" VALUES(608,'["📰 خبر | فينيسيوس يغادر الملعب عاري الجذع\n\nبعد عودته أمام سيلتا بدا الأسرع والأكثر جرأة في المواجهات الفردية، وأظهر جسده للجميع.\n\n(آس)\n#ريال_مدريد\n\n1/2", "المشهد جاء بعد أيام من مؤتمره الصحفي الذي اعترف فيه بخطئه. وغيّر البرازيلي مجرى المباراة بأفضل إحساس بدني له هذا الموسم.\n\n2/2", "📰 AS\n🔗 المصدر: https://as.com/futbol/videos/ha-vuelto-vinicius-y-se-lo-dejo-claro-a-todos-yendose-sin-camiseta-para-que-lo-vieran-todos-este-es-su-estado-fisico-actual-f202611-v/"]','immédiat','2026-11-21T22:42:00','12095410','2026-11-21T22:42:04');
 INSERT INTO "threads" VALUES(609,'["🧠 قراءة | فينيسيوس اعتذر في الملعب\n\nأنطونيو روميرو يرى أن البرازيلي ردّ على أخطائه بالكرة، لكن الخطوة الأولى لا تكفي.\n\n(أنطونيو روميرو - آس)\n\n#ريال_مدريد\n\n1/7", "جاءت المباراة في اليوم الذي تأكد فيه أن مقعد البدلاء صار واقعًا للبرازيلي في هذه المرحلة.\n\nوالجمهور يراقب تصرفاته بالمجهر.\n\n2/7", "رغم ذلك لم ينكمش. دخل بعزيمة واضحة، وطلب الكرة، وواجه مدافعيه على جناحه كلما سنحت الفرصة.\n\nروميرو يقرّ بأنه ما زال بعيدًا عن أفضل مستوياته.\n\n3/7", "شارك في هدفَي فريقه، وأيقظ جمهورًا كان يتذمر بعد شوط أول وصفه روميرو بالمخزي.\n\n4/7", "في لحظات عدة بدا كاللاعب الذي يكسر المباريات بقوة المطرقة، وفي نظره جرّ زملاءه إلى العودة في النتيجة.\n\n5/7", "حجّة روميرو: فينيسيوس يدرك أن رصيده يوشك على النفاد، فاعتذر بأفضل طريقة: قَبِل الدكة بتواضع، وحمل الفريق بشجاعة حين لزم الأمر.\n\n6/7", "والمطلوب الآن أن يواصل بالموقف والعمل، وأن يتجنب أخطاء أضرّت به وبالفريق كثيرًا.\n\n7/7", "✍️ أنطونيو روميرو | AS\n🔗 المصدر: https://as.com/opinion/vinicius-pide-perdon-en-el-cesped-f202611-n/"]','file','2026-11-21T22:51:57','12095594','2026-11-21T22:52:10');
 INSERT INTO "threads" VALUES(610,'["🗣️ مورينيو | «بعد التعادل 1-1 صار الأمر كالانهيار الجارف»\n\nالمدرب تحدث لقناة النادي بعد الفوز على سلتا، التاسع على التوالي.\n\n(ريال مدريد TV)\n\n#ريال_مدريد\n\n1/10", "عن صعوبة المباراة:\n\n«سلتا يعرف كيف يلعب، وكيف يدافع، وكيف يحتفظ بالكرة، وكيف يُحبط فريقًا يريد الاستحواذ والفوز».\n\n2/10", "عن تعب اللاعبين:\n\n«رأيت لاعبين كثيرين غير منتعشين، وصلوا يوم الخميس، ولم ينالوا قسطًا من النوم يوم الأربعاء، وقضوا ساعات في الطائرة».\n\n3/10", "«أول تمريرة في المباراة، من كوناتي، خرجت مباشرة إلى الخارج. هذا شعور سيئ. لكنني أرى أيضًا الأشياء الجيدة».\n\n4/10", "«أنهينا المباراة بأردا وجود، وبوسط ميدان من المهاجمين المنهكين جدًا، لكن كان واضحًا أنهم يخوضونها بكل ما لديهم».\n\n5/10", "عن مفاتيح الشوط الثاني:\n\n«ضغط أكثر شدة، وسرعة أكبر في استعادة الكرة بعد خسارتها. إنه أمر ذهني».\n\n6/10", "«ومن الصعوبات أن تتأخر في النتيجة وأن يصفّر الجمهور ضدك في ملعبك. حققنا تسعة انتصارات متتالية، ونسعى إلى العاشر يوم الثلاثاء».\n\n7/10", "عن فينيسيوس وإسبي:\n\n«هذه قيم إنسانية، وهي أن تدرك أن الفريق أهم منا جميعًا. هناك لاعبون لم يشاركوا ولو لدقيقة، وكانوا يطلبون من الحكم إطلاق صافرة النهاية».\n\n8/10", "«هذه مسؤولية اللاعبين، فهم من يبنون هذه المجموعة القوية وغرفة ملابس رائحتها طيبة».\n\n9/10", "«ما نريده هو الفوز بسهولة، والوصول إلى الاستراحة والجميع يضحك والنتيجة 3-0 أو 4-0. لكن ذلك ليس ممكنًا دائمًا».\n\n10/10", "✍️ كارلوس فورخانيس | AS\n🔗 المصدر: https://as.com/futbol/primera/mourinho-despues-del-1-1-fue-una-avalancha-f202611-n/"]','immédiat','2026-11-21T22:51:57','12095592','2026-11-21T22:52:02');
+INSERT INTO "threads" VALUES(611,'["🎙️ مؤتمر إسبي | «كنت منحنيًا لأنهم كانوا يضربونني من كل جانب»\n\nمهاجم ريال مدريد تحدّث بعد هدف الفوز على سيلتا (2-1)، وهو رابع أهدافه في 63 دقيقة لعب فقط.\n\n(ماركا)\n#ريال_مدريد\n\n1/9", "عن أول هدف له في البرنابيو:\n\n«أعتقد أنه الأكثر تميزًا. تخيّلتُ كثيرًا من الأيام التي أسجّل فيها هنا مع كل المدريديستا، وهو يوم لن أنساه».\n\n2/9", "عن وصفة التأثير في دقائق قليلة:\n\n«أن أكون جاهزًا، وأن أعمل كل يوم لأكون جاهزًا، كي لا أخذل المدرب، سواء لعبتُ 5 دقائق أو 10 أو 30».\n\n3/9", "عن لقائه مع رافا نادال:\n\n«أسطورة مثل رافا نادال يقف هناك ويتحدث معي، هذا جعلني سعيدًا جدًا. كان فخورًا بي».\n\n4/9", "عن رغبته في دقائق أكثر:\n\n«أعمل كل يوم لأحصل على دقائق أكثر، وأعتقد أن كل لاعب يريد اللعب أكثر. أنا سعيد جدًا بما قدّمه لي مورينيو».\n\n5/9", "عن محبة غرفة الملابس ومورينيو:\n\n«الجميع سعداء جدًا. مورينيو أيضًا في قمة الفرح، وعلينا أن نواصل».\n\n6/9", "عن احتفال الزملاء بالهدف:\n\n«نحن عائلة كاملة. كنتُ منحنيًا لأنهم كانوا يضربونني من كل جانب».\n\n7/9", "وعن المباراة المقبلة في دوري الأبطال (بحسب كادينا سير):\n\n«يوم الثلاثاء معركة أخرى. الهدف أن نكون جميعًا معًا. نحن 23 أو 24 لاعبًا على الخط نفسه».\n\n8/9", "وبحسب كادينا سير، إسبي سجّل أهدافه الأربعة من ست تسديدات على المرمى فقط.\n\nوهو أكثر لاعب تسجيلًا من دكة البدلاء في الدوريات الخمسة الكبرى هذا الموسم.\n\n9/9", "✍️ خويل ديل ريو | Marca\n🔗 المصدر: https://www.marca.com/futbol/real-madrid/2026/11/21/carlos-espi-agachado-me-estaban-dando-todos-lados.html"]','immédiat','2026-11-21T23:02:54','12095795','2026-11-21T23:02:58');
+INSERT INTO "threads" VALUES(612,'["🔥 نقاش | هل فاز ريال مدريد على سيلتا بهجمتين مرتدتين فقط؟\n\nبوسيتا يرى أن الفريق الملكي لم يسيطر ولم يحاصر مرمى رادو، ومع ذلك خرج بالنقاط.\n\n(جاكوبو بوسيتا - كادينا سير)\n#ريال_مدريد\n\n1/8", "في نظره، الهدفان جاءا بعد تسديدة لدوران في الأولى، وانطلاقة طويلة لبيلينغهام في الثانية.\n\nأما إسبي فيعدّه من أفضل صفقات الموسم كمهاجم صريح بديل.\n\n2/8", "بوسيتا يشبّه إسبي بماريانو في ألافيس وكيكي غارسيا في إسبانيول.\n\nوهذا ما يفتقده سيلتا: بورخا مصاب ولا مهاجم صريح آخر في التشكيلة.\n\n3/8", "يصف دخول سيلتا بأنه لا تشوبه شائبة: تقدم بعد خمس دقائق بتمريرة ويلي إلى القائم البعيد وهدف دوران.\n\nوالكرات الطويلة من رادو أربكت هاوسن.\n\n4/8", "ويذهب أبعد من ذلك في الحكم: الركلة التي أضاعها مبابي جاءت بعد إمساك «كان سيُحرج حتى في الدوري الإسباني لكرة السلة».\n\nوأول خطأ لسيلتا احتُسب في الدقيقة 41.\n\n5/8", "في الشوط الثاني أنقذ كورتوا هدفًا لدوران، ثم سجّل بيلينغهام من الهجمة المرتدة، وجاء هدف إسبي في الدقيقة 85 بعد عرضية فينيسيوس وخطأ رادو.\n\n6/8", "مشكلة سيلتا في نظر بوسيتا واضحة: إصابات ستارفيلت ورومان وبورخا، وتشكيلة شابة وقصيرة لثلاث بطولات.\n\nودريوش «لغز» دُفع فيه أكثر من 7.5 ملايين يورو.\n\n7/8", "وقد كان مورينيو قال قبل اللقاء إن سيلتا يملك نقاطًا أقل مما يستحق.\n\nفهل يكفي التخطيط الجيد حين تغيب الجودة في الدكة؟\n\nما رأيكم؟ 👇\n\n8/8", "✍️ جاكوبو بوسيتا | Cadena SER\n🔗 المصدر: https://cadenaser.com/galicia/2026/11/21/un-gran-celta-muere-en-la-orilla-del-bernabeu-radio-vigo/"]','file','2026-11-21T23:02:54','12095798','2026-11-21T23:03:05');
 CREATE TABLE unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT, PRIMARY KEY (jour, journal));
 INSERT INTO "unes" VALUES('2026-11-17','marca','[{"es": "«Es muy, muy, muy bueno». Hasta Zidane se rinde a Güler", "ar": "«إنه جيد جدًا جدًا جدًا». حتى زيدان يستسلم أمام غولر", "fr": "« Il est très, très, très bon ». Même Zidane s''incline devant Güler", "en": "\"He''s very, very, very good\". Even Zidane bows to Güler"}, {"es": "El genio turco suma cuatro goles y cinco asistencias en sus ocho últimos duelos con el Real Madrid y su selección", "ar": "العبقري التركي يسجل أربعة أهداف ويقدم خمس تمريرات حاسمة في مبارياته الثماني الأخيرة مع ريال مدريد ومنتخب بلاده", "fr": "Le génie turc cumule quatre buts et cinq passes décisives lors de ses huit derniers matchs avec le Real Madrid et sa sélection", "en": "The Turkish genius has four goals and five assists in his last eight games with Real Madrid and his national team"}]','11987719','122107181601544862');
 INSERT INTO "unes" VALUES('2026-11-17','as','[{"es": "MEA CULPA DE VINICIUS. El brasileño explica en Singapur las causas de su bajón: «Tras el Mundial entrené menos», «Soy humano y cometo errores, pero en el momento decisivo, siempre estoy ahí»", "ar": "فينيسيوس يعترف بذنبه. البرازيلي يشرح في سنغافورة أسباب تراجع مستواه: «بعد كأس العالم تدرّبت أقل»، «أنا إنسان وأرتكب أخطاء، لكن في اللحظة الحاسمة أكون دائمًا حاضرًا»", "fr": "MEA CULPA DE VINICIUS. Le Brésilien explique à Singapour les causes de sa méforme : « Après la Coupe du monde, je me suis moins entraîné », « Je suis humain et je fais des erreurs, mais au moment décisif, je suis toujours là »", "en": "VINICIUS'' MEA CULPA. The Brazilian explains in Singapore the reasons for his slump: \"After the World Cup I trained less\", \"I''m only human and I make mistakes, but in the decisive moment, I''m always there\""}]','11987722','122107181781544862');
@@ -8770,4 +8840,7 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/ha-vuelto-vinicius-y-se-l
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3771380166933411190-real-madrid-la-reaction-de-nadal-et-son-fils-sur-le-penalty-rate-de-mbappe','Real Madrid : la réaction de Nadal et son fils sur le pénalty raté de Mbappé','2026-11-21T22:51:02');
 INSERT INTO "vus" VALUES('https://as.com/opinion/vinicius-pide-perdon-en-el-cesped-f202611-n/','Vinicius pide perdón en el césped','2026-11-21T22:51:57');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mourinho-despues-del-1-1-fue-una-avalancha-f202611-n/','Mourinho: “Después del 1-1 fue una avalancha”','2026-11-21T22:51:57');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/carlos-espi-agachado-me-estaban-dando-todos-lados.html','Carlos Espí: "Estaba agachado porque me estaban dando por todos lados"','2026-11-21T23:02:54');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/carlos-espi-un-goleador-de-oro-en-el-real-madrid-es-el-mejor-revulsivo-de-las-cinco-grandes-ligas-europeas-cadena-ser/','Carlos Espí, un goleador de oro en el Real Madrid: es el mejor revulsivo de las cinco grandes ligas europeas','2026-11-21T23:02:54');
+INSERT INTO "vus" VALUES('https://cadenaser.com/galicia/2026/11/21/un-gran-celta-muere-en-la-orilla-del-bernabeu-radio-vigo/','Un gran Celta muere en la orilla del Bernabéu','2026-11-21T23:02:54');
 COMMIT;
