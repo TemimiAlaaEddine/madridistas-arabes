@@ -8345,4 +8345,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/por-que-nico-paz-retorn
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Habib-diallo-et-billal-brahimi-une-nouvelle-fois-pas-convoques-par-patrick-videira-pour-le-match-du-mans-a-marseille/1745158#at_medium=RSS_feeds','Habib Diallo et Billal Brahimi une nouvelle fois pas convoqués par Patrick Videira pour le match du Mans à Marseille','2026-11-21T17:50:59');
 INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/endrick-es-el-mejor-en-su-posicion-veremos-que-se-puede-hacer-f202611-n/','“Endrick es el mejor en su posición, veremos qué se puede hacer”','2026-11-21T18:02:02');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/actualidad/once-inicial-del-real-madrid-ante-el-celta-21-11-2026','Once inicial del Real Madrid ante el Celta','2026-11-21T18:51:21');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a4365665785846837632-real-madrid-celta-vigo-les-compositions-officielles','Real Madrid - Celta Vigo : les compositions officielles','2026-11-21T18:55:56');
 COMMIT;
