@@ -8147,4 +8147,5 @@ INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261121/rea
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a5048217447765808499-real-madrid-las-monaco-a-tente-le-coup-pour-yan-diomande','Real Madrid : l’AS Monaco a tenté le coup pour Yan Diomandé','2026-11-21T11:21:28');
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-21/florentino-perez-con-nadal-a-su-lado-no-olvida-el-caso-negreira-no-voy-a-parar-hasta-que-se-depuren-responsabilidades.html','Florentino Pérez, con Nadal a su lado, no olvida el caso Negreira: “No voy a parar hasta que se depuren responsabilidades”','2026-11-21T11:31:32');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/madrid-aprueba-cuentas-bernabeu-ingresa-doble-reforma.html','El Madrid aprueba las cuentas: el Bernabéu ya ingresa el doble desde la reforma','2026-11-21T11:46:31');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1945319689812685183-real-madrid-florentino-perez-sort-la-sulfateuse-contre-le-barca-et-javier-tebas','Real Madrid : Florentino Pérez sort la sulfateuse contre le Barça et Javier Tebas !','2026-11-21T11:50:53');
 COMMIT;
