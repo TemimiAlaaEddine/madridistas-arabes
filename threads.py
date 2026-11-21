@@ -671,7 +671,7 @@ def vers_typefully(con, couvertures, dossier_couv):
             con.commit()
             continue
         motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
-        # une nouvelle part tout de suite (sinon jusqu'à 7 h d'attente la nuit, hors créneaux) ; une opinion attend son créneau
+        # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
         quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
         if quand == "now" and not motifs and con.execute(
