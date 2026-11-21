@@ -12,6 +12,7 @@
 | `threads.py` | Threads X (Typefully) et publications sur la Page Facebook |
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
+| `match.py` | Stats du dernier match (WhoScored via Bright Data, Sofascore via Edge) pour la commande /match ; clé `brightdata_api_token` dans `secrets.json` |
 | `sources.py` | Revue des sources : santé des flux, rendement, sources à ajouter ou retirer |
 | `statut.py` | Tableau de bord de l'équipe d'agents, publié sur GitHub Pages après chaque passage |
 | `faits.py` | Range dans `connaissance.md` les faits validés depuis le tableau de bord |

@@ -28,4 +28,4 @@ Termine par : « Lequel on développe avec /script ? »
 
 ## Règles
 - Comme fait, seulement ce qui est dans connaissance.md, dans les articles ou dans une recherche web vérifiée sur la page. Une HYPOTHÈSE reste présentée comme telle.
-- N'invente aucune statistique. DataMB et WhoScored interdisent la lecture automatique : si un chiffre manque, donne à l'utilisateur le lien DataMB du joueur (champ `datamb` de sa fiche dans config.json, ou `datamb_club`) et demande-lui de le relever ; pour un match, demande la page WhoScored enregistrée (voir `/script`).
+- N'invente aucune statistique. Pour un match, lance `python match.py` (WhoScored et Sofascore). DataMB interdit la lecture automatique : si un chiffre de saison manque, donne à l'utilisateur le lien DataMB du joueur (champ `datamb` de sa fiche dans config.json, ou `datamb_club`) et demande-lui de le relever.

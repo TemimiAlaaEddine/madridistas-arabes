@@ -35,13 +35,13 @@ Si `/script` arrive sans sujet (ou avec « propose-moi un sujet ») :
 ## 2. Rassembler la matière
 1. Lis `connaissance.md` (faits validés et préférences de l'utilisateur, dont sa méthode d'analyse). Pour une comparaison ou une analogie historique, lis aussi `histoire.md` (saisons repères, avec leurs pistes de comparaison).
 2. Cherche dans la base : `python connaissance.py <mots> --jours <n> --court` (une ligne par article), puis lis en entier les articles retenus avec `python connaissance.py --id <numéros>`. Essaie plusieurs mots : noms latins (« valencia », « guler »), clés de joueurs de config.json (« mbappe »), noms arabes (« فالنسيا »). Élargis `--jours` si c'est trop maigre.
-3. Pour un match, demande la page WhoScored enregistrée (Ctrl+S) dans le dossier du projet, puis lance `python whoscored.py "<fichier>.html"` : systèmes, notes et stats par joueur, à citer comme « WhoScored ».
+3. Pour un match, lance `python match.py` (dernier match, ou `python match.py <id WhoScored>`) : systèmes, notes et stats par joueur de WhoScored, stats d'équipe et xG de Sofascore, à citer comme « WhoScored » ou « Sofascore ». Lecture automatique autorisée par l'utilisateur (2026-11-21). La commande `/match` enchaîne tout jusqu'au brouillon Typefully.
 4. Pour des stats de saison d'un joueur ou du club (par 90 minutes, en percentiles face aux 7 grands championnats : xG, PPDA, duels, passes...), utilise DataMB : lien du joueur dans le champ `datamb` de sa fiche dans `config.json`, lien du club dans `datamb_club`. Ses chiffres sont chargés en JavaScript, et le site interdit la lecture automatique de ses fichiers de données : donne le lien à l'utilisateur et demande-lui les chiffres utiles, ou une capture d'écran. Cite toujours « DataMB » avec la saison, et ne reproduis jamais ses graphiques (radars, nuages de points).
 5. **Recherche web, à chaque fois** (choix de l'utilisateur, 2026-11-19 : enrichir nos connaissances au-delà de la base) :
    - Lance plusieurs recherches sur le sujet dans le même tour (WebSearch, mode « standard », « extended » si c'est maigre), en espagnol, en anglais et, au besoin, en italien ou en portugais. Cherche ce que la base n'a pas : statistiques (Opta, FotMob, BeSoccer, The Analyst, Driblab), contrats et clauses, antécédents (saisons passées, autres entraîneurs), avis de spécialistes.
    - Un résumé de recherche ne prouve rien : vérifie chaque chiffre retenu sur la page elle-même (agent `web-fetch`, ou Bright Data `scrape_as_markdown` si le site bloque). Note l'auteur et la date.
    - Présente les résultats en deux listes : **vérifié** (lu sur la page, utilisable avec sa source) et **non vérifié** (page illisible ou sources contradictoires). Le non vérifié n'entre dans le texte que si l'utilisateur le confirme.
-   - N'invente jamais pour combler un manque. DataMB et WhoScored restent en lecture manuelle (point 4 et point 3).
+   - N'invente jamais pour combler un manque. DataMB reste en lecture manuelle (point 4).
 
 ## 3. Écrire
 Règles communes :

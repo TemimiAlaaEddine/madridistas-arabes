@@ -21,3 +21,6 @@ videos/*/voix/
 # voix clonée de l'utilisateur (un échantillon par langue) : reste sur ce PC
 ma_voix*.wav
 
+
+# stats de match récupérées par match.py (pages de ~1 Mo)
+matchs/
