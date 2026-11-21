@@ -7905,4 +7905,5 @@ INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/liga/20
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-21/rafa-nadal-ocupa-la-escena-en-la-asamblea-de-socios-de-otras-cuentas-record-del-real-madrid.html','Rafa Nadal ocupa la escena en la asamblea de socios de otras cuentas récord del Real Madrid','2026-11-21T04:41:11');
 INSERT INTO "vus" VALUES('https://www.vi.nl/pro/hoe-een-rollertje-het-leven-van-edward-linskens-veranderde','Hoe een rollertje het leven van Edward Linskens veranderde','2026-11-21T05:01:31');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/mes-despues-vuelve-madrid.html','Un mes después vuelve otro Madrid','2026-11-21T05:31:55');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-man-city-arsenal-dortmund-real-madrid-psg-en-derby-van-het-noorden','VI Live: Man City, Arsenal, Dortmund, Real Madrid, PSG en Derby van het Noorden','2026-11-21T06:51:02');
 COMMIT;
