@@ -2,14 +2,15 @@
 sans Claude) et gardés dans matchs.json. Le tri s'en sert pour la règle « pendant un match » (match_en_cours)."""
 import json
 import re
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from commun import BASE, ErreurClaude, appeler_claude, lire_page, maintenant
 
 URL = "https://www.realmadrid.com/es-ES/futbol/calendario"
 FICHIER = BASE / "matchs.json"
 DUREE = timedelta(hours=2, minutes=30)  # prolongation et arrêts de jeu compris
-MI_TEMPS = re.compile(r"half|break|descanso|interval|pause|^ht$", re.I)  # nom de l'état sur la page, deviné
+SOFA_EQUIPE = 2829  # Real Madrid sur Sofascore
+MI_TEMPS = 31  # status.code Sofascore de la mi-temps (« Halftime ») ; « 1st half » est 6, « 2nd half » 7
 # chaque match est un objet JSON de la page : "Real Madrid vs Celta de Vigo", coup d'envoi en UTC, heure fixée ou non (date seule)
 MATCH = re.compile(r'"description":\{"plaintext":"([^"]+)"\},"week":[^,]*,"weekAsText":[^,]*,"dateTime":"([^"]+)",'
                    r'"dateTxt":[^,]*,"isScheduled":(true|false),"status":"pre_match"')
@@ -43,16 +44,18 @@ def match_en_cours(utc=None):
             " buteurs) et les déclarations d'après-match.\n")
 
 
-def etat(page, debut):
-    """(statut, équipe à domicile, son score, équipe à l'extérieur, son score) du match qui commence à `debut` (UTC), lus dans
-    la page calendrier ; score None tant qu'il n'est pas affiché. Un match y a deux formes : la fiche des matchs à venir (celle
-    de MATCH) et la ligne des résultats, seule restante une fois le match fini ; on ne sait pas laquelle porte le direct."""
-    d = re.escape(debut) + r'\.000Z"'
-    equipes = (r'.{0,4000}?"homeTeam":\{.{0,2000}?"name":"([^"]+)".{0,500}?"homeTeamScoreTotal":(?:null|"(\d+)")'
-               r'.{0,500}?"awayTeam":\{.{0,2000}?"name":"([^"]+)".{0,500}?"awayTeamScoreTotal":(?:null|"(\d+)")')
-    for forme in (r'"status":"(\w+)","dateTime":"' + d, r'"dateTime":"' + d + r',"dateTxt":[^,]*,"isScheduled":\w+,"status":"(\w+)"'):
-        if m := re.search(forme + equipes, page, re.S):
-            return m.groups()
+def etat(debut):
+    """(statut, code, équipe à domicile, son score, équipe à l'extérieur, son score) du match qui commence à `debut` (UTC), lus
+    sur Sofascore (la page du club restait sur « live » 0-0 et sans mi-temps pendant Real-Celta, le 21 nov.) ; None si absent.
+    En direct, le match est dans events/next ; fini, dans events/last. Écart de 3 h toléré si le coup d'envoi a bougé."""
+    from match import sofascore  # Edge, sinon Bright Data (serveurs de GitHub)
+    ts = datetime.fromisoformat(debut).replace(tzinfo=timezone.utc).timestamp()
+    for sens in ("next", "last"):
+        for e in sofascore(f"team/{SOFA_EQUIPE}/events/{sens}/0").get("events", []):
+            if abs(e["startTimestamp"] - ts) < 3 * 3600:
+                s = e["status"]
+                return (s.get("description") or s.get("type"), s.get("code"), e["homeTeam"]["name"],
+                        e.get("homeScore", {}).get("current"), e["awayTeam"]["name"], e.get("awayScore", {}).get("current"))
     return None
 
 
@@ -67,24 +70,23 @@ def nom_arabe(nom):
 
 
 def suivre_match(con, utc=None):
-    """Pendant un match (fenêtre de match_courant), à chaque passage : l'état lu sur la page calendrier est noté dans
-    suivi_match quand il change ; à la mi-temps, le score part tout de suite sur X, une seule fois. Sans buteurs : la page ne
-    les donne pas (homeScorers vide, même après le match).
-    shortcut: nom de l'état « mi-temps » deviné (MI_TEMPS) faute d'avoir vu un match en cours, à corriger d'après suivi_match."""
+    """Pendant un match (fenêtre de match_courant), à chaque passage : l'état lu sur Sofascore est noté dans suivi_match quand
+    il change ; à la mi-temps, le score part tout de suite sur X, une seule fois (score seul, sans buteurs)."""
+    import subprocess
     import threads
     utc = utc or maintenant()
     m = match_courant(utc)
     if not m:
         return 0
     try:
-        e = etat(lire_page(URL), m["debut"])
-    except OSError as err:
-        print(f"  ! suivi du match : page calendrier illisible ({err})")
+        e = etat(m["debut"])
+    except (OSError, ValueError, KeyError, subprocess.SubprocessError) as err:  # Bright Data refuse parfois : passage suivant
+        print(f"  ! suivi du match : Sofascore illisible ({err})")
         return 0
     if not e:
-        print(f"  ! suivi du match : {m['match']} introuvable sur la page calendrier")
+        print(f"  ! suivi du match : {m['match']} introuvable sur Sofascore")
         return 0
-    statut, dom, sd, ext, se = e
+    statut, code, dom, sd, ext, se = e
     score = f"{sd}-{se}" if sd is not None and se is not None else ""
     con.execute("CREATE TABLE IF NOT EXISTS suivi_match (debut TEXT, vu TEXT, statut TEXT, score TEXT, typefully TEXT)")
     dernier = con.execute("SELECT statut, score FROM suivi_match WHERE debut = ? ORDER BY rowid DESC LIMIT 1", (m["debut"],)).fetchone()
@@ -92,7 +94,7 @@ def suivre_match(con, utc=None):
         con.execute("INSERT INTO suivi_match VALUES (?, ?, ?, ?, NULL)", (m["debut"], utc.isoformat(timespec="seconds"), statut, score))
         con.commit()
     print(f"  Suivi du match : {dom} {score or '?'} {ext}, statut « {statut} »")
-    if (not score or not MI_TEMPS.search(statut) or not threads.reglage("typefully_api_key")
+    if (not score or code != MI_TEMPS or not threads.reglage("typefully_api_key")
             or con.execute("SELECT 1 FROM suivi_match WHERE debut = ? AND typefully IS NOT NULL", (m["debut"],)).fetchone()):
         return 0
     texte = f"⏸️ نهاية الشوط الأول\n\n{nom_arabe(dom)} {sd} - {se} {nom_arabe(ext)}\n\n#ريال_مدريد"

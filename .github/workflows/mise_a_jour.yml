@@ -50,6 +50,7 @@ jobs:
           TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
           FACEBOOK_PAGE_ID: ${{ secrets.FACEBOOK_PAGE_ID }}
           FACEBOOK_PAGE_TOKEN: ${{ secrets.FACEBOOK_PAGE_TOKEN }}
+          BRIGHTDATA_API_TOKEN: ${{ secrets.BRIGHTDATA_API_TOKEN }} # suivi du match : Sofascore refuse les serveurs de GitHub
           PYTHONIOENCODING: utf-8
           PYTHONUNBUFFERED: 1 # chaque ligne du journal a son heure réelle : on voit quelle étape est lente
           FORCER_UNES: ${{ inputs.unes_maintenant && '1' || '' }}
