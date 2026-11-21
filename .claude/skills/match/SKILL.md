@@ -5,9 +5,9 @@ description: Analyse d'après-match du Real Madrid en une commande : récupère 
 
 # Analyse d'après-match : stats → texte → brouillon Typefully
 
-Ce qui suit la commande précise la demande : `/match` (dernier match, thread X en arabe), `/match facebook français`, `/match 1994027` (identifiant WhoScored d'un match précis).
+Ce qui suit la commande précise la demande : `/match` (dernier match, thread X en arabe), `/match facebook français`, `/match 1994027` (identifiant WhoScored d'un match précis), `/match --date 2026-11-22` (le match de ce jour ; c'est ce que lance `apres_match.py`, automatiquement 2 h 30 après le coup d'envoi).
 
-1. **Stats** : lance `python match.py` (ou `python match.py <id>`). Le script affiche le score, les systèmes, les notes et les stats par joueur de WhoScored, puis les stats d'équipe (possession, xG, grosses occasions…) et les notes, xG, duels par joueur de Sofascore. En cas d'échec :
+1. **Stats** : lance `python match.py` (ou `python match.py <id>`, ou `python match.py --date <date>`). Avec `--date`, si le match n'est pas encore terminé sur WhoScored, arrête-toi et dis-le. Le script affiche le score, les systèmes, les notes et les stats par joueur de WhoScored, puis les stats d'équipe (possession, xG, grosses occasions…) et les notes, xG, duels par joueur de Sofascore. En cas d'échec :
    - erreur Bright Data (curl, code 22) : la clé `brightdata_api_token` manque dans `secrets.json`, ou le compte est à court de crédit ;
    - « Sofascore : match introuvable » : continue avec WhoScored seul et dis-le.
 2. **Texte** : suis `/script` (.claude/skills/script/SKILL.md) à partir de l'étape 1, avec ces réglages :

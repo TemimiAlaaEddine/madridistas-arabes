@@ -2,6 +2,7 @@
 
 Usage : python match.py            (dernier match terminé)
         python match.py <id>       (identifiant WhoScored d'un match précis, lu dans son adresse /Matches/<id>/)
+        python match.py --date AAAA-MM-JJ   (le match de ce jour, heure de Madrid ; erreur s'il n'est pas encore terminé sur WhoScored)
 Les pages sont gardées dans matchs/AAAA-MM-JJ-adversaire/ (hors git). Sert à la commande /match (.claude/skills/match).
 WhoScored passe par Bright Data (clé "brightdata_api_token" dans secrets.json) : Cloudflare bloque les accès directs.
 Sofascore passe par Edge sans fenêtre : son API refuse les requêtes qui ne viennent pas d'un navigateur.
@@ -19,6 +20,7 @@ from couvertures import EDGE
 from threads import reglage
 
 DOSSIER = Path(__file__).parent / "matchs"
+SANS_FENETRE = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # lancé par la tâche planifiée : pas de console qui s'ouvre
 WS_EQUIPE, SOFA_EQUIPE = 52, 2829  # Real Madrid sur WhoScored et Sofascore
 LIGNE = re.compile(r"\[(\d{6,8}),\d+,'(\d\d-\d\d-\d\d)','[^']*',\d+,'([^']*)',\d+,\d+,'([^']*)',\d+,'([^']*)'")
 
@@ -28,13 +30,13 @@ def bright_data(url):
     corps = json.dumps({"zone": "mcp_unlocker", "url": url, "format": "raw"})
     r = subprocess.run(["curl", "-s", "-f", "-m", "180", "https://api.brightdata.com/request",
                         "-H", f"Authorization: Bearer {reglage('brightdata_api_token')}",
-                        "-H", "Content-Type: application/json", "-d", corps], capture_output=True, check=True)
+                        "-H", "Content-Type: application/json", "-d", corps], capture_output=True, check=True, creationflags=SANS_FENETRE)
     return r.stdout.decode("utf-8", "replace")
 
 
 def sofascore(chemin):
     r = subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--virtual-time-budget=10000", "--dump-dom",
-                        f"https://www.sofascore.com/api/v1/{chemin}"], capture_output=True, timeout=90, check=True)
+                        f"https://www.sofascore.com/api/v1/{chemin}"], capture_output=True, timeout=90, check=True, creationflags=SANS_FENETRE)
     return json.loads(html.unescape(re.search(r"<pre[^>]*>(.*)</pre>", r.stdout.decode("utf-8"), re.S).group(1)))
 
 
@@ -61,12 +63,17 @@ def resume_sofascore(stats, compos):
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
-    if len(sys.argv) > 1:
+    if len(sys.argv) > 1 and sys.argv[1] != "--date":
         ws_id, date = sys.argv[1], None
     else:
-        ws_id, j, dom, ext, score = matchs_joues(bright_data(f"https://www.whoscored.com/Teams/{WS_EQUIPE}/Fixtures"))[-1]
+        joues = matchs_joues(bright_data(f"https://www.whoscored.com/Teams/{WS_EQUIPE}/Fixtures"))
+        if len(sys.argv) > 2:  # --date : ce match-là, jamais le précédent si WhoScored n'est pas encore à jour
+            joues = [m for m in joues if datetime.strptime(m[1], "%d-%m-%y").date().isoformat() == sys.argv[2]]
+            if not joues:
+                sys.exit(f"Le match du {sys.argv[2]} n'est pas encore terminé sur WhoScored : réessaie plus tard.")
+        ws_id, j, dom, ext, score = joues[-1]
         date = datetime.strptime(j, "%d-%m-%y").date()
-        print(f"Dernier match : {dom} {score} {ext} ({date})")
+        print(f"Match : {dom} {score} {ext} ({date})")
     page = bright_data(f"https://www.whoscored.com/Matches/{ws_id}/Live")
     d = whoscored.lire(page)
     date = date or datetime.fromisoformat(d["startTime"]).date()
