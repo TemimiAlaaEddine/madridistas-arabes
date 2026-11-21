@@ -8075,4 +8075,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7762462760473501787-les-d
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/florentino-perez-anuncia-futbol-gratis-imaginense-nino-15-anos-mumbai.html','Florentino Pérez anuncia el fútbol gratis: "Imagínense un niño de 15 años de Mumbai..."','2026-11-21T10:16:21');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-experimento-piloto-en-la-india-que-florentino-perez-ha-anunciado-para-ver-al-real-madrid-gratis-f202611-v/','El experimento piloto en la India que Florentino Pérez ha anunciado para ver al Real Madrid gratis','2026-11-21T10:35:53');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/florentino-repugnante-e-indigno-tebas-haya-ido.html','Florentino: "Es repugnante e indigno que Tebas no se haya ido"','2026-11-21T10:41:32');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/florentino-de-tebas-en-lugar-de-ayudar-a-esclarecer-ha-escogido-el-camino-de-atacar-al-madrid-f202611-n/','Florentino, de Tebas: “En lugar de ayudar a esclarecer, ha escogido el camino de atacar al Madrid”','2026-11-21T10:46:06');
 COMMIT;
