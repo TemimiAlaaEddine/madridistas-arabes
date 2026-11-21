@@ -8037,4 +8037,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/no-es-casualidad-q
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/nadal-acompana-florentino-asamblea-orgullo-contar.html','Nadal acompaña a Florentino en la Asamblea: "Es un orgullo contar con él"','2026-11-21T09:16:23');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/nadal-florentino-y-un-aplauso-eterno-asi-fue-recibido-rafa-en-la-asamblea-para-su-ratificacion-f202611-v/','Nadal, Florentino y un aplauso eterno: así fue recibido Rafa en la asamblea para su ratificación','2026-11-21T09:26:00');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/nadal-viene-a-morder-champions/','Nadal viene a morder Champions','2026-11-21T09:31:51');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/21/6b01646de85ecec7518b4581.html','Florentino Pérez ''asciende'' a Rafa Nadal a su derecha en la Asamblea del Madrid: "Es un orgullo contar con él"','2026-11-21T09:36:15');
 COMMIT;
