@@ -8160,4 +8160,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/21/ma
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1945319689812685183-real-madrid-florentino-perez-sort-la-sulfateuse-contre-le-barca-et-javier-tebas','Real Madrid : Florentino Pérez sort la sulfateuse contre le Barça et Javier Tebas !','2026-11-21T11:50:53');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/21/rafael-nadal-elegido-por-aclamacion-como-nuevo-miembro-de-la-junta-directiva-del-real-madrid-cadena-ser/','Rafael Nadal, elegido por aclamación como nuevo miembro de la Junta Directiva del Real Madrid','2026-11-21T11:55:47');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/florentino-20261121123551-nt.html','Partidos gratis en India, Nadal ''superstar'', y más ataques al caso Negreira: así fue el discurso de un Florentino que pidió no pitar a los jugadores','2026-11-21T11:56:09');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1661526677770780771-real-madrid-rafael-nadal-integre-le-conseil-dadministration','Real Madrid : Rafael Nadal intègre le conseil d’administration','2026-11-21T12:05:55');
 COMMIT;
