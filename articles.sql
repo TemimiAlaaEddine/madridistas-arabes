@@ -8348,4 +8348,5 @@ INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/prime
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a4365665785846837632-real-madrid-celta-vigo-les-compositions-officielles','Real Madrid - Celta Vigo : les compositions officielles','2026-11-21T18:55:56');
 INSERT INTO "vus" VALUES('https://as.com/futbol/femenino/jensen-asalta-la-segunda-plaza-f202611-n/','Jensen asalta la segunda plaza','2026-11-21T19:01:25');
 INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-21u-houdt-aanvoerder-thibaut-courtois-zijn-netten-bij-real-proper-tegen-celta~a78c62bc/','LIVE (21u). Houdt aanvoerder Thibaut Courtois zijn netten bij Real proper tegen Celta?','2026-11-21T19:01:25');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/A-quelle-heure-et-sur-quelle-chaine-voir-real-madrid-celta-vigo-en-liga/1744428#at_medium=RSS_feeds','Où voir Real Madrid-Celta Vigo ?','2026-11-21T19:10:51');
 COMMIT;
