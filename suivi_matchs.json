@@ -1,7 +1,7 @@
 {
   "Real Madrid vs Celta de Vigo | 2026-11-21": {
-    "fait": false,
-    "essais": 1,
-    "resultat": "! ffres, et je n'ai créé aucun fichier dans `scripts/`. Je n'ai rien déposé dans Typefully et je n'ai pas touché à `connaissance.md`.\n\nPour relancer, il faut corriger ou recharger le jeton Bright Data (guillemets compris), puis relancer le workflow.\n\nFICHIER: aucun (échec de la récupération des stats)"
+    "fait": true,
+    "essais": 2,
+    "resultat": "https://typefully.com/?d=12095155&a=360421"
   }
 }
