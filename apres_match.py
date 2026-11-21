@@ -16,7 +16,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from threads import CONFIG, LIMITE, heure_madrid, longueur, typefully_api
+from threads import CONFIG, LIMITE, heure_madrid, longueur, typefully_api, typefully_image
 
 BASE = Path(__file__).parent
 SUIVI = BASE / "suivi_matchs.json"
@@ -27,7 +27,11 @@ CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personn
             "Thread X en arabe, format au choix. Ne pose aucune question, ne modifie pas connaissance.md, saute l'étape 6 et ne "
             "dépose rien dans Typefully : écris seulement le fichier dans scripts/ (étape 3). Forme du fichier : le titre « # … » "
             "et une ligne de contexte, puis une ligne « --- », puis les tweets séparés par des lignes « --- » (sans numérotation), "
-            "puis les sections « ## » (accroches, hashtags, sources). Termine ta réponse par la ligne « FICHIER: scripts/<nom>.md ».")
+            "puis les sections « ## » (accroches, hashtags, sources). Graphiques : match.py en liste quelques-uns (chemin et "
+            "contenu) ; places-en 2 à 4 dans le thread, chacun sur sa propre ligne « [graphique: <chemin>] » à la fin du tweet "
+            "dont il illustre le propos (un par tweet ; cette ligne ne compte pas dans les 270 caractères). "
+            "Termine ta réponse par la ligne « FICHIER: scripts/<nom>.md ».")
+GRAPHIQUE = re.compile(r"^\[graphique:\s*([^\]]+?)\s*\]\s*$", re.M)
 
 
 def cle(m):
@@ -52,15 +56,17 @@ def a_analyser(matchs, suivi, utc):
 
 
 def tweets_du_fichier(texte):
-    """Les tweets d'un fichier de scripts/ écrit selon CONSIGNE : entre le premier « --- » et la première section « ## »."""
-    blocs = [t.strip() for t in texte.split("\n## ")[0].split("\n---\n")]
-    tweets = [t for t in blocs[1:] if t]
+    """[(tweet, [chemins des graphiques])] d'un fichier de scripts/ écrit selon CONSIGNE : entre le premier « --- » et la
+    première section « ## » ; les lignes « [graphique: …] » sont retirées du texte du tweet."""
+    blocs = [b.strip() for b in texte.split("\n## ")[0].split("\n---\n")[1:] if b.strip()]
+    images = [GRAPHIQUE.findall(b) for b in blocs]
+    tweets = [GRAPHIQUE.sub("", b).strip() for b in blocs]
     if not 2 <= len(tweets) <= 30:
         raise ValueError(f"{len(tweets)} tweets lus dans le fichier")
     trop_longs = [i for i, t in enumerate(tweets, 1) if longueur(t) > LIMITE - 6]  # 6 : place du « i/n »
     if trop_longs:
         raise ValueError(f"tweets trop longs : {trop_longs}")
-    return tweets
+    return list(zip(tweets, images))
 
 
 def analyser(m):
@@ -78,7 +84,18 @@ def analyser(m):
     if r.returncode != 0 or not fichier:
         raise ValueError((r.stderr or r.stdout).strip()[-300:] or f"code {r.returncode}")
     tweets = tweets_du_fichier((BASE / fichier.group(1)).read_text(encoding="utf-8"))
-    posts = [{"text": f"{t}\n\n{i}/{len(tweets)}"} for i, t in enumerate(tweets, 1)]
+    posts = []
+    for i, (t, images) in enumerate(tweets, 1):
+        post = {"text": f"{t}\n\n{i}/{len(tweets)}"}
+        ids = []
+        for c in images:
+            try:
+                ids.append(typefully_image(Path(c).name, (BASE / c).read_bytes()))
+            except (OSError, KeyError, ValueError) as err:
+                print(f"! graphique {c} non joint : {err}")
+        if any(ids):  # image refusée ou pas prête à temps : le tweet part sans elle
+            post["media_ids"] = [x for x in ids if x]
+        posts.append(post)
     d = typefully_api("drafts", {"draft_title": f"تحليل {m['match']} ({date_madrid(m)})",
                                  "platforms": {"x": {"enabled": True, "posts": posts}}})  # sans publish_at : simple brouillon
     return f"https://typefully.com/?d={d['id']}&a={CONFIG['typefully_social_set']}"

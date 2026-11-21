@@ -13,6 +13,7 @@
 | `commun.py` | Fonctions partagées : flux RSS, appel à Claude, base, nom du site, rubriques, pays |
 | `connaissance.py`, `whoscored.py` | Outils de la commande /script |
 | `apres_match.py` | Analyse d'après-match automatique, sans le PC : workflow `apres_match.yml` toutes les 15 min ; 2 h 30 après chaque match de `matchs.json`, Claude Code lance `/match` et le thread part en brouillon dans Typefully. Suivi dans `suivi_matchs.json` (résultat de chaque essai, lien du brouillon). Secret GitHub `BRIGHTDATA_API_TOKEN` en plus des autres |
+| `graphiques.py` | Graphiques d'après-match (PNG 1200×900, arabe) tirés de Sofascore : comparaison des équipes, xG minute par minute, carte des tirs, xG + xA par joueur ; faits par `match.py`, joints au thread (ligne `[graphique: …]` dans le tweet) |
 | `match.py` | Stats du dernier match (WhoScored via Bright Data, Sofascore via Edge) pour la commande /match ; clé `brightdata_api_token` dans `secrets.json` |
 | `sources.py` | Revue des sources : santé des flux, rendement, sources à ajouter ou retirer |
 | `statut.py` | Tableau de bord de l'équipe d'agents, publié sur GitHub Pages après chaque passage |

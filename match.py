@@ -105,9 +105,22 @@ def main():
     except (subprocess.SubprocessError, OSError, AttributeError, ValueError, KeyError) as err:
         print(f"\n! Sofascore indisponible ({err!r}) : continue avec WhoScored seul")
         return
-    (dossier / "sofascore.json").write_text(json.dumps({"event": evt, "statistics": stats, "lineups": compos}), encoding="utf-8")
+    try:
+        tirs = sofascore(f"event/{evt['id']}/shotmap")["shotmap"]
+    except (subprocess.SubprocessError, OSError, ValueError, KeyError):
+        tirs = []  # sans carte des tirs : pas de graphiques xG et tirs
+    (dossier / "sofascore.json").write_text(json.dumps({"event": evt, "statistics": stats, "lineups": compos, "shotmap": tirs}), encoding="utf-8")
     print("\n######## Sofascore")
     resume_sofascore(stats, compos)
+    import graphiques  # ici : Edge et la police Cairo ne servent que si Sofascore a répondu
+    try:
+        faits = graphiques.generer(dossier)
+    except Exception as err:  # un graphique raté ne doit pas faire échouer l'analyse
+        print(f"\n! Graphiques impossibles ({err!r}) : thread sans graphiques")
+        return
+    print("\n######## Graphiques (à joindre au thread : ligne « [graphique: <chemin>] » dans le tweet qui en parle)")
+    for nom, quoi in faits:
+        print(f"   {(dossier / 'graphiques' / nom).relative_to(Path(__file__).parent).as_posix()} : {quoi}")
 
 
 if __name__ == "__main__":

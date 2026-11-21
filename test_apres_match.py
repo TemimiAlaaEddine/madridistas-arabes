@@ -19,8 +19,11 @@ assert a.a_analyser(matchs, {}, datetime(2026, 12, 13, 23, 30)) == [osasuna]
 assert a.date_madrid(celta) == "2026-11-21" and a.date_madrid({**celta, "debut": "2026-11-21T23:30:00"}) == "2026-11-22", "date de Madrid"
 
 
-fichier = "# ثريد\nسياق\n---\nتغريدة 1\n---\nتغريدة 2\n\n---\n\n## المصادر\n- x"
-assert a.tweets_du_fichier(fichier) == ["تغريدة 1", "تغريدة 2"], "en-tête et sections « ## » écartés"
+fichier = "# ثريد\nسياق\n---\nتغريدة 1\n[graphique: matchs/x/graphiques/xg.png]\n---\nتغريدة 2\n\n---\n\n## المصادر\n- x"
+assert a.tweets_du_fichier(fichier) == [("تغريدة 1", ["matchs/x/graphiques/xg.png"]), ("تغريدة 2", [])], \
+    "en-tête et sections « ## » écartés, ligne de graphique retirée du texte"
+long_avec_image = "# ثريد\n---\n" + "ا" * 270 + "\n[graphique: matchs/x/graphiques/tirs.png]\n---\nب"
+assert a.tweets_du_fichier(long_avec_image)[0][1] == ["matchs/x/graphiques/tirs.png"], "la ligne de graphique ne compte pas dans la longueur"
 for mauvais in ("# ثريد\n---\nوحيدة\n## x", "# ثريد\n---\n" + "ا" * 300 + "\n---\nب"):
     try:
         a.tweets_du_fichier(mauvais)
