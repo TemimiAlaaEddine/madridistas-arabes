@@ -31,13 +31,23 @@ def bright_data(url):
     r = subprocess.run(["curl", "-s", "-f", "-m", "180", "https://api.brightdata.com/request",
                         "-H", f"Authorization: Bearer {reglage('brightdata_api_token')}",
                         "-H", "Content-Type: application/json", "-d", corps], capture_output=True, check=True, creationflags=SANS_FENETRE)
+    if not r.stdout.strip():  # page refusée par le site : Bright Data répond 200 avec un corps vide
+        raise ValueError(f"Bright Data : réponse vide pour {url}")
     return r.stdout.decode("utf-8", "replace")
 
 
 def sofascore(chemin):
-    r = subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--virtual-time-budget=10000", "--dump-dom",
-                        f"https://www.sofascore.com/api/v1/{chemin}"], capture_output=True, timeout=90, check=True, creationflags=SANS_FENETRE)
-    return json.loads(html.unescape(re.search(r"<pre[^>]*>(.*)</pre>", r.stdout.decode("utf-8"), re.S).group(1)))
+    url = f"https://www.sofascore.com/api/v1/{chemin}"
+    try:
+        r = subprocess.run([EDGE, "--headless=new", "--disable-gpu", "--virtual-time-budget=10000", "--dump-dom", url],
+                           capture_output=True, timeout=90, check=True, creationflags=SANS_FENETRE)
+        return json.loads(html.unescape(re.search(r"<pre[^>]*>(.*)</pre>", r.stdout.decode("utf-8"), re.S).group(1)))
+    except (subprocess.SubprocessError, OSError, TypeError, AttributeError, ValueError):
+        pass  # navigateur absent ou refusé (serveurs de GitHub) : repli sur Bright Data, qui échoue parfois au 1er essai
+    try:
+        return json.loads(bright_data(url))
+    except (subprocess.SubprocessError, ValueError):
+        return json.loads(bright_data(url))
 
 
 def matchs_joues(calendrier):
