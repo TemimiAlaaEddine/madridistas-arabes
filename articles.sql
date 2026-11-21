@@ -8420,4 +8420,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/malen-overklast-kane-lamine-y
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/21/gonzalez-fuertes-responde-florentino-perez-mejor-arbitros-indignados-real-madrid-tv.html','González Fuertes responde a Florentino Pérez: "A lo mejor los árbitros tienen que estar indignados con Real Madrid TV"','2026-11-21T20:52:22');
 INSERT INTO "vus" VALUES('https://www.hln.be/primera-division/live-aanvoerder-thibaut-courtois-en-real-madrid-nog-steeds-op-achterstand-kylian-mbappe-trapt-penalty-huizenhoog-over~a78c62bc/','LIVE. Aanvoerder Thibaut Courtois en Real Madrid nog steeds op achterstand: Kylian Mbappé trapt penalty huizenhoog over','2026-11-21T20:55:48');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115628/real-madrid-vs-celta-vigo-2026-la-liga-live-online-stream','CONFIRMED lineups: Real Madrid vs Celta Vigo, 2026 La Liga','2026-11-21T21:01:29');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a9127393483144050572-real-madrid-le-penalty-completement-loupe-par-kylian-mbappe','Real Madrid : le penalty complètement loupé par Kylian Mbappé','2026-11-21T21:06:16');
 COMMIT;
