@@ -8223,4 +8223,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/La-place-de-vi
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/vini-y-diomande-al-rojo-vivo-f202611-n/','Vini y Diomande, al rojo vivo','2026-11-21T12:41:49');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/2026-11-21/real-madrid-rafa-nadal-florentino-perez-junta-directivaa_4469807/','Rafa Nadal arrasa con el 99,5% de los votos y entra por la puerta grande en la directiva del Real Madrid','2026-11-21T12:51:34');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/perez-trekt-weer-van-leer-negreira-tebas-en-nepnieuws-passeren-de-revue','Pérez trekt weer van leer: Negreira, Tebas en ''nepnieuws'' passeren de revue','2026-11-21T13:11:05');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-humilde-reaccion-de-nadal-cuando-es-ratificado-con-solo-4-votos-en-contra-y-5-abstenciones-f202611-v/','La humilde reacción de Nadal cuando es ratificado con solo 4 votos en contra y 5 abstenciones','2026-11-21T13:26:13');
 COMMIT;
