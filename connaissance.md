@@ -2,12 +2,12 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 22
+Dernier fait relu : 23
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
 - Saison 2025-26 : aucun titre, avec Xabi Alonso puis Álvaro Arbeloa (promu de la Castilla en cours de saison ; validé par l'utilisateur le 2026-11-20). Ensuite : José Mourinho nommé entraîneur, Florentino Pérez réélu. Source : validé par l'utilisateur (2026-11-08).
-- Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ selon SI, environ 107 M£ selon TEAMtalk), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Source : Sports Illustrated.
+- Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ hors bonus selon SI et Foot Mercato, environ 107 M£ selon TEAMtalk ; recrue la plus chère de l'histoire du Real Madrid), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Sources : Sports Illustrated ; Foot Mercato (Allan Brevi) pour le record et les 125 M€ hors bonus de Diomandé ; validé par l'utilisateur le 2026-11-21.
 - Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Source : TEAMtalk.
 - Été 2026 : Nico Paz passe la saison à Côme, avec une option de rachat pour le Real. Source : Les Nouvelles du Foot.
 - Nico Paz : le Real a vendu 100 % de ses droits à Côme pour environ 60 M€ et garde une option de rachat de 80 M€, activable seulement du 1er au 15 juillet 2027. Le directeur sportif de Côme, Lodi, confirme l'option. Sources : Defensa Central (Diego Vargas, 2026-10-21), OneFootball, Marca (Alberto Rubio, 2026-11-11), ABC (Rubén Cañizares, 2026-11-20) ; validé par l'utilisateur le 2026-11-18.
