@@ -9075,4 +9075,5 @@ INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261122/mad
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-la-liga/115654/player-ratings-real-madrid-2-1-celta-vigo','Player Ratings: Real Madrid 2–1 Celta Vigo','2026-11-22T02:11:42');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115658/top-10-players-real-madrid-2-1-celta-vigo','TOP 10 PLAYERS: Real Madrid 2-1 Celta Vigo','2026-11-22T02:52:05');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/noticia/2026/11/22/mourinho-garante-vinicius-junior-titular-do-real-madrid-contra-o-psv-na-champions-sem-perguntas.ghtml','Mourinho garante Vinicius Junior titular do Real Madrid contra o PSV na Champions: "Sem perguntas"','2026-11-22T05:11:09');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50558763/lionel-messi-throw-red-card-inter-miami-columbus-crew','Columbus coach says Messi should''ve got red card: ''Everyone knows''','2026-11-22T05:21:14');
 COMMIT;
