@@ -9079,4 +9079,5 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50558763/lionel
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/aprobados-y-suspensos-del-celta-burcio-aquel-nino-del-real-madrid-brilla-como-rival-blanco-f202611-n/','Aprobados y suspensos del Celta: Burcio, aquel niño del Real Madrid se luce como rival blanco','2026-11-22T07:46:10');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/koke-y-carvajal-rivales-intimos-f202611-n/','Koke y Carvajal, rivales íntimos','2026-11-22T07:46:10');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/un-ano-en-el-camp-nou-dos-infiernos-en-el-paraiso-f202611-n/','Un año en el Camp Nou: dos ‘infiernos’ en el paraíso','2026-11-22T07:46:10');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/mourinho-verklapt-basisspeler-tegen-psv-dan-hoef-je-het-niet-meer-te-vragen','Mourinho verklapt basisspeler tegen PSV: ''Dan hoef je het niet meer te vragen''','2026-11-22T08:05:52');
 COMMIT;
