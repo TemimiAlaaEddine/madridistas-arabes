@@ -9192,4 +9192,6 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/22/re
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/22/vinicius-enciende-chispa-espi-mantiene-llama.html','Vinicius enciende la chispa y Espí mantiene la llama','2026-11-22T09:42:20');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115664/espi-real-madrid-celta-2026-quotes','Espi: “I will make the most of every minute to help the team”','2026-11-22T09:46:34');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8762870802355434140-real-madrid-les-coulisses-de-lechange-entre-mbappe-et-camavinga-a-la-mi-temps','Real Madrid : l’échange tactique entre Mbappé et Camavinga à la mi-temps','2026-11-22T09:46:34');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a8834559385023333385-real-madrid-jose-mourinho-rend-hommage-a-rafael-nadal','Real Madrid : José Mourinho rend hommage à Rafael Nadal','2026-11-22T10:46:02');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/garrido-y-el-potente-significado-de-nadal-como-directivo-un-golpe-de-efecto-soberbio-de-florentino-f202611-v/','Garrido y el potente significado de Nadal como directivo: “Un golpe de efecto soberbio de Florentino”','2026-11-22T10:46:07');
 COMMIT;
