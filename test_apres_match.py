@@ -16,6 +16,9 @@ assert a.a_analyser(matchs, {}, datetime(2026, 11, 23, 22, 0)) == [celta], "ratt
 assert a.a_analyser(matchs, {}, datetime(2026, 11, 23, 22, 45)) == [], "plus de 2 jours : abandonné"
 assert a.a_analyser(matchs, {}, datetime(2026, 12, 13, 23, 0)) == [], "heure pas fixée : pas avant 23 h 30 UTC"
 assert a.a_analyser(matchs, {}, datetime(2026, 12, 13, 23, 30)) == [osasuna]
+_essai = {a.cle(celta): {"fait": False, "essais": 1, "dernier": "2026-11-21T22:30"}}
+assert a.a_analyser(matchs, _essai, datetime(2026, 11, 21, 22, 55)) == [], "30 min au moins entre deux essais"
+assert a.a_analyser(matchs, _essai, datetime(2026, 11, 21, 23, 0)) == [celta]
 assert a.date_madrid(celta) == "2026-11-21" and a.date_madrid({**celta, "debut": "2026-11-21T23:30:00"}) == "2026-11-22", "date de Madrid"
 
 

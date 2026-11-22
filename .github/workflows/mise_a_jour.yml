@@ -14,6 +14,7 @@ concurrency: mise_a_jour # jamais deux passages en même temps
 permissions:
   contents: write
   issues: write # issue d'alerte quand un envoi échoue 3 passages de suite
+  actions: write # lancer l'analyse d'après-match (apres_match.yml) quand un match est à analyser
 
 jobs:
   passage:
@@ -63,6 +64,17 @@ jobs:
           git config user.email "actions@users.noreply.github.com"
           git add articles.sql photos.json
           git diff --cached --quiet || (git commit -m "Passage du $(date -u +'%Y-%m-%d %H:%M') UTC" && git pull --rebase && git push)
+      - name: Analyse d'après-match à lancer ? (la planification GitHub de apres_match.yml saute des passages)
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PYTHONIOENCODING: utf-8
+        run: |
+          match=$(python apres_match.py --a-faire)
+          if [ -n "$match" ]; then
+            echo "Analyse lancée : $match"
+            gh workflow run apres_match.yml --ref "${{ github.ref_name }}"
+          fi
       - name: Alerte (envoi en échec depuis 3 passages)
         if: always()
         env:

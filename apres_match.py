@@ -1,10 +1,11 @@
-"""Analyse d'après-match automatique, lancée par GitHub Actions (.github/workflows/apres_match.yml) toutes les 15 minutes.
+"""Analyse d'après-match automatique (GitHub Actions, .github/workflows/apres_match.yml), déclenchée par le workflow principal
+(mise_a_jour.yml, lancé toutes les 5 min par cron-job.org) dès qu'un match est à analyser ; la planification GitHub reste en secours.
 
 Usage : python apres_match.py            (analyse le match fini, s'il y en a un)
         python apres_match.py --a-faire  (affiche le match à analyser, ou rien : le workflow n'installe Claude Code que si besoin)
 Les matchs viennent de matchs.json (calendrier.py, revue du lundi). 2 h 30 après le coup d'envoi, Claude Code lance /match en
 mode automatique et écrit le thread dans scripts/ ; ce script le dépose ensuite en brouillon dans Typefully (API, sans date).
-Heure pas encore fixée : on attend 23 h 30 UTC le jour du match. 3 essais par match, un par passage (WhoScored met parfois du
+Heure pas encore fixée : on attend 23 h 30 UTC le jour du match. 3 essais par match, espacés de 30 min au moins (WhoScored met parfois du
 temps à publier les stats), rattrapage pendant 2 jours. Suivi dans suivi_matchs.json (enregistré dans le dépôt).
 Secrets GitHub : CLAUDE_CODE_OAUTH_TOKEN, TYPEFULLY_API_KEY, BRIGHTDATA_API_TOKEN.
 """
@@ -22,6 +23,7 @@ BASE = Path(__file__).parent
 SUIVI = BASE / "suivi_matchs.json"
 ATTENTE = timedelta(hours=2, minutes=30)  # coup d'envoi + 2 h 30 : match fini, stats publiées
 ESSAIS = 3
+ESPACEMENT = timedelta(minutes=30)  # entre deux essais : le workflow principal peut relancer l'analyse toutes les 5 min
 OUTILS = ["Bash(python *)", "Read", "Grep", "Glob", "Edit(scripts/**)", "WebSearch", "WebFetch", "Agent", "Skill"]
 CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personne ne répond. Lance `python match.py --date {date}`. "
             "Thread X en arabe, construit selon les étapes 2 (lecture du match en 6 étapes : récit, périodes, bascules, phases, joueurs ; idées fortes tirées des périodes et des phases) et 3 de /match. Ne pose aucune question, ne modifie pas connaissance.md, saute l'étape 6 et ne "
@@ -50,9 +52,11 @@ def date_madrid(m):
 
 
 def a_analyser(matchs, suivi, utc):
-    """Matchs finis depuis moins de 2 jours, pas encore analysés, moins de 3 essais."""
-    return [m for m in matchs if utc - timedelta(days=2) < moment(m) <= utc
-            and not suivi.get(cle(m), {}).get("fait") and suivi.get(cle(m), {}).get("essais", 0) < ESSAIS]
+    """Matchs finis depuis moins de 2 jours, pas encore analysés, moins de 3 essais, dernier essai il y a 30 min au moins."""
+    def pret(s):
+        return not s.get("fait") and s.get("essais", 0) < ESSAIS and (
+            "dernier" not in s or utc - datetime.fromisoformat(s["dernier"]) >= ESPACEMENT)
+    return [m for m in matchs if utc - timedelta(days=2) < moment(m) <= utc and pret(suivi.get(cle(m), {}))]
 
 
 def tweets_du_fichier(texte):
@@ -113,6 +117,7 @@ def passage(utc=None):
     for m in a_analyser(matchs, suivi, utc)[:1]:  # un match par passage
         s = suivi.setdefault(cle(m), {"fait": False, "essais": 0})
         s["essais"] += 1
+        s["dernier"] = utc.isoformat(timespec="minutes")
         try:
             s["resultat"], s["fait"] = analyser(m), True
         except (OSError, ValueError, KeyError) as err:
