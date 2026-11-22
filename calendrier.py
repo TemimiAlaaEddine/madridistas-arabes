@@ -42,7 +42,16 @@ def match_en_cours(utc=None):
     return (f"\nMATCH EN COURS : {m['match']} (coup d'envoi à {heure_madrid(datetime.fromisoformat(m['debut'])):%H:%M}, heure de Madrid)."
             " Écarte les faits de jeu (actions, occasions, cartons, buts racontés en direct) ; garde en revanche la composition"
             " officielle, les déclarations d'avant-match, le résultat de la mi-temps (score et buteurs), le résultat final (score et"
-            " buteurs) et les déclarations d'après-match.\n")
+            " buteurs) et les déclarations d'après-match.\n"
+            # Real-Celta, 21 nov. : le thread de la mi-temps reprenait « لم يصنع الفريق أي فرصة حقيقية » (Cadena SER), démenti par
+            # les stats (occasion de Bernardo, penalty manqué) ; l'article portait en fait sur une critique du banc du Real
+            "Tant que le match n'est pas fini, le compte est celui d'un supporter du Real Madrid :\n"
+            "- résultat de la mi-temps : le score, les buteurs et la minute, rien d'autre ; aucun jugement sur le jeu du Real, de ses"
+            " joueurs, de son entraîneur ou de son banc (pas de « أسوأ شوط », « لم يصنع أي فرصة », « نائم », « مخيب »), même attribué"
+            " à un média ; si le Real est mené, une phrase sobre qui regarde vers la suite (« ما زال أمامنا شوط كامل ») ; s'il mène,"
+            " la joie reste sobre ;\n"
+            "- écarte, jusqu'au coup de sifflet final, les articles dont le sujet est une critique du Real pendant ce match (jeu,"
+            " joueurs, entraîneur, banc, attitude) : ils pourront être traités après le match, comme un débat.\n")
 
 
 def evenement(debut):

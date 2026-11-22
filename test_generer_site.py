@@ -1310,6 +1310,7 @@ with tempfile.TemporaryDirectory() as d:
     calendrier.FICHIER.write_text(json.dumps(pm), encoding="utf-8")
     regle = calendrier.match_en_cours(datetime(2026, 11, 21, 21, 10))
     assert "Celta" in regle and "21:00" in regle and "mi-temps" in regle, regle
+    assert "supporter du Real Madrid" in regle and "aucun jugement sur le jeu" in regle and "critique du Real" in regle, regle
     assert calendrier.match_en_cours(datetime(2026, 11, 21, 19, 59)) == calendrier.match_en_cours(datetime(2026, 11, 21, 22, 30)) == ""
     assert calendrier.match_en_cours(datetime(2026, 12, 13, 1)) == ""  # heure pas encore fixée : date seule, pas de fenêtre
     # suivi en direct (Sofascore) : état noté à chaque changement ; début, buts, rouges, mi-temps, fin, chacun une seule fois
