@@ -9352,4 +9352,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/real-madrid-celta-es
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/do-banco-titularidade-vini-muda-jogo-resposta-imediata-mourinho/','Do banco à titularidade: Vini Jr muda jogo e recebe resposta imediata de Mourinho','2026-11-22T17:06:36');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/es-un-orgullo-que-el-bernabeu-aplauda-a-un-chico-de-pueblo-f202611-n/','“Es un orgullo que el Bernabéu aplauda a un chico de pueblo”','2026-11-22T17:26:11');
 INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/liga-primera/barcelona-villarreal-remontada-pedri.html','El Barça le da la vuelta al marcador y apaga el incendio de la primera parte','2026-11-22T17:40:54');
+INSERT INTO "vus" VALUES('https://as.com/tikitakas/claudia-la-pareja-de-cucurella-se-hace-viral-vean-al-nombre-que-elige-como-mejor-jugador-que-el-espanol-f202611-v/','Claudia, la pareja de Cucurella, se hace viral: vean al nombre que elige como “mejor jugador” que el español','2026-11-22T18:16:31');
 COMMIT;
