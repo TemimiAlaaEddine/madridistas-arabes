@@ -1404,7 +1404,8 @@ with tempfile.TemporaryDirectory() as d:
     assert tw["but:9"].startswith("⚽🔥 هدددف لريال مدريد!") and "Starfelt 30' (ضد مرماه)" in tw["but:9"] and "سيلتا فيغو 0 - 1 ريال مدريد" in tw["but:9"]
     # suivi dédié : une lecture par minute ; chaque fait une fois, dans l'ordre ; incidents relus si le score ou le statut change
     etapes = [(evt(0, "notstarted", "Not started"), []), (evt(6, "inprogress", "1st half", 0, 0), []),
-              (evt(6, "inprogress", "1st half", 0, 0), []), (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
+              (evt(6, "inprogress", "1st half", 0, 0), []), (evt(6, "inprogress", "1st half", 0, 1), []),  # but au score, pas encore en incident
+              (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
               (evt(31, "inprogress", "Halftime", 0, 1), [but(1, 6, "Durán", 0, 1)]),
               (evt(100, "finished", "Ended", 1, 1), [but(1, 6, "Durán", 0, 1), but(2, 66, "Bellingham", 1, 1)])]
     pas, horloge, appels, sauves = [0], [datetime(2026, 11, 21, 19, 58)], [], []
@@ -1426,7 +1427,8 @@ with tempfile.TemporaryDirectory() as d:
     assert cles == ["début", "but:1", "mi-temps", "but:2", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
     assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 5  # rien ne part deux fois, arrêt à la fin
     assert appels[0] == "team/2829/events/next/0" and "team/2829/events/next/0" not in appels[1:]  # ensuite : event/77 seul
-    assert appels.count("event/77/incidents") == 4, appels  # relus au début, au 1er but, à la mi-temps et à la fin, pas à chaque minute
+    # relus au début, au changement de score puis la minute suivante (but pas encore en incident), à la mi-temps et à la fin
+    assert appels.count("event/77/incidents") == 5, appels
     assert calendrier.lire_direct()["2026-11-21T20:00:00"] == {"cles": cles, "fini": True}
     calendrier.DIRECT.write_text(json.dumps({"2026-11-21T20:00:00": {"cles": ["début"], "fini": False}}), encoding="utf-8")
     calendrier.direct_actif = lambda: False

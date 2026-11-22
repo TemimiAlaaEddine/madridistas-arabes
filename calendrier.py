@@ -260,7 +260,9 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
                 print(f"{h} ! match introuvable sur Sofascore")
             else:
                 cle_etat = (e["status"].get("code"), e.get("homeScore", {}).get("current"), e.get("awayScore", {}).get("current"))
-                if e["status"].get("type") != "notstarted" and (cle_etat != avant or n % 5 == 0):
+                # but déjà au score mais pas encore dans les incidents (Liverpool-Man United, 22 nov. : 2 min de retard) : relus la minute suivante
+                manque = sum(i.get("incidentType") == "goal" for i in incidents) < (cle_etat[1] or 0) + (cle_etat[2] or 0)
+                if e["status"].get("type") != "notstarted" and (cle_etat != avant or manque or n % 5 == 0):
                     incidents = sofascore(f"event/{id_match}/incidents").get("incidents", [])
                 if cle_etat != avant:
                     print(f"{h} {e['homeTeam']['name']} {cle_etat[1]}-{cle_etat[2]} {e['awayTeam']['name']}, "
