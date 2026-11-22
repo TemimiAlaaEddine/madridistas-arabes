@@ -9309,4 +9309,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/barca-komt-dramatische-start-
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/22/carlos-espi-angel-guarda-mourinho-solucionador-problemas.html','Carlos Espí, el ángel de la guarda de Mourinho: "Es un solucionador de problemas"','2026-11-22T15:11:52');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/una-jornada-perfecta/','Una jornada perfecta','2026-11-22T15:21:37');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bosnische-en-noorse-arbitrage-bij-cl-duels-van-feyenoord-en-psv','Bosnische en Noorse arbitrage bij CL-duels van Feyenoord en PSV','2026-11-22T15:26:12');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-barca-renverse-villarreal-apres-une-entame-cauchemardesque-et-un-penalty-manque-par-lamine-yamal/1745385#at_medium=RSS_feeds','Le Barça renverse Villarreal après une entame cauchemardesque et un penalty manqué par Lamine Yamal','2026-11-22T15:31:21');
 COMMIT;
