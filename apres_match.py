@@ -34,7 +34,7 @@ CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personn
             "contenu) ; places-en 2 à 4 dans le thread, chacun sur sa propre ligne « [graphique: <chemin>] » à la fin du tweet "
             "dont il illustre le propos (un par paragraphe ; tous seront joints au tweet long). "
             "Écris aussi les tweets joueurs (étape 4 de /match, un tweet par joueur de la sélection de l'étape 6) dans "
-            "scripts/<date>-joueurs-<adversaire>.md, même forme, avec la photo du joueur (ligne « [photo: <chemin>] », étape 4 de /match). "
+            "scripts/<date>-joueurs-<adversaire>.md, même forme, posts longs de 500 à 1 000 caractères, avec la photo du joueur (ligne « [photo: <chemin>] », étape 4 de /match). "
             "Termine ta réponse par les lignes « JOUEURS: scripts/<nom>.md » puis « FICHIER: scripts/<nom>.md » (le thread).")
 GRAPHIQUE = re.compile(r"^\[(?:graphique|photo):\s*([^\]]+?)\s*\]\s*$", re.M)  # photo : celle du joueur (tweets joueurs)
 
