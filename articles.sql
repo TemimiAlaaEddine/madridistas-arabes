@@ -9234,4 +9234,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8834559385023333385-real-
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/garrido-y-el-potente-significado-de-nadal-como-directivo-un-golpe-de-efecto-soberbio-de-florentino-f202611-v/','Garrido y el potente significado de Nadal como directivo: “Un golpe de efecto soberbio de Florentino”','2026-11-22T10:46:07');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/es-el-mejor-centrocampista-del-mundo-f202611-n/','“Eres el mejor”','2026-11-22T11:01:56');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/sin-noticias-de-nico-paz-en-el-real-madrid-f202611-n/','Sin noticias de Nico Paz en el Real Madrid','2026-11-22T11:11:36');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/22/mourinho-bromea-sobre-la-dupla-mbappe-espi-si-perdemos-el-balon-tendre-que-entrar-yo-y-darle-una-hostia-a-alguno-en-la-transicion-cadena-ser/','Mourinho bromea sobre la dupla Mbappé-Espí: "Si perdemos el balón, tendré que entrar yo y darle una hostia a alguno en la transición"','2026-11-22T11:21:03');
 COMMIT;
