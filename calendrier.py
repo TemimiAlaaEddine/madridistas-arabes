@@ -50,11 +50,13 @@ def match_en_cours(utc=None):
             " buteurs) et les déclarations d'après-match.\n"
             # Real-Celta, 21 nov. : le thread de la mi-temps reprenait « لم يصنع الفريق أي فرصة حقيقية » (Cadena SER), démenti par
             # les stats (occasion de Bernardo, penalty manqué) ; l'article portait en fait sur une critique du banc du Real
-            "Tant que le match n'est pas fini, le compte est celui d'un supporter du Real Madrid :\n"
-            "- résultat de la mi-temps : le score, les buteurs et la minute, rien d'autre ; aucun jugement sur le jeu du Real, de ses"
-            " joueurs, de son entraîneur ou de son banc (pas de « أسوأ شوط », « لم يصنع أي فرصة », « نائم », « مخيب »), même attribué"
-            " à un média ; si le Real est mené, une phrase sobre qui regarde vers la suite (« ما زال أمامنا شوط كامل ») ; s'il mène,"
-            " la joie reste sobre ;\n"
+            "Pendant tout le match, du coup d'envoi au coup de sifflet final, le compte est celui d'un supporter du Real Madrid :\n"
+            "- aucun jugement négatif sur le jeu du Real, de ses joueurs, de son entraîneur ou de son banc (pas de « أسوأ شوط »,"
+            " « لم يصنع أي فرصة », « نائم », « مخيب »), même attribué à un média ;\n"
+            "- résultat de la mi-temps : le score, les buteurs et la minute, rien d'autre ; si le Real est mené, une phrase sobre qui"
+            " regarde vers la suite (« ما زال أمامنا شوط كامل ») ; s'il mène, la joie ;\n"
+            "- résultat final : victoire du Real, la joie ; nul ou défaite, une phrase sobre et fidèle au club, sans reproche à chaud"
+            " (l'analyse critique viendra après, dans le thread d'après-match) ;\n"
             "- écarte, jusqu'au coup de sifflet final, les articles dont le sujet est une critique du Real pendant ce match (jeu,"
             " joueurs, entraîneur, banc, attitude) : ils pourront être traités après le match, comme un débat.\n")
 
@@ -110,8 +112,11 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     statut, tag = e["status"], "\n\n#ريال_مدريد"
     score = f"{dom} {e.get('homeScore', {}).get('current', 0)} - {e.get('awayScore', {}).get('current', 0)} {ext}"
     tweets, buts, avant = [], [], (0, 0)
+    # voix de supporter du Real pendant tout le match (choix de l'utilisateur, 2026-11-22) : joie pour le Real, soutien quand il souffre
+    sd, se = e.get("homeScore", {}).get("current", 0) or 0, e.get("awayScore", {}).get("current", 0) or 0
+    real, adv = (sd, se) if real_dom else (se, sd)
     if statut.get("type") == "inprogress":  # pas de « coup d'envoi » rattrapé une fois le match fini
-        tweets.append(("début", f"▶️ انطلاق المباراة\n\n{dom} - {ext}{tag}"))
+        tweets.append(("début", f"▶️ انطلاق المباراة\n\n{dom} - {ext}\n\nهلا مدريد! 🤍{tag}"))
     for i in sorted(incidents, key=lambda i: (i.get("time", 0), i.get("addedTime") or 0)):
         cle = f"{i.get('id') or minute(i)}"
         if i.get("incidentType") == "goal":
@@ -123,16 +128,20 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
             ligne = f"{joueur(i)} {minute(i)}" + {"penalty": " (ركلة جزاء)", "ownGoal": " (ضد مرماه)"}.get(i.get("incidentClass"), "")
             buts.append(f"⚽ {ligne}" + ("" if pour_real else f" ({adversaire})"))
             courant = f"{dom} {apres[0]} - {apres[1]} {ext}"
-            texte = f"⚽🔥 هدددف لريال مدريد!\n\n{ligne}\n\n{courant}" if pour_real else f"⚽ هدف لـ{adversaire}\n\n{ligne}\n\n{courant}"
+            texte = (f"⚽🔥 هدددف لريال مدريد!\n\n{ligne}\n\n{courant}" if pour_real
+                     else f"⚽ هدف لـ{adversaire}\n\n{ligne}\n\n{courant}\n\nهيا يا ريال! 💪")
             tweets.append((f"but:{cle}", texte + tag))
         elif i.get("incidentType") == "card" and i.get("incidentClass") in ("red", "yellowRed"):
             equipe = dom if i.get("isHome") else ext
             second = " (إنذار ثانٍ)" if i["incidentClass"] == "yellowRed" else ""
-            tweets.append((f"rouge:{cle}", f"🟥 بطاقة حمراء\n\n{joueur(i)} ({equipe}) {minute(i)}{second}{tag}"))
+            suite = "ريال مدريد بعشرة لاعبين، وكلنا مع الفريق 🤍" if bool(i.get("isHome")) == real_dom else "ريال مدريد في تفوق عددي 💪"
+            tweets.append((f"rouge:{cle}", f"🟥 بطاقة حمراء\n\n{joueur(i)} ({equipe}) {minute(i)}{second}\n\n{suite}{tag}"))
     if statut.get("code") == MI_TEMPS:
-        tweets.append(("mi-temps", f"⏸️ نهاية الشوط الأول\n\n{score}{tag}"))
+        suite = "ريال مدريد في المقدمة 🤍" if real > adv else "ما زال أمامنا شوط كامل 💪" if real < adv else "الكلمة للشوط الثاني 💪"
+        tweets.append(("mi-temps", f"⏸️ نهاية الشوط الأول\n\n{score}\n\n{suite}{tag}"))
     if statut.get("type") == "finished":
-        tweets.append(("fin", f"🏁 نهاية المباراة\n\n{score}" + ("\n\n" + "\n".join(buts) if buts else "") + tag))
+        suite = "فوز ريال مدريد! هلا مدريد 🤍" if real > adv else "تعادل، والموسم طويل 💪" if real == adv else "خسارة مؤلمة، وسنعود أقوى 🤍"
+        tweets.append(("fin", f"🏁 نهاية المباراة\n\n{score}\n\n{suite}" + ("\n\n" + "\n".join(buts) if buts else "") + tag))
     return tweets
 
 

@@ -1310,7 +1310,7 @@ with tempfile.TemporaryDirectory() as d:
     calendrier.FICHIER.write_text(json.dumps(pm), encoding="utf-8")
     regle = calendrier.match_en_cours(datetime(2026, 11, 21, 21, 10))
     assert "Celta" in regle and "21:00" in regle and "mi-temps" in regle, regle
-    assert "supporter du Real Madrid" in regle and "aucun jugement sur le jeu" in regle and "critique du Real" in regle, regle
+    assert "supporter du Real Madrid" in regle and "Pendant tout le match" in regle and "aucun jugement négatif" in regle and "résultat final" in regle and "critique du Real" in regle, regle
     assert calendrier.match_en_cours(datetime(2026, 11, 21, 19, 59)) == calendrier.match_en_cours(datetime(2026, 11, 21, 22, 30)) == ""
     assert calendrier.match_en_cours(datetime(2026, 12, 13, 1)) == ""  # heure pas encore fixée : date seule, pas de fenêtre
     # suivi en direct (Sofascore) : état noté à chaque changement ; début, buts, rouges, mi-temps, fin, chacun une seule fois
@@ -1360,11 +1360,13 @@ with tempfile.TemporaryDirectory() as d:
                              {"id": 5, "incidentType": "card", "incidentClass": "yellow", "time": 20, "isHome": True, "player": {"name": "X"}}]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 15)) == 1  # carton jaune : pas de tweet
         assert textes()[-1].startswith("⚽ هدف لـسيلتا فيغو") and "بابلو دوران 6'" in textes()[-1] and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-1]
+        assert "هيا يا ريال! 💪" in textes()[-1] and "هلا مدريد! 🤍" in textes()[0]  # voix de supporter : soutien après un but encaissé
         sofa["panne"] = True
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 40)) == 0  # Bright Data refuse : repris au passage suivant
         del sofa["panne"]
         sofa["next"] = [evt(31, "inprogress", "Halftime", 0, 1)]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 50)) == 1 and textes()[-1].startswith("⏸️ نهاية الشوط الأول")
+        assert "ما زال أمامنا شوط كامل 💪" in textes()[-1]  # mené à la pause
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 55)) == 0  # mi-temps une seule fois
         # deux événements entre deux passages : partent dans l'ordre ; rouge et but de la tête vers le Real
         sofa["next"] = [evt(7, "inprogress", "2nd half", 1, 1)]
@@ -1380,13 +1382,14 @@ with tempfile.TemporaryDirectory() as d:
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 20)) == 0  # 1er envoi refusé : rien n'est marqué parti
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 25)) == 2
         assert textes()[-2].startswith("🟥 بطاقة حمراء") and "Starfelt (سيلتا فيغو) 60' (إنذار ثانٍ)" in textes()[-2]
+        assert "ريال مدريد في تفوق عددي 💪" in textes()[-2]  # rouge pour l'adversaire
         assert textes()[-1].startswith("⚽🔥 هدددف لريال مدريد!") and "Jude Bellingham 66'" in textes()[-1]
         sofa["next"], sofa["last"] = [], [evt(100, "finished", "Ended", 2, 1)]  # fini : passé dans events/last
         sofa["incidents"].append(but(3, 85, "Carlos Espí", 2, 1, "penalty", "كارلوس إسبي"))
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 55)) == 2  # dernier but puis fin
         assert "كارلوس إسبي 85' (ركلة جزاء)" in textes()[-2]
-        assert textes()[-1] == ("🏁 نهاية المباراة\n\nريال مدريد 2 - 1 سيلتا فيغو\n\n⚽ بابلو دوران 6' (سيلتا فيغو)\n⚽ Jude Bellingham 66'"
-                                "\n⚽ كارلوس إسبي 85' (ركلة جزاء)\n\n#ريال_مدريد"), textes()[-1]
+        assert textes()[-1] == ("🏁 نهاية المباراة\n\nريال مدريد 2 - 1 سيلتا فيغو\n\nفوز ريال مدريد! هلا مدريد 🤍\n\n⚽ بابلو دوران 6' (سيلتا فيغو)"
+                                "\n⚽ Jude Bellingham 66'\n⚽ كارلوس إسبي 85' (ركلة جزاء)\n\n#ريال_مدريد"), textes()[-1]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 22, 0)) == 0 and len(envois) == 7  # rien ne part deux fois
         assert all(c["publish_at"] == "now" for c in envois)
     finally:
