@@ -194,17 +194,17 @@ with tempfile.TemporaryDirectory() as tmp:
     assert g.deja_publies(db) == ["Lizarazu recadre Mbappé"]
 print("OK directs et doublons d'opinion")
 
-# threads X : longueur comptée comme X, crédit + numérotation, thread refusé si un tweet dépasse 280
+# threads X : longueur comptée comme X, un seul tweet long + le crédit (lien) en réponse, refusé au-delà du tweet long
 import sqlite3
 import threads as t
 TELECHARGER = t.telecharger_image  # vraie fonction : des tests plus bas la remplacent sans la remettre
 assert t.longueur("ريال مدريد") == 10 and t.longueur("https://www.marca.com/" + "x" * 200) == 23 and t.longueur("🔥") == 2
 art = {"auteur_ar": "خوانما كاستانيو", "auteur": "Juanma Castaño", "journal": "Marca", "lien": "https://marca.com/a"}
 th = t.assembler(art, ["فكرة أولى", "فكرة ثانية"])
-assert len(th) == 3 and th[0].endswith("1/2") and th[1].endswith("2/2") and "خوانما كاستانيو | Marca" in th[2] and "https://marca.com/a" in th[2]
-assert not t.NUMERO.search(th[2])  # le tweet du lien ne compte pas dans la numérotation
-assert t.assembler(art, ["فكرة وحيدة"])[0] == "فكرة وحيدة"  # un seul tweet + le lien : pas de numéro
-assert t.assembler(art, ["ب" * 290]) is None and t.assembler(art, []) is None
+assert len(th) == 2 and th[0] == "فكرة أولى\n\nفكرة ثانية" and "خوانما كاستانيو | Marca" in th[1] and "https://marca.com/a" in th[1]
+assert not t.NUMERO.search(th[0]) and not t.URL.search(th[0])  # pas de « i/n », le lien seulement dans la réponse
+assert t.assembler(art, ["ب" * 290]) is not None  # au-delà de 280 : tweet long
+assert t.assembler(art, ["ب" * (t.LIMITE_LONG + 1)]) is None and t.assembler(art, []) is None
 with tempfile.TemporaryDirectory() as tmp:
     db = Path(tmp) / "a.db"
     g.enregistrer([{"id": 1, "section": "debats", "titre": "ع", "texte": "ن"}],
@@ -319,7 +319,7 @@ try:
 finally:
     t.appeler_claude, t.typefully_api, t.reglage = vrai
 assert "veille" in prompts[0] and "avant-veille" not in prompts[0] and "aujourd'hui" not in prompts[0]
-assert envois[0]["publish_at"] == "now" and envois[0]["platforms"]["x"]["posts"][1]["text"].endswith("2/2")
+assert envois[0]["publish_at"] == "now" and [p["text"] for p in envois[0]["platforms"]["x"]["posts"]] == ["📌 حصاد ريال مدريد | 16 نوفمبر\n\n▪️ خبر\n\n(ماركا)"]  # un seul tweet long
 con.close()
 print("OK résumé du jour")
 
@@ -349,8 +349,9 @@ assert telecharges[0] == "https://img.kiosko.net/2026/11/17/es/marca.750.jpg"  #
 post = x[0]["platforms"]["x"]["posts"][0]
 assert len(x) == 1 and post["media_ids"] == ["m1"] and post["text"].startswith("📰 غلاف ماركا | الثلاثاء 17 نوفمبر") and "▪️ حتى زيدان" in post["text"]
 # titres trop longs pour un tweet : réponses en thread, aucun titre perdu, image et hashtag sur le 1er seulement
-_tw = t.tweets_une("📰 غلاف ماركا | الجمعة 20 نوفمبر\n\n", [f"▪️ {'ب' * 120} {i}" for i in range(4)])
-assert len(_tw) == 3 and all(t.longueur(x) <= t.LIMITE for x in _tw) and sum(x.count("▪️") for x in _tw) == 4
+assert len(t.tweets_une("E\n\n", [f"▪️ {'ب' * 120} {i}" for i in range(4)])) == 1  # tweet long : tout dans le 1er
+_tw = t.tweets_une("📰 غلاف ماركا | الجمعة 20 نوفمبر\n\n", [f"▪️ {'ب' * 9000} {i}" for i in range(4)])
+assert len(_tw) == 2 and all(t.longueur(x) <= t.LIMITE_LONG for x in _tw) and sum(x.count("▪️") for x in _tw) == 4
 assert _tw[0].startswith("📰") and _tw[0].endswith("#ريال_مدريد") and not _tw[1].endswith("#ريال_مدريد")
 assert t.tweets_une("E\n\n", ["▪️ a"]) == ["E\n\n▪️ a\n\n#ريال_مدريد"]
 assert len(fb) == 1 and fb[0][0].endswith("/photos") and 'name="source"; filename="une-marca.jpg"' in fb[0][1]  # image envoyée en fichier

@@ -729,7 +729,7 @@ def partage(a):
         # X pré-remplit seulement le 1er tweet (ni image ni suite du thread par lien)
         image += (f'<a class="bouton b-x" href="https://x.com/intent/post?text={urllib.parse.quote(tweets[0])}" target="_blank"'
                   f' rel="noopener">{LOGO_X}فتح X مع التغريدة الأولى</a>')
-        liste_tw = "".join(copiable(t, f"x-{i}-{n}", f"{threads.longueur(t)}/{threads.LIMITE}")
+        liste_tw = "".join(copiable(t, f"x-{i}-{n}", f"{threads.longueur(t)}/{threads.LIMITE_LONG if n == 1 else threads.LIMITE}")
                            for n, t in enumerate(tweets, 1))
         boutons = f'<button type="button" class="b-x" data-ouvre="x-{i}">{LOGO_X}ثريد ({len(tweets)})</button>' + boutons
         fenetres += fenetre(f"x-{i}", "ثريد X", f'{image}<ol class="tweets">{liste_tw}</ol>')

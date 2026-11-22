@@ -27,7 +27,7 @@ assert a.tweets_du_fichier(fichier) == [("تغريدة 1", ["matchs/x/graphiques
     "en-tête et sections « ## » écartés, ligne de graphique retirée du texte"
 long_avec_image = "# ثريد\n---\n" + "ا" * 270 + "\n[graphique: matchs/x/graphiques/tirs.png]\n---\nب"
 assert a.tweets_du_fichier(long_avec_image)[0][1] == ["matchs/x/graphiques/tirs.png"], "la ligne de graphique ne compte pas dans la longueur"
-for mauvais in ("# ثريد\n---\nوحيدة\n## x", "# ثريد\n---\n" + "ا" * 300 + "\n---\nب"):
+for mauvais in ("# ثريد\n---\nوحيدة\n## x", "# ثريد\n---\n" + "ا" * 25_000 + "\n---\nب"):
     try:
         a.tweets_du_fichier(mauvais)
         raise AssertionError("aurait dû refuser")

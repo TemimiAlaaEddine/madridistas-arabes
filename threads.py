@@ -24,6 +24,7 @@ from difflib import SequenceMatcher
 from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, lire_page, maintenant, normaliser_titre
 
 LIMITE = 280
+LIMITE_LONG = 25_000  # tweet long (X Premium, depuis le 22 nov. 2026) : chaque thread devient un seul tweet
 SECRETS = BASE / "secrets.json"  # token et chat sur le PC, hors git ; sur GitHub : variables d'environnement
 URL = re.compile(r"https?://\S+")
 
@@ -42,6 +43,7 @@ REGLES = """- Tweet 1, l'accroche, écrit comme les comptes foot arabes les plus
 - Tweets suivants : chacun apporte du nouveau, sans redire l'accroche ni la source du tweet 1 ; fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. Deux ou trois lignes courtes valent mieux qu'un bloc ; une énumération (notes des joueurs, chiffres, noms) va à la ligne, chaque élément précédé de « ▪️ ». L'avis reste attribué à son auteur, par son nom de famille ou une tournure (في نظره، يذهب أبعد من ذلك) : n'écris jamais « الكاتب » ni « الصحفي », et ne recite pas le journal. Le dernier porte la conclusion ou la phrase la plus marquante.
 - Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, 4 à 10 pour une conférence de presse (une déclaration forte par tweet ; le thème annoncé avant une citation est celui de la question posée, sans en inventer un pour la suite d'une même réponse).
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces et retours à la ligne compris. Pas de lien, pas de numérotation, pas d'autre hashtag, pas d'intertitre « ## », aucun émoji en dehors de ceux prévus ci-dessus.
+- Les tweets sont réunis à l'envoi en un seul tweet long, un paragraphe chacun : le tweet 1 est ce qu'on lit avant « Afficher plus ».
 - N'ajoute aucun fait ni avis absent du texte. Pas d'exagération ni de point d'exclamation."""
 
 PROMPT = """Tu prépares des threads X (Twitter) en arabe pour le compte « المدريديستا علاء », à partir d'articles déjà rédigés pour son site.
@@ -76,13 +78,10 @@ def credit(a):
 
 
 def assembler(a, tweets):
-    """Numérote les tweets puis ajoute le tweet de crédit (avec le lien), non numéroté : il peut être retiré à l'envoi
-    et ajouté à la main sans fausser « i/n ». None si un tweet dépasse la limite de X ou si le thread est vide."""
-    tweets = [str(t).strip() for t in tweets if str(t).strip()]
-    n = len(tweets)
-    tweets = [f"{t}\n\n{i}/{n}" for i, t in enumerate(tweets, 1)] if n > 1 else tweets
-    tweets.append(credit(a))
-    return tweets if n and all(longueur(t) <= LIMITE for t in tweets) else None
+    """Réunit les tweets écrits par Claude en un seul tweet long, suivi du tweet de crédit (avec le lien) publié en réponse :
+    il peut être retiré à l'envoi et ajouté à la main. None si c'est trop long pour X ou si le thread est vide."""
+    long = "\n\n".join(t for t in (str(t).strip() for t in tweets) if t)
+    return [long, credit(a)] if long and longueur(long) <= LIMITE_LONG and longueur(credit(a)) <= LIMITE else None
 
 
 def connexion_threads(con):
@@ -183,7 +182,7 @@ def controler_thread(con, article_id, tweets, officiel=False):
     """Motifs de blocage d'un thread avant envoi ([] : il peut partir). officiel : article du site du club, jamais un doublon
     (la confirmation officielle part même si la presse a donné la nouvelle avant, ex. Tchouaméni le 19 nov.)."""
     motifs = []
-    if any(longueur(x) > LIMITE for x in tweets):
+    if longueur(tweets[0]) > LIMITE_LONG or any(longueur(x) > LIMITE for x in tweets[1:]):
         motifs.append("tweet trop long")
     if not SOURCE.search(tweets[0]):
         motifs.append("source absente du 1er tweet")
@@ -395,9 +394,9 @@ def resume_du_jour(con, utc=None):
     try:
         tweets = [str(x).strip() for x in extraire_json(appeler_claude(PROMPT_RESUME.format(jour=jour, articles="\n".join(blocs)),
                                                                        CONFIG.get("modele_redaction", "sonnet")))]
-        if not 2 <= len(tweets) <= 5 or any(not x or longueur(x) > LIMITE - 6 for x in tweets):  # 6 : place du « i/n »
+        if not 2 <= len(tweets) <= 5 or any(not x for x in tweets) or longueur("\n\n".join(tweets)) > LIMITE_LONG:
             raise ValueError(f"thread inutilisable ({len(tweets)} tweets)")
-        posts = [{"text": f"{x}\n\n{i}/{len(tweets)}"} for i, x in enumerate(tweets, 1)]
+        posts = [{"text": "\n\n".join(tweets)}]  # un seul tweet long
         d = typefully_api("drafts", {"draft_title": f"حصاد ريال مدريد {jour}", "publish_at": "now",
                                      "platforms": {"x": {"enabled": True, "posts": posts}}})
     except (OSError, ValueError, KeyError, ErreurClaude) as err:  # repris au passage suivant, tant qu'on est avant 3 h
@@ -476,7 +475,7 @@ def tweets_une(entete, lignes):
     tweets, courant = [], []
     texte = lambda l: entete + "\n".join(l) + "\n\n#ريال_مدريد" if not tweets else "\n".join(l)
     for ligne in lignes:
-        if courant and longueur(texte(courant + [ligne])) > LIMITE:
+        if courant and longueur(texte(courant + [ligne])) > LIMITE_LONG:
             tweets.append(texte(courant))
             courant = []
         courant.append(ligne)

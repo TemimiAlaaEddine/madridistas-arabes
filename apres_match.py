@@ -18,7 +18,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from threads import CONFIG, LIMITE, heure_madrid, longueur, typefully_api, typefully_image
+from threads import CONFIG, LIMITE_LONG, heure_madrid, longueur, typefully_api, typefully_image
 
 BASE = Path(__file__).parent
 SUIVI = BASE / "suivi_matchs.json"
@@ -29,10 +29,10 @@ OUTILS = ["Bash(python *)", "Read", "Grep", "Glob", "Edit(scripts/**)", "WebSear
 CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personne ne répond. Lance `python match.py --date {date}`. "
             "Thread X en arabe, construit selon les étapes 2 (lecture du match en 6 étapes : récit, périodes, bascules, phases, joueurs ; idées fortes tirées des périodes et des phases) et 3 de /match. Ne pose aucune question, ne modifie pas connaissance.md, saute l'étape 6 et ne "
             "dépose rien dans Typefully : écris seulement le fichier dans scripts/ (étape 4). Forme du fichier : le titre « # … » "
-            "et une ligne de contexte, puis une ligne « --- », puis les tweets séparés par des lignes « --- » (sans numérotation), "
+            "et une ligne de contexte, puis une ligne « --- », puis les paragraphes séparés par des lignes « --- » (sans numérotation ; ils seront réunis en un seul tweet long),"
             "puis les sections « ## » (accroches, hashtags, sources). Graphiques : match.py en liste quelques-uns (chemin et "
             "contenu) ; places-en 2 à 4 dans le thread, chacun sur sa propre ligne « [graphique: <chemin>] » à la fin du tweet "
-            "dont il illustre le propos (un par tweet ; cette ligne ne compte pas dans les 270 caractères). "
+            "dont il illustre le propos (un par paragraphe ; tous seront joints au tweet long). "
             "Écris aussi les tweets joueurs (étape 4 de /match, un tweet par joueur de la sélection de l'étape 6) dans "
             "scripts/<date>-joueurs-<adversaire>.md, même forme, avec la photo du joueur (ligne « [photo: <chemin>] », étape 4 de /match). "
             "Termine ta réponse par les lignes « JOUEURS: scripts/<nom>.md » puis « FICHIER: scripts/<nom>.md » (le thread).")
@@ -70,9 +70,8 @@ def tweets_du_fichier(texte):
     tweets = [GRAPHIQUE.sub("", b).strip() for b in blocs]
     if not 2 <= len(tweets) <= 30:
         raise ValueError(f"{len(tweets)} tweets lus dans le fichier")
-    trop_longs = [i for i, t in enumerate(tweets, 1) if longueur(t) > LIMITE - 6]  # 6 : place du « i/n »
-    if trop_longs:
-        raise ValueError(f"tweets trop longs : {trop_longs}")
+    if longueur("\n\n".join(tweets)) > LIMITE_LONG:
+        raise ValueError("texte trop long pour un tweet long")
     return list(zip(tweets, images))
 
 
@@ -91,20 +90,17 @@ def analyser(m):
     if r.returncode != 0 or not fichier:
         raise ValueError((r.stderr or r.stdout).strip()[-300:] or f"code {r.returncode}")
     tweets = tweets_du_fichier((BASE / fichier.group(1)).read_text(encoding="utf-8"))
-    posts = []
-    for i, (t, images) in enumerate(tweets, 1):
-        post = {"text": f"{t}\n\n{i}/{len(tweets)}"}
-        ids = []
-        for c in images:
-            try:
-                ids.append(typefully_image(Path(c).name, (BASE / c).read_bytes()))
-            except (OSError, KeyError, ValueError) as err:
-                print(f"! graphique {c} non joint : {err}")
-        if any(ids):  # image refusée ou pas prête à temps : le tweet part sans elle
-            post["media_ids"] = [x for x in ids if x]
-        posts.append(post)
+    post = {"text": "\n\n".join(t for t, _ in tweets)}  # un seul tweet long, un paragraphe par bloc du fichier
+    ids = []
+    for c in [c for _, images in tweets for c in images][:CONFIG.get("max_images_tweet", 4)]:
+        try:
+            ids.append(typefully_image(Path(c).name, (BASE / c).read_bytes()))
+        except (OSError, KeyError, ValueError) as err:
+            print(f"! graphique {c} non joint : {err}")
+    if any(ids):  # image refusée ou pas prête à temps : le tweet part sans elle
+        post["media_ids"] = [x for x in ids if x]
     d = typefully_api("drafts", {"draft_title": f"تحليل {m['match']} ({date_madrid(m)})",
-                                 "platforms": {"x": {"enabled": True, "posts": posts}}})  # sans publish_at : simple brouillon
+                                 "platforms": {"x": {"enabled": True, "posts": [post]}}})  # sans publish_at : simple brouillon
     lien = f"https://typefully.com/?d={d['id']}&a={CONFIG['typefully_social_set']}"
     return lien + deposer_joueurs(m, r.stdout)
 

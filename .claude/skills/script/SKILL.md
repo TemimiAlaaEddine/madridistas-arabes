@@ -51,7 +51,7 @@ Règles communes :
 - Images : seulement des visuels libres de droits (schémas tactiques dessinés soi-même, photos de Wikimedia Commons). Jamais d'images de match ni de photos d'agence.
 
 **Thread X**
-- Un tweet par bloc, séparés par `---`. Chaque tweet fait au plus 270 caractères comptés comme X (laisse la place à la numérotation « i/n », ajoutée à l'envoi). Vérifie avec `threads.longueur` de threads.py.
+- Un tweet par bloc, séparés par `---`. Les blocs sont réunis à l'envoi en **un seul tweet long** (X Premium, choix de l'utilisateur, 2026-11-22), un paragraphe par bloc, sans numérotation : le 1er bloc est ce qu'on lit avant « Afficher plus », garde-le sous 270 caractères. Vérifie avec `threads.longueur` de threads.py.
 - Le 1er tweet contient l'accroche, 🧵 et #ريال_مدريد. Pas de tweet de sources à la fin (choix de l'utilisateur, 2026-11-12) : les sources restent en bas du fichier, et chaque tweet cite déjà la sienne. Le dernier tweet est la question aux lecteurs.
 - De 8 tweets pour un sujet simple jusqu'à 30 pour une analyse longue, selon ce que demande l'utilisateur.
 - Propose 3 accroches de rechange et 5 hashtags.
@@ -66,7 +66,7 @@ Règles communes :
 Écris le texte dans `scripts/AAAA-MM-JJ-thread-sujet-court.md` ou `scripts/AAAA-MM-JJ-facebook-sujet-court.md`, avec les sources et leurs liens en bas, puis affiche-le dans ta réponse.
 
 ## 5. Publier (seulement sur un « oui » explicite de l'utilisateur)
-- Thread X : propose de le déposer en brouillon dans Typefully (social set 360421), sans programmation. La numérotation « i/n » est ajoutée à chaque tweet à ce moment-là.
+- Thread X : propose de le déposer en brouillon dans Typefully (social set 360421), sans programmation, en un seul tweet long (blocs séparés par une ligne vide, sans numérotation).
 - Publication Facebook : propose de la publier sur la Page. Montre d'abord le texte exact. Après accord, écris-le dans un fichier texte du dossier temporaire, puis :
   `python -c "import sys,json,urllib.request,urllib.parse,threads as t; d=urllib.parse.urlencode({'message': open(sys.argv[1], encoding='utf-8').read(), 'access_token': t.reglage('facebook_page_token')}).encode(); print(json.load(urllib.request.urlopen(t.GRAPH + t.reglage('facebook_page_id') + '/feed', d)))" <fichier.txt>`
   Une publication sur la Page est visible tout de suite par les abonnés : ne la lance jamais sans accord.

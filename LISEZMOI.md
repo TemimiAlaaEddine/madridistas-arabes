@@ -83,7 +83,7 @@ Les articles n'affichent plus de photo de joueur ; les photos restent sur les pa
 
 ## Threads X et publications Facebook
 
-À chaque passage, `threads.py` découpe les articles des 2 derniers jours en threads X. Au plus `max_threads` par passage, nouvelles d'abord. Un tweet fait au plus 280 caractères comptés comme X. Le dernier tweet crédite le journaliste et le journal, avec le lien de la source ; il n'est pas numéroté (« i/n » ne compte que les autres tweets).
+À chaque passage, `threads.py` découpe les articles des 2 derniers jours en threads X. Au plus `max_threads` par passage, nouvelles d'abord. Depuis le passage à X Premium (22 nov. 2026), chaque thread devient un seul tweet long (`LIMITE_LONG`, 25 000 caractères comptés comme X), sans numérotation ; le crédit du journaliste et du journal, avec le lien de la source, part en réponse à ce tweet (280 caractères au plus). Le résumé du jour, les unes et l'analyse d'après-match sont aussi un seul tweet long.
 
 **Résumé du jour** : au premier passage entre minuit et 3 h (heure de Madrid), Claude choisit les 3 sujets de la veille parmi les articles du site et publie tout de suite le thread « 📌 حصاد ريال مدريد » (4 tweets, sans lien, en variant les journaux) via Typefully. Une fois par jour (table `resumes`).
 
