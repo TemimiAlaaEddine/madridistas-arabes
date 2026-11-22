@@ -24,7 +24,7 @@ ATTENTE = timedelta(hours=2, minutes=30)  # coup d'envoi + 2 h 30 : match fini, 
 ESSAIS = 3
 OUTILS = ["Bash(python *)", "Read", "Grep", "Glob", "Edit(scripts/**)", "WebSearch", "WebFetch", "Agent", "Skill"]
 CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personne ne répond. Lance `python match.py --date {date}`. "
-            "Thread X en arabe, construit selon les étapes 2 (lecture du match : conclusions par phase de jeu, idées fortes tirées des phases, des stats par mi-temps et des bascules) et 3 de /match. Ne pose aucune question, ne modifie pas connaissance.md, saute l'étape 6 et ne "
+            "Thread X en arabe, construit selon les étapes 2 (lecture du match en 6 étapes : récit, périodes, bascules, phases, joueurs ; idées fortes tirées des périodes et des phases) et 3 de /match. Ne pose aucune question, ne modifie pas connaissance.md, saute l'étape 6 et ne "
             "dépose rien dans Typefully : écris seulement le fichier dans scripts/ (étape 4). Forme du fichier : le titre « # … » "
             "et une ligne de contexte, puis une ligne « --- », puis les tweets séparés par des lignes « --- » (sans numérotation), "
             "puis les sections « ## » (accroches, hashtags, sources). Graphiques : match.py en liste quelques-uns (chemin et "

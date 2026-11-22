@@ -28,7 +28,7 @@ except ValueError:
 m.subprocess.run, m.bright_data = _vrai
 print("OK test_match")
 
-# Bascules : un changement du Real à la 30e double ses passes vers le dernier tiers -> moment signalé
+# Lecture du match : le momentum FotMob s'inverse à la 30e, au moment où Vinícius entre et où le Real double ses passes vers le dernier tiers
 import bascules
 def _ev(minute, equipe, typ="Pass", x=50, endx=60, ok=1, periode=1, **k):
     return dict({"minute": minute, "second": 0, "teamId": equipe, "x": x, "y": 50, "endX": endx, "endY": 50, "id": minute * 100 + x,
@@ -41,12 +41,32 @@ for mn in range(0, 90):
         evs += [_ev(mn, 52, x=60, endx=80, periode=p), _ev(mn, 52, x=60, endx=80, periode=p)]
 evs.append(_ev(30, 52, "SubstitutionOn", playerId=7))
 evs.sort(key=lambda e: (e["period"]["value"], e["minute"]))
-lignes = bascules.analyser({"events": evs, "playerIdNameDictionary": {"7": "Vinícius"},
-                            "home": {"teamId": 52, "name": "Real Madrid"}, "away": {"teamId": 62, "name": "Celta"}})
-texte = "\n".join(lignes)
-assert "31' Real Madrid : entrée de Vinícius" in texte and "Real Madrid entrées dans le dernier tiers 0 -> 30" in texte, texte
-assert "xG" not in texte, "sans Sofascore, pas de ligne xG"
-print("OK bascules")
+_match = {"events": evs, "playerIdNameDictionary": {"7": "Vinícius"}, "score": "0 : 0", "htScore": "0 : 0",
+          "home": {"teamId": 52, "name": "Real Madrid"}, "away": {"teamId": 62, "name": "Celta"}}
+_mom = [{"minute": m, "value": -60 if m < 30 else 60} for m in list(range(0, 46)) + [45.5] + list(range(46, 91))]
+_mom.sort(key=lambda m: m["minute"])
+_fm_match = {"general": {"homeTeam": {"name": "Real Madrid", "id": 1}, "awayTeam": {"name": "Celta", "id": 2}},
+             "content": {"stats": {"Periods": {}}, "shotmap": {"shots": []}, "momentum": {"main": {"data": _mom}}}}
+texte = "\n".join(bascules.analyser(_match, None, _fm_match))
+assert "30'-45+'" in texte and "momentum +60 (Real Madrid)" in texte, texte
+assert "30' : momentum -60 -> +60" in texte and "31' Real Madrid : entrée de Vinícius (au même moment)" in texte, texte
+assert "Real Madrid : entrées dans le dernier tiers 0 -> 30" in texte, texte
+assert "mi-temps : pas de bascule" in texte, "momentum identique avant et après la pause"
+sans = "\n".join(bascules.analyser(_match))
+assert "découpage par mi-temps" in sans and "1re mi-temps" in sans and "sans xG" in sans and ", xG " not in sans.split("ÉTAPE 3")[1].split("ÉTAPE 5")[0], sans
+print("OK lecture du match")
+
+# xA : le tir est relié à la passe (RelatedEventId) ; 2e ballon : récupération 5 s après son corner puis tir ; hauteur du bloc
+_q = lambda *n, **v: [{"type": {"displayName": x}} for x in n] + [{"type": {"displayName": k}, "value": w} for k, w in v.items()]
+_xa = [dict(_ev(60, 52, x=70, endx=90, playerId=10, eventId=5, qualifiers=_q("KeyPass")), t=60.0),
+       dict(_ev(60, 52, "Goal", x=95, playerId=9, eventId=6, isShot=True, qualifiers=_q(RelatedEventId="5")), t=60.1)]
+_j = bascules.joueurs({"playerIdNameDictionary": {"9": "Espí", "10": "Vinícius"}}, _xa, {int(_xa[1]["id"]): 0.44}, 52, 0, 90)
+assert any(l.startswith("Vinícius") and "xA 0.44" in l for l in _j) and any(l.startswith("Espí") and "xG 0.44" in l for l in _j), _j
+_c2 = [dict(_ev(70, 52, x=99, endx=94, qualifiers=_q("CornerTaken")), t=70.0), dict(_ev(70, 62, "Clearance", x=5), t=70.05),
+       dict(_ev(70, 52, "BallRecovery", x=75), t=70.1), dict(_ev(70, 52, "MissedShots", x=85, isShot=True), t=70.15)]
+assert bascules.sequences(_c2)[-1]["tirs"][0]["phase"] == "cpa2"
+assert round(bascules.bloc([dict(_ev(10, 62, "Tackle", x=20), t=10), dict(_ev(11, 62, "Interception", x=40), t=11)], 62, 0, 90)) == 32
+print("OK joueurs, 2e ballon, bloc")
 
 # Phases : récupération au milieu puis dernier tiers en 2 passes = transition ; coup franc dans sa surface = sortie directe, pas CPA
 _seq = [dict(_ev(10, 52, "BallRecovery", x=40), t=10.0), dict(_ev(10, 52, x=40, endx=60), t=10.1), dict(_ev(10, 52, x=60, endx=85), t=10.2),
@@ -55,7 +75,7 @@ _seq = [dict(_ev(10, 52, "BallRecovery", x=40), t=10.0), dict(_ev(10, 52, x=40, 
 s1, s2 = bascules.sequences(_seq, [])
 assert s1["rapide"] and not s1["placee"] and len(s1["tirs"]) == 1, s1
 assert s2["directe"] and not s2["cpa"], s2
-assert "1. construction" in texte and "8. CPA défensifs" in texte
+assert "1. construction" in texte and "8. CPA défensifs" in texte and "7. défense basse" in texte
 print("OK phases")
 
 # Ballon revenu au gardien puis long ballon et tir en 9 s (Valence 75e) : sortie directe, même si la possession a commencé par un coup franc
@@ -65,3 +85,16 @@ _fk = [dict(_ev(74, 52, x=56, endx=45, qualifiers=[{"type": {"displayName": "Fre
 (s3,) = bascules.sequences(_fk, [])
 assert s3["tirs"][0]["phase"] == "directe" and s3["tirs"][0]["delai"] == 9, s3["tirs"]
 print("OK sortie directe")
+
+# FotMob : résumé hors ligne (stats par mi-temps, couloirs, tirs par situation, renversement du momentum)
+import fotmob
+_st = lambda a, b: {"stats": [{"stats": [{"title": "Expected goals (xG)", "stats": [a, b]}]}]}
+_fm = {"general": {"homeTeam": {"name": "Real Madrid", "id": 1}, "awayTeam": {"name": "Celta", "id": 2}},
+       "content": {"stats": {"Periods": {"All": _st("3.76", "1.51"), "FirstHalf": _st("1.69", "1.33"), "SecondHalf": _st("2.07", "0.17")}},
+                   "attackingZones": {"home": {"firstHalf": {"left": 45, "center": 21, "right": 34}}},
+                   "shotmap": {"shots": [{"teamId": 1, "situation": "FastBreak", "expectedGoals": 0.5}]},
+                   "momentum": {"main": {"data": [{"minute": m, "value": 60 if m < 30 else -60} for m in range(0, 60)]}}}}
+_t = "\n".join(fotmob.resumer(_fm))
+assert "3.76 | 1.51  /  1.69 | 1.33  /  2.07 | 0.17" in _t and "1re 45 / 21 / 34" in _t and "FastBreak 1 (xG 0.50)" in _t, _t
+assert "25'-30'" not in _t and "30'-35' (+60 -> -60)" in _t, _t
+print("OK fotmob")

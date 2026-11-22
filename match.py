@@ -1,4 +1,4 @@
-"""Récupère les stats du dernier match du Real Madrid sur WhoScored et Sofascore, puis les affiche.
+"""Récupère les stats du dernier match du Real Madrid sur WhoScored, Sofascore et FotMob, puis les affiche.
 
 Usage : python match.py            (dernier match terminé)
         python match.py <id>       (identifiant WhoScored d'un match précis, lu dans son adresse /Matches/<id>/)
@@ -6,6 +6,7 @@ Usage : python match.py            (dernier match terminé)
 Les pages sont gardées dans matchs/AAAA-MM-JJ-adversaire/ (hors git). Sert à la commande /match (.claude/skills/match).
 WhoScored passe par Bright Data (clé "brightdata_api_token" dans secrets.json) : Cloudflare bloque les accès directs.
 Sofascore passe par Edge sans fenêtre : son API refuse les requêtes qui ne viennent pas d'un navigateur.
+FotMob (stats Opta par mi-temps, momentum, couloirs d'attaque) : page de match lue directement (fotmob.py).
 """
 import html
 import json
@@ -16,6 +17,7 @@ from datetime import datetime
 from pathlib import Path
 
 import bascules
+import fotmob
 import whoscored
 from couvertures import EDGE
 from threads import reglage
@@ -103,12 +105,29 @@ def main():
     tirs = None
     try:
         tirs = partie_sofascore(dossier, date)
-    finally:  # même sans Sofascore (xG en moins) : les tendances viennent des actions WhoScored
+    finally:  # même sans Sofascore : la lecture du match repose sur WhoScored et FotMob (Opta)
+        f = partie_fotmob(dossier, date)
         try:
-            print("\n######## Tendances et bascules (indices chiffrés à interpréter avec le score et le contexte)")
-            print("\n".join(bascules.analyser(d, tirs)))
+            print("\n######## Lecture du match en 6 étapes (bascules.py ; indices chiffrés à interpréter avec le score et le contexte)")
+            print("\n".join(bascules.analyser(d, tirs, f)))
         except Exception as err:  # un calcul raté ne doit pas faire échouer l'analyse
-            print(f"! Tendances impossibles ({err!r})")
+            print(f"! Lecture du match impossible ({err!r})")
+
+
+def partie_fotmob(dossier, date):
+    """Page FotMob du match (momentum, xG Opta par tir, stats par mi-temps), ou None : un complément, jamais bloquant."""
+    try:
+        adresse = fotmob.trouver(date)
+        if not adresse:
+            print("\n! FotMob : match introuvable à cette date (périodes = mi-temps, xG de Sofascore)")
+            return None
+        f = fotmob.lire(adresse)
+        (dossier / "fotmob.json").write_text(json.dumps(f), encoding="utf-8")
+        print(f"\nFotMob : {fotmob.SITE}{adresse}")
+        return f
+    except Exception as err:  # site en panne ou page changée : l'analyse continue sans FotMob
+        print(f"\n! FotMob indisponible ({err!r}) : périodes = mi-temps, xG de Sofascore")
+        return None
 
 
 def partie_sofascore(dossier, date):
