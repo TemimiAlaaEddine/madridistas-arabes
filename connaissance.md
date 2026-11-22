@@ -114,7 +114,7 @@ Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après le
 - 2026-11-14 : Ballon d'Or 2026 : Harry Kane gagne, Kylian Mbappé termine deuxième à 28 points. Source : Foot Mercato (Jordan Pardon).
 
 ## Préférences pour les scripts
-- 2026-11-08 : utiliser les stats WhoScored (notes, passes clés, dribbles, système de jeu) pour l'analyse des matchs, en citant WhoScored comme source.
+- 2026-11-08 : utiliser les stats WhoScored (notes, passes clés, dribbles, système de jeu) pour l'analyse des matchs. Source à citer : Opta (« أوبتا »), le fournisseur des données de WhoScored et de FotMob, jamais WhoScored ni FotMob (2026-11-22).
 - 2026-11-08, méthode d'analyse tactique de l'utilisateur, à appliquer dans tous les scripts d'analyse :
   - Lire un match à travers 8 phases. Avec ballon : 1. construction (sortie de balle, relance), 2. transition offensive (de la récupération à l'attaque rapide), 3. attaque placée (face à un bloc organisé), 4. coups de pied arrêtés offensifs. Sans ballon : 5. pression haute, 6. transition défensive (repli ou contre-pressing après la perte), 7. défense basse (bloc bas, protection de la surface), 8. coups de pied arrêtés défensifs.
   - Points d'inflexion : repérer les moments où le match bascule (changement, blessure, carton, bloc modifié, changement de système, fatigue, but). Pour chacun, dire s'il est INTENTIONNEL (décision de l'entraîneur) ou NON INTENTIONNEL (blessure, erreur, expulsion). C'est une lecture argumentée, pas un fait, sauf si l'entraîneur l'a confirmé. Ce classement sert à construire l'analyse : il ne s'écrit pas dans le texte publié (pas de « مقصودة » / « غير مقصودة » ; choix de l'utilisateur, 2026-11-21).

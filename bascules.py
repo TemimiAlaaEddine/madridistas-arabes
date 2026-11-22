@@ -327,7 +327,8 @@ def periodes(fm, extra, mi, fin):
             a_m, b_m = moitie[x][0], moitie[y - 1][0]
             out.append({"a": vers_t(a_m) if x else (0 if fin_moitie == mi else mi), "b": fin_moitie if dernier else vers_t(moitie[y][0]),
                         "nom": f"{int(a_m)}'-{('45+' if fin_moitie == mi else '90+') if dernier else str(int(moitie[y][0]) - 1)}'",
-                        "mom": sum(p[1] for p in moitie[x:y]) / (y - x)})
+                        "mom": sum(p[1] for p in moitie[x:y]) / (y - x),
+                        "m0": a_m, "m1": moitie[-1][0] if dernier else moitie[y][0]})  # minutes FotMob, pour le graphique
     return out
 
 

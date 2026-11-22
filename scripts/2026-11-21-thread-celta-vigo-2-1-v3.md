@@ -7,6 +7,7 @@ Réécriture v3 du 2026-11-22 avec la lecture du match en 6 étapes (bascules.py
 قسّمت المباراة حسب مؤشر الزخم من أوبتا، ثم بحثت في الأرقام عمّا صنع كل فترة. الخلاصة: الضغط حسم الليلة، والدكة أنهتها 🧵
 
 #ريال_مدريد
+[graphique: matchs/2026-11-21-celta-vigo/graphiques/momentum.png]
 ---
 الفترة 1 (0-10): سيلتا الأفضل. سجّل دوران في الدقيقة 6، وصنع فريقه في عشر دقائق أهدافًا متوقعة (0.96) أكثر مما صنعه في بقية المباراة كلها (0.55).
 ---
@@ -70,9 +71,9 @@ Réécriture v3 du 2026-11-22 avec la lecture du match en 6 étapes (bascules.py
 - Étape 6 :
   - 30'-45+' : Javi Rodríguez 5 sorties de balle, Carreira xA 0.25 ;
   - 54'-90+' : Vinícius 5 passes dans la surface, 3 passes clés, xA 1.08 ; Espí 2 tirs, xG 1.32.
-- Pas de graphique joint : les graphiques actuels utilisent l'xG Sofascore (1.64 pour le Celta), différent de l'xG Opta du thread.
+- Graphique : momentum.png (momentum Opta, 5 périodes numérotées) au tweet 1 ; les autres graphiques utilisent l'xG Sofascore (1.64 pour le Celta), pas joints.
 
 ## المصادر
-- فوتموب (Opta) : xG par tir et par mi-temps, momentum (fotmob.py, 2026-11-22) : https://www.fotmob.com/matches/real-madrid-vs-celta-vigo/2uda7y#5868139
-- هوسكورد (Opta) : actions du match, calculées par bascules.py (périodes, phases, joueurs)
+- أوبتا (lu sur FotMob) : xG par tir et par mi-temps, momentum (fotmob.py, 2026-11-22) : https://www.fotmob.com/matches/real-madrid-vs-celta-vigo/2uda7y#5868139
+- أوبتا (lu sur WhoScored) : actions du match, calculées par bascules.py (périodes, phases, joueurs)
 - آس، كارلوس فورخانيس (déclarations de Mourinho à Real Madrid TV) : https://as.com/futbol/primera/mourinho-despues-del-1-1-fue-una-avalancha-f202611-n/

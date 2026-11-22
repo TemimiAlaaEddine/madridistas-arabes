@@ -1,4 +1,4 @@
-"""Graphiques d'après-match (PNG 1200×900, arabe) tirés des données Sofascore gardées par match.py, à joindre au thread.
+"""Graphiques d'après-match (PNG 1200×900, arabe) tirés des données Sofascore (et du momentum FotMob) gardées par match.py, à joindre au thread.
 
 Usage : python graphiques.py matchs/<dossier>     (refait les PNG de ce match)
 Appelé par match.py après chaque récupération. Rendu : page HTML/SVG capturée par Edge (ou Chrome) sans fenêtre, comme les
@@ -11,6 +11,7 @@ import time
 from html import escape as e
 from pathlib import Path
 
+import fotmob
 from couvertures import COUV_POLICES, EDGE
 
 L, H = 1200, 900
@@ -151,6 +152,42 @@ def joueurs(compos, rm_dom):
     return legende(("أهداف متوقعة (xG)", RM), ("تمريرات حاسمة متوقعة (xA)", XA)) + svg
 
 
+def momentum(fm, noms):
+    """Momentum Opta minute par minute (barres : Real Madrid vers le haut, adversaire vers le bas), périodes de bascules.py en
+    bandes numérotées, buts marqués sur l'axe."""
+    import bascules  # ici : graphiques.py reste utilisable sans FotMob
+    rm_dom = fm["general"]["homeTeam"]["id"] == fotmob.EQUIPE
+    pts = [(m["minute"], m["value"] if rm_dom else -m["value"]) for m in fm["content"]["momentum"]["main"]["data"]]
+    per = [p for p in bascules.periodes(fm, 0, 46, 999) if p["mom"] is not None]
+    lw, lh, gauche, haut, bas = 1040, 590, 50, 110, 50
+    fin = max(91, pts[-1][0] + 1)
+    X = lambda m: gauche + (lw - gauche - 10) * m / fin
+    mid = haut + (lh - haut - bas) / 2
+    Y = lambda v: mid - (lh - haut - bas) / 2 * v / 100
+    el = []
+    for k, p in enumerate(per):  # bandes des périodes, une sur deux teintée, numéro et minutes en haut
+        x0, x1 = X(p["m0"]), X(p["m1"] if p["m1"] != pts[-1][0] and p["m1"] != 45.5 else p["m1"] + 0.5)
+        if k % 2 == 0:
+            el.append(f'<rect x="{x0:.1f}" y="{haut}" width="{x1 - x0:.1f}" height="{lh - haut - bas}" fill="{LIGNE}"/>')
+        el.append(f'<text x="{(x0 + x1) / 2:.1f}" y="{haut - 80}" text-anchor="middle" fill="{TEXTE}" font-size="24" font-weight="700">{k + 1}</text>'
+                  f'<text x="{(x0 + x1) / 2:.1f}" y="{haut - 56}" text-anchor="middle" fill="{DOUX}" font-size="17">{e(p["nom"])}</text>')
+    largeur = (lw - gauche - 10) / fin * 0.8
+    for m, v in pts:
+        y0, y1 = sorted((Y(0), Y(v)))
+        el.append(f'<rect x="{X(m) - largeur / 2:.1f}" y="{y0:.1f}" width="{largeur:.1f}" height="{max(y1 - y0, 0.5):.1f}" fill="{RM if v > 0 else ADV}"/>')
+    el.append(f'<line x1="{gauche}" x2="{lw - 10}" y1="{Y(0)}" y2="{Y(0)}" stroke="{DOUX}" stroke-width="1.5"/>')
+    el += [f'<text x="{X(m)}" y="{lh - bas + 30}" text-anchor="middle" fill="{DOUX}" font-size="20">{m}\'</text>' for m in range(0, 91, 15)]
+    el.append(f'<line x1="{X(45.75)}" x2="{X(45.75)}" y1="{haut}" y2="{lh - bas}" stroke="{DOUX}" stroke-width="2" stroke-dasharray="6 6"/>')
+    for t in (fm["content"].get("shotmap") or {}).get("shots") or []:
+        if t.get("eventType") == "Goal":
+            real = (t["teamId"] == fotmob.EQUIPE) != bool(t.get("isOwnGoal"))
+            y = haut - 18 if real else lh - bas + 14  # buts du Real : ligne réservée sous les numéros de période ; adversaire : sous l'axe
+            el.append(f'<circle cx="{X(t["min"]):.1f}" cy="{y:.1f}" r="9" fill="{RM if real else ADV}" stroke="{TEXTE}" stroke-width="2"/>'
+                      f'<text x="{X(t["min"]) + 14:.1f}" y="{y + 6:.1f}" text-anchor="start" fill="{TEXTE}" font-size="17">هدف د{t["min"]}</text>')
+    svg = f'<svg width="{lw}" height="{lh}" viewBox="0 0 {lw} {lh}" direction="ltr">{"".join(el)}</svg>'
+    return legende((f"{noms[0]} (أعلى)", RM), (f"{noms[1]} (أسفل)", ADV)) + svg
+
+
 def rendre(html, png):
     src = png.with_suffix(".html")
     src.write_text(html, encoding="utf-8")
@@ -188,9 +225,15 @@ def generer(dossier):
     if d.get("lineups"):
         a_faire.append(("joueurs", "الأخطر في ريال مدريد", "الأهداف المتوقعة والتمريرات الحاسمة المتوقعة لكل لاعب", joueurs(d["lineups"], rm_dom),
                         "xG + xA des 7 joueurs du Real Madrid les plus dangereux"))
+    fm = Path(dossier) / "fotmob.json"
+    if fm.exists():  # momentum Opta de FotMob : les périodes de la lecture du match
+        f = json.loads(fm.read_text(encoding="utf-8"))
+        if ((f["content"].get("momentum") or {}).get("main") or {}).get("data"):
+            a_faire.append(("momentum", "مؤشر الزخم وفترات المباراة", f"{score} · من كان الأخطر دقيقة بدقيقة", momentum(f, noms),
+                            "momentum Opta minute par minute, périodes numérotées de la lecture du match, buts", "أوبتا"))
     faits = []
-    for nom, titre, sous, corps, quoi in a_faire:
-        if rendre(page(titre, sous, corps), sortie / f"{nom}.png"):
+    for nom, titre, sous, corps, quoi, *source in a_faire:
+        if rendre(page(titre, sous, corps, *source), sortie / f"{nom}.png"):
             faits.append((f"{nom}.png", quoi))
     return faits
 
