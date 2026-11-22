@@ -9311,4 +9311,5 @@ INSERT INTO "vus" VALUES('https://www.lagalerna.com/una-jornada-perfecta/','Una 
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bosnische-en-noorse-arbitrage-bij-cl-duels-van-feyenoord-en-psv','Bosnische en Noorse arbitrage bij CL-duels van Feyenoord en PSV','2026-11-22T15:26:12');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-barca-renverse-villarreal-apres-une-entame-cauchemardesque-et-un-penalty-manque-par-lamine-yamal/1745385#at_medium=RSS_feeds','Le Barça renverse Villarreal après une entame cauchemardesque et un penalty manqué par Lamine Yamal','2026-11-22T15:31:21');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3276012337579958924-jt-foot-mercato-vinicius-est-de-retour','JT Foot Mercato : Vinicius Jr est de retour','2026-11-22T16:11:12');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/22/comesana-dice-basta-tras-el-arbitraje-en-el-camp-nou-nos-pasa-lo-mismo-en-el-bernabeu-y-nos-pasa-lo-mismo-aqui-cadena-ser/','Comesaña dice basta tras el arbitraje en el Camp Nou: "Nos pasa lo mismo en el Bernabéu y nos pasa lo mismo aquí"','2026-11-22T16:25:54');
 COMMIT;
