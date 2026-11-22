@@ -1343,6 +1343,8 @@ with tempfile.TemporaryDirectory() as d:
     calendrier.appeler_claude = lambda *a: "سيلتا فيغو"
     t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": len(envois)})[1]
     t.reglage = lambda cle: "k"
+    vrai_direct = (calendrier.direct_actif, calendrier.DIRECT)
+    calendrier.direct_actif, calendrier.DIRECT = (lambda: False), Path(d) / "direct.json"
     try:
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 19, 50)) == 0 and not appels_sofa  # avant le coup d'envoi : rien lu
         assert not cs.execute("SELECT name FROM sqlite_master WHERE name = 'suivi_match'").fetchone()
@@ -1397,5 +1399,38 @@ with tempfile.TemporaryDirectory() as d:
     finally:
         calendrier.appeler_claude = vrai[1]
     assert tw["but:9"].startswith("⚽🔥 هدددف لريال مدريد!") and "Starfelt 30' (ضد مرماه)" in tw["but:9"] and "سيلتا فيغو 0 - 1 ريال مدريد" in tw["but:9"]
+    # suivi dédié : une lecture par minute ; chaque fait une fois, dans l'ordre ; incidents relus si le score ou le statut change
+    etapes = [(evt(0, "notstarted", "Not started"), []), (evt(6, "inprogress", "1st half", 0, 0), []),
+              (evt(6, "inprogress", "1st half", 0, 0), []), (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
+              (evt(31, "inprogress", "Halftime", 0, 1), [but(1, 6, "Durán", 0, 1)]),
+              (evt(100, "finished", "Ended", 1, 1), [but(1, 6, "Durán", 0, 1), but(2, 66, "Bellingham", 1, 1)])]
+    pas, horloge, appels, sauves = [0], [datetime(2026, 11, 21, 19, 58)], [], []
+    def sofa_minute(chemin):
+        appels.append(chemin)
+        e, inc = etapes[min(pas[0], len(etapes) - 1)]
+        return {"incidents": inc} if chemin.endswith("/incidents") else {"event": e} if chemin == "event/77" else {"events": [e]}
+    def minute_suivante(secondes):
+        horloge[0] += timedelta(seconds=secondes)
+        pas[0] += 1
+    envois.clear()
+    vrai2 = (mt.sofascore, t.typefully_api, calendrier.sauver_direct)
+    mt.sofascore, calendrier.sauver_direct = sofa_minute, lambda msg: sauves.append(msg)
+    t.typefully_api = lambda chemin, corps=None: (envois.append(corps), {"id": len(envois)})[1]
+    try:
+        cles = calendrier.suivre_en_direct("2026-11-21T20:00:00", dormir=minute_suivante, horloge=lambda: horloge[0])
+    finally:
+        mt.sofascore, t.typefully_api, calendrier.sauver_direct = vrai2
+    assert cles == ["début", "but:1", "mi-temps", "but:2", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
+    assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 5  # rien ne part deux fois, arrêt à la fin
+    assert appels[0] == "team/2829/events/next/0" and "team/2829/events/next/0" not in appels[1:]  # ensuite : event/77 seul
+    assert appels.count("event/77/incidents") == 4, appels  # relus au début, au 1er but, à la mi-temps et à la fin, pas à chaque minute
+    assert calendrier.lire_direct()["2026-11-21T20:00:00"] == {"cles": cles, "fini": True}
+    calendrier.DIRECT.write_text(json.dumps({"2026-11-21T20:00:00": {"cles": ["début"], "fini": False}}), encoding="utf-8")
+    calendrier.direct_actif = lambda: False
+    assert calendrier.direct_a_lancer(datetime(2026, 11, 21, 19, 50)) == "2026-11-21T20:00:00"  # 15 min avant : lancé
+    assert calendrier.direct_a_lancer(datetime(2026, 11, 21, 19, 40)) == ""  # trop tôt
+    calendrier.direct_actif = lambda: True
+    assert calendrier.direct_a_lancer(datetime(2026, 11, 21, 20, 30)) == ""  # tourne déjà
+    calendrier.direct_actif, calendrier.DIRECT = vrai_direct
     calendrier.FICHIER = ancien
 print("OK calendrier et règle pendant un match")

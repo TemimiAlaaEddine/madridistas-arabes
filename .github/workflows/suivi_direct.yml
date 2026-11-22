@@ -1,0 +1,46 @@
+name: Suivi du match en direct
+
+# Lancé par le workflow principal (mise_a_jour.yml) 15 min avant le coup d'envoi d'un match de matchs.json : lit Sofascore une
+# fois par minute jusqu'à la fin et tweete chaque fait (coup d'envoi, buts, cartons rouges, mi-temps, fin), une seule fois.
+# Bouton « Run workflow » : test à blanc sur n'importe quel match (equipe = identifiant Sofascore, a_blanc coché).
+on:
+  workflow_dispatch:
+    inputs:
+      debut:
+        description: "Coup d'envoi en UTC (AAAA-MM-JJTHH:MM:SS)"
+        required: true
+      equipe:
+        description: "Identifiant Sofascore de l'équipe suivie (2829 = Real Madrid)"
+        default: "2829"
+      a_blanc:
+        description: "Test à blanc : affiche les tweets sans les publier"
+        type: boolean
+        default: false
+
+concurrency: suivi_direct # un seul suivi à la fois ; un lancement en double attend puis s'arrête (match déjà fini)
+
+permissions:
+  contents: write # direct.json : tweets déjà partis, lus par le passage principal
+
+jobs:
+  direct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 200
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser pillow
+      - name: Une lecture de Sofascore par minute, du coup d'envoi à la fin
+        env:
+          BRIGHTDATA_API_TOKEN: ${{ secrets.BRIGHTDATA_API_TOKEN }} # Sofascore refuse les serveurs de GitHub
+          TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+          PYTHONIOENCODING: utf-8
+          PYTHONUNBUFFERED: 1
+        run: |
+          git config user.name "suivi-direct"
+          git config user.email "actions@users.noreply.github.com"
+          python calendrier.py --direct "${{ inputs.debut }}" --equipe "${{ inputs.equipe }}" ${{ inputs.a_blanc && '--a-blanc' || '' }}

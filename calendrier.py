@@ -2,6 +2,9 @@
 sans Claude) et gardés dans matchs.json. Le tri s'en sert pour la règle « pendant un match » (match_en_cours)."""
 import json
 import re
+import subprocess
+import sys
+import time
 from functools import lru_cache
 from datetime import datetime, timedelta, timezone
 
@@ -12,6 +15,8 @@ FICHIER = BASE / "matchs.json"
 DUREE = timedelta(hours=2, minutes=30)  # prolongation et arrêts de jeu compris
 SOFA_EQUIPE = 2829  # Real Madrid sur Sofascore
 MI_TEMPS = 31  # status.code Sofascore de la mi-temps (« Halftime ») ; « 1st half » est 6, « 2nd half » 7
+DIRECT = BASE / "direct.json"  # tweets du direct déjà partis, par match : partagé entre le suivi dédié et le passage principal
+INTERVALLE = 60  # suivi dédié : une lecture de Sofascore par minute (un but est tweeté 1 à 2 min après, délai de Sofascore compris)
 # chaque match est un objet JSON de la page : "Real Madrid vs Celta de Vigo", coup d'envoi en UTC, heure fixée ou non (date seule)
 MATCH = re.compile(r'"description":\{"plaintext":"([^"]+)"\},"week":[^,]*,"weekAsText":[^,]*,"dateTime":"([^"]+)",'
                    r'"dateTxt":[^,]*,"isScheduled":(true|false),"status":"pre_match"')
@@ -54,14 +59,14 @@ def match_en_cours(utc=None):
             " joueurs, entraîneur, banc, attitude) : ils pourront être traités après le match, comme un débat.\n")
 
 
-def evenement(debut):
+def evenement(debut, equipe=SOFA_EQUIPE):
     """Le match du Real qui commence à `debut` (UTC), tel que Sofascore le donne (la page du club restait sur « live » 0-0 et
     sans mi-temps pendant Real-Celta, le 21 nov.) ; None si absent. En direct, le match est dans events/next ; fini, dans
     events/last. Écart de 3 h toléré si le coup d'envoi a bougé."""
     from match import sofascore  # Edge, sinon Bright Data (serveurs de GitHub)
     ts = datetime.fromisoformat(debut).replace(tzinfo=timezone.utc).timestamp()
     for sens in ("next", "last"):
-        for e in sofascore(f"team/{SOFA_EQUIPE}/events/{sens}/0").get("events", []):
+        for e in sofascore(f"team/{equipe}/events/{sens}/0").get("events", []):
             if abs(e["startTimestamp"] - ts) < 3 * 3600:
                 return e
     return None
@@ -76,7 +81,7 @@ def arabe(objet):
 def nom_arabe_claude(nom):
     try:
         ar = appeler_claude(f"Écris le nom usuel en arabe du club de football « {nom} », et rien d'autre.", "haiku", "low").strip()
-    except ErreurClaude:
+    except (ErreurClaude, SystemExit):  # SystemExit : Claude pas installé (suivi dédié), appeler_claude arrêterait tout
         return nom
     return ar if len(ar) < 40 and re.search(r"[؀-ۿ]", ar) else nom
 
@@ -96,11 +101,11 @@ def minute(incident):
     return f"{incident['time']}+{incident['addedTime']}'" if incident.get("addedTime") else f"{incident['time']}'"
 
 
-def tweets_du_match(e, incidents):
+def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     """[(clé, texte)] des tweets que l'état du match appelle, dans l'ordre : début, buts et cartons rouges (chronologiques),
     mi-temps, fin. L'appelant écarte les clés déjà parties."""
     dom, ext = nom_arabe(e["homeTeam"]), nom_arabe(e["awayTeam"])
-    real_dom = e["homeTeam"].get("id") == SOFA_EQUIPE
+    real_dom = e["homeTeam"].get("id") == equipe
     adversaire = ext if real_dom else dom
     statut, tag = e["status"], "\n\n#ريال_مدريد"
     score = f"{dom} {e.get('homeScore', {}).get('current', 0)} - {e.get('awayScore', {}).get('current', 0)} {ext}"
@@ -164,7 +169,10 @@ def suivre_match(con, utc=None):
     print(f"  Suivi du match : {e['homeTeam']['name']} {score or '?'} {e['awayTeam']['name']}, statut « {statut} »")
     if not threads.reglage("typefully_api_key"):
         return 0
+    if direct_actif():  # le suivi dédié (une lecture par minute) tweete ; ce passage ne fait que noter l'état
+        return 0
     deja = {r[0] for r in con.execute("SELECT cle FROM tweets_match WHERE debut = ?", (m["debut"],))}
+    deja |= set(lire_direct().get(m["debut"], {}).get("cles", []))  # déjà partis par le suivi dédié
     n = 0
     for cle, texte in tweets_du_match(e, incidents):
         if cle in deja:
@@ -184,7 +192,109 @@ def suivre_match(con, utc=None):
     return n
 
 
-if __name__ == "__main__":
+
+# ---------- suivi dédié (workflow suivi_direct.yml) : une lecture par minute pendant tout le match ----------
+def lire_direct():
+    try:
+        return json.loads(DIRECT.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return {}
+
+
+def direct_actif():
+    """Le workflow du suivi dédié tourne-t-il (ou attend-il) ? False si gh est absent ou refuse : le passage principal tweete."""
+    try:
+        r = subprocess.run(["gh", "run", "list", "--workflow", "suivi_direct.yml", "--limit", "5", "--json", "status"],
+                           capture_output=True, text=True, timeout=30)
+        return r.returncode == 0 and any(x["status"] in ("in_progress", "queued", "waiting", "pending") for x in json.loads(r.stdout))
+    except (OSError, ValueError, subprocess.SubprocessError):
+        return False
+
+
+def direct_a_lancer(utc=None):
+    """Coup d'envoi (UTC) du match à suivre en direct maintenant, ou "" : de 15 min avant le coup d'envoi à la fin de la fenêtre,
+    si le suivi de ce match n'est pas fini et que le workflow ne tourne pas déjà."""
+    utc = utc or maintenant()
+    m = match_courant(utc + timedelta(minutes=15))
+    if not m or lire_direct().get(m["debut"], {}).get("fini") or direct_actif():
+        return ""
+    return m["debut"]
+
+
+def sauver_direct(message):
+    """Pousse direct.json dans le dépôt (sur GitHub) : le passage principal y voit les tweets déjà partis."""
+    try:
+        for cmd in (["git", "add", "direct.json"], ["git", "commit", "-q", "-m", message],
+                    ["git", "pull", "-q", "--rebase", "--autostash"], ["git", "push", "-q"]):
+            subprocess.run(cmd, capture_output=True, timeout=60, check=True)
+    except (OSError, subprocess.SubprocessError) as err:  # le tweet est parti ; seul le partage avec le passage principal tarde
+        print(f"  ! direct.json non poussé ({err})")
+
+
+def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVALLE, dormir=time.sleep, horloge=None):
+    """Lit Sofascore toutes les `intervalle` secondes, du coup d'envoi à la fin, et tweete chaque fait une seule fois, dans
+    l'ordre : coup d'envoi, buts, cartons rouges, mi-temps, fin. Le détail des incidents n'est relu que si le score ou le statut
+    change, ou toutes les 5 lectures (un carton rouge ne change ni l'un ni l'autre). publier=False : affiche sans tweeter."""
+    import threads
+    from match import sofascore
+    horloge = horloge or maintenant
+    t0 = datetime.fromisoformat(debut)
+    attente = (t0 - timedelta(minutes=2) - horloge()).total_seconds()
+    if attente > 0:
+        print(f"Attente du coup d'envoi : {attente / 60:.0f} min")
+        dormir(attente)
+    etat = lire_direct()
+    suivi = etat.setdefault(debut, {"cles": [], "fini": False})
+    e = id_match = None
+    avant, incidents, n = None, [], 0
+    while horloge() < t0 + timedelta(hours=2, minutes=45) and not suivi["fini"]:
+        h = horloge().strftime("%H:%M:%S")
+        try:
+            if id_match is None:
+                e = evenement(debut, equipe)
+                id_match = e["id"] if e else None
+            else:
+                e = sofascore(f"event/{id_match}")["event"]
+            if not e:
+                print(f"{h} ! match introuvable sur Sofascore")
+            else:
+                cle_etat = (e["status"].get("code"), e.get("homeScore", {}).get("current"), e.get("awayScore", {}).get("current"))
+                if e["status"].get("type") != "notstarted" and (cle_etat != avant or n % 5 == 0):
+                    incidents = sofascore(f"event/{id_match}/incidents").get("incidents", [])
+                if cle_etat != avant:
+                    print(f"{h} {e['homeTeam']['name']} {cle_etat[1]}-{cle_etat[2]} {e['awayTeam']['name']}, "
+                          f"« {e['status'].get('description')} » (code {cle_etat[0]})")
+                avant = cle_etat
+                for cle, texte in tweets_du_match(e, incidents, equipe):
+                    if cle in suivi["cles"]:
+                        continue
+                    if publier:
+                        threads.typefully_api("drafts", {"draft_title": f"{cle} {e['homeTeam']['name']}-{e['awayTeam']['name']}",
+                                                         "publish_at": "now", "platforms": {"x": {"enabled": True, "posts": [{"text": texte}]}}})
+                    print(f"{h} >> tweet « {cle} »{'' if publier else ' (à blanc, non publié)'} :\n   " + texte.replace("\n", "\n   "))
+                    suivi["cles"].append(cle)
+                    suivi["fini"] = cle == "fin"
+                    if publier:
+                        DIRECT.write_text(json.dumps(etat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
+                        sauver_direct(f"Direct : {cle}")
+        except (OSError, ValueError, KeyError, subprocess.SubprocessError) as err:  # lecture ou envoi raté : minute suivante
+            print(f"{h} ! {err!r} : réessayé dans {intervalle} s")
+        n += 1
+        if not suivi["fini"]:
+            dormir(intervalle)
+    print("Fin du suivi :", suivi["cles"])
+    return suivi["cles"]
+
+
+if __name__ == "__main__" and sys.argv[1:2] == ["--direct-a-lancer"]:
+    sys.stdout.reconfigure(encoding="utf-8")
+    print(direct_a_lancer())
+elif __name__ == "__main__" and sys.argv[1:2] == ["--direct"]:  # --direct <coup d'envoi UTC> [--equipe <id>] [--a-blanc]
+    sys.stdout.reconfigure(encoding="utf-8")
+    args = sys.argv[2:]
+    suivre_en_direct(args[0], int(args[args.index("--equipe") + 1]) if "--equipe" in args else SOFA_EQUIPE,
+                     publier="--a-blanc" not in args)
+elif __name__ == "__main__":
     from threads import heure_madrid
     print("\n## Calendrier (site officiel)\n")
     try:
