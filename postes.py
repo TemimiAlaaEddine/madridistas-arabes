@@ -244,6 +244,14 @@ def montrer(k, c, v):
     return f"{c[k]:g} {NOMS[k]}"
 
 
+def habitudes_z(pid, role, v, reperes):
+    """Le plus grand écart du joueur à ses propres matchs (en écarts du rôle), 0 s'il reste dans ses habitudes."""
+    h, rep = reperes["joueurs"].get(str(pid)), reperes["roles"].get(role, {})
+    zs = [abs(v[k] - h[k]) / max(rep[k][1], 0.1 * abs(h[k]), 0.05) for k in POIDS[role]
+          if h and k in h and k in rep and v.get(k) is not None and k not in SANS_DUREE]
+    return max(zs) if zs and max(zs) >= 1.5 else 0
+
+
 def habitudes(pid, role, v, reperes):
     """Critères où le joueur s'écarte nettement de ses propres matchs (1,5 écart du rôle), s'il en a au moins 3 enregistrés."""
     h, rep = reperes["joueurs"].get(str(pid)), reperes["roles"].get(role, {})
@@ -264,6 +272,39 @@ def raisons(role, c, v, contrib):
     plus = [montrer(k, c, v) for k, x in sorted(contrib.items(), key=lambda i: -i[1]) if x > 0.5 and POIDS[role][k] > 0][:3]
     moins = [montrer(k, c, v) for k, x in sorted(contrib.items(), key=lambda i: i[1]) if x < -0.5][:2]
     return (" ; points forts : " + ", ".join(plus) if plus else "") + (" ; points faibles : " + ", ".join(moins) if moins else "")
+
+
+def marquants(evals, remplacants, habit):
+    """Les 3 à 5 joueurs du Real à présenter, un tweet chacun : [(motif, éval)]. Le meilleur de chaque ligne s'il est au-dessus du
+    repère, complété par les meilleurs scores (+0,15 au moins) jusqu'à 3 ; puis celui qui est en difficulté (score de -0,3 ou moins), le remplaçant qui
+    a pesé (+0,4 ou plus) et celui qui sort le plus de ses habitudes, s'ils ne sont pas déjà choisis."""
+    tri = sorted(evals, key=lambda e: -e[0])
+    choix = []
+    pris = lambda e: any(e[1] == x[1][1] for x in choix)
+    for roles in LIGNES.values():
+        e = next((e for e in tri if e[2] in roles), None)
+        if e and e[0] >= 0.2:
+            choix.append(("parmi les meilleurs", e))
+    for e in tri:
+        if len(choix) >= 3 or e[0] < 0.15:
+            break
+        if not pris(e):
+            choix.append(("parmi les meilleurs", e))
+    choix.sort(key=lambda x: -x[1][0])
+    if tri and tri[-1][0] <= -0.3 and not pris(tri[-1]):
+        choix.append(("en difficulté", tri[-1]))
+    entre = next((e for e in tri if e[1] in remplacants and e[0] >= 0.4), None)
+    if entre and not pris(entre) and len(choix) < 5:
+        choix.append(("a changé le match en entrant", entre))
+    hors = max((e for e in tri if not pris(e) and habit(e)), key=habit, default=None)
+    if hors and len(choix) < 5:
+        choix.append(("hors de ses habitudes", hors))
+    for e in tri:  # au moins 3 tweets
+        if len(choix) >= 3:
+            break
+        if not pris(e):
+            choix.append(("à noter", e))
+    return choix[:5]
 
 
 def rapport(d, actions, xg, xgot, fin, mi, reperes=None):
@@ -295,6 +336,11 @@ def rapport(d, actions, xg, xgot, fin, mi, reperes=None):
                 if cote == real and titre == "match":
                     lignes.append(f"   {d[cote]['name']} - {ligne}")
                     lignes += [ligne_joueur(e) for e in ls]
+                    if ligne == "attaque":  # dernière ligne : la sélection pour les tweets joueurs
+                        remp = {p["playerId"] for p in d[cote]["players"] if not p.get("isFirstEleven")}
+                        habit = lambda e: habitudes_z(e[1], e[2], e[5], reperes)  # 0 : rien d'inhabituel
+                        lignes.append("   sélection pour les tweets joueurs (un tweet chacun) :")
+                        lignes += [ligne_joueur(e, f"{motif} : ") for motif, e in marquants(evals, remp, habit)]
                 else:
                     choix = [("le plus haut", ls[0])] + ([("le plus bas", ls[-1])] if len(ls) > 1 else []) if ls else []
                     lignes += [ligne_joueur(e, f"{d[cote]['name']} - {ligne}, {etiquette} : ") for etiquette, e in choix]

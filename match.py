@@ -19,6 +19,7 @@ from pathlib import Path
 
 import bascules
 import fotmob
+import galerie
 import whoscored
 from couvertures import EDGE
 from commun import CONFIG
@@ -143,6 +144,26 @@ def main():
             print("\n".join(bascules.analyser(d, tirs, f)))
         except Exception as err:  # un calcul raté ne doit pas faire échouer l'analyse
             print(f"! Lecture du match impossible ({err!r})")
+        partie_photos(d, dossier, date)
+
+
+def partie_photos(d, dossier, date):
+    """Galerie du club (photos des tweets joueurs) et numéros de maillot du Real pour reconnaître les joueurs : jamais bloquant."""
+    try:
+        galerie.nettoyer(DOSSIER, datetime.now().date())
+        faits = galerie.telecharger(date.isoformat(), dossier)
+    except Exception as err:  # site du club en panne ou page changée : tweets joueurs sans photo
+        print(f"\n! Photos du club indisponibles ({err!r})")
+        return
+    if not faits:
+        print("\n! Pas encore de chronique du club pour ce match : tweets joueurs sans photo")
+        return
+    real = d["home"] if d["home"]["teamId"] == WS_EQUIPE else d["away"]
+    noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
+    f = real["formations"][0]
+    numeros = ", ".join(f"{noms.get(p, '?')} {n}" for p, n in zip(f["playerIds"], f["jerseyNumbers"]))
+    print(f"\n######## Photos du match (galerie du club) : {len(faits)} dans {(dossier / 'photos').relative_to(Path(__file__).parent).as_posix()}"
+          f" (NN.jpg), planches planche-N.jpg ; numéros du Real : {numeros}")
 
 
 def partie_fotmob(dossier, date):

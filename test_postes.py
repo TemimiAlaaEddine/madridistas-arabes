@@ -37,3 +37,12 @@ _c = {k: 0 for k in postes.NOMS} | {"xg": 2.0, "pertes": 0}
 r = postes.raisons("avant-centre", _c, _v, contrib)
 assert "xG 2.00" in r and "ballons perdus" not in r, r
 print("OK score")
+
+# sélection : meilleur de chaque ligne au-dessus du repère, complété jusqu'à 3, puis en difficulté, remplaçant, habitudes
+_ev = lambda s, pid, role: (s, pid, role, 90, {}, {}, {})
+_evals = [_ev(0.9, 1, "latéral"), _ev(0.5, 2, "meneur"), _ev(0.1, 3, "ailier"), _ev(-0.6, 4, "milieu défensif"),
+          _ev(0.45, 5, "ailier"), _ev(0.0, 6, "défenseur central")]
+_ch = postes.marquants(_evals, remplacants={5}, habit=lambda e: 2.0 if e[1] == 6 else 0)
+assert [(m, e[1]) for m, e in _ch] == [("parmi les meilleurs", 1), ("parmi les meilleurs", 2), ("parmi les meilleurs", 5),
+                                       ("en difficulté", 4), ("hors de ses habitudes", 6)], _ch
+print("OK sélection")

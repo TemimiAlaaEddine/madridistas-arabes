@@ -4,7 +4,8 @@
 Usage : python apres_match.py            (analyse le match fini, s'il y en a un)
         python apres_match.py --a-faire  (affiche le match à analyser, ou rien : le workflow n'installe Claude Code que si besoin)
 Les matchs viennent de matchs.json (calendrier.py, revue du lundi). 2 h 30 après le coup d'envoi, Claude Code lance /match en
-mode automatique et écrit le thread dans scripts/ ; ce script le dépose ensuite en brouillon dans Typefully (API, sans date).
+mode automatique et écrit le thread et les tweets joueurs dans scripts/ ; ce script les dépose ensuite en brouillons dans Typefully
+(API, sans date : le thread, puis un brouillon par joueur).
 Heure pas encore fixée : on attend 23 h 30 UTC le jour du match. 3 essais par match, espacés de 30 min au moins (WhoScored met parfois du
 temps à publier les stats), rattrapage pendant 2 jours. Suivi dans suivi_matchs.json (enregistré dans le dépôt).
 Secrets GitHub : CLAUDE_CODE_OAUTH_TOKEN, TYPEFULLY_API_KEY, BRIGHTDATA_API_TOKEN.
@@ -32,8 +33,10 @@ CONSIGNE = ("/match --date {date}\n\nMode automatique (GitHub Actions) : personn
             "puis les sections « ## » (accroches, hashtags, sources). Graphiques : match.py en liste quelques-uns (chemin et "
             "contenu) ; places-en 2 à 4 dans le thread, chacun sur sa propre ligne « [graphique: <chemin>] » à la fin du tweet "
             "dont il illustre le propos (un par tweet ; cette ligne ne compte pas dans les 270 caractères). "
-            "Termine ta réponse par la ligne « FICHIER: scripts/<nom>.md ».")
-GRAPHIQUE = re.compile(r"^\[graphique:\s*([^\]]+?)\s*\]\s*$", re.M)
+            "Écris aussi les tweets joueurs (étape 4 de /match, un tweet par joueur de la sélection de l'étape 6) dans "
+            "scripts/<date>-joueurs-<adversaire>.md, même forme, avec la photo du joueur (ligne « [photo: <chemin>] », étape 4 de /match). "
+            "Termine ta réponse par les lignes « JOUEURS: scripts/<nom>.md » puis « FICHIER: scripts/<nom>.md » (le thread).")
+GRAPHIQUE = re.compile(r"^\[(?:graphique|photo):\s*([^\]]+?)\s*\]\s*$", re.M)  # photo : celle du joueur (tweets joueurs)
 
 
 def cle(m):
@@ -102,7 +105,32 @@ def analyser(m):
         posts.append(post)
     d = typefully_api("drafts", {"draft_title": f"تحليل {m['match']} ({date_madrid(m)})",
                                  "platforms": {"x": {"enabled": True, "posts": posts}}})  # sans publish_at : simple brouillon
-    return f"https://typefully.com/?d={d['id']}&a={CONFIG['typefully_social_set']}"
+    lien = f"https://typefully.com/?d={d['id']}&a={CONFIG['typefully_social_set']}"
+    return lien + deposer_joueurs(m, r.stdout)
+
+
+def deposer_joueurs(m, sortie):
+    """Un brouillon Typefully par tweet joueur (sans numérotation ni date) ; jamais bloquant : le thread est déjà déposé."""
+    f = re.search(r"JOUEURS:\s*(scripts/[^\s`*]+\.md)", sortie)
+    if not f:
+        return " ; tweets joueurs : fichier absent"
+    try:
+        tweets = tweets_du_fichier((BASE / f.group(1)).read_text(encoding="utf-8"))
+        for i, (t, images) in enumerate(tweets, 1):
+            post = {"text": t}
+            ids = []
+            for c in images:
+                try:
+                    ids.append(typefully_image(Path(c).name, (BASE / c).read_bytes()))
+                except (OSError, KeyError, ValueError) as err:
+                    print(f"! photo {c} non jointe : {err}")
+            if any(ids):  # photo refusée : le tweet part sans elle
+                post["media_ids"] = [x for x in ids if x]
+            typefully_api("drafts", {"draft_title": f"أداء {i}/{len(tweets)} - {m['match']} ({date_madrid(m)})",
+                                     "platforms": {"x": {"enabled": True, "posts": [post]}}})
+        return f" ; {len(tweets)} tweets joueurs en brouillon"
+    except (OSError, ValueError, KeyError) as err:
+        return f" ; tweets joueurs non déposés ({err})"
 
 
 def charger():

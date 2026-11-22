@@ -34,3 +34,24 @@ for mauvais in ("# ثريد\n---\nوحيدة\n## x", "# ثريد\n---\n" + "ا" 
     except ValueError:
         pass
 print("OK fichier")
+
+
+# tweets joueurs : un brouillon par tweet, sans numérotation ; absent ou illisible : jamais bloquant
+import tempfile
+from pathlib import Path
+_envois, _vrai = [], a.typefully_api
+a.typefully_api = lambda chemin, corps: _envois.append(corps) or {"id": len(_envois)}
+with tempfile.TemporaryDirectory(dir=a.BASE / "scripts") as _d:
+    _f = Path(_d) / "j.md"
+    _f.write_text("# لاعبون\nسياق\n---\n⭐ أداء | غولر\n---\n⭐ أداء | فينيسيوس\n---\n⭐ أداء | كورتوا\n", encoding="utf-8")
+    _rel = _f.relative_to(a.BASE).as_posix()
+    assert a.deposer_joueurs(celta, f"...\nJOUEURS: {_rel}\nFICHIER: scripts/x.md") == " ; 3 tweets joueurs en brouillon"
+assert [c["platforms"]["x"]["posts"][0]["text"] for c in _envois] == ["⭐ أداء | غولر", "⭐ أداء | فينيسيوس", "⭐ أداء | كورتوا"]
+assert "fichier absent" in a.deposer_joueurs(celta, "FICHIER: scripts/x.md")
+assert "non déposés" in a.deposer_joueurs(celta, "JOUEURS: scripts/absent.md")
+a.typefully_api = _vrai
+print("OK tweets joueurs")
+
+assert a.tweets_du_fichier("# لاعبون\n---\n⭐ أداء | غولر\n[photo: matchs/x/photos/07.jpg]\n---\nب") == \
+    [("⭐ أداء | غولر", ["matchs/x/photos/07.jpg"]), ("ب", [])], "ligne de photo lue comme une image et retirée du texte"
+print("OK photo")
