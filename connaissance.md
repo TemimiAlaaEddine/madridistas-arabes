@@ -31,6 +31,7 @@ Dernier fait relu : 23
 - 2026-11-19 : Arda Güler a été nommé Jeune joueur révélation de la Ligue des champions 2025-2026 par l'UEFA. Source : ABC (Miguel Zarza).
 - 2026-11-19 : Le Real Madrid a officialisé le 19 novembre 2026 la prolongation d'Aurélien Tchouaméni jusqu'au 30 juin 2032, comme Arda Güler (contrat jusqu'en 2032, novembre 2026). Sources : Marca (NACHO LABARGA), AS (Frédéric Hermel).
 - 2026-11-19 : Jude Bellingham a remporté le prix Mahou Five-Star Player d'octobre 2026, mois où le Real Madrid a gagné ses cinq matchs. Source : Managing Madrid (Kiyan Sobhani).
+- Avant la J13 (Celta, 2026-11-21) : Arda Güler est 2e de la Liga aux grosses occasions créées (14). Source : Opta (« أوبتا », fait d'avant-match lu sur FotMob) ; validé par l'utilisateur le 2026-11-22.
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
@@ -82,6 +83,7 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 - Buteurs toutes compétitions au 8 novembre (but d'Elche compté pour Güler) : Mbappé 17 (dont 13 en Liga), Bellingham 5, Güler 5, Diomande 4, Espí 3, Valverde 3, Rüdiger 2, Carreras, Vinícius, Endrick et B. Silva 1 chacun, plus 1 c.s.c. (Herrero).
 - 2026-11-07, J12 : Valence 0-3 Real Madrid à Mestalla. Valverde (28e), Güler (36e), Mbappé (75e, 13e but en Liga) ; Gayà expulsé (79e). Source : Foot Mercato (Jordan Pardon).
 - 2026-11-07, J12 : Güler meilleure note du match (9,2 : 1 but, 1 passe décisive, 3 passes clés) ; tirs 19 contre 4 (11 cadrés contre 2). Source : WhoScored.
+- 2026-11-21, J13 : après Real Madrid 2-1 Celta, le Real a gagné ses 9 derniers matchs toutes compétitions (Villarreal, Roma, Séville, Leipzig, Barcelone, Racing, AEK, Valence, Celta), depuis la défaite contre l'Atlético le 20 septembre. Source : résultats de cette page, confirmés par le calendrier FotMob ; vérifié le 2026-11-22.
 
 ## Journalistes et médias (qui pense quoi)
 Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après les titres et chapeaux de la base (n° = article) ; validé par l'utilisateur le 2026-11-20. Sert à relativiser une opinion selon la ligne habituelle de son auteur, pas à la disqualifier.

@@ -110,7 +110,7 @@ _fm["content"]["insights"] = [{"type": "team", "teamId": 1, "text": "Have won th
 _t = "\n".join(fotmob.resumer(_fm))
 assert "Espí (Real Madrid) 1 tirs, 1 buts, xG 0.40, xGOT 0.70" in _t, _t
 assert "Güler 90' : occasions créées 3, dribbles réussis 3/4" in _t and "récupérations" not in _t, _t
-assert "fait Opta : Real Madrid : Have won their last 8 matches" in _t, _t
+assert "fait Opta d'avant-match (ne compte pas ce match) : Real Madrid : Have won their last 8 matches" in _t, _t
 print("OK fotmob joueurs")
 
 # bascules : couloirs, duos de passes, note à une minute donnée

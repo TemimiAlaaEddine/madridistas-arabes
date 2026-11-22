@@ -122,7 +122,7 @@ def resumer(d):
             lignes.append(f"    {j['name']} {st['Minutes played']['value']}' : " + ", ".join(det))
     for i in c.get("insights") or []:
         qui = noms.get(i.get("teamId"), "") + " : " if i.get("type") == "team" else ""
-        lignes.append(f"  fait Opta : {qui}{i.get('text')}")
+        lignes.append(f"  fait Opta d'avant-match (ne compte pas ce match) : {qui}{i.get('text')}")
     return lignes
 
 
