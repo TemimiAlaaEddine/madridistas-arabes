@@ -9076,4 +9076,7 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-la-liga/
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115658/top-10-players-real-madrid-2-1-celta-vigo','TOP 10 PLAYERS: Real Madrid 2-1 Celta Vigo','2026-11-22T02:52:05');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/noticia/2026/11/22/mourinho-garante-vinicius-junior-titular-do-real-madrid-contra-o-psv-na-champions-sem-perguntas.ghtml','Mourinho garante Vinicius Junior titular do Real Madrid contra o PSV na Champions: "Sem perguntas"','2026-11-22T05:11:09');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50558763/lionel-messi-throw-red-card-inter-miami-columbus-crew','Columbus coach says Messi should''ve got red card: ''Everyone knows''','2026-11-22T05:21:14');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/aprobados-y-suspensos-del-celta-burcio-aquel-nino-del-real-madrid-brilla-como-rival-blanco-f202611-n/','Aprobados y suspensos del Celta: Burcio, aquel niño del Real Madrid se luce como rival blanco','2026-11-22T07:46:10');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/koke-y-carvajal-rivales-intimos-f202611-n/','Koke y Carvajal, rivales íntimos','2026-11-22T07:46:10');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/un-ano-en-el-camp-nou-dos-infiernos-en-el-paraiso-f202611-n/','Un año en el Camp Nou: dos ‘infiernos’ en el paraíso','2026-11-22T07:46:10');
 COMMIT;
