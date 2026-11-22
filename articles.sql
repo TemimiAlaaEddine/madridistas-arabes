@@ -9252,4 +9252,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Liga-real-madrid
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/el-gesto-que-tuvo-federico-valverde-vinicius-jr-real-madrid-que-no-se-vio-tv-y-del-que-habla-todo-espana-mira-el-video-n6064741','El gesto que tuvo Federico Valverde con Vinícius Jr. en Real Madrid que no se vio por TV y del que habla todo España; mirá el video','2026-11-22T13:55:56');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Liga-real-madrid-jose-mourinho-sur-les-blessures-des-joueurs-et-les-difficultes-des-grands-clubs-ce-sont-des-periodes/20246087#at_medium=RSS_feeds','Mourinho : «Ce sont des périodes difficiles»','2026-11-22T14:35:53');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/mourinho-wijst-op-druk-schema-kijk-maar-naar-de-blessures','Mourinho wijst op druk schema: ''Kijk maar naar de blessures''','2026-11-22T14:41:12');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/barca-komt-dramatische-start-te-boven-en-blijft-fier-aan-kop-in-la-liga','Barça komt dramatische start te boven en blijft fier aan kop in La Liga','2026-11-22T15:01:25');
 COMMIT;
