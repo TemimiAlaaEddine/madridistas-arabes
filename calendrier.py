@@ -147,6 +147,9 @@ def suivre_match(con, utc=None):
     m = match_courant(utc)
     if not m:
         return 0
+    if direct_actif():  # le suivi dédié lit Sofascore chaque minute et tweete : pas de requête Bright Data en double ici
+        print("  Suivi du match : suivi dédié en cours (suivi_direct.yml)")
+        return 0
     try:
         e = evenement(m["debut"])
         incidents = ([] if not e or e["status"].get("type") == "notstarted"
@@ -169,9 +172,7 @@ def suivre_match(con, utc=None):
     print(f"  Suivi du match : {e['homeTeam']['name']} {score or '?'} {e['awayTeam']['name']}, statut « {statut} »")
     if not threads.reglage("typefully_api_key"):
         return 0
-    if direct_actif():  # le suivi dédié (une lecture par minute) tweete ; ce passage ne fait que noter l'état
-        return 0
-    deja = {r[0] for r in con.execute("SELECT cle FROM tweets_match WHERE debut = ?", (m["debut"],))}
+    deja ={r[0] for r in con.execute("SELECT cle FROM tweets_match WHERE debut = ?", (m["debut"],))}
     deja |= set(lire_direct().get(m["debut"], {}).get("cles", []))  # déjà partis par le suivi dédié
     n = 0
     for cle, texte in tweets_du_match(e, incidents):

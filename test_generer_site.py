@@ -1349,6 +1349,9 @@ with tempfile.TemporaryDirectory() as d:
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 19, 50)) == 0 and not appels_sofa  # avant le coup d'envoi : rien lu
         assert not cs.execute("SELECT name FROM sqlite_master WHERE name = 'suivi_match'").fetchone()
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 1)) == 0 and appels_sofa == ["team/2829/events/next/0"]  # pas commencé
+        calendrier.direct_actif = lambda: True  # suivi dédié en cours : aucune lecture de Sofascore (Bright Data) en double
+        assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 2)) == 0 and appels_sofa == ["team/2829/events/next/0"]
+        calendrier.direct_actif = lambda: False
         sofa["next"] = [evt(0, "notstarted", "Not started", debut=coup_envoi + 7 * 86400), evt(6, "inprogress", "1st half", 0, 0)]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 5)) == 1 and "انطلاق المباراة" in textes()[-1]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 10)) == 0  # rien de neuf
