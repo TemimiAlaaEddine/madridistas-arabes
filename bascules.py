@@ -397,19 +397,22 @@ def analyser(d, sofa_tirs=None, fm=None):
         sens = "" if p["mom"] is None else f"momentum {p['mom']:+.0f} ({eq[0][2] if p['mom'] > 15 else eq[1][2] if p['mom'] < -15 else 'équilibré'}) ; "
         lignes.append(f"  {p['nom']:<10} {sens}score au début {score(d, actions, p['a'])}")
 
-    lignes.append(f"\nÉTAPE 3 - Chaque période : qu'est-ce qui explique qui domine ? (par 15 min ; {source_xg} ; « ressort » = écart net avec "
-                  "son propre match)")
+    lignes.append(f"\nÉTAPE 3 - Chaque période : qu'est-ce qui explique qui domine ? ({source_xg} ; nombres réels de la période, à citer tels "
+                  "quels ; « ressort » compare les rythmes par 15 min, pour l'analyse seulement, jamais dans un tweet)")
     tout = {nom: mesurer(actions, tirs, equipe, dom, 0, fin) for equipe, dom, nom in eq}
     mesures = []
     for p in per:
-        lignes.append(f"  {p['nom']}")
+        duree = p["b"] - p["a"]
+        lignes.append(f"  {p['nom']} ({duree:.0f} min)")
         m = {nom: mesurer(actions, tirs, equipe, dom, p["a"], p["b"]) for equipe, dom, nom in eq}
         mesures.append(m)
+        reel = lambda k, v: v if k in ("part", "ppda") else v * max(duree, 1) / 15  # mesurer ramène les comptes à 15 min
         for _, _, nom in eq:
-            lignes.append(f"    {nom} : " + ", ".join(f"{MESURES[k][0]} {fmt(k, m[nom][k])}" for k in MESURES if k in m[nom]))
+            lignes.append(f"    {nom} : " + ", ".join(f"{MESURES[k][0]} {fmt(k, reel(k, m[nom][k]))}" for k in MESURES if k in m[nom]))
             res = ecarts(tout[nom], m[nom])[:3]
             if res:
-                lignes.append("      ressort : " + " ; ".join(f"{MESURES[k][0]} {fmt(k, v2)} (match : {fmt(k, v1)})" for k, v1, v2 in res))
+                lignes.append("      ressort (rythme par 15 min) : " + " ; ".join(f"{MESURES[k][0]} {fmt(k, v2)} contre {fmt(k, v1)} sur le match"
+                                                                              for k, v1, v2 in res))
         if p["b"] - p["a"] < 10:
             lignes.append("    (période courte : peu d'actions, chiffres fragiles)")
 
