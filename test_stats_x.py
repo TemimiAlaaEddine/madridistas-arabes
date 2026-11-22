@@ -41,6 +41,8 @@ assert ps["333"]["type"] == "Une de journal" and ps["444"]["type"] == "Réponse 
 assert ps["555"]["type"] == "Tweet joueur" and ps["555"]["tranche"] == "heure inconnue" and ps["555"]["etiquette"] == "⭐ أداء"
 r = s.rapport(list(ps.values()))
 assert "4 posts" in r and "Réponses avec le lien de la source : 1" in r and "x.com/i/status/111" in r
+assert ps["222"]["hashtags"] == "(aucun)" and "Hashtags" in r
+assert s.hashtags("⏱️ نهاية\n\n#ريال_مدريد_سيلتا_فيغو #الليغا #الليغا") == "#ريال_مدريد_سيلتا_فيغو #الليغا"
 assert s.etiquette("🗣️ مورينيو | «...»") == "🗣️ تصريح" and s.etiquette("نص عادي") == "(sans étiquette)"
 assert s.date_csv("2026-11-22 08:11 +0100") == datetime(2026, 11, 22, 7, 11), "converti en UTC"
 try:

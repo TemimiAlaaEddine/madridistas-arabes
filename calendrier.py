@@ -103,13 +103,28 @@ def minute(incident):
     return f"{incident['time']}+{incident['addedTime']}'" if incident.get("addedTime") else f"{incident['time']}'"
 
 
+# uniqueTournament Sofascore -> hashtag ; une compétition absente n'a que le tag du match
+COMPETITIONS = {8: "#الليغا", 7: "#دوري_أبطال_أوروبا", 329: "#كأس_الملك", 213: "#السوبر_الإسباني",
+                357: "#كأس_العالم_للأندية", 465: "#السوبر_الأوروبي"}
+BARCA = 2817
+
+
+def hashtags_match(e, dom, ext):
+    """Tag du match (équipe qui reçoit d'abord) + compétition, ou #الكلاسيكو contre le Barça (choix de l'utilisateur, 2026-11-22)."""
+    match = "#" + re.sub(r"\W+", "_", f"{dom} {ext}").strip("_")
+    if BARCA in (e["homeTeam"].get("id"), e["awayTeam"].get("id")):
+        return f"{match} #الكلاسيكو"
+    comp = COMPETITIONS.get(((e.get("tournament") or {}).get("uniqueTournament") or {}).get("id"))
+    return f"{match} {comp}" if comp else match
+
+
 def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     """[(clé, texte)] des tweets que l'état du match appelle, dans l'ordre : début, buts et cartons rouges (chronologiques),
     mi-temps, fin. L'appelant écarte les clés déjà parties."""
     dom, ext = nom_arabe(e["homeTeam"]), nom_arabe(e["awayTeam"])
     real_dom = e["homeTeam"].get("id") == equipe
     adversaire = ext if real_dom else dom
-    statut, tag = e["status"], "\n\n#ريال_مدريد"
+    statut, tag = e["status"], "\n\n" + hashtags_match(e, dom, ext)
     score = f"{dom} {e.get('homeScore', {}).get('current', 0)} - {e.get('awayScore', {}).get('current', 0)} {ext}"
     tweets, buts, avant = [], [], (0, 0)
     # voix de supporter du Real pendant tout le match (choix de l'utilisateur, 2026-11-22) : joie pour le Real, soutien quand il souffre

@@ -74,6 +74,11 @@ def etiquette(texte):
     return tete
 
 
+def hashtags(texte):
+    """Combinaison des hashtags du post, dans l'ordre : « #ريال_مدريد_سيلتا_فيغو #الليغا », ou « (aucun) »."""
+    return " ".join(dict.fromkeys(re.findall(r"#\w+", texte or ""))) or "(aucun)"
+
+
 def lire_csv(chemin):
     with open(chemin, encoding="utf-8-sig", newline="") as f:
         lignes = list(csv.DictReader(f))
@@ -121,6 +126,7 @@ def posts(chemin, con):
             nombre(l[k]) for k in ("likes", "reposts", "reponses", "signets"))
         resultat.append({"id": sid, "texte": texte, "date": date, "vues": vues, "interactions": inter,
                          "abonnements": nombre(l["abonnements"]), "type": genre, "etiquette": etiquette(texte),
+                         "hashtags": hashtags(texte),
                          "section": a["section"] if a else "—", "journal": a["journal"] if a else "—",
                          "format": "—" if not date else ("Tweet long" if date >= DEBUT_LONG else "Thread"),
                          # l'heure ne vient que de Typefully : l'export de X ne donne souvent que le jour
@@ -144,7 +150,7 @@ def rapport(ps):
     if reponses:
         lignes += [f"Réponses avec le lien de la source : {len(reponses)}, {sum(p['vues'] for p in reponses):,.0f} vues "
                    "(écartées des classements).".replace(",", " "), ""]
-    for cle, titre in (("type", "Type"), ("etiquette", "Étiquette"), ("format", "Format"), ("tranche", "Heure de Madrid"),
+    for cle, titre in (("type", "Type"), ("etiquette", "Étiquette"), ("hashtags", "Hashtags"), ("format", "Format"), ("tranche", "Heure de Madrid"),
                        ("section", "Section"), ("journal", "Journal source")):
         lignes += performance.classement(principaux, cle, titre) + [""]
     lignes.append("**Les 5 posts les plus vus**")

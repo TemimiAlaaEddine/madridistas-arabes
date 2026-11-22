@@ -1320,7 +1320,8 @@ with tempfile.TemporaryDirectory() as d:
     coup_envoi = datetime(2026, 11, 21, 20, tzinfo=timezone.utc).timestamp()
     def evt(code, typ, desc, sd=None, se=None, debut=coup_envoi):  # forme des événements de l'API Sofascore
         e = {"id": 77, "startTimestamp": int(debut), "status": {"code": code, "type": typ, "description": desc},
-             "homeTeam": {"id": 2829, "name": "Real Madrid"}, "awayTeam": {"id": 2821, "name": "Celta Vigo"}}
+             "homeTeam": {"id": 2829, "name": "Real Madrid"}, "awayTeam": {"id": 2821, "name": "Celta Vigo"},
+             "tournament": {"uniqueTournament": {"id": 8}}}
         if sd is not None:
             e["homeScore"], e["awayScore"] = {"current": sd}, {"current": se}
         return e
@@ -1390,7 +1391,7 @@ with tempfile.TemporaryDirectory() as d:
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 55)) == 2  # dernier but puis fin
         assert "كارلوس إسبي 85' (ركلة جزاء)" in textes()[-2]
         assert textes()[-1] == ("🏁 نهاية المباراة\n\nريال مدريد 2 - 1 سيلتا فيغو\n\nفوز ريال مدريد! هلا مدريد 🤍\n\n⚽ بابلو دوران 6' (سيلتا فيغو)"
-                                "\n⚽ Jude Bellingham 66'\n⚽ كارلوس إسبي 85' (ركلة جزاء)\n\n#ريال_مدريد"), textes()[-1]
+                                "\n⚽ Jude Bellingham 66'\n⚽ كارلوس إسبي 85' (ركلة جزاء)\n\n#ريال_مدريد_سيلتا_فيغو #الليغا"), textes()[-1]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 22, 0)) == 0 and len(envois) == 7  # rien ne part deux fois
         assert all(c["publish_at"] == "now" for c in envois)
     finally:
@@ -1405,6 +1406,9 @@ with tempfile.TemporaryDirectory() as d:
         tw = dict(calendrier.tweets_du_match(dehors, [but(9, 30, "Starfelt", 0, 1, "ownGoal")]))
     finally:
         calendrier.appeler_claude = vrai[1]
+    assert calendrier.hashtags_match(dehors, "سيلتا فيغو", "ريال مدريد") == "#سيلتا_فيغو_ريال_مدريد #الليغا"
+    assert calendrier.hashtags_match({"homeTeam": {"id": 2817}, "awayTeam": {"id": 2829}}, "برشلونة", "ريال مدريد") == "#برشلونة_ريال_مدريد #الكلاسيكو"
+    assert calendrier.hashtags_match({"homeTeam": {}, "awayTeam": {}}, "ريال مدريد", "ب.ج") == "#ريال_مدريد_ب_ج", "compétition inconnue, ponctuation"
     assert tw["but:9"].startswith("⚽🔥 هدددف لريال مدريد!") and "Starfelt 30' (ضد مرماه)" in tw["but:9"] and "سيلتا فيغو 0 - 1 ريال مدريد" in tw["but:9"]
     # suivi dédié : une lecture par minute ; chaque fait une fois, dans l'ordre ; incidents relus si le score ou le statut change
     etapes = [(evt(0, "notstarted", "Not started"), []), (evt(6, "inprogress", "1st half", 0, 0), []),

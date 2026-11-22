@@ -52,14 +52,14 @@ Règles communes :
 
 **Thread X**
 - Un tweet par bloc, séparés par `---`. Les blocs sont réunis à l'envoi en **un seul tweet long** (X Premium, choix de l'utilisateur, 2026-11-22), un paragraphe par bloc, sans numérotation : le 1er bloc est ce qu'on lit avant « Afficher plus », garde-le sous 270 caractères. Vérifie avec `threads.longueur` de threads.py.
-- Le 1er tweet contient l'accroche, 🧵 et #ريال_مدريد. Pas de tweet de sources à la fin (choix de l'utilisateur, 2026-11-12) : les sources restent en bas du fichier, et chaque tweet cite déjà la sienne. Le dernier tweet est la question aux lecteurs.
+- Le 1er tweet contient l'accroche et 🧵, sans hashtag : article d'opinion (choix de l'utilisateur, 2026-11-22). Pas de tweet de sources à la fin (choix de l'utilisateur, 2026-11-12) : les sources restent en bas du fichier, et chaque tweet cite déjà la sienne. Le dernier tweet est la question aux lecteurs.
 - De 8 tweets pour un sujet simple jusqu'à 30 pour une analyse longue, selon ce que demande l'utilisateur.
-- Propose 3 accroches de rechange et 5 hashtags.
+- Propose 3 accroches de rechange.
 
 **Publication Facebook**
 - Un texte d'un seul bloc, prêt à coller : une première ligne forte (c'est elle qu'on voit avant « Voir plus »), des paragraphes courts séparés par une ligne vide, de 250 à 600 mots selon le sujet.
 - Si les trois langues sont demandées : le texte complet en français ⚜️, puis en anglais 🇨🇦, puis en espagnol 🇪🇸, séparés par une ligne.
-- À la fin : les sources (journal, auteur, lien) et au plus 3 hashtags.
+- À la fin : les sources (journal, auteur, lien) sans hashtag (opinion).
 - Propose 2 premières lignes de rechange.
 
 ## 4. Enregistrer

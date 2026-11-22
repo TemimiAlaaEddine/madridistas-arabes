@@ -74,7 +74,7 @@ Montre le storyboard sous forme lisible (une ligne par scène : rôle dans la st
 - **TikTok** : 1 à 2 phrases qui prolongent l'accroche + la source + 3 à 5 hashtags (dont #ريال_مدريد ou #RealMadrid).
 - **YouTube Shorts** : un titre de 100 caractères au plus, puis une description de 2 à 3 lignes avec la source (journal, auteur) et #Shorts.
 - **Facebook Reels** : 2 à 3 phrases avec la source, sans lien (loi C-18 au Canada).
-- **X** : un tweet de 240 caractères au plus, avec la source entre parenthèses et #ريال_مدريد, sans lien.
+- **X** : un tweet de 240 caractères au plus, avec la source entre parenthèses et les hashtags selon la règle de `REGLES` (threads.py) : tag du match, nom du joueur, rien pour une opinion ; sans lien.
 - Une suggestion de type de son (ambiance stade, tension, épique...), sans titre protégé.
 
 ## 6. Livrer
