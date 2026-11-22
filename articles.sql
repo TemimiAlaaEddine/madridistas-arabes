@@ -6523,6 +6523,7 @@ INSERT INTO "liens_x" VALUES('12096260','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12096409','https://x.com/ElMadridistAlaa/status/2124289611384177057','2026-11-21T23:51:25.762Z');
 INSERT INTO "liens_x" VALUES('12096608','https://x.com/ElMadridistAlaa/status/2124292560449659274','2026-11-22T00:03:11.591Z');
 INSERT INTO "liens_x" VALUES('12098112','https://x.com/ElMadridistAlaa/status/2124367282768113688','2026-11-22T05:00:23.625Z');
+INSERT INTO "liens_x" VALUES('12098537','https://x.com/ElMadridistAlaa/status/2124368531190120922','2026-11-22T05:05:21.082Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -9073,4 +9074,5 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50555627/real-m
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261122/madrid-socios-siempre-proyecto-florentino-nadal-entra-puerta-grande/1003744467522_0.html','"Por un Madrid de sus socios, para siempre": el proyecto de Florentino con un Nadal que entra por la puerta grande','2026-11-22T01:11:13');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-la-liga/115654/player-ratings-real-madrid-2-1-celta-vigo','Player Ratings: Real Madrid 2–1 Celta Vigo','2026-11-22T02:11:42');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115658/top-10-players-real-madrid-2-1-celta-vigo','TOP 10 PLAYERS: Real Madrid 2-1 Celta Vigo','2026-11-22T02:52:05');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/noticia/2026/11/22/mourinho-garante-vinicius-junior-titular-do-real-madrid-contra-o-psv-na-champions-sem-perguntas.ghtml','Mourinho garante Vinicius Junior titular do Real Madrid contra o PSV na Champions: "Sem perguntas"','2026-11-22T05:11:09');
 COMMIT;
