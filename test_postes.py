@@ -46,3 +46,13 @@ _ch = postes.marquants(_evals, remplacants={5}, habit=lambda e: 2.0 if e[1] == 6
 assert [(m, e[1]) for m, e in _ch] == [("parmi les meilleurs", 1), ("parmi les meilleurs", 2), ("parmi les meilleurs", 5),
                                        ("en difficulté", 4), ("hors de ses habitudes", 6)], _ch
 print("OK sélection")
+
+# /joueur : évaluation d'un joueur sur un match enregistré, et forme sur ses derniers matchs (seulement si les pages sont là)
+import pathlib
+if pathlib.Path("matchs/2026-11-21-celta-vigo/whoscored.html").exists():
+    _e = postes.evaluer_joueur("matchs/2026-11-21-celta-vigo", "guler")
+    assert _e["nom"] == "Arda Güler" and _e["role"] == "meneur" and _e["minutes"] >= 90, _e
+    assert postes.evaluer_joueur("matchs/2026-11-21-celta-vigo", "personne") is None
+    _f = postes.forme("guler", 3)
+    assert _f[0].startswith("Forme de Arda Güler sur ses 3 derniers") and any("bilan" in l for l in _f), _f
+    print("OK joueur")

@@ -140,6 +140,7 @@ Dans Claude Code, ouvert dans ce dossier. Elles proposent, tu décides : rien n'
 
 - `/sujets` (rédacteur en chef, 5 min par jour) : les 3 sujets du jour qui méritent ton avis, avec l'angle et les articles qui le soutiennent ; les doublons et les écarts de ton relevés dans les threads envoyés ; les threads bloqués qui t'attendent dans Typefully.
 - `/moderation` (community manager, 10 min par jour) : les commentaires de la Page Facebook encore sans réponse (`python moderation.py`), avec pour chacun une action (répondre, ignorer, masquer, transmettre...) et une réponse proposée dans la langue du commentaire. Pour X, colle les mentions reçues. Tu réponds toi-même sur Facebook et sur X : le jeton n'a pas la permission `pages_manage_engagement`.
+- `/joueur <nom> [match | forme N]` : un tweet sur un joueur du Real, au format des tweets joueurs d'après-match (« ⭐ أداء | », ton émotionnel, photo du club), pour un match précis (`python postes.py matchs/<dossier> --joueur <nom>`) ou pour sa forme sur ses N derniers matchs enregistrés (`python postes.py --joueur <nom> N`) ; déposé en brouillon dans Typefully.
 - `/angles [sujet]` (analyste tactique) : 3 angles d'analyse (thèse, faits sourcés tirés de `connaissance.md`, argument contraire, ce qui manque) à développer ensuite avec `/script`.
 
 ## Vidéos verticales (/video)

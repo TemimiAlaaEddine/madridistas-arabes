@@ -2,6 +2,8 @@
 
 Usage : python postes.py --reperes          (recalcule reperes_postes.json à partir des matchs enregistrés dans matchs/)
         python postes.py matchs/AAAA-MM-JJ-adversaire   (évaluation seule d'un match)
+        python postes.py matchs/AAAA-MM-JJ-adversaire --joueur guler   (un joueur du Real sur ce match ; commande /joueur)
+        python postes.py --joueur guler [5]     (sa forme sur ses 5 derniers matchs enregistrés ; commande /joueur)
 Méthode : 1. le rôle de chaque joueur vient de sa place dans le système WhoScored (remplaçants compris), corrigé par son couloir
 réel (un ailier qui joue dans l'axe est jugé comme un meneur) ; 2. chaque rôle a ses critères, positifs et négatifs, comptés dans
 les actions Opta de WhoScored (xG, xGOT de FotMob) ; 3. tout est ramené à 90 minutes, les actions défensives sont corrigées par la
@@ -347,9 +349,78 @@ def rapport(d, actions, xg, xgot, fin, mi, reperes=None):
     return lignes
 
 
+def charger(dossier):
+    """Page WhoScored et FotMob d'un match enregistré : (d, actions, xg, xgot, fin)."""
+    dossier = Path(dossier)
+    d = whoscored.lire((dossier / "whoscored.html").read_text(encoding="utf-8"))
+    fm = json.loads((dossier / "fotmob.json").read_text(encoding="utf-8")) if (dossier / "fotmob.json").exists() else None
+    actions, xg, xgot = preparer(d, fm)
+    return d, actions, xg, xgot, max(e["t"] for e in actions) + 0.1
+
+
+def evaluer_joueur(dossier, nom, reperes=None):
+    """Évaluation d'un joueur du Real sur un match enregistré (nom sans accents, en partie : « guler ») :
+    dict (nom, rôle, minutes, score, raisons, habitudes, comptes) ou None s'il n'a pas joué 15 minutes."""
+    from connaissance import sans_accents
+    reperes = reperes or json.loads(REPERES.read_text(encoding="utf-8"))
+    d, actions, xg, xgot, fin = charger(dossier)
+    noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
+    cote = "home" if d["home"]["teamId"] == REAL else "away"
+    for pid, role, m, c, v in evaluer_equipe(d, actions, xg, xgot, cote, 0, fin, mini=15):
+        if sans_accents(nom) in sans_accents(noms.get(pid, "")):
+            s, contrib = noter(role, v, reperes)
+            return {"nom": noms[pid], "role": role, "minutes": round(m), "score": s, "raisons": raisons(role, c, v, contrib).strip(" ;"),
+                    "habitudes": habitudes(pid, role, v, reperes), "contrib": contrib, "comptes": c,
+                    "adversaire": d["away" if cote == "home" else "home"]["name"], "score_match": d.get("score")}
+    return None
+
+
+def forme(nom, n=5):
+    """Lignes de la forme d'un joueur sur ses n derniers matchs enregistrés : un match par ligne, puis le bilan (score moyen,
+    meilleur et pire match, critères régulièrement au-dessus ou en dessous du repère, tendance des 3 derniers)."""
+    reperes = json.loads(REPERES.read_text(encoding="utf-8"))
+    evals = []
+    for f in sorted(ICI.glob("matchs/*/whoscored.html")):
+        e = evaluer_joueur(f.parent, nom, reperes)
+        if e:
+            evals.append((f.parent.name[:10], e))
+    evals = evals[-n:]
+    if not evals:
+        return [f"{nom} : aucun match enregistré avec au moins 15 minutes jouées"]
+    lignes = [f"Forme de {evals[-1][1]['nom']} sur ses {len(evals)} derniers matchs enregistrés (score de -3 à 3, 0 = joueur moyen du rôle) :"]
+    for jour, e in evals:
+        lignes.append(f"  {jour} contre {e['adversaire']} ({e['score_match']}) : {e['role']}, {e['minutes']}', score {e['score']:+.1f} ; {e['raisons']}")
+    scores = [e["score"] for _, e in evals]
+    meilleur, pire = max(evals, key=lambda x: x[1]["score"]), min(evals, key=lambda x: x[1]["score"])
+    lignes.append(f"  bilan : score moyen {statistics.mean(scores):+.1f} ; meilleur match {meilleur[0]} contre {meilleur[1]['adversaire']} "
+                  f"({meilleur[1]['score']:+.1f}) ; le moins bon {pire[0]} contre {pire[1]['adversaire']} ({pire[1]['score']:+.1f})")
+    regulier = {}
+    for _, e in evals:
+        for k, x in e["contrib"].items():
+            regulier.setdefault(k, []).append(x)
+    forts = [NOMS[k] for k, xs in regulier.items() if len(xs) >= 2 and statistics.mean(xs) > 0.5 and all(
+        POIDS.get(e["role"], {}).get(k, 0) > 0 for _, e in evals if k in e["contrib"])]
+    faibles = [NOMS[k] for k, xs in regulier.items() if len(xs) >= 2 and statistics.mean(xs) < -0.5]
+    if forts:
+        lignes.append("  régulièrement au-dessus du repère : " + ", ".join(forts))
+    if faibles:
+        lignes.append("  régulièrement en dessous : " + ", ".join(faibles))
+    if len(scores) >= 4:
+        recent, avant = statistics.mean(scores[-3:]), statistics.mean(scores[:-3])
+        sens = "en hausse" if recent - avant >= 0.3 else "en baisse" if avant - recent >= 0.3 else "stable"
+        lignes.append(f"  tendance : {sens} (3 derniers matchs {recent:+.1f}, avant {avant:+.1f})")
+    return lignes
+
+
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    if sys.argv[1:] == ["--reperes"]:
+    if len(sys.argv) >= 3 and sys.argv[1] == "--joueur":  # forme : python postes.py --joueur guler [n]
+        print("\n".join(forme(sys.argv[2], int(sys.argv[3]) if len(sys.argv) > 3 else 5)))
+    elif len(sys.argv) == 4 and sys.argv[2] == "--joueur":  # un match : python postes.py matchs/<dossier> --joueur guler
+        e = evaluer_joueur(sys.argv[1], sys.argv[3])
+        print(f"{e['nom']} contre {e['adversaire']} ({e['score_match']}) : {e['role']}, {e['minutes']}', score {e['score']:+.1f} ; {e['raisons']}"
+              + (f" ; {', '.join(e['habitudes'])}" if e["habitudes"] else "") if e else f"{sys.argv[3]} : pas 15 minutes jouées dans ce match")
+    elif sys.argv[1:] == ["--reperes"]:
         n, roles = construire_reperes()
         print(f"{REPERES.name} : {n} matchs ; joueurs par rôle (matchs entiers, 45 min au moins) : {roles}")
     elif len(sys.argv) == 2:

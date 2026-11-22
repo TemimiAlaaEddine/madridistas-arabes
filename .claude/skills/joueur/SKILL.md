@@ -1,0 +1,19 @@
+---
+name: joueur
+description: Tweet sur un joueur du Real Madrid, à la demande, pour un match précis ou pour sa forme sur les derniers matchs, au format des tweets joueurs de /match (« ⭐ أداء | », ton émotionnel, photo), déposé en brouillon dans Typefully. À utiliser pour « /joueur Güler », « /joueur Bellingham Barça », « un tweet sur Vinícius contre le Celta », « tweet sur la forme de Mbappé ».
+---
+
+# Tweet joueur à la demande
+
+Ce qui suit la commande : le joueur, puis éventuellement un match (adversaire ou date) ou « forme » / « saison ». Exemples : `/joueur Güler` (forme), `/joueur Bellingham Barça`, `/joueur Vinícius 2026-11-21`, `/joueur Mbappé forme 8` (8 derniers matchs).
+
+1. **Mode** : un match est cité → mode match ; sinon → mode forme (5 derniers matchs, ou le nombre donné).
+2. **Chiffres** (évaluation par poste de postes.py, voir l'étape 6 de /match) :
+   - mode match : trouve le dossier du match dans `matchs/` (date ou adversaire dans le nom), puis `python postes.py matchs/<dossier> --joueur <nom>`. Match absent de `matchs/` : `python match.py <id WhoScored>` (ou `--date AAAA-MM-JJ`) le récupère (une requête Bright Data) ; préviens l'utilisateur avant si ce n'est pas le dernier match. Complète avec les stats Opta du joueur dans `fotmob.json` (`python fotmob.py AAAA-MM-JJ` ou la section « joueurs » de `fotmob.resumer`) : minutes jouées, occasions créées, duels au sol et aériens.
+   - mode forme : `python postes.py --joueur <nom> [n]` : un match par ligne, bilan (score moyen, meilleur et moins bon match), critères réguliers, tendance. Les matchs pris sont ceux de `matchs/` (après une analyse, la liste s'allonge). Garde l'idée qui ressort (une régularité, une hausse, un match qui tranche) plutôt qu'une moyenne.
+   - Le nom se donne sans accents et peut être partiel (« guler », « vini »). Pas trouvé : dis-le, ne devine pas un autre joueur.
+   - Si l'utilisateur a noté ce qu'il a vu (jeu sans ballon…), le tweet le dit, au lieu de s'en tenir aux chiffres (règle des observations de /match).
+3. **Photo** : la règle de /match. Mode match : photo mise en avant par le club si `match.py`/`galerie.py` en donne une pour ce joueur (`matchs/<dossier>/photos/club-*.jpg`), sinon une photo de la galerie où il est seul ou au premier plan, reconnu à son numéro de maillot (numéros dans `whoscored.html`, ou affichés par `match.py`), vérifiée en pleine taille, jamais à son visage. Photos absentes (effacées après 7 jours) : `python galerie.py AAAA-MM-JJ matchs/<dossier>` les recharge tant que la chronique du club figure sur sa page des chroniques ; sinon, pas de photo. Mode forme : une photo de son dernier match, même règle. Aucune photo sûre : pas de photo.
+4. **Texte** : un seul tweet, le format des tweets joueurs de /match : « ⭐ أداء | » + nom du joueur et accroche de 10 mots au plus, ligne vide, 2 ou 3 faits chiffrés en nombres réels et en langage de football (mode forme : sur combien de matchs, « في آخر 5 مباريات »), ligne vide, un avis court qui tranche, ligne vide, #ريال_مدريد. Ton émotionnel et exagéré, mais aucun émoji en dehors de « ⭐ » et des « ▪️ » de liste ; aucun fait inventé ; pas de source, pas de score de postes.py, pas de « repère ». 240 caractères au plus (vérifie avec `threads.longueur`). Si les chiffres disent un match difficile, le tweet le dit avec la même émotion (déception de supporter), sans moquerie.
+5. **Enregistrer** : `scripts/AAAA-MM-JJ-joueur-<nom>.md`, même forme que les tweets joueurs (titre, contexte, `---`, le tweet avec sa ligne `[photo: …]`, puis `## Préparation (non publiée)` avec les chiffres utilisés et le choix de la photo, et `## المصادر`).
+6. **Brouillon** : dépose-le tout de suite dans Typefully (social set 360421), **brouillon sans date**, sans numérotation, la photo envoyée avec `create_media_upload` (puis `curl -T <fichier> "<upload_url>"` sans autre en-tête, puis `get_media_status` jusqu'à « ready ») dans `media_ids`. Termine par le lien du brouillon.
