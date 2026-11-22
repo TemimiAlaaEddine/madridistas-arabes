@@ -9421,4 +9421,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115673/real-madrid-psv-
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-kraker-tussen-liverpool-en-man-utd-barcelona-en-fc-twente-spelen-vroeg','VI Live: Atlético Madrid sluit aan bij Real Madrid en Barcelona in titelstrijd','2026-11-22T22:01:20');
 INSERT INTO "vus" VALUES('https://as.com/futbol/asi-esta-la-clasificacion-de-primera-y-asi-estaria-sin-el-var-13-jornada-f202611-n/','Así está la clasificación de Primera y así estaría sin el VAR: 13ª jornada','2026-11-22T22:11:02');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/atletico-madrid-sluit-aan-bij-real-madrid-en-barcelona-in-titelstrijd','Atlético Madrid sluit aan bij Real Madrid en Barcelona in titelstrijd','2026-11-22T22:31:15');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/L-atletico-de-madrid-retrouve-la-victoire-a-getafe-et-consolide-sa-place-sur-le-podium-de-la-liga/1745491#at_medium=RSS_feeds','L''Atlético de Madrid retrouve la victoire à Getafe et consolide sa place sur le podium de la Liga','2026-11-22T22:41:13');
 COMMIT;
