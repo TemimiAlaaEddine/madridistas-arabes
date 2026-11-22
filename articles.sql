@@ -6795,6 +6795,7 @@ INSERT INTO "liens_x" VALUES('12112468','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12113556','https://x.com/ElMadridistAlaa/status/2124571569586614339','2026-11-22T18:31:55.366Z');
 INSERT INTO "liens_x" VALUES('12114947','https://x.com/ElMadridistAlaa/status/2124595023245443456','2026-11-22T20:05:18.232Z');
 INSERT INTO "liens_x" VALUES('12115200','https://x.com/ElMadridistAlaa/status/2124600057521725479','2026-11-22T20:25:18.552Z');
+INSERT INTO "liens_x" VALUES('12117687','https://x.com/ElMadridistAlaa/status/2124639504162312616','2026-11-22T23:01:46.642Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -7351,6 +7352,7 @@ INSERT INTO "resumes" VALUES('2026-11-18','12028389');
 INSERT INTO "resumes" VALUES('2026-11-19','12052126');
 INSERT INTO "resumes" VALUES('2026-11-20','12076325');
 INSERT INTO "resumes" VALUES('2026-11-21','12095801');
+INSERT INTO "resumes" VALUES('2026-11-22','12117687');
 CREATE TABLE suivi_match (debut TEXT, vu TEXT, statut TEXT, score TEXT, typefully TEXT);
 INSERT INTO "suivi_match" VALUES('2026-11-21T20:00:00','2026-11-21T20:01:32','live','0-0',NULL);
 CREATE TABLE threads (article_id INTEGER PRIMARY KEY, tweets TEXT, statut TEXT, date TEXT, typefully TEXT, envoye TEXT);
