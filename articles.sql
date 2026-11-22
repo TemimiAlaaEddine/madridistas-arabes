@@ -9419,4 +9419,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/pro/analyse-dit-kan-psv-verwachten-v
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/de-revolucionar-el-partido-celta-apuntar-la-champions-league-espana-destacan-el-rol-determinante-federico-valverde-real-madrid-n6064770','De revolucionar el partido ante Celta, a apuntar a la Champions League: en España destacan el rol determinante de Federico Valverde en Real Madrid','2026-11-22T20:21:45');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115673/real-madrid-psv-2026-referee','Referee named for Champions League match between Real Madrid and PSV Eindhoven','2026-11-22T20:41:03');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-kraker-tussen-liverpool-en-man-utd-barcelona-en-fc-twente-spelen-vroeg','VI Live: Atlético Madrid sluit aan bij Real Madrid en Barcelona in titelstrijd','2026-11-22T22:01:20');
+INSERT INTO "vus" VALUES('https://as.com/futbol/asi-esta-la-clasificacion-de-primera-y-asi-estaria-sin-el-var-13-jornada-f202611-n/','Así está la clasificación de Primera y así estaría sin el VAR: 13ª jornada','2026-11-22T22:11:02');
 COMMIT;
