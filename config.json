@@ -431,5 +431,6 @@
   "seuil_doublon": 0.6,
   "facebook_lien_en_commentaire": true,
   "modele_tri": "sonnet",
-  "modele_redaction": "sonnet"
+  "modele_redaction": "sonnet",
+  "brightdata_quota_mois": 5000
 }

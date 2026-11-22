@@ -136,3 +136,13 @@ assert ("défense", "gauche", 1, 1) in bascules.duels_zones(_duels, 52, 0, 10, m
 assert ("attaque", "droite", 0, 1) in bascules.duels_zones(_duels, 62, 0, 10, mini=1)  # le même duel aérien, vu par l'adversaire
 assert bascules.face_a_face(_duels) == [(1, 9, 3, 1)], bascules.face_a_face(_duels)
 print("OK duels")
+
+# Quota Bright Data : compteur officiel de l'API (mois en cours), alerte au-delà de 80 % du quota de config.json
+_vrai_run = m.subprocess.run
+_rep = lambda n: _sp.CompletedProcess([], 0, ('{"hl_x": {"back_m0": {"cost": 0.15, "reqs_unblocker": %d}, "back_d0": {}}}' % n).encode())
+m.subprocess.run, m.CONFIG = (lambda *a, **k: _rep(101)), {**m.CONFIG, "brightdata_quota_mois": 5000}
+assert m.quota_bright_data() == (101, 5000, 0.15) and "ALERTE" not in m.ligne_quota() and "(2 %)" in m.ligne_quota()
+m.subprocess.run = lambda *a, **k: _rep(4100)
+assert "ALERTE" in m.ligne_quota(), m.ligne_quota()
+m.subprocess.run = _vrai_run
+print("OK quota Bright Data")

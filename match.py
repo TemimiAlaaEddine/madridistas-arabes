@@ -3,6 +3,7 @@
 Usage : python match.py            (dernier match terminé)
         python match.py <id>       (identifiant WhoScored d'un match précis, lu dans son adresse /Matches/<id>/)
         python match.py --date AAAA-MM-JJ   (le match de ce jour, heure de Madrid ; erreur s'il n'est pas encore terminé sur WhoScored)
+        python match.py --quota  (requêtes Bright Data du mois, d'après son API, et part du quota de la clé gratuite)
 Les pages sont gardées dans matchs/AAAA-MM-JJ-adversaire/ (hors git). Sert à la commande /match (.claude/skills/match).
 WhoScored passe par Bright Data (clé "brightdata_api_token" dans secrets.json) : Cloudflare bloque les accès directs.
 Sofascore passe par Edge sans fenêtre : son API refuse les requêtes qui ne viennent pas d'un navigateur.
@@ -20,6 +21,7 @@ import bascules
 import fotmob
 import whoscored
 from couvertures import EDGE
+from commun import CONFIG
 from threads import reglage
 
 DOSSIER = Path(__file__).parent / "matchs"
@@ -37,6 +39,22 @@ def bright_data(url):
     if not r.stdout.strip():  # page refusée par le site : Bright Data répond 200 avec un corps vide
         raise ValueError(f"Bright Data : réponse vide pour {url}")
     return r.stdout.decode("utf-8", "replace")
+
+
+def quota_bright_data():
+    """(requêtes du mois, quota, coût en $) de la zone mcp_unlocker, d'après l'API de Bright Data (compteur officiel, pas le
+    nôtre : il compte aussi les requêtes faites hors du projet). Quota de la clé gratuite : config.json « brightdata_quota_mois »."""
+    r = subprocess.run(["curl", "-s", "-f", "-m", "60", "https://api.brightdata.com/zone/cost?zone=mcp_unlocker",
+                        "-H", f"Authorization: Bearer {reglage('brightdata_api_token')}"], capture_output=True, check=True,
+                       creationflags=SANS_FENETRE)
+    mois = next(iter(json.loads(r.stdout).values()))["back_m0"]  # back_m0 : mois en cours (back_d0 : aujourd'hui)
+    return mois.get("reqs_unblocker", 0), CONFIG.get("brightdata_quota_mois", 5000), mois.get("cost", 0)
+
+
+def ligne_quota():
+    n, quota, cout = quota_bright_data()
+    alerte = " ALERTE : plus de 80 % du quota" if n >= 0.8 * quota else ""
+    return f"Bright Data (mois en cours) : {n} requêtes sur {quota} ({100 * n / quota:.0f} %), {cout:.2f} $ au tarif public{alerte}"
 
 
 def sofascore(chemin):
@@ -175,5 +193,8 @@ def partie_sofascore(dossier, date):
     return tirs
 
 
-if __name__ == "__main__":
+if __name__ == "__main__" and sys.argv[1:] == ["--quota"]:  # compteur mensuel Bright Data (workflow principal, alerte à 80 %)
+    sys.stdout.reconfigure(encoding="utf-8")
+    print(ligne_quota())
+elif __name__ == "__main__":
     main()

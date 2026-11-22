@@ -87,6 +87,20 @@ jobs:
             echo "Analyse lancée : $match"
             gh workflow run apres_match.yml --ref "${{ github.ref_name }}"
           fi
+      - name: "Quota Bright Data (clé gratuite) : une issue par mois au-delà de 80 %"
+        if: always()
+        continue-on-error: true # un compteur illisible ne fait pas échouer le passage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BRIGHTDATA_API_TOKEN: ${{ secrets.BRIGHTDATA_API_TOKEN }}
+          PYTHONIOENCODING: utf-8
+        run: |
+          ligne=$(python match.py --quota)
+          echo "$ligne"
+          titre="Quota Bright Data : $(date -u +%Y-%m)"
+          if echo "$ligne" | grep -q "ALERTE" && [ -z "$(gh issue list --state all --search "$titre in:title" --json number -q '.[].number')" ]; then
+            gh issue create --title "$titre" --body "$ligne. Le suivi en direct et les analyses s'arrêteront à la limite : réduire les lectures (suivi toutes les 2 min) ou attendre le mois suivant."
+          fi
       - name: Alerte (envoi en échec depuis 3 passages)
         if: always()
         env:
