@@ -56,17 +56,13 @@ sans = "\n".join(bascules.analyser(_match))
 assert "découpage par mi-temps" in sans and "1re mi-temps" in sans and "sans xG" in sans and ", xG " not in sans.split("ÉTAPE 3")[1].split("ÉTAPE 5")[0], sans
 print("OK lecture du match")
 
-# xA : le tir est relié à la passe (RelatedEventId) ; 2e ballon : récupération 5 s après son corner puis tir ; hauteur du bloc
+# 2e ballon : récupération 5 s après son corner puis tir ; hauteur du bloc
 _q = lambda *n, **v: [{"type": {"displayName": x}} for x in n] + [{"type": {"displayName": k}, "value": w} for k, w in v.items()]
-_xa = [dict(_ev(60, 52, x=70, endx=90, playerId=10, eventId=5, qualifiers=_q("KeyPass")), t=60.0),
-       dict(_ev(60, 52, "Goal", x=95, playerId=9, eventId=6, isShot=True, qualifiers=_q(RelatedEventId="5")), t=60.1)]
-_j = bascules.joueurs({"playerIdNameDictionary": {"9": "Espí", "10": "Vinícius"}}, _xa, {int(_xa[1]["id"]): 0.44}, 52, 0, 90)
-assert any(l.startswith("Vinícius") and "xA 0.44" in l for l in _j) and any(l.startswith("Espí") and "xG 0.44" in l for l in _j), _j
 _c2 = [dict(_ev(70, 52, x=99, endx=94, qualifiers=_q("CornerTaken")), t=70.0), dict(_ev(70, 62, "Clearance", x=5), t=70.05),
        dict(_ev(70, 52, "BallRecovery", x=75), t=70.1), dict(_ev(70, 52, "MissedShots", x=85, isShot=True), t=70.15)]
 assert bascules.sequences(_c2)[-1]["tirs"][0]["phase"] == "cpa2"
 assert round(bascules.bloc([dict(_ev(10, 62, "Tackle", x=20), t=10), dict(_ev(11, 62, "Interception", x=40), t=11)], 62, 0, 90)) == 32
-print("OK joueurs, 2e ballon, bloc")
+print("OK 2e ballon, bloc")
 
 # Phases : récupération au milieu puis dernier tiers en 2 passes = transition ; coup franc dans sa surface = sortie directe, pas CPA
 _seq = [dict(_ev(10, 52, "BallRecovery", x=40), t=10.0), dict(_ev(10, 52, x=40, endx=60), t=10.1), dict(_ev(10, 52, x=60, endx=85), t=10.2),

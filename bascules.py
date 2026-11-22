@@ -341,51 +341,7 @@ def periodes(fm, extra, mi, fin):
     return out
 
 
-# ---------- étape 6 : les joueurs ----------
-def joueurs(d, actions, xg, equipe, a, b, n=3):
-    """Les n joueurs les plus impliqués d'une équipe entre a et b : récupérations, sorties de balle, passes vers le dernier tiers et la
-    surface, passes clés, tirs (xG) et xG créé pour un partenaire (xA, par la passe reliée au tir)."""
-    noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
-    entrees = {e["playerId"]: e["minute"] + 1 for e in actions if e["type"]["displayName"] == "SubstitutionOn"}
-    par_id = {(e["teamId"], e.get("eventId")): e for e in actions}
-    c = {}
-    get = lambda pid: c.setdefault(pid, {"recup": 0, "sorties": 0, "tiers": 0, "surface": 0, "cles": 0, "tirs": 0, "xg": 0.0, "xa": 0.0})
-    for e in actions:
-        if not (a <= e["t"] < b) or e["teamId"] != equipe or "playerId" not in e:
-            continue
-        typ, ok, q = e["type"]["displayName"], e["outcomeType"]["value"] == 1, quals(e)
-        j = get(e["playerId"])
-        if typ in RECUP and ok and e["x"] >= 50:
-            j["recup"] += 1
-        if typ == "Pass" and ok and "endX" in e:
-            j["sorties"] += e["x"] < 50 <= e["endX"]
-            j["tiers"] += e["x"] < 66.7 <= e["endX"]
-            j["surface"] += SURFACE(e["endX"], e["endY"])
-        if typ == "Pass" and "KeyPass" in q:
-            j["cles"] += 1
-        if e.get("isShot"):
-            j["tirs"] += 1
-            j["xg"] += xg.get(int(e["id"]), 0)
-            lien = next((x.get("value") for x in e.get("qualifiers", []) if x["type"]["displayName"] == "RelatedEventId"), None)
-            passe = par_id.get((equipe, int(lien))) if lien else None
-            if passe and "playerId" in passe and passe["playerId"] != e["playerId"]:
-                get(passe["playerId"])["xa"] += xg.get(int(e["id"]), 0)
-    # le danger créé (xG + xA) pèse lourd : 1 xG vaut 10 actions de volume (sinon un meneur de jeu passe devant le buteur décisif)
-    implication = lambda j: j["recup"] + j["sorties"] + j["tiers"] + 2 * (j["surface"] + j["cles"] + j["tirs"]) + 10 * (j["xg"] + j["xa"])
-    lignes = []
-    for pid, j in sorted(c.items(), key=lambda i: -implication(i[1]))[:n]:
-        if not implication(j):
-            continue
-        det = [f"{j[k]} {nom}" for k, nom in (("recup", "ballons gagnés dans la moitié adverse"), ("sorties", "sorties de balle"),
-               ("tiers", "passes vers le dernier tiers"), ("surface", "passes dans la surface"), ("cles", "passes clés")) if j[k]]
-        if j["tirs"]:
-            det.append(f"{j['tirs']} tirs" + (f" (xG {j['xg']:.2f})" if xg else ""))
-        if j["xa"]:
-            det.append(f"xA {j['xa']:.2f}")
-        lignes.append(f"{noms.get(pid, '?')}{f' (entré à la {entrees[pid]}e)' if pid in entrees else ''} : {', '.join(det)}")
-    return lignes
-
-
+# ---------- étape 6 : les joueurs (évaluation par rôle dans postes.py) ----------
 def couloir(y):
     """WhoScored : y = 0 sur la touche droite de l'équipe qui attaque, y = 100 sur la gauche (latéral gauche vers 83)."""
     return "droite" if y < 37 else "gauche" if y > 63 else "axe"
@@ -547,8 +503,14 @@ def analyser(d, sofa_tirs=None, fm=None):
         zones = [", ".join(f"{t} {c} {g}/{n}" for t, c, g, n in duels_zones(actions, equipe, a, b)) or "-" for a, b in ((0, mi), (mi, fin))]
         lignes.append(f"    {'duels par zone':<24} gagnés/joués, zones d'au moins 4 duels, vues par {nom} : {zones[0]}  ||  {zones[1]}")
 
-    lignes.append("\nÉTAPE 6 - Les joueurs : qui a fait la différence dans chaque période ? (les 3 plus impliqués par équipe ; positions "
-                  "moyennes en mètres depuis son but, d'après les ballons touchés ; duos = passes réussies du 1er vers le 2e ; note WhoScored)")
+    lignes.append("\nÉTAPE 6 - Les joueurs : chacun jugé selon son rôle (postes.py), puis par période les positions moyennes (mètres depuis "
+                  "son but, d'après les ballons touchés), les duos (passes réussies du 1er vers le 2e) et les notes WhoScored qui bougent")
+    import postes  # ici : postes importe bascules
+    try:
+        xgot = {s["id"]: s.get("expectedGoalsOnTarget") or 0 for s in (fm["content"].get("shotmap") or {}).get("shots") or []} if fm else None
+        lignes += postes.rapport(d, actions, xg, xgot, fin, mi)
+    except (OSError, ValueError, KeyError) as err:  # repères absents ou page inattendue : le reste de l'étape continue
+        lignes.append(f"  ! évaluation par rôle impossible ({err!r})")
     noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
     ref = {equipe: positions(actions, equipe, 0, fin) for equipe, _, _ in eq}
     for equipe, dom, nom in eq:
@@ -561,8 +523,6 @@ def analyser(d, sofa_tirs=None, fm=None):
     for p in per:
         lignes.append(f"  {p['nom']}")
         for equipe, dom, nom in eq:
-            for j in joueurs(d, actions, xg, equipe, p["a"], p["b"]):
-                lignes.append(f"    {nom} - {j}")
             dep = deplacements(actions, equipe, p["a"], p["b"], ref[equipe])
             if dep:
                 lignes.append(f"    {nom} - positions qui changent : " + " ; ".join(f"{noms.get(pid, '?')} {quoi}" for pid, quoi in dep))
