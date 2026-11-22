@@ -9351,4 +9351,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/22/comesana-dic
 INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/real-madrid-celta-espi-se-viste-de-heroe-con-un-gol-en-el-ultimo-suspiro-todo-en-imagenes-f202611-f/','Real Madrid-Celta: Espí se viste de héroe con un gol en el último suspiro, todo en imágenes','2026-11-22T16:31:15');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/do-banco-titularidade-vini-muda-jogo-resposta-imediata-mourinho/','Do banco à titularidade: Vini Jr muda jogo e recebe resposta imediata de Mourinho','2026-11-22T17:06:36');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/es-un-orgullo-que-el-bernabeu-aplauda-a-un-chico-de-pueblo-f202611-n/','“Es un orgullo que el Bernabéu aplauda a un chico de pueblo”','2026-11-22T17:26:11');
+INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/liga-primera/barcelona-villarreal-remontada-pedri.html','El Barça le da la vuelta al marcador y apaga el incendio de la primera parte','2026-11-22T17:40:54');
 COMMIT;
