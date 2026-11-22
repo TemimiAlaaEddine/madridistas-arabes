@@ -34,7 +34,13 @@ MESURES = {
     "xg": ("xG", 0.3), "tirs": ("tirs", 2), "tiers": ("entrées dans le dernier tiers", 4), "surface": ("passes dans la surface", 2),
     "sorties": ("sorties de sa moitié (passes réussies)", 3), "part": ("part des passes (%)", 8),
     "recup": ("ballons gagnés dans le dernier tiers", 2), "ppda": ("PPDA (bas = pressing fort)", 6),
+    "duels": ("duels gagnés (%)", 10),
 }
+# duels Opta : duel aérien, dribble (TakeOn) contre tentative ratée (Challenge), tacle, faute (gagnée = faute subie)
+DUELS = {"Aerial", "TakeOn", "Challenge", "Tackle", "Foul"}
+# duel gagné, règle Opta (retrouve au duel près les duels au sol et aériens de Sofascore et FotMob sur Real-Celta) : tout tacle est
+# gagné, même quand le ballon sort ; Challenge (dribblé) et faute commise sont perdus
+GAGNE = lambda e: e["type"]["displayName"] == "Tackle" or e["outcomeType"]["value"] == 1 and e["type"]["displayName"] != "Challenge"
 
 
 # ---------- préparation ----------
@@ -139,6 +145,9 @@ def mesurer(actions, tirs, equipe, dom, a, b):
         "recup": sum(e["teamId"] == equipe and e["type"]["displayName"] in RECUP and e["x"] >= 66.7 and ok(e) for e in ev) / duree,
         "ppda": len(adv_passes) / max(len(defense), 1),
     }
+    gagnes = [e for e in ev if e["type"]["displayName"] in DUELS and GAGNE(e)]
+    if gagnes:  # part des duels gagnés : chaque duel a un seul vainqueur (GAGNE), quelle que soit l'équipe
+        r["duels"] = 100 * sum(e["teamId"] == equipe for e in gagnes) / len(gagnes)
     if tirs:
         r["xg"] = sum(s["xg"] for s in tirs if s["dom"] == dom and a <= s["t"] < b) / duree
     return r
@@ -147,7 +156,7 @@ def mesurer(actions, tirs, equipe, dom, a, b):
 def ecarts(avant, apres):
     """Changements nets entre deux mesures : [(clé, avant, après)], du plus fort au plus faible."""
     out = [(k, avant[k], apres[k]) for k in MESURES if k in avant and k in apres and abs(apres[k] - avant[k]) >= MESURES[k][1]
-           and abs(apres[k] - avant[k]) >= 0.35 * max(abs(avant[k]), abs(apres[k]))]
+           and (k == "duels" or abs(apres[k] - avant[k]) >= 0.35 * max(abs(avant[k]), abs(apres[k])))]
     return sorted(out, key=lambda c: -abs(c[2] - c[1]) / max(abs(c[1]), abs(c[2]), 1e-9))
 
 
@@ -414,6 +423,44 @@ def duos(actions, equipe, a, b, n=3, mini=4):
     return [(p, r, k) for (p, r), k in sorted(c.items(), key=lambda i: -i[1])[:n] if k >= mini]
 
 
+def duels_zones(actions, equipe, a, b, mini=4):
+    """Duels gagnés / joués par zone, vus par l'équipe : (tiers, couloir) -> [gagnés, joués]. Les coordonnées d'une action
+    adverse sont dans son propre sens d'attaque : on les retourne."""
+    z = {}
+    for e in actions:
+        if a <= e["t"] < b and e["type"]["displayName"] in DUELS and GAGNE(e) and "x" in e:
+            mien = e["teamId"] == equipe
+            x, y = (e["x"], e["y"]) if mien else (100 - e["x"], 100 - e["y"])
+            c = z.setdefault(("défense" if x < 33.3 else "milieu" if x < 66.7 else "attaque", couloir(y)), [0, 0])
+            c[0] += mien
+            c[1] += 1
+    return [(t, c, g, n) for (t, c), (g, n) in sorted(z.items(), key=lambda i: -i[1][1]) if n >= mini]
+
+
+def face_a_face(actions, mini=3):
+    """Duels joueur contre joueur : les deux joueurs d'un duel ont chacun une action à la même seconde (à 1 s près), une seule
+    gagnée. Renvoie [(gagnant le plus souvent, l'autre, ses victoires, ses défaites)] pour les paires d'au moins 3 duels."""
+    ev = [e for e in actions if e["type"]["displayName"] in DUELS and "playerId" in e]
+    c, pris = {}, set()
+    for i, e in enumerate(ev):
+        k = next((k for k in range(i + 1, min(i + 4, len(ev))) if k not in pris and ev[k]["teamId"] != e["teamId"]
+                  and ev[k]["period"]["value"] == e["period"]["value"] and abs(ev[k]["t"] - e["t"]) <= 1 / 60), None)
+        if i in pris or k is None:
+            continue
+        f = ev[k]
+        if GAGNE(e) != GAGNE(f):
+            pris |= {i, k}
+            g, p = (e, f) if GAGNE(e) else (f, e)
+            cle = tuple(sorted((g["playerId"], p["playerId"])))
+            c.setdefault(cle, {})[g["playerId"]] = c.get(cle, {}).get(g["playerId"], 0) + 1
+    out = []
+    for (j1, j2), v in c.items():
+        if sum(v.values()) >= mini:
+            g, p = sorted((j1, j2), key=lambda j: -v.get(j, 0))
+            out.append((g, p, v.get(g, 0), v.get(p, 0)))
+    return sorted(out, key=lambda o: -(o[2] + o[3]))
+
+
 def note_a(ratings, t):
     """Note WhoScored à la minute t (les notes sont données minute par minute, en minutes du match arrêts de jeu compris)."""
     av = [(float(m), v) for m, v in (ratings or {}).items() if float(m) <= t]
@@ -461,7 +508,7 @@ def analyser(d, sofa_tirs=None, fm=None):
         lignes.append(f"  {p['nom']} ({duree:.0f} min)")
         m = {nom: mesurer(actions, tirs, equipe, dom, p["a"], p["b"]) for equipe, dom, nom in eq}
         mesures.append(m)
-        reel = lambda k, v: v if k in ("part", "ppda") else v * max(duree, 1) / 15  # mesurer ramène les comptes à 15 min
+        reel = lambda k, v: v if k in ("part", "ppda", "duels") else v * max(duree, 1) / 15  # mesurer ramène les comptes à 15 min
         for _, _, nom in eq:
             lignes.append(f"    {nom} : " + ", ".join(f"{MESURES[k][0]} {fmt(k, reel(k, m[nom][k]))}" for k in MESURES if k in m[nom]))
             res = ecarts(tout[nom], m[nom])[:3]
@@ -497,6 +544,8 @@ def analyser(d, sofa_tirs=None, fm=None):
         lignes.append(f"  {nom}")
         for (ph, v1), (_, v2) in zip(phases(seqs, actions, equipe, 0, mi, bool(xg)), phases(seqs, actions, equipe, mi, fin, bool(xg))):
             lignes.append(f"    {ph:<24} {v1}  ||  {v2}")
+        zones = [", ".join(f"{t} {c} {g}/{n}" for t, c, g, n in duels_zones(actions, equipe, a, b)) or "-" for a, b in ((0, mi), (mi, fin))]
+        lignes.append(f"    {'duels par zone':<24} gagnés/joués, zones d'au moins 4 duels, vues par {nom} : {zones[0]}  ||  {zones[1]}")
 
     lignes.append("\nÉTAPE 6 - Les joueurs : qui a fait la différence dans chaque période ? (les 3 plus impliqués par équipe ; positions "
                   "moyennes en mètres depuis son but, d'après les ballons touchés ; duos = passes réussies du 1er vers le 2e ; note WhoScored)")
@@ -505,6 +554,10 @@ def analyser(d, sofa_tirs=None, fm=None):
     for equipe, dom, nom in eq:
         lignes.append(f"  positions moyennes sur le match, {nom} : " + ", ".join(
             f"{noms.get(pid, '?')} {x:.0f} m {couloir(y)}" for pid, (x, y, n) in sorted(ref[equipe].items(), key=lambda i: i[1][0]) if n >= 10))
+    ff = face_a_face(actions)
+    if ff:
+        lignes.append("  face-à-face (duels entre les deux mêmes joueurs, au moins 3) : "
+                      + ", ".join(f"{noms.get(g, '?')} bat {noms.get(p_, '?')} {v}-{d_}" for g, p_, v, d_ in ff))
     for p in per:
         lignes.append(f"  {p['nom']}")
         for equipe, dom, nom in eq:

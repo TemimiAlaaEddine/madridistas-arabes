@@ -20,7 +20,7 @@ STATS = {  # lignes gardées, dans l'ordre d'affichage
     "Ball possession": "possession (%)", "Expected goals (xG)": "xG", "xG open play": "xG dans le jeu", "xG set play": "xG sur CPA",
     "xG on target (xGOT)": "xG des tirs cadrés", "Total shots": "tirs", "Big chances": "grosses occasions",
     "Touches in opposition box": "touches dans la surface adverse", "Accurate passes": "passes réussies", "Opposition half": "passes réussies dans la moitié adverse",
-    "Accurate long balls": "longs ballons réussis", "Accurate crosses": "centres réussis", "Duels won": "duels gagnés",
+    "Accurate long balls": "longs ballons réussis", "Accurate crosses": "centres réussis", "Duels won": "duels gagnés", "Ground duels won": "duels au sol gagnés", "Aerial duels won": "duels aériens gagnés",
     "Tackles": "tacles", "Interceptions": "interceptions", "Fouls committed": "fautes",
 }
 
@@ -54,7 +54,7 @@ def lire(adresse):
 JOUEUR = {  # stats Opta par joueur (FotMob), affichées quand elles ne sont pas nulles
     "FotMob rating": "note", "Chances created": "occasions créées", "Passes into final third": "passes vers le dernier tiers",
     "Touches in opposition box": "touches dans la surface", "Successful dribbles": "dribbles réussis", "Recoveries": "récupérations",
-    "Defensive actions": "actions défensives", "Dribbled past": "dribblé", "Duels won": "duels gagnés", "Duels lost": "duels perdus",
+    "Defensive actions": "actions défensives", "Dribbled past": "dribblé", "Duels won": "duels gagnés", "Duels lost": "duels perdus", "Ground duels won": "au sol", "Aerial duels won": "aériens",
     "Was fouled": "fautes subies", "Dispossessed": "ballons perdus sous pression",
     "Saves": "arrêts", "Goals conceded": "buts encaissés", "xGOT faced": "xGOT subi", "Goals prevented": "buts évités",
 }

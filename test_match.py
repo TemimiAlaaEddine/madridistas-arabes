@@ -120,3 +120,19 @@ _acts = [_p(1), _p(2), _p(1), _p(2), _p(1), _p(2), _p(1), _p(2), _p(1), _p(3, te
 assert bascules.duos(_acts, 52, 0, 5) == [(1, 2, 4), (2, 1, 4)], bascules.duos(_acts, 52, 0, 5)  # la dernière passe va à l'adversaire
 assert bascules.note_a({"0": 6.0, "10": 6.5, "60": 7.2}, 59.5) == 6.5 and bascules.note_a({"60": 7}, 30) is None
 print("OK bascules joueurs")
+
+
+# duels : règle Opta (tout tacle gagné, dribblé et faute commise perdus), part par période, zones (sens retourné), face-à-face
+_d = lambda pid, team, typ, ok, x=50, y=50, t=1.0: {"t": t, "teamId": team, "playerId": pid, "type": {"displayName": typ},
+                                                     "outcomeType": {"value": ok}, "period": {"value": 1}, "x": x, "y": y}
+assert bascules.GAGNE(_d(1, 52, "Tackle", 0)) and not bascules.GAGNE(_d(1, 52, "Challenge", 0)) and not bascules.GAGNE(_d(1, 52, "Foul", 0))
+_duels = [_d(1, 52, "TakeOn", 1, t=1), _d(9, 62, "Challenge", 0, t=1),          # 1 dribble 9
+          _d(1, 52, "TakeOn", 0, t=2), _d(9, 62, "Tackle", 0, t=2),             # 9 tacle 1 (ballon sorti : gagné quand même)
+          _d(1, 52, "Aerial", 1, x=20, y=90, t=3), _d(9, 62, "Aerial", 0, x=80, y=10, t=3),
+          _d(1, 52, "Foul", 1, t=4), _d(9, 62, "Foul", 0, t=4)]
+assert round(bascules.mesurer(_duels, [], 52, True, 0, 10)["duels"]) == 75
+assert bascules.duels_zones(_duels, 52, 0, 10, mini=1)[0] == ("milieu", "axe", 2, 3), bascules.duels_zones(_duels, 52, 0, 10, mini=1)
+assert ("défense", "gauche", 1, 1) in bascules.duels_zones(_duels, 52, 0, 10, mini=1)
+assert ("attaque", "droite", 0, 1) in bascules.duels_zones(_duels, 62, 0, 10, mini=1)  # le même duel aérien, vu par l'adversaire
+assert bascules.face_a_face(_duels) == [(1, 9, 3, 1)], bascules.face_a_face(_duels)
+print("OK duels")
