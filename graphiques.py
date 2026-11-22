@@ -5,6 +5,7 @@ Appelé par match.py après chaque récupération. Rendu : page HTML/SVG captur�
 couvertures. Couleurs validées (skill dataviz, fond #0a1628) : Real Madrid or, adversaire bleu, xA violet.
 """
 import json
+import shutil
 import subprocess
 import sys
 import time
@@ -199,6 +200,7 @@ def rendre(html, png):
     while not png.exists() and time.time() < fin:
         time.sleep(0.5)
     time.sleep(0.5)
+    src.unlink(missing_ok=True)
     return png.exists()
 
 
@@ -235,6 +237,7 @@ def generer(dossier):
     for nom, titre, sous, corps, quoi, *source in a_faire:
         if rendre(page(titre, sous, corps, *source), sortie / f"{nom}.png"):
             faits.append((f"{nom}.png", quoi))
+    shutil.rmtree(sortie / "profil", ignore_errors=True)  # profil Edge jetable (~13 Mo)
     return faits
 
 

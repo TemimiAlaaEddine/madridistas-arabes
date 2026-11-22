@@ -169,6 +169,7 @@ def generer_couvertures(arts, dossier, menage=True):
                 time.sleep(0.5)  # laisse finir l'écriture du fichier
             except subprocess.TimeoutExpired:
                 print(f"  ! couverture de l'article {a['id']} : Edge trop lent, réessayé au prochain passage")
+            src.unlink(missing_ok=True)
         if (sortie / nom).exists():
             noms[a["id"]] = nom
             if not (sortie / vignette(nom)).exists():
@@ -178,4 +179,5 @@ def generer_couvertures(arts, dossier, menage=True):
     for ancienne in (sortie.glob("a-*") if menage else []):  # couvertures et vignettes d'articles supprimés ou modifiés
         if ancienne.name not in gardes:
             ancienne.unlink()
+    shutil.rmtree(sources / "profil", ignore_errors=True)  # profil Edge jetable (~18 Mo)
     return noms
