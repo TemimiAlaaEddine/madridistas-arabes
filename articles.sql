@@ -9310,4 +9310,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/22/carlos-espi-ang
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/una-jornada-perfecta/','Una jornada perfecta','2026-11-22T15:21:37');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bosnische-en-noorse-arbitrage-bij-cl-duels-van-feyenoord-en-psv','Bosnische en Noorse arbitrage bij CL-duels van Feyenoord en PSV','2026-11-22T15:26:12');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Le-barca-renverse-villarreal-apres-une-entame-cauchemardesque-et-un-penalty-manque-par-lamine-yamal/1745385#at_medium=RSS_feeds','Le Barça renverse Villarreal après une entame cauchemardesque et un penalty manqué par Lamine Yamal','2026-11-22T15:31:21');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a3276012337579958924-jt-foot-mercato-vinicius-est-de-retour','JT Foot Mercato : Vinicius Jr est de retour','2026-11-22T16:11:12');
 COMMIT;
