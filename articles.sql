@@ -9366,4 +9366,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/es-un-orgullo-que-el-ber
 INSERT INTO "vus" VALUES('https://www.relevo.com/futbol/liga-primera/barcelona-villarreal-remontada-pedri.html','El Barça le da la vuelta al marcador y apaga el incendio de la primera parte','2026-11-22T17:40:54');
 INSERT INTO "vus" VALUES('https://as.com/tikitakas/claudia-la-pareja-de-cucurella-se-hace-viral-vean-al-nombre-que-elige-como-mejor-jugador-que-el-espanol-f202611-v/','Claudia, la pareja de Cucurella, se hace viral: vean al nombre que elige como “mejor jugador” que el español','2026-11-22T18:16:31');
 INSERT INTO "vus" VALUES('https://as.com/futbol/mas_futbol/el-madrid-renueva-gol-manu-duarte-hasta-2029-f202611-n/','El Madrid renueva gol: Manu Duarte, hasta 2029','2026-11-22T18:31:43');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a5694994326267034842-bayern-le-like-etonnant-de-michael-olise-contre-sa-direction','Bayern : le like étonnant de Michael Olise contre sa direction','2026-11-22T18:46:11');
 COMMIT;
