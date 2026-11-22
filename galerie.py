@@ -1,6 +1,8 @@
 """Photos du match : la galerie de la chronique du site du Real Madrid (une cinquantaine de photos le soir même).
 
 Usage : python galerie.py AAAA-MM-JJ matchs/AAAA-MM-JJ-adversaire   (lancé aussi par match.py)
+        python galerie.py --google "Arda Güler" [d|w|m]   (photos récentes sur Google Images : planche et liste ; /joueur)
+        python galerie.py --image <url> <fichier>         (télécharge l'image choisie)
 Le robots.txt de realmadrid.com autorise les pages et les images. Les photos n'ont pas de légende : elles sont gardées dans
 <dossier>/photos/NN.jpg, avec des planches numérotées (planche-1.jpg…) pour les regarder d'un coup ; on reconnaît le joueur à son
 numéro de maillot (numéros affichés par match.py), jamais à son visage. Les photos des matchs de plus de 7 jours sont effacées
@@ -110,6 +112,55 @@ def telecharger(jour, dossier):
     return faits
 
 
+def google_images(nom, dossier, periode="w", n=24):
+    """Photos récentes d'un joueur sur Google Images (une requête Bright Data, filtre de date : d jour, w semaine, m mois) :
+    planche numérotée des n premières vignettes dans <dossier>/planche-google.jpg et [(numéro, image d'origine, page source)].
+    Le joueur se reconnaît au texte de la page source (son nom), jamais à son visage."""
+    import base64
+    import json
+    import urllib.parse
+    from PIL import Image, ImageDraw, ImageFont
+    from match import bright_data  # ici : match importe galerie
+    q = urllib.parse.quote(f"{nom} Real Madrid")
+    d = json.loads(bright_data(f"https://www.google.com/search?q={q}&tbm=isch&tbs=qdr:{periode}&hl=es&brd_json=1"))
+    sortie = Path(dossier)
+    sortie.mkdir(parents=True, exist_ok=True)
+    trouves, vignettes = [], []
+    for x in d.get("images") or []:
+        vignette = x.get("image") or ""
+        if not (x.get("original_image") and vignette.startswith("data:image")):
+            continue
+        try:
+            im = Image.open(BytesIO(base64.b64decode(vignette.split(",", 1)[1]))).convert("RGB")
+        except (ValueError, OSError):
+            continue
+        trouves.append((len(trouves) + 1, x["original_image"], x.get("source") or x.get("title") or ""))
+        vignettes.append(im)
+        if len(trouves) >= n:
+            break
+    if vignettes:
+        police, case = ImageFont.load_default(size=28), 300
+        planche = Image.new("RGB", (6 * case, -(-len(vignettes) // 6) * case), "black")
+        for k, im in enumerate(vignettes):
+            im.thumbnail((case, case))
+            x, y = k % 6 * case, k // 6 * case
+            planche.paste(im, (x, y))
+            ImageDraw.Draw(planche).text((x + 6, y + 4), str(k + 1), fill="yellow", font=police, stroke_width=3, stroke_fill="black")
+        planche.save(sortie / "planche-google.jpg", "JPEG", quality=85)
+    return trouves
+
+
+def telecharger_image(url, fichier):
+    """Télécharge l'image d'origine choisie (JPEG) ; False si le site la refuse."""
+    from PIL import Image
+    try:
+        with Image.open(BytesIO(lire(url))) as im:
+            im.convert("RGB").save(fichier, "JPEG", quality=90)
+        return True
+    except (subprocess.SubprocessError, OSError):
+        return False
+
+
 def nettoyer(matchs, aujourdhui, jours=7):
     """Efface les photos des matchs de plus de `jours` jours (date en tête du dossier) : elles ne servent qu'aux tweets du
     lendemain ; les pages WhoScored et FotMob restent (repères par poste). Renvoie les dossiers nettoyés."""
@@ -127,6 +178,14 @@ def nettoyer(matchs, aujourdhui, jours=7):
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
+    if len(sys.argv) >= 3 and sys.argv[1] == "--google":  # python galerie.py --google "Arda Güler" [d|w|m]
+        dossier = Path(__file__).parent / "matchs" / "_joueurs" / sys.argv[2].lower().replace(" ", "-")
+        for num, url, source in google_images(sys.argv[2], dossier, sys.argv[3] if len(sys.argv) > 3 else "w"):
+            print(f"{num:>2}. {source[:110]} | {url}")
+        print(f"planche : {(dossier / 'planche-google.jpg').relative_to(Path(__file__).parent).as_posix()}")
+        sys.exit()
+    if len(sys.argv) == 4 and sys.argv[1] == "--image":  # python galerie.py --image <url> <fichier>
+        sys.exit(0 if telecharger_image(sys.argv[2], Path(sys.argv[3])) else "image refusée par le site : prends la suivante")
     if len(sys.argv) != 3:
         sys.exit(__doc__)
     f = telecharger(*sys.argv[1:])

@@ -40,3 +40,18 @@ assert galerie.mis_en_avant("ND-LIGA-J13-RM-CELTA", _j, pages=["x"]) == {
     "Vinícius Júnior": ["ND-LIGA-J13-RM-CELTA-ALEGRIA-BELLINGHAM-VINICIUS-02_AV17181"]}, "autre match et entraîneur écartés"
 galerie.lire = _vrai
 print("OK mis en avant")
+
+# Google Images : vignettes valides gardées avec leur page source, planche écrite ; entrée sans image d'origine écartée
+import base64, io, json as _json
+import match as _match
+from PIL import Image as _Image
+_b = io.BytesIO(); _Image.new("RGB", (40, 30), "red").save(_b, "JPEG")
+_v = "data:image/jpeg;base64," + base64.b64encode(_b.getvalue()).decode()
+_rep = {"images": [{"original_image": "https://x/1.jpg", "image": _v, "source": "Arda Güler renueva"},
+                   {"image": _v, "source": "sans lien"}, {"original_image": "https://x/2.jpg", "image": _v, "title": "Daily Sabah"}]}
+_vrai_bd, _match.bright_data = _match.bright_data, lambda url: _json.dumps(_rep)
+with tempfile.TemporaryDirectory() as _d:
+    assert galerie.google_images("Arda Güler", _d) == [(1, "https://x/1.jpg", "Arda Güler renueva"), (2, "https://x/2.jpg", "Daily Sabah")]
+    assert (Path(_d) / "planche-google.jpg").exists()
+_match.bright_data = _vrai_bd
+print("OK google")

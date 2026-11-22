@@ -54,5 +54,8 @@ if pathlib.Path("matchs/2026-11-21-celta-vigo/whoscored.html").exists():
     assert _e["nom"] == "Arda Güler" and _e["role"] == "meneur" and _e["minutes"] >= 90, _e
     assert postes.evaluer_joueur("matchs/2026-11-21-celta-vigo", "personne") is None
     _f = postes.forme("guler", 3)
-    assert _f[0].startswith("Forme de Arda Güler sur ses 3 derniers") and any("bilan" in l for l in _f), _f
+    assert _f[0].startswith("Arda Güler, ses 3 derniers matchs") and any("bilan" in l for l in _f) and any("totaux" in l for l in _f), _f
+    from datetime import date
+    assert postes.debut_saison(date(2026, 11, 22)) == "2026-08-01" and postes.debut_saison(date(2027, 3, 1)) == "2026-08-01"
+    assert "la saison" in postes.forme("guler", aujourdhui=date(2026, 11, 22))[0]
     print("OK joueur")

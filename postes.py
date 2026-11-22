@@ -3,7 +3,7 @@
 Usage : python postes.py --reperes          (recalcule reperes_postes.json à partir des matchs enregistrés dans matchs/)
         python postes.py matchs/AAAA-MM-JJ-adversaire   (évaluation seule d'un match)
         python postes.py matchs/AAAA-MM-JJ-adversaire --joueur guler   (un joueur du Real sur ce match ; commande /joueur)
-        python postes.py --joueur guler [5]     (sa forme sur ses 5 derniers matchs enregistrés ; commande /joueur)
+        python postes.py --joueur guler [5]     (sa saison, matchs enregistrés depuis le 1er août ; avec 5 : ses 5 derniers ; commande /joueur)
 Méthode : 1. le rôle de chaque joueur vient de sa place dans le système WhoScored (remplaçants compris), corrigé par son couloir
 réel (un ailier qui joue dans l'axe est jugé comme un meneur) ; 2. chaque rôle a ses critères, positifs et négatifs, comptés dans
 les actions Opta de WhoScored (xG, xGOT de FotMob) ; 3. tout est ramené à 90 minutes, les actions défensives sont corrigées par la
@@ -358,15 +358,15 @@ def charger(dossier):
     return d, actions, xg, xgot, max(e["t"] for e in actions) + 0.1
 
 
-def evaluer_joueur(dossier, nom, reperes=None):
+def evaluer_joueur(dossier, nom, reperes=None, mini=15):
     """Évaluation d'un joueur du Real sur un match enregistré (nom sans accents, en partie : « guler ») :
-    dict (nom, rôle, minutes, score, raisons, habitudes, comptes) ou None s'il n'a pas joué 15 minutes."""
+    dict (nom, rôle, minutes, score, raisons, habitudes, comptes) ou None s'il n'a pas joué `mini` minutes."""
     from connaissance import sans_accents
     reperes = reperes or json.loads(REPERES.read_text(encoding="utf-8"))
     d, actions, xg, xgot, fin = charger(dossier)
     noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
     cote = "home" if d["home"]["teamId"] == REAL else "away"
-    for pid, role, m, c, v in evaluer_equipe(d, actions, xg, xgot, cote, 0, fin, mini=15):
+    for pid, role, m, c, v in evaluer_equipe(d, actions, xg, xgot, cote, 0, fin, mini=mini):
         if sans_accents(nom) in sans_accents(noms.get(pid, "")):
             s, contrib = noter(role, v, reperes)
             return {"nom": noms[pid], "role": role, "minutes": round(m), "score": s, "raisons": raisons(role, c, v, contrib).strip(" ;"),
@@ -375,21 +375,40 @@ def evaluer_joueur(dossier, nom, reperes=None):
     return None
 
 
-def forme(nom, n=5):
-    """Lignes de la forme d'un joueur sur ses n derniers matchs enregistrés : un match par ligne, puis le bilan (score moyen,
-    meilleur et pire match, critères régulièrement au-dessus ou en dessous du repère, tendance des 3 derniers)."""
+def debut_saison(jour):
+    """1er août de la saison en cours (la saison 2026-27 commence le 2026-08-01)."""
+    return f"{jour.year if jour.month >= 8 else jour.year - 1}-08-01"
+
+
+def forme(nom, n=None, aujourdhui=None):
+    """Lignes de la saison d'un joueur (n=None : tous ses matchs enregistrés depuis le 1er août) ou de ses n derniers matchs :
+    un match par ligne, puis les totaux, le bilan (score moyen, meilleur et moins bon match), les critères réguliers et la tendance."""
+    from datetime import date
     reperes = json.loads(REPERES.read_text(encoding="utf-8"))
-    evals = []
+    depuis = debut_saison(aujourdhui or date.today())
+    evals, joues = [], 0
     for f in sorted(ICI.glob("matchs/*/whoscored.html")):
-        e = evaluer_joueur(f.parent, nom, reperes)
+        if f.parent.name[:10] < depuis:
+            continue
+        joues += 1
+        e = evaluer_joueur(f.parent, nom, reperes, mini=1)  # toutes ses apparitions, pour les totaux (but du remplaçant entré tard)
         if e:
             evals.append((f.parent.name[:10], e))
-    evals = evals[-n:]
+    if n:
+        evals = evals[-n:]
+    toutes, evals = evals, [x for x in evals if x[1]["minutes"] >= 15]  # le score par poste demande 15 minutes
     if not evals:
-        return [f"{nom} : aucun match enregistré avec au moins 15 minutes jouées"]
-    lignes = [f"Forme de {evals[-1][1]['nom']} sur ses {len(evals)} derniers matchs enregistrés (score de -3 à 3, 0 = joueur moyen du rôle) :"]
+        return [f"{nom} : aucun match enregistré cette saison avec au moins 15 minutes jouées"]
+    quoi = (f"ses {len(toutes)} derniers matchs" if n else
+            f"la saison : {len(toutes)} matchs joués, dont {len(evals)} à 15 minutes ou plus, sur les {joues} matchs enregistrés depuis le {depuis}")
+    lignes = [f"{evals[-1][1]['nom']}, {quoi} (score de -3 à 3, 0 = joueur moyen du rôle) :"]
     for jour, e in evals:
         lignes.append(f"  {jour} contre {e['adversaire']} ({e['score_match']}) : {e['role']}, {e['minutes']}', score {e['score']:+.1f} ; {e['raisons']}")
+    tot = lambda k: sum(e["comptes"].get(k) or 0 for _, e in toutes)
+    lignes.append(f"  totaux (toutes ses apparitions) : {sum(e['minutes'] for _, e in toutes)} minutes, {tot('buts'):g} buts, xG {tot('xg'):.2f}, xA {tot('xa'):.2f}, "
+                  f"{tot('cles'):g} passes clés, {tot('surface'):g} passes dans la surface, {tot('dribbles_g'):g} dribbles réussis, "
+                  f"{tot('recup'):g} ballons récupérés, {tot('duels_g'):g} duels gagnés ; rôles : "
+                  + ", ".join(f"{r} {sum(e['role'] == r for _, e in evals)}" for r in dict.fromkeys(e["role"] for _, e in evals)))
     scores = [e["score"] for _, e in evals]
     meilleur, pire = max(evals, key=lambda x: x[1]["score"]), min(evals, key=lambda x: x[1]["score"])
     lignes.append(f"  bilan : score moyen {statistics.mean(scores):+.1f} ; meilleur match {meilleur[0]} contre {meilleur[1]['adversaire']} "
@@ -414,8 +433,8 @@ def forme(nom, n=5):
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
-    if len(sys.argv) >= 3 and sys.argv[1] == "--joueur":  # forme : python postes.py --joueur guler [n]
-        print("\n".join(forme(sys.argv[2], int(sys.argv[3]) if len(sys.argv) > 3 else 5)))
+    if len(sys.argv) >= 3 and sys.argv[1] == "--joueur":  # saison : python postes.py --joueur guler ; n derniers : ... guler 5
+        print("\n".join(forme(sys.argv[2], int(sys.argv[3]) if len(sys.argv) > 3 else None)))
     elif len(sys.argv) == 4 and sys.argv[2] == "--joueur":  # un match : python postes.py matchs/<dossier> --joueur guler
         e = evaluer_joueur(sys.argv[1], sys.argv[3])
         print(f"{e['nom']} contre {e['adversaire']} ({e['score_match']}) : {e['role']}, {e['minutes']}', score {e['score']:+.1f} ; {e['raisons']}"
