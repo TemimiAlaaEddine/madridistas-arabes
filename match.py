@@ -15,6 +15,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+import bascules
 import whoscored
 from couvertures import EDGE
 from threads import reglage
@@ -61,10 +62,11 @@ def matchs_joues(calendrier):
 
 
 def resume_sofascore(stats, compos):
-    print("\n== Sofascore : stats d'équipe (domicile | extérieur)")
-    for groupe in next(p for p in stats["statistics"] if p["period"] == "ALL")["groups"]:
-        for i in groupe["statisticsItems"]:
-            print(f"   {i['name']:<28} {i['home']} | {i['away']}")
+    print("\n== Sofascore : stats d'équipe (domicile | extérieur), puis (1re mi-temps / 2e mi-temps)")
+    per = {p["period"]: {i["name"]: i for g in p["groups"] for i in g["statisticsItems"]} for p in stats["statistics"]}
+    for nom, i in per["ALL"].items():
+        mt = " / ".join(f"{per[k][nom]['home']} | {per[k][nom]['away']}" for k in ("1ST", "2ND") if nom in per.get(k, {}))
+        print(f"   {nom:<28} {i['home']} | {i['away']}" + (f"   ({mt})" if mt else ""))
     for cote in ("home", "away"):
         e = compos[cote]
         print(f"\n== Sofascore : {e.get('formation')} ({cote})")
@@ -98,18 +100,30 @@ def main():
     (dossier / "whoscored.html").write_text(page, encoding="utf-8")
     print(f"Pages gardées dans {dossier}\n\n######## WhoScored")
     whoscored.afficher(d)
+    tirs = None
+    try:
+        tirs = partie_sofascore(dossier, date)
+    finally:  # même sans Sofascore (xG en moins) : les tendances viennent des actions WhoScored
+        try:
+            print("\n######## Tendances et bascules (indices chiffrés à interpréter avec le score et le contexte)")
+            print("\n".join(bascules.analyser(d, tirs)))
+        except Exception as err:  # un calcul raté ne doit pas faire échouer l'analyse
+            print(f"! Tendances impossibles ({err!r})")
 
+
+def partie_sofascore(dossier, date):
+    """Stats, compos, carte des tirs et graphiques Sofascore ; renvoie les tirs (None si Sofascore manque)."""
     # même match côté Sofascore : celui du même jour parmi les derniers matchs du club
     try:  # sur GitHub Actions, Sofascore peut refuser les serveurs : l'analyse continue avec WhoScored seul
         evts = sofascore(f"team/{SOFA_EQUIPE}/events/last/0")["events"]
         evt = next((e for e in reversed(evts) if datetime.fromtimestamp(e["startTimestamp"]).date() == date), None)
         if not evt:
             print("\n! Sofascore : match introuvable à cette date")
-            return
+            return None
         stats, compos = sofascore(f"event/{evt['id']}/statistics"), sofascore(f"event/{evt['id']}/lineups")
     except (subprocess.SubprocessError, OSError, AttributeError, ValueError, KeyError) as err:
         print(f"\n! Sofascore indisponible ({err!r}) : continue avec WhoScored seul")
-        return
+        return None
     try:
         tirs = sofascore(f"event/{evt['id']}/shotmap")["shotmap"]
     except (subprocess.SubprocessError, OSError, ValueError, KeyError):
@@ -122,10 +136,11 @@ def main():
         faits = graphiques.generer(dossier)
     except Exception as err:  # un graphique raté ne doit pas faire échouer l'analyse
         print(f"\n! Graphiques impossibles ({err!r}) : thread sans graphiques")
-        return
+        return tirs
     print("\n######## Graphiques (à joindre au thread : ligne « [graphique: <chemin>] » dans le tweet qui en parle)")
     for nom, quoi in faits:
         print(f"   {(dossier / 'graphiques' / nom).relative_to(Path(__file__).parent).as_posix()} : {quoi}")
+    return tirs
 
 
 if __name__ == "__main__":

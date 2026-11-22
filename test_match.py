@@ -27,3 +27,41 @@ except ValueError:
     pass
 m.subprocess.run, m.bright_data = _vrai
 print("OK test_match")
+
+# Bascules : un changement du Real à la 30e double ses passes vers le dernier tiers -> moment signalé
+import bascules
+def _ev(minute, equipe, typ="Pass", x=50, endx=60, ok=1, periode=1, **k):
+    return dict({"minute": minute, "second": 0, "teamId": equipe, "x": x, "y": 50, "endX": endx, "endY": 50, "id": minute * 100 + x,
+                 "period": {"value": periode}, "type": {"displayName": typ}, "outcomeType": {"value": ok}, "qualifiers": []}, **k)
+evs = []
+for mn in range(0, 90):
+    p = 1 if mn < 45 else 2
+    evs += [_ev(mn, 52, x=50, endx=55, periode=p), _ev(mn, 62, x=40, endx=45, periode=p)]
+    if mn >= 30:
+        evs += [_ev(mn, 52, x=60, endx=80, periode=p), _ev(mn, 52, x=60, endx=80, periode=p)]
+evs.append(_ev(30, 52, "SubstitutionOn", playerId=7))
+evs.sort(key=lambda e: (e["period"]["value"], e["minute"]))
+lignes = bascules.analyser({"events": evs, "playerIdNameDictionary": {"7": "Vinícius"},
+                            "home": {"teamId": 52, "name": "Real Madrid"}, "away": {"teamId": 62, "name": "Celta"}})
+texte = "\n".join(lignes)
+assert "31' Real Madrid : entrée de Vinícius" in texte and "Real Madrid entrées dans le dernier tiers 0 -> 30" in texte, texte
+assert "xG" not in texte, "sans Sofascore, pas de ligne xG"
+print("OK bascules")
+
+# Phases : récupération au milieu puis dernier tiers en 2 passes = transition ; coup franc dans sa surface = sortie directe, pas CPA
+_seq = [dict(_ev(10, 52, "BallRecovery", x=40), t=10.0), dict(_ev(10, 52, x=40, endx=60), t=10.1), dict(_ev(10, 52, x=60, endx=85), t=10.2),
+        dict(_ev(10, 52, "SavedShot", x=90, isShot=True), t=10.3),
+        dict(_ev(20, 62, x=5, endx=40, qualifiers=[{"type": {"displayName": "FreekickTaken"}}]), t=20.0), dict(_ev(20, 62, x=40, endx=75), t=20.2)]
+s1, s2 = bascules.sequences(_seq, [])
+assert s1["rapide"] and not s1["placee"] and len(s1["tirs"]) == 1, s1
+assert s2["directe"] and not s2["cpa"], s2
+assert "1. construction" in texte and "8. CPA défensifs" in texte
+print("OK phases")
+
+# Ballon revenu au gardien puis long ballon et tir en 9 s (Valence 75e) : sortie directe, même si la possession a commencé par un coup franc
+_fk = [dict(_ev(74, 52, x=56, endx=45, qualifiers=[{"type": {"displayName": "FreekickTaken"}}]), t=74.0),
+       dict(_ev(74, 52, x=45, endx=10), t=74.2), dict(_ev(74, 52, x=5, endx=76), t=74.5), dict(_ev(74, 52, x=77, endx=86), t=74.6),
+       dict(_ev(74, 52, "Goal", x=98, isShot=True), t=74.65)]
+(s3,) = bascules.sequences(_fk, [])
+assert s3["tirs"][0]["phase"] == "directe" and s3["tirs"][0]["delai"] == 9, s3["tirs"]
+print("OK sortie directe")
