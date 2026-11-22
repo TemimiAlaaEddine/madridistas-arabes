@@ -377,6 +377,60 @@ def joueurs(d, actions, xg, equipe, a, b, n=3):
     return lignes
 
 
+def couloir(y):
+    """WhoScored : y = 0 sur la touche droite de l'équipe qui attaque, y = 100 sur la gauche (latéral gauche vers 83)."""
+    return "droite" if y < 37 else "gauche" if y > 63 else "axe"
+
+
+def positions(actions, equipe, a, b):
+    """Position moyenne de chaque joueur d'après ses ballons touchés : {id: (mètres depuis son but, y, touches)}."""
+    pts = {}
+    for e in actions:
+        if a <= e["t"] < b and e["teamId"] == equipe and e.get("isTouch") and "playerId" in e:
+            pts.setdefault(e["playerId"], []).append(e)
+    return {pid: (1.05 * statistics.mean(e["x"] for e in ev), statistics.mean(e["y"] for e in ev), len(ev)) for pid, ev in pts.items()}
+
+
+def deplacements(actions, equipe, a, b, ref, mini=6):
+    """Joueurs dont la position dans la période s'écarte de leur position sur le match : 8 m en profondeur ou un couloir de différence."""
+    out = []
+    for pid, (x, y, n) in positions(actions, equipe, a, b).items():
+        if n >= mini and pid in ref:
+            x0, y0, _ = ref[pid]
+            if abs(x - x0) >= 8 or couloir(y) != couloir(y0):
+                out.append((pid, f"{x0:.0f} m {couloir(y0)} -> {x:.0f} m {couloir(y)} ({n} ballons)"))
+    return out
+
+
+def duos(actions, equipe, a, b, n=3, mini=4):
+    """Les paires passeur -> receveur les plus fréquentes : le receveur est le premier joueur à toucher le ballon après la passe réussie."""
+    c = {}
+    for i, e in enumerate(actions):
+        if not (a <= e["t"] < b and e["teamId"] == equipe and e["type"]["displayName"] == "Pass" and e["outcomeType"]["value"] == 1):
+            continue
+        suite = next((z for z in actions[i + 1:i + 6] if z.get("isTouch") and "playerId" in z), None)
+        if suite and suite["teamId"] == equipe and suite["playerId"] != e.get("playerId"):
+            c[(e["playerId"], suite["playerId"])] = c.get((e["playerId"], suite["playerId"]), 0) + 1
+    return [(p, r, k) for (p, r), k in sorted(c.items(), key=lambda i: -i[1])[:n] if k >= mini]
+
+
+def note_a(ratings, t):
+    """Note WhoScored à la minute t (les notes sont données minute par minute, en minutes du match arrêts de jeu compris)."""
+    av = [(float(m), v) for m, v in (ratings or {}).items() if float(m) <= t]
+    return max(av)[1] if av else None
+
+
+def variations(equipe_ws, a, b, seuil=0.4):
+    """Joueurs dont la note WhoScored monte ou baisse d'au moins 0,4 pendant la période."""
+    out = []
+    for p in equipe_ws.get("players", []):
+        r = (p.get("stats") or {}).get("ratings")
+        n0, n1 = note_a(r, a), note_a(r, b)
+        if n1 is not None and abs(n1 - (n0 or 6.0)) >= seuil:  # entré pendant la période : part de 6, la note de départ
+            out.append(f"{p['name']} {n0 or 6.0:.1f} -> {n1:.1f}")
+    return out
+
+
 # ---------- le rapport ----------
 def analyser(d, sofa_tirs=None, fm=None):
     actions, tirs, xg, extra = preparer(d, sofa_tirs, fm)
@@ -444,12 +498,27 @@ def analyser(d, sofa_tirs=None, fm=None):
         for (ph, v1), (_, v2) in zip(phases(seqs, actions, equipe, 0, mi, bool(xg)), phases(seqs, actions, equipe, mi, fin, bool(xg))):
             lignes.append(f"    {ph:<24} {v1}  ||  {v2}")
 
-    lignes.append("\nÉTAPE 6 - Les joueurs : qui a fait la différence dans chaque période ? (les 3 plus impliqués par équipe)")
+    lignes.append("\nÉTAPE 6 - Les joueurs : qui a fait la différence dans chaque période ? (les 3 plus impliqués par équipe ; positions "
+                  "moyennes en mètres depuis son but, d'après les ballons touchés ; duos = passes réussies du 1er vers le 2e ; note WhoScored)")
+    noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
+    ref = {equipe: positions(actions, equipe, 0, fin) for equipe, _, _ in eq}
+    for equipe, dom, nom in eq:
+        lignes.append(f"  positions moyennes sur le match, {nom} : " + ", ".join(
+            f"{noms.get(pid, '?')} {x:.0f} m {couloir(y)}" for pid, (x, y, n) in sorted(ref[equipe].items(), key=lambda i: i[1][0]) if n >= 10))
     for p in per:
         lignes.append(f"  {p['nom']}")
-        for equipe, _, nom in eq:
+        for equipe, dom, nom in eq:
             for j in joueurs(d, actions, xg, equipe, p["a"], p["b"]):
                 lignes.append(f"    {nom} - {j}")
+            dep = deplacements(actions, equipe, p["a"], p["b"], ref[equipe])
+            if dep:
+                lignes.append(f"    {nom} - positions qui changent : " + " ; ".join(f"{noms.get(pid, '?')} {quoi}" for pid, quoi in dep))
+            ds = duos(actions, equipe, p["a"], p["b"])
+            if ds:
+                lignes.append(f"    {nom} - duos : " + ", ".join(f"{noms.get(a_, '?')} -> {noms.get(r, '?')} {k}" for a_, r, k in ds))
+            var = variations(d["home" if dom else "away"], p["a"], p["b"])
+            if var:
+                lignes.append(f"    {nom} - notes qui bougent : " + ", ".join(var))
     return lignes
 
 

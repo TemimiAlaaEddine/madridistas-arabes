@@ -98,3 +98,25 @@ _t = "\n".join(fotmob.resumer(_fm))
 assert "3.76 | 1.51  /  1.69 | 1.33  /  2.07 | 0.17" in _t and "1re 45 / 21 / 34" in _t and "FastBreak 1 (xG 0.50)" in _t, _t
 assert "25'-30'" not in _t and "30'-35' (+60 -> -60)" in _t, _t
 print("OK fotmob")
+
+
+# FotMob : finition par tireur, stats Opta des joueurs, faits Opta
+_fm["content"]["shotmap"]["shots"] += [{"teamId": 1, "playerName": "Espí", "situation": "RegularPlay", "eventType": "Goal",
+                                        "expectedGoals": 0.4, "expectedGoalsOnTarget": 0.7}]
+_fm["content"]["playerStats"] = {"9": {"name": "Güler", "teamId": 1, "stats": [{"stats": {
+    "Minutes played": {"stat": {"value": 90}}, "Chances created": {"stat": {"value": 3}}, "Recoveries": {"stat": {"value": 0}},
+    "Successful dribbles": {"stat": {"value": 3, "total": 4}}}}]}}
+_fm["content"]["insights"] = [{"type": "team", "teamId": 1, "text": "Have won their last 8 matches"}]
+_t = "\n".join(fotmob.resumer(_fm))
+assert "Espí (Real Madrid) 1 tirs, 1 buts, xG 0.40, xGOT 0.70" in _t, _t
+assert "Güler 90' : occasions créées 3, dribbles réussis 3/4" in _t and "récupérations" not in _t, _t
+assert "fait Opta : Real Madrid : Have won their last 8 matches" in _t, _t
+print("OK fotmob joueurs")
+
+# bascules : couloirs, duos de passes, note à une minute donnée
+assert [bascules.couloir(y) for y in (15, 50, 83)] == ["droite", "axe", "gauche"]
+_p = lambda pid, ok=1, team=52: {"t": 1, "teamId": team, "playerId": pid, "isTouch": True, "type": {"displayName": "Pass"}, "outcomeType": {"value": ok}}
+_acts = [_p(1), _p(2), _p(1), _p(2), _p(1), _p(2), _p(1), _p(2), _p(1), _p(3, team=62)]
+assert bascules.duos(_acts, 52, 0, 5) == [(1, 2, 4), (2, 1, 4)], bascules.duos(_acts, 52, 0, 5)  # la dernière passe va à l'adversaire
+assert bascules.note_a({"0": 6.0, "10": 6.5, "60": 7.2}, 59.5) == 6.5 and bascules.note_a({"60": 7}, 30) is None
+print("OK bascules joueurs")

@@ -1,4 +1,4 @@
-"""FotMob : stats Opta d'un match du Real Madrid (par mi-temps, xG en jeu et sur CPA, momentum, couloirs d'attaque, tirs par situation).
+"""FotMob : stats Opta d'un match du Real Madrid (par mi-temps, xG en jeu et sur CPA, momentum, couloirs d'attaque, tirs par situation, finition par tireur, stats de chaque joueur, faits Opta).
 
 Usage : python fotmob.py AAAA-MM-JJ   (le match du Real ce jour-là, heure de Madrid ; lancé aussi par match.py)
 Pages lues directement, sans Bright Data : le robots.txt de FotMob autorise les pages et interdit /api/ (donc pas de cartes de chaleur).
@@ -46,7 +46,22 @@ def trouver(date):
 
 def lire(adresse):
     p = page(adresse)
-    return {"general": p["general"], "content": {k: p["content"].get(k) for k in ("stats", "momentum", "attackingZones", "shotmap")}}
+    c = {k: p["content"].get(k) for k in ("stats", "momentum", "attackingZones", "shotmap", "playerStats")}
+    c["insights"] = (p["content"].get("matchFacts") or {}).get("insights")
+    return {"general": p["general"], "content": c}
+
+
+JOUEUR = {  # stats Opta par joueur (FotMob), affichées quand elles ne sont pas nulles
+    "FotMob rating": "note", "Chances created": "occasions créées", "Passes into final third": "passes vers le dernier tiers",
+    "Touches in opposition box": "touches dans la surface", "Successful dribbles": "dribbles réussis", "Recoveries": "récupérations",
+    "Defensive actions": "actions défensives", "Dribbled past": "dribblé", "Duels won": "duels gagnés", "Duels lost": "duels perdus",
+    "Was fouled": "fautes subies", "Dispossessed": "ballons perdus sous pression",
+    "Saves": "arrêts", "Goals conceded": "buts encaissés", "xGOT faced": "xGOT subi", "Goals prevented": "buts évités",
+}
+
+
+def stats_joueur(j):
+    return {k: v["stat"] for grp in j.get("stats") or [] for k, v in (grp.get("stats") or {}).items() if v.get("stat")}
 
 
 def resumer(d):
@@ -83,6 +98,31 @@ def resumer(d):
         bascules = [f"{a}'-{a + 5}' ({p:+.0f} -> {q:+.0f})" for (_, p), (a, q) in zip(tranches, tranches[1:]) if p * q < 0 and abs(q - p) >= 40]
         if bascules:
             lignes.append("  renversements du momentum (tranches de 5 min) : " + ", ".join(bascules))
+    noms = {dom["id"]: dom["name"], ext["id"]: ext["name"]}
+    tireurs = collections.defaultdict(lambda: [0, 0, 0.0, 0.0])  # tirs, buts, xG, xGOT
+    for t in tirs:
+        if not t.get("isOwnGoal"):
+            s = tireurs[(t["teamId"], t.get("playerName", "?"))]
+            s[0] += 1
+            s[1] += t.get("eventType") == "Goal"
+            s[2] += t.get("expectedGoals") or 0
+            s[3] += t.get("expectedGoalsOnTarget") or 0
+    fins = [f"{n} ({noms.get(e, '?')}) {nb} tirs, {b} buts, xG {x:.2f}, xGOT {xo:.2f}"
+            for (e, n), (nb, b, x, xo) in sorted(tireurs.items(), key=lambda i: -i[1][2]) if b or x >= 0.2]
+    if fins:
+        lignes.append("  finition par tireur (xGOT > xG : tirs bien placés ; buts < xGOT : le gardien a fait la différence) : " + " ; ".join(fins))
+    js = [(j, stats_joueur(j)) for j in (c.get("playerStats") or {}).values()]
+    for e in (dom, ext):
+        equipe = sorted(((j, st) for j, st in js if j["teamId"] == e["id"] and (st.get("Minutes played") or {}).get("value")),
+                        key=lambda i: -i[1]["Minutes played"]["value"])
+        if equipe:
+            lignes.append(f"  joueurs de {e['name']} (Opta, stats non nulles) :")
+        for j, st in equipe:
+            det = [f"{nom} {st[k]['value']}" + (f"/{st[k]['total']}" if "total" in st[k] else "") for k, nom in JOUEUR.items() if (st.get(k) or {}).get("value")]
+            lignes.append(f"    {j['name']} {st['Minutes played']['value']}' : " + ", ".join(det))
+    for i in c.get("insights") or []:
+        qui = noms.get(i.get("teamId"), "") + " : " if i.get("type") == "team" else ""
+        lignes.append(f"  fait Opta : {qui}{i.get('text')}")
     return lignes
 
 

@@ -77,7 +77,20 @@ def resume_sofascore(stats, compos):
             if s.get("minutesPlayed"):
                 print(f"   {p['player']['name']:<24} {s['minutesPlayed']:>3}' note {s.get('rating') or '-'} | xG {s.get('expectedGoals', 0):.2f}"
                       f" | xA {s.get('expectedAssists', 0):.2f} | duels {s.get('duelWon', 0)}/{s.get('duelWon', 0) + s.get('duelLost', 0)}"
-                      f" | ballons récupérés {s.get('ballRecovery', 0)} | pertes {s.get('possessionLostCtrl', 0)}")
+                      f" | ballons récupérés {s.get('ballRecovery', 0)} | pertes {s.get('possessionLostCtrl', 0)}"
+                      f" | conduites progressives {s.get('progressiveBallCarriesCount', 0)} ({s.get('totalProgression', 0):.0f} m gagnés balle au pied)"
+                      f" | valeur (Sofascore) passes {s.get('passValueNormalized', 0):+.2f}, dribbles {s.get('dribbleValueNormalized', 0):+.2f},"
+                      f" défense {s.get('defensiveValueNormalized', 0):+.2f} | fautes subies {s.get('wasFouled', 0)}"
+                      f" | aériens {s.get('aerialWon', 0)}/{s.get('aerialWon', 0) + s.get('aerialLost', 0)}"
+                      + "".join(f" | {nom} {s[k]:g}" for k, nom in RARES.items() if s.get(k)))
+
+
+RARES = {  # stats Sofascore affichées seulement quand elles ne sont pas nulles
+    "bigChanceCreated": "grosses occasions créées", "bigChanceMissed": "grosses occasions manquées",
+    "errorLeadToAShot": "erreurs menant à un tir", "errorLeadToAGoal": "erreurs menant à un but", "lastManTackle": "tacles du dernier défenseur",
+    "clearanceOffLine": "sauvetages sur la ligne", "penaltyWon": "penaltys obtenus", "penaltyConceded": "penaltys concédés",
+    "goalsPrevented": "buts évités", "hitWoodwork": "poteaux",
+}
 
 
 def main():
