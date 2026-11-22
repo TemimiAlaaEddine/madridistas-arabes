@@ -9246,4 +9246,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/22/mourinho-bro
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-debate-que-tiene-en-ciernes-al-madridismo-guler-o-nico-paz-ojo-a-las-respuestas-en-carrusel-f202611-v/','El debate que tiene en ciernes al madridismo, ¿Güler o Nico Paz?: ojo a las respuestas en Carrusel','2026-11-22T11:31:16');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-equipo-se-esta-entrenando-22-11-2026','El equipo se está entrenando','2026-11-22T11:41:22');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-ingles/noticia/2026/11/22/bruno-fernandes-diz-que-as-negociacoes-de-renovacao-com-o-united-estao-suspensas.ghtml','Bruno Fernandes nega exigências para renovar com o United: "Se quisesse mais dinheiro, não estaria aqui"','2026-11-22T11:46:07');
+INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/mourinho-real-madrid-mbappe-carlos-espi-tatica/','Mourinho: ‘Ele e Mbappé podem jogar juntos, mas eu vou ter que entrar em campo para defender’','2026-11-22T13:05:54');
 COMMIT;
