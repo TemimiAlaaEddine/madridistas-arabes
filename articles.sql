@@ -9089,4 +9089,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/koke-y-carvajal-rivales-
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/un-ano-en-el-camp-nou-dos-infiernos-en-el-paraiso-f202611-n/','Un año en el Camp Nou: dos ‘infiernos’ en el paraíso','2026-11-22T07:46:10');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/mourinho-verklapt-basisspeler-tegen-psv-dan-hoef-je-het-niet-meer-te-vragen','Mourinho verklapt basisspeler tegen PSV: ''Dan hoef je het niet meer te vragen''','2026-11-22T08:05:52');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/22/madridismo-vena-asi-celebro-nadal-gol-espi-nuevo-directivo.html','Madridismo en vena: así celebró Nadal el gol de Espí como nuevo directivo','2026-11-22T08:11:22');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7187064329388066837-je-devrai-entrer-sur-le-terrain-et-frapper-quelquun-jose-mourinho-a-fait-le-show-en-conference-de-presse','« Je devrai entrer sur le terrain et frapper quelqu’un », José Mourinho a fait le show en conférence de presse','2026-11-22T08:21:24');
 COMMIT;
