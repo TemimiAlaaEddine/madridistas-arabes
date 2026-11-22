@@ -16,6 +16,7 @@ from pathlib import Path
 
 SITE = "https://www.realmadrid.com"
 CRONICAS = SITE + "/es-ES/noticias/futbol/primer-equipo/cronicas"
+ACTUALIDAD = (SITE + "/es-ES/noticias/futbol/primer-equipo", SITE + "/es-ES/noticias/futbol/primer-equipo/actualidad")
 IMAGE = "https://assets.realmadrid.com/is/image/realmadrid/{}?wid=1200"
 NAVIGATEUR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
 PAR_PLANCHE, COLONNES, VIGNETTE = 20, 4, 360
@@ -44,6 +45,42 @@ def photos(page):
     return vus
 
 
+def enregistrer(identifiant, fichier):
+    """Télécharge une photo du club en JPEG (sauf si elle est déjà là) ; False si elle est introuvable."""
+    from PIL import Image
+    if fichier.exists():
+        return True
+    try:
+        with Image.open(BytesIO(lire(IMAGE.format(identifiant)))) as im:
+            im.convert("RGB").save(fichier, "JPEG", quality=88)
+        return True
+    except (subprocess.SubprocessError, OSError):
+        return False
+
+
+def etiquette(ids):
+    """Début du nom des photos du match chez le club (« ND-LIGA-J13-RM-CELTA »), tiré de la photo principale de la galerie."""
+    nd = next((i for i in ids if i.startswith("ND-")), None)
+    return "-".join(nd.split("-")[:5]) if nd else None
+
+
+def mis_en_avant(tag, joueurs, pages=ACTUALIDAD):
+    """Joueurs que le club met en avant le soir du match : {nom: [photos]}, d'après le nom des photos de ses articles
+    (« ND-LIGA-J13-RM-CELTA-ALEGRIA-BELLINGHAM-VINICIUS-02_AV17181 »). joueurs : {nom: mots qui le désignent, en majuscules}."""
+    noms = set()
+    for u in pages:
+        noms |= set(re.findall(r"assets\.realmadrid\.com/is/image/realmadrid/(ND-[A-Za-z0-9_-]+)",
+                               lire(u).decode("utf-8", "replace").replace("\\u002F", "/")))
+    out = {}
+    for n in sorted(noms):
+        if tag and n.startswith(tag + "-"):
+            mots = set(re.split(r"[-_]", n[len(tag) + 1:]))
+            for j, cles in joueurs.items():
+                if mots & cles:
+                    out.setdefault(j, []).append(n)
+    return out
+
+
 def telecharger(jour, dossier):
     """Télécharge la galerie et fait les planches ; renvoie [(fichier, identifiant)] ou [] s'il n'y a pas de chronique."""
     from PIL import Image, ImageDraw, ImageFont
@@ -56,13 +93,8 @@ def telecharger(jour, dossier):
     faits = []
     for n, i in enumerate(ids, 1):
         f = sortie / f"{n:02d}.jpg"
-        if not f.exists():
-            try:
-                with Image.open(BytesIO(lire(IMAGE.format(i)))) as im:
-                    im.convert("RGB").save(f, "JPEG", quality=88)
-            except (subprocess.SubprocessError, OSError):
-                continue  # photo absente : on passe à la suivante
-        faits.append((f, i))
+        if enregistrer(i, f):
+            faits.append((f, i))
     police = ImageFont.load_default(size=40)
     for p in range(0, len(faits), PAR_PLANCHE):
         lot = faits[p:p + PAR_PLANCHE]

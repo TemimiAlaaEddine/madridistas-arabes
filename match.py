@@ -20,6 +20,7 @@ from pathlib import Path
 import bascules
 import fotmob
 import galerie
+from connaissance import sans_accents
 import whoscored
 from couvertures import EDGE
 from commun import CONFIG
@@ -28,6 +29,7 @@ from threads import reglage
 DOSSIER = Path(__file__).parent / "matchs"
 SANS_FENETRE = getattr(subprocess, "CREATE_NO_WINDOW", 0)  # lancé par la tâche planifiée : pas de console qui s'ouvre
 WS_EQUIPE, SOFA_EQUIPE = 52, 2829  # Real Madrid sur WhoScored et Sofascore
+ALIAS = {"Vinícius Júnior": {"VINI"}, "Arda Güler": {"ARDA"}}  # noms courts du club dans le nom de ses photos
 LIGNE = re.compile(r"\[(\d{6,8}),\d+,'(\d\d-\d\d-\d\d)','[^']*',\d+,'([^']*)',\d+,\d+,'([^']*)',\d+,'([^']*)'")
 
 
@@ -162,8 +164,23 @@ def partie_photos(d, dossier, date):
     noms = {int(k): v for k, v in d["playerIdNameDictionary"].items()}
     f = real["formations"][0]
     numeros = ", ".join(f"{noms.get(p, '?')} {n}" for p, n in zip(f["playerIds"], f["jerseyNumbers"]))
-    print(f"\n######## Photos du match (galerie du club) : {len(faits)} dans {(dossier / 'photos').relative_to(Path(__file__).parent).as_posix()}"
-          f" (NN.jpg), planches planche-N.jpg ; numéros du Real : {numeros}")
+    rel = (dossier / "photos").relative_to(Path(__file__).parent).as_posix()
+    print(f"\n######## Photos du match (galerie du club) : {len(faits)} dans {rel} (NN.jpg), planches planche-N.jpg ; numéros du Real : {numeros}")
+    # joueurs mis en avant par le club (nom de ses photos) : ce sont eux qui ont leur tweet, avec la photo du club
+    mots = {noms.get(p, "?"): {m.upper() for m in sans_accents(noms.get(p, "")).replace("-", " ").split() if len(m) >= 3}
+            | ALIAS.get(noms.get(p, ""), set()) for p in f["playerIds"] if p in noms}
+    try:
+        club = galerie.mis_en_avant(galerie.etiquette([i for _, i in faits]), mots)
+    except Exception as err:  # articles du club illisibles : sélection de postes.py
+        print(f"! Joueurs mis en avant par le club : lecture impossible ({err!r})")
+        return
+    if club:
+        print("Joueurs mis en avant par le club (leur tweet, avec cette photo) :")
+        for j, ids in club.items():
+            fichiers = [f"{rel}/club-{i.split('_')[-1]}.jpg" for i in ids if galerie.enregistrer(i, dossier / "photos" / f"club-{i.split('_')[-1]}.jpg")]
+            print(f"   {j} : " + ", ".join(fichiers))
+    else:
+        print("Aucun joueur mis en avant par le club pour l'instant : sélection de postes.py, photos reconnues au numéro")
 
 
 def partie_fotmob(dossier, date):

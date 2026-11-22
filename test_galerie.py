@@ -25,3 +25,18 @@ with tempfile.TemporaryDirectory() as _d:
     assert not (Path(_d) / "2026-11-07-valencia" / "photos").exists() and (Path(_d) / "2026-11-07-valencia" / "whoscored.html").exists()
     assert (Path(_d) / "2026-11-21-celta-vigo" / "photos").exists() and (Path(_d) / "journal" / "photos").exists()
 print("OK nettoyage")
+
+# joueurs mis en avant par le club : nom des photos de ses articles, seulement celles de ce match
+assert galerie.etiquette(["01_JT30825", "ND-LIGA-J13-RM-CELTA-ALEGRIA-VINICIUS-ESPI-01_AV19029"]) == "ND-LIGA-J13-RM-CELTA"
+assert galerie.etiquette(["01_JT30825"]) is None
+_art = ("realmadrid/ND-LIGA-J13-RM-CELTA-ALEGRIA-BELLINGHAM-VINICIUS-02_AV17181 realmadrid/ND-LIGA-J13-RM-CELTA-RP-MOURINHO-01_AV19936 "
+        "realmadrid/ND-LIGA-J01-RM-RSOCIEDAD-ALEGRIA-VINI-BELLINGHAM_AV11135 realmadrid/ND-LIGA-J13-RM-CELTA-COURTOIS-01_AV19763")
+_art = " ".join("assets.realmadrid.com/is/image/" + m for m in _art.split())
+galerie.lire = lambda url: _art.encode()
+_j = {"Jude Bellingham": {"JUDE", "BELLINGHAM"}, "Vinícius Júnior": {"VINICIUS", "JUNIOR", "VINI"}, "Thibaut Courtois": {"THIBAUT", "COURTOIS"}}
+assert galerie.mis_en_avant("ND-LIGA-J13-RM-CELTA", _j, pages=["x"]) == {
+    "Jude Bellingham": ["ND-LIGA-J13-RM-CELTA-ALEGRIA-BELLINGHAM-VINICIUS-02_AV17181"],
+    "Thibaut Courtois": ["ND-LIGA-J13-RM-CELTA-COURTOIS-01_AV19763"],
+    "Vinícius Júnior": ["ND-LIGA-J13-RM-CELTA-ALEGRIA-BELLINGHAM-VINICIUS-02_AV17181"]}, "autre match et entraîneur écartés"
+galerie.lire = _vrai
+print("OK mis en avant")
