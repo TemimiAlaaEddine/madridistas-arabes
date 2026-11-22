@@ -18,7 +18,7 @@ import sys
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from threads import CONFIG, LIMITE_LONG, heure_madrid, longueur, typefully_api, typefully_image
+from threads import CONFIG, LIMITE_LONG, heure_madrid, longueur, tags_a_la_fin, typefully_api, typefully_image
 
 BASE = Path(__file__).parent
 SUIVI = BASE / "suivi_matchs.json"
@@ -90,7 +90,7 @@ def analyser(m):
     if r.returncode != 0 or not fichier:
         raise ValueError((r.stderr or r.stdout).strip()[-300:] or f"code {r.returncode}")
     tweets = tweets_du_fichier((BASE / fichier.group(1)).read_text(encoding="utf-8"))
-    post = {"text": "\n\n".join(t for t, _ in tweets)}  # un seul tweet long, un paragraphe par bloc du fichier
+    post = {"text": tags_a_la_fin("\n\n".join(t for t, _ in tweets))}  # un seul tweet long, un paragraphe par bloc du fichier
     ids = []
     for c in [c for _, images in tweets for c in images][:CONFIG.get("max_images_tweet", 4)]:
         try:

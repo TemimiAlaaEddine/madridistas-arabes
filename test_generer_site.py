@@ -203,6 +203,9 @@ art = {"auteur_ar": "خوانما كاستانيو", "auteur": "Juanma Castaño"
 th = t.assembler(art, ["فكرة أولى", "فكرة ثانية"])
 assert len(th) == 2 and th[0] == "فكرة أولى\n\nفكرة ثانية" and "خوانما كاستانيو | Marca" in th[1] and "https://marca.com/a" in th[1]
 assert not t.NUMERO.search(th[0]) and not t.URL.search(th[0])  # pas de « i/n », le lien seulement dans la réponse
+assert t.assembler(art, ["🔄 ميركاتو | أ\n\nتفصيل\n\n(ماركا)\n#مبابي #ريال_مدريد", "ب #هاشتاغ_داخل_الجملة", "ج"])[0] == \
+    "🔄 ميركاتو | أ\n\nتفصيل\n\n(ماركا)\n\nب #هاشتاغ_داخل_الجملة\n\nج\n\n#مبابي #ريال_مدريد", "tags à la fin du tweet long"
+assert t.tags_a_la_fin("أ\n\n#ريال_مدريد\n\nب\n#ريال_مدريد") == "أ\n\nب\n\n#ريال_مدريد" and t.tags_a_la_fin("أ") == "أ"
 assert t.assembler(art, ["ب" * 290]) is not None  # au-delà de 280 : tweet long
 assert t.assembler(art, ["ب" * (t.LIMITE_LONG + 1)]) is None and t.assembler(art, []) is None
 with tempfile.TemporaryDirectory() as tmp:

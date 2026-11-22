@@ -81,10 +81,24 @@ def credit(a):
     return f"{signe}\n🔗 المصدر: {a['lien']}"
 
 
+LIGNE_TAGS = re.compile(r"(#\w+\s*)+")
+
+
+def tags_a_la_fin(texte):
+    """Lignes faites seulement de hashtags déplacées à la fin du tweet long, sans doublon : les règles les placent au tweet 1,
+    qui n'est plus que le premier paragraphe depuis le passage au tweet long (remarque de l'utilisateur, 2026-11-22)."""
+    lignes = texte.split("\n")
+    tags = [l.strip() for l in lignes if LIGNE_TAGS.fullmatch(l.strip())]
+    if not tags:
+        return texte
+    corps = re.sub(r"\n{3,}", "\n\n", "\n".join(l for l in lignes if not LIGNE_TAGS.fullmatch(l.strip()))).strip()
+    return corps + "\n\n" + " ".join(dict.fromkeys(" ".join(tags).split()))
+
+
 def assembler(a, tweets):
     """Réunit les tweets écrits par Claude en un seul tweet long, suivi du tweet de crédit (avec le lien) publié en réponse :
     il peut être retiré à l'envoi et ajouté à la main. None si c'est trop long pour X ou si le thread est vide."""
-    long = "\n\n".join(t for t in (str(t).strip() for t in tweets) if t)
+    long = tags_a_la_fin("\n\n".join(t for t in (str(t).strip() for t in tweets) if t))
     return [long, credit(a)] if long and longueur(long) <= LIMITE_LONG and longueur(credit(a)) <= LIMITE else None
 
 
@@ -400,7 +414,7 @@ def resume_du_jour(con, utc=None):
                                                                        CONFIG.get("modele_redaction", "sonnet")))]
         if not 2 <= len(tweets) <= 5 or any(not x for x in tweets) or longueur("\n\n".join(tweets)) > LIMITE_LONG:
             raise ValueError(f"thread inutilisable ({len(tweets)} tweets)")
-        posts = [{"text": "\n\n".join(tweets)}]  # un seul tweet long
+        posts = [{"text": tags_a_la_fin("\n\n".join(tweets))}]  # un seul tweet long
         d = typefully_api("drafts", {"draft_title": f"حصاد ريال مدريد {jour}", "publish_at": "now",
                                      "platforms": {"x": {"enabled": True, "posts": posts}}})
     except (OSError, ValueError, KeyError, ErreurClaude) as err:  # repris au passage suivant, tant qu'on est avant 3 h
