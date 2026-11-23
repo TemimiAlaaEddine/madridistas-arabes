@@ -21,7 +21,9 @@ print("OK déclarations")
 
 # lancement : le premier journal à publier une déclaration fraîche ; rien si un direct a déjà eu lieu pour cette conférence
 T0 = datetime(2026, 11, 23, 12, 0)
-vrai = (c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet)
+vrai = (c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet, c.tweet_de_fin)
+vrai_fin = c.tweet_de_fin
+c.tweet_de_fin = lambda utc: "🎙️ نهاية"  # sans appel à Claude (nom arabe de l'adversaire)
 import calendrier
 vrai_actif = calendrier.direct_actif
 calendrier.direct_actif = lambda w="": False
@@ -58,8 +60,44 @@ try:
     assert 15 <= (horloge[0] - T0).total_seconds() / 60 <= 18, "fin 10 min après la dernière déclaration (min 6)"
     assert sauvegardes[0][0].endswith("suivie sur Marca") and "fin" in sauvegardes[-1][0]
     print("OK boucle")
+
+    # tweet de fin : avant le prochain match, ou après le match commencé il y a moins de 6 h
+    import tempfile
+    from pathlib import Path
+    vrai_cal = (calendrier.FICHIER, calendrier.nom_arabe_claude)
+    with tempfile.TemporaryDirectory() as tmp:
+        calendrier.FICHIER = Path(tmp) / "matchs.json"
+        calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs Celta de Vigo", "debut": "2026-11-21T20:00:00", "heure_fixee": True},
+                                                  {"match": "Real Madrid vs PSV", "debut": "2026-11-24T20:00:00", "heure_fixee": True}]), encoding="utf-8")
+        calendrier.nom_arabe_claude = lambda n: {"PSV": "آيندهوفن", "Celta de Vigo": "سيلتا فيغو"}[n]
+        try:
+            assert vrai_fin(datetime(2026, 11, 23, 12)) == "🎙️ نهاية المؤتمر الصحفي لمورينيو قبل مباراة ريال مدريد وآيندهوفن\n\n#مورينيو #ريال_مدريد"
+            assert "بعد مباراة ريال مدريد وسيلتا فيغو" in vrai_fin(datetime(2026, 11, 21, 22, 30))
+            calendrier.FICHIER.write_text("[]", encoding="utf-8")
+            assert vrai_fin(datetime(2026, 11, 23, 12)).startswith("🎙️ نهاية المؤتمر الصحفي لمورينيو\n")
+        finally:
+            calendrier.FICHIER, calendrier.nom_arabe_claude = vrai_cal
+
+    # publication : photo sur le 1er tweet seulement, puis le tweet de fin
+    horloge[0] = T0
+    c.deja_publies = lambda depuis: ([], [])
+    def texte_avec_image(it):
+        it["image"] = "https://marca.com/photo.jpg"
+        return "نص"
+    generer_site.texte_complet = texte_avec_image
+    vrais_t = (t.typefully_api, t.telecharger_image, t.typefully_image)
+    posts = []
+    t.typefully_api = lambda chemin, corps=None: (posts.append(corps["platforms"]["x"]["posts"][0]), {"id": 1})[1]
+    t.telecharger_image, t.typefully_image = (lambda u, i: ("a.jpg", b"")), (lambda n, b: "media1")
+    try:
+        c.suivre("Marca", dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    finally:
+        t.typefully_api, t.telecharger_image, t.typefully_image = vrais_t
+    assert [p.get("media_ids") for p in posts] == [["media1"], None, None, None], posts
+    assert posts[-1]["text"] == "🎙️ نهاية" and len(posts) == 4, "3 déclarations (0, 1, 3) puis la fin"
+    print("OK photo et fin")
 finally:
-    c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet = vrai
+    c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet, c.tweet_de_fin = vrai
     calendrier.direct_actif = vrai_actif
 
 # passage principal pendant le direct : articles du journal suivi laissés au direct, autre journal et déjà tweetés écartés,

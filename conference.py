@@ -119,6 +119,26 @@ def tweet(titre, texte, deja):
     return None if not r or "DOUBLON" in r[:20] or r[:10].strip() == "HORS" else r
 
 
+def tweet_de_fin(utc):
+    """« 🎙️ نهاية المؤتمر الصحفي لمورينيو قبل/بعد مباراة ريال مدريد و... » d'après matchs.json : un match commencé il y a moins
+    de 6 h -> conférence d'après-match, sinon celle d'avant le prochain match."""
+    from calendrier import FICHIER, nom_arabe_claude
+    nom = CONFIG.get("entraineur", "mourinho")
+    nom_ar = CONFIG.get("personnes", {}).get(nom, {}).get("nom", nom)
+    try:
+        matchs = sorted(json.loads(FICHIER.read_text(encoding="utf-8")), key=lambda m: m["debut"])
+    except (OSError, ValueError):
+        matchs = []
+    apres = [m for m in matchs if timedelta(0) <= utc - datetime.fromisoformat(m["debut"]) < timedelta(hours=6)]
+    avant = [m for m in matchs if datetime.fromisoformat(m["debut"]) > utc]
+    m, quand = (apres[-1], "بعد") if apres else (avant[0], "قبل") if avant else (None, "")
+    texte = f"🎙️ نهاية المؤتمر الصحفي ل{nom_ar}"
+    if m:
+        equipes = [("ريال مدريد" if e.strip() == "Real Madrid" else nom_arabe_claude(e.strip())) for e in m["match"].split(" vs ")]
+        texte += f" {quand} مباراة {' و'.join(equipes)}"
+    return f"{texte}\n\n#{nom_ar.replace(' ', '_')} #ريال_مدريد"
+
+
 def sauver(etat, message):
     """Pousse conference.json dans le dépôt : le passage principal y voit le direct en cours et les articles déjà tweetés."""
     ETAT.write_text(json.dumps(etat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
@@ -176,8 +196,9 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
                     continue
                 if publier:
                     post = {"text": texte}
-                    try:  # photo de l'article : le tweet part sans elle si elle est refusée
-                        media = threads.typefully_image(*threads.telecharger_image(it["image"], f"conf-{len(session['liens'])}")) if it.get("image") else None
+                    try:  # photo de l'article sur le 1er tweet de la conférence seulement ; il part sans elle si elle est refusée
+                        media = (threads.typefully_image(*threads.telecharger_image(it["image"], f"conf-{len(session['liens'])}"))
+                                 if it.get("image") and not session["tweets"] else None)
                         if media:
                             post["media_ids"] = [media]
                     except (OSError, ValueError, KeyError) as err:
@@ -190,6 +211,15 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
         except (OSError, ValueError, KeyError, ErreurClaude) as err:  # lecture ou envoi raté : minute suivante
             print(f"{h} ! {err!r} : réessayé dans {INTERVALLE} s")
         dormir(INTERVALLE)
+    if session["tweets"]:  # la conférence a été tweetée : on annonce sa fin
+        fin = tweet_de_fin(horloge())
+        try:
+            if publier:
+                threads.typefully_api("drafts", {"draft_title": "نهاية المؤتمر", "publish_at": "now",
+                                                 "platforms": {"x": {"enabled": True, "posts": [{"text": fin}]}}})
+            print(f">> tweet de fin{'' if publier else ' (à blanc)'} :\n   " + fin.replace("\n", "\n   "))
+        except (OSError, KeyError) as err:
+            print(f"! tweet de fin impossible ({err})")
     session["fini"] = True
     session["fin"] = horloge().isoformat(timespec="seconds")
     enregistrer(f"Conférence en direct : fin ({len(session['tweets'])} déclarations)")

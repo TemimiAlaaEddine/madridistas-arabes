@@ -82,7 +82,10 @@ def arabe(objet):
 @lru_cache
 def nom_arabe_claude(nom):
     try:
-        ar = appeler_claude(f"Écris le nom usuel en arabe du club de football « {nom} », et rien d'autre.", "haiku", "low").strip()
+        # « پي إس في » le 23 nov. : lettres persanes refusées, nom tel que l'écrivent les médias sportifs arabes (آيندهوفن)
+        ar = appeler_claude(f"Écris le nom du club de football « {nom} » tel que l'écrivent les médias sportifs arabes (beIN, Kooora), "
+                            "en lettres arabes seulement (jamais پ ni گ ni ڤ), et rien d'autre.", "sonnet", "low").strip()
+        ar = ar.translate(str.maketrans("پڤگ", "بفغ"))  # haiku ne respectait pas la consigne (« ڤيغو سيلتا »)
     except (ErreurClaude, SystemExit):  # SystemExit : Claude pas installé (suivi dédié), appeler_claude arrêterait tout
         return nom
     return ar if len(ar) < 40 and re.search(r"[؀-ۿ]", ar) else nom
