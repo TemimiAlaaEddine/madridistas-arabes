@@ -1,10 +1,5 @@
 [
  {
-  "match": "Real Madrid vs Celta de Vigo",
-  "debut": "2026-11-21T20:00:00",
-  "heure_fixee": true
- },
- {
   "match": "Real Madrid vs PSV",
   "debut": "2026-11-24T20:00:00",
   "heure_fixee": true
@@ -22,6 +17,11 @@
  {
   "match": "Athletic Club vs Real Madrid",
   "debut": "2026-12-06T15:15:00",
+  "heure_fixee": true
+ },
+ {
+  "match": "Arsenal vs Real Madrid",
+  "debut": "2026-12-09T20:00:00",
   "heure_fixee": true
  }
 ]
