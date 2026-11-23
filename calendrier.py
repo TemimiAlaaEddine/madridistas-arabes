@@ -232,7 +232,6 @@ def suivre_match(con, utc=None):
     return n
 
 
-
 # ---------- suivi dédié (workflow suivi_direct.yml) : une lecture par minute pendant tout le match ----------
 def lire_direct():
     try:

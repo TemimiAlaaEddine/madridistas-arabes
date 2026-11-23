@@ -10,7 +10,6 @@ import sqlite3
 import sys
 import urllib.request
 from datetime import datetime, time, timedelta
-from pathlib import Path
 
 from commun import BASE, DB_PATH, e, maintenant, restaurer_base
 from threads import ENVOYES, heure_madrid

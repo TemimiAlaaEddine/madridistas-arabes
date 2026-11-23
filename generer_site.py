@@ -17,6 +17,7 @@ import json
 import os
 import re
 import sqlite3
+import sys
 import time
 import urllib.parse
 import urllib.request
@@ -516,7 +517,6 @@ def slug(texte):
     return re.sub(r"[^a-z0-9]+", "-", plat(texte)).strip("-") or "auteur"
 
 
-
 def date_ar(iso):
     d = datetime.fromisoformat(iso)
     return f"{d.day} {MOIS[d.month - 1]} {d.year}"
@@ -965,6 +965,7 @@ def traiter_lot(lot):
 
 # ---------- main ----------
 def main():
+    sys.stdout.reconfigure(encoding="utf-8")  # console Windows sans « chcp 65001 » : un titre arabe faisait planter le passage
     ap = argparse.ArgumentParser()
     ap.add_argument("--test", action="store_true", help="montre les lots prévus, sans Claude")
     ap.add_argument("--rendre", action="store_true", help="régénère seulement les pages")

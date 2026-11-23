@@ -1,12 +1,15 @@
 """Vérification rapide : python test_generer_site.py"""
 import io
 import json
+import sys
 import tempfile
 import urllib.parse
 from pathlib import Path
 
 import couvertures
 import generer_site as g
+
+sys.stdout.reconfigure(encoding="utf-8")
 
 couvertures.EDGE = None  # pas de rendu d'images par Edge dans les tests (lent) ; le gabarit est testé à part
 
