@@ -9970,4 +9970,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champi
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7436375564083057275-rennes-se-frotte-les-mains-avec-le-phenomene-marocain-yassir-zabiri','Rennes se frotte les mains avec le phénomène marocain Yassir Zabiri','2026-11-23T16:05:56');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2417029384772505498-real-madrid-la-reaction-folle-de-kylian-mbappe-apres-son-penalty-manque-contre-le-celta','Real Madrid : la réaction folle de Kylian Mbappé après son penalty manqué contre le Celta','2026-11-23T16:56:17');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-pillada-en-los-microfonos-de-dazn-a-mbappe-tras-el-penalti-fallado-f202611-v/','La ‘pillada’ en los micrófonos de DAZN a Mbappé tras el penalti fallado','2026-11-23T17:05:51');
+INSERT INTO "vus" VALUES('https://www.vi.nl/video/bosz-wil-niet-in-negatieve-scenario-s-denken-hou-op-we-hebben-een-goede-ploeg','Bosz wil niet in negatieve scenario''s denken: ''Hou op, we hebben een goede ploeg''','2026-11-23T17:56:01');
 COMMIT;
