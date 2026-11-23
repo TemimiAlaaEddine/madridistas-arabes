@@ -9850,4 +9850,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/mourinho-sob
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mou-da-la-exclusiva-del-proximo-reto-profesional-de-bernardo-silva-terremoto-en-portugal-asegurado-f202611-v/','Mou ‘da la exclusiva’ del próximo reto profesional de Bernardo Silva: terremoto en Portugal asegurado','2026-11-23T13:25:52');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/mourinho-23-11-2026','Mourinho: "Los 12 puntos nos dan tranquilidad, pero no queremos jugar el playoff de la Champions"','2026-11-23T13:37:19');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mou-tenia-ganas-hoy-de-hablar-de-dinero-sus-respuestas-sobre-su-sueldo-y-el-de-los-jugadores-f202611-v/','Mou tenía ganas hoy de hablar de dinero: sus respuestas sobre su sueldo y el de los jugadores','2026-11-23T13:41:24');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a223172969551546767-real-madrid-thibaut-courtois-previent-vinicius-jr','Real Madrid : Thibaut Courtois prévient Vinicius Jr','2026-11-23T13:46:00');
 COMMIT;
