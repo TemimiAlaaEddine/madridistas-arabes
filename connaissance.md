@@ -27,7 +27,7 @@ Dernier fait relu : 36
 - 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
-- 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Sources : Real Madrid CF (site officiel), AS (Tomás Roncero), Foot Mercato (Jordan Pardon), Voetbal International.
+- 2026-11-18 : Le Real Madrid a annoncé officiellement le 18 novembre 2026 la prolongation du contrat d'Arda Güler jusqu'au 30 juin 2032. Source : Real Madrid CF (site officiel).
 - 2026-11-19 : Arda Güler a été nommé Jeune joueur révélation de la Ligue des champions 2025-2026 par l'UEFA. Source : ABC (Miguel Zarza).
 - 2026-11-19 : Le Real Madrid a officialisé le 19 novembre 2026 la prolongation d'Aurélien Tchouaméni jusqu'au 30 juin 2032, comme Arda Güler (contrat jusqu'en 2032, novembre 2026). Sources : Marca (NACHO LABARGA), AS (Frédéric Hermel).
 - 2026-11-19 : Jude Bellingham a remporté le prix Mahou Five-Star Player d'octobre 2026, mois où le Real Madrid a gagné ses cinq matchs. Source : Managing Madrid (Kiyan Sobhani).

@@ -17,6 +17,7 @@ from commun import BASE, CONFIG, DB_PATH, ErreurClaude, appeler_claude, extraire
 CONNAISSANCE = BASE / "connaissance.md"
 A_CLASSER = "À classer"
 RELU = re.compile(r"Dernier fait relu : (\d+)")
+OFFICIEL = "Real Madrid CF (site officiel)"  # nom de realmadrid.com dans config.json
 
 PROMPT = """Tu tiens connaissance.md, la mémoire des faits validés sur le Real Madrid. L'utilisateur vient de valider les faits
 ci-dessous. Range chacun comme il le ferait :
@@ -76,12 +77,18 @@ def a_classer(lignes, ligne):
     ajouter(lignes, A_CLASSER, ligne)
 
 
+def source_officielle(ligne):
+    """Si le site du club est parmi les sources, il suffit : les autres disparaissent (« ; validé par… » reste)."""
+    return re.sub(r"Sources? : [^;]*?(?=\s*;|\.?$)",
+                  lambda m: f"Source : {OFFICIEL}" if re.search(r"Real Madrid CF|site officiel", m.group()) else m.group(), ligne)
+
+
 def integrer(texte, operations, secours, dernier):
     """Applique les opérations de Claude ; une opération invalide (section inconnue, ligne introuvable) part dans
     « À classer ». `secours` (lignes par défaut des faits) sert si `operations` est None. Renvoie (texte, résumé)."""
     lignes, resume = texte.split("\n"), []
     for op in operations if operations is not None else [{"action": "ajouter", "section": A_CLASSER, "ligne": l} for l in secours]:
-        ligne = str(op.get("ligne", "")).strip() if isinstance(op, dict) else ""
+        ligne = source_officielle(str(op.get("ligne", "")).strip()) if isinstance(op, dict) else ""
         if not ligne.startswith(("- ", "|")) or "\n" in ligne:
             continue  # jamais de titre, de bloc ou de ligne vide glissés dans le fichier
         vu = ligne[2:] if ligne.startswith("- ") else ligne

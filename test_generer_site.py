@@ -1285,6 +1285,13 @@ assert "## Médias\n\n- m\n\n## À classer\n\n- x\n- y\n\n## Préférences" in t
 assert "Dernier fait relu : 9" in texte_c and "titre glissé" not in texte_c and len(resume_c) == 6
 assert faits.integrer(base_c, None, ["- s"], 1)[0].count("Dernier fait relu : 2") == 1  # secours ; le numéro ne recule jamais
 assert "## À classer\n\n- s\n" in faits.integrer(base_c, None, ["- s"], 1)[0]
+assert faits.source_officielle("- f. Sources : AS (X, 2026-11-18), Real Madrid CF (site officiel), Marca ; validé le 2026-11-20.") \
+    == "- f. Source : Real Madrid CF (site officiel) ; validé le 2026-11-20."
+assert faits.source_officielle("- f. Sources : AS, Real Madrid CF (site officiel).") == "- f. Source : Real Madrid CF (site officiel)."
+assert faits.source_officielle("- f. Sources : AS, Marca.") == "- f. Sources : AS, Marca."
+assert faits.source_officielle("- f. Sources : Real Madrid CF, AS.") == "- f. Source : Real Madrid CF (site officiel)."  # nom abrégé par Claude
+_op = [{"action": "remplacer", "ancienne": "- m", "ligne": "- m. Sources : Marca, Real Madrid CF (site officiel)."}]
+assert "- m. Source : Real Madrid CF (site officiel)." in faits.integrer(base_c, _op, [], 1)[0]  # fusion depuis l'issue
 print("OK validation des faits")
 
 # Veilleur : fichier de workflow invalide et autres workflows en échec ; l'ancien fichier invalide réparé ne compte plus
@@ -1308,11 +1315,23 @@ corps_t = """## Décisions
 - [x] Ajouter le flux `{"nom": "D", "url": "ftp://d"}`
 - [x] Ajouter le flux `{"nom": "B2", "url": "https://b.es/rss"}`
 - [x] Ajouter la graphie `{"C": "سي", "A": "autre"}`
-- [x] Retirer le flux `Z`"""
+- [x] Retirer le flux `Z`
+- [x] Corriger la publication `X n° 8, article 12` : retirer
+- [ ] Corriger la publication `X n° 9, article 13` : écrire « اهتمام »"""
 nouvelle, res = sources.appliquer(corps_t, conf_t)
 assert [f["nom"] for f in nouvelle["flux"]] == ["B", "C"] and nouvelle["flux"][1] == {"nom": "C", "url": "https://c.it/rss", "pays": "it"}  # jamais d'autorisation
 assert nouvelle["noms_ar"] == {"A": "أ", "C": "سي"} and conf_t["flux"][0]["nom"] == "A"  # graphie existante gardée ; l'original intact
-assert len(res) == 6 and "déjà suivi" in res[3] and "Z : déjà absent" in res[-1], res
+assert len(res) == 7 and "déjà suivi" in res[3] and "Z : déjà absent" in res[-2], res
+assert res[-1] == "- ✏️ à corriger à la main : X n° 8, article 12 (retirer)", res  # case de l'audit : rappel seulement, non cochée ignorée
+from unittest import mock
+html_t = '<head><link rel="alternate" type="application/rss+xml" href="/uploads/feed.xml"></head>'
+with mock.patch("urllib.request.urlopen", side_effect=OSError):
+    assert sources.decouvrir("https://x.es/") == ""
+reponse_t = mock.MagicMock()
+reponse_t.__enter__.return_value.read.return_value = html_t.encode()
+with mock.patch("urllib.request.urlopen", return_value=reponse_t), mock.patch.object(sources, "sante", return_value={"etat": "✅", "entrees": 3, "real": 2}):
+    prop_t = {"nom": "X", "url": "", "site": "https://x.es/"}
+    assert sources.verifier(prop_t) == "✅ 3 entrées, 2 sur le Real" and prop_t["url"] == "https://x.es/uploads/feed.xml"
 assert sources.appliquer("rien de coché", conf_t) == (conf_t, [])
 d_rev = "\n".join(sources.modifications({"retirer": [{"flux": sources.CONFIG["flux"][0]["nom"]}]}, []))
 assert sources.appliquer(d_rev.replace("- [ ]", "- [x]"), sources.CONFIG)[0]["flux"] == sources.CONFIG["flux"][1:]  # aller-retour
