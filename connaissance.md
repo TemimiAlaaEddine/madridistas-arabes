@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 23
+Dernier fait relu : 33
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -78,12 +78,14 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 | 1er nov. | Liga | Racing Santander (ext.) | 3-0 | Mbappé 11' (pén.), Bellingham 21', Diomande 36' |
 | 4 nov. | LDC | AEK Athènes (ext.) | 3-2 | Bellingham 32', Mbappé 78', Valverde 90'+2 |
 | 7 nov. | Liga | Valence (ext.) | 3-0 | Valverde 28', Güler 36', Mbappé 75' |
+| 21 nov. | Liga | Celta Vigo | 2-1 | Bellingham 66', Espí 85' |
 
 - Points douteux : les minutes varient de 1 à 2 min selon les sources (Real Sociedad : LaLiga suivi, un autre site donne 40', 60', 68', 80'). Elche 25' : crédité à Güler, mais le compte rendu officiel du Real le donne en c.s.c. du gardien Dituro. Málaga 26' : c.s.c. de Herrero provoqué par Bellingham, parfois attribué à Bellingham. Leipzig 52' : majorité pour Güler, une source dit Mbappé.
-- Buteurs toutes compétitions au 8 novembre (but d'Elche compté pour Güler) : Mbappé 17 (dont 13 en Liga), Bellingham 5, Güler 5, Diomande 4, Espí 3, Valverde 3, Rüdiger 2, Carreras, Vinícius, Endrick et B. Silva 1 chacun, plus 1 c.s.c. (Herrero).
+- Buteurs toutes compétitions au 21 novembre (but d'Elche compté pour Güler) : Mbappé 17 (dont 13 en Liga), Bellingham 6, Güler 5, Diomande 4, Espí 4, Valverde 3, Rüdiger 2, Carreras, Vinícius, Endrick et B. Silva 1 chacun, plus 1 c.s.c. (Herrero).
 - 2026-11-07, J12 : Valence 0-3 Real Madrid à Mestalla. Valverde (28e), Güler (36e), Mbappé (75e, 13e but en Liga) ; Gayà expulsé (79e). Source : Foot Mercato (Jordan Pardon).
 - 2026-11-07, J12 : Güler meilleure note du match (9,2 : 1 but, 1 passe décisive, 3 passes clés) ; tirs 19 contre 4 (11 cadrés contre 2). Source : WhoScored.
 - 2026-11-21, J13 : après Real Madrid 2-1 Celta, le Real a gagné ses 9 derniers matchs toutes compétitions (Villarreal, Roma, Séville, Leipzig, Barcelone, Racing, AEK, Valence, Celta), depuis la défaite contre l'Atlético le 20 septembre. Source : résultats de cette page, confirmés par le calendrier FotMob ; vérifié le 2026-11-22.
+- 2026-11-21, J13 : Real Madrid 2-1 Celta Vigo au Bernabéu, en revenant de 0-1. Pablo Durán ouvre le score pour le Celta (6e), Bellingham égalise (66e, sur une passe de Mbappé), Carlos Espí, entré en jeu, marque le but de la victoire (85e). Mbappé a manqué un penalty (mentionné par une seule source). Sources : ESPN (Alex Kirkland), Marca (Miguel Ángel García, Joel del Río), Foot Mercato (Allan Brevi), Managing Madrid (passe de Mbappé, entrée en jeu d'Espí), AS (Luis Nieto, penalty manqué).
 
 ## Journalistes et médias (qui pense quoi)
 Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après les titres et chapeaux de la base (n° = article) ; validé par l'utilisateur le 2026-11-20. Sert à relativiser une opinion selon la ligne habituelle de son auteur, pas à la disqualifier.
