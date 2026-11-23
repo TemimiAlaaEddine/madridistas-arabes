@@ -117,7 +117,7 @@ SERIES = {  # nom : (table, colonne de date, condition)
 
 
 def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=BASE / "videos", connaissance=BASE / "connaissance.md",
-            alertes_gh=(), revues=()):
+            alertes_gh=(), revues=(), quota=None):
     dec = heure_madrid(utc) - utc
     madrid = utc + dec
     j0 = datetime.combine(madrid.date(), time()) - dec  # minuit à Madrid, en UTC
@@ -254,7 +254,8 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
         "journaux": lignes(con, "SELECT journal, count(*) FROM articles WHERE date >= ? GROUP BY 1 ORDER BY 2 DESC LIMIT 8", semaine),
     }
     kpi = [("Articles aujourd'hui", aa, ah), ("Threads X", ta, th), ("Posts Facebook", pfa, pfh),
-           ("Passages réussis", f"{len(p_auj) - len(rates)}/{len(p_auj)}" if p_auj else "–", None), ("Pannes en cours", len(pannes), None)]
+           ("Passages réussis", f"{len(p_auj) - len(rates)}/{len(p_auj)}" if p_auj else "–", None), ("Pannes en cours", len(pannes), None),
+           ("Quota Typefully (mois)", f"{'⚠️ ' if quota[3] else ''}{quota[0]}/{quota[1]} · ~{quota[2]} fin du mois" if quota else "–", None)]
     return {"genere": iso(utc) + "Z", "dernier_passage": dernier, "kpi": kpi, "agents": agents, "graphes": graphes, "faits": a_valider, "revues": list(revues)}
 
 
@@ -454,8 +455,14 @@ def main():
     restaurer_base(DB_PATH)
     utc = maintenant()
     passages, revue, alertes, revues = lire_github(utc - timedelta(days=2))
+    try:
+        import sante
+        quota = sante.quota_typefully()
+    except (OSError, ValueError) as err:  # clé absente ou refusée : tuile « – », le tableau de bord sort quand même
+        print(f"! quota Typefully illisible ({err})")
+        quota = None
     con = sqlite3.connect(DB_PATH)
-    d = donnees(con, utc, passages, revue, alertes_gh=alertes, revues=revues)
+    d = donnees(con, utc, passages, revue, alertes_gh=alertes, revues=revues, quota=quota)
     con.close()
     SORTIE.mkdir(exist_ok=True)
     (SORTIE / "index.html").write_text(page(d), encoding="utf-8")

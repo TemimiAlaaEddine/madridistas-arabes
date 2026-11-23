@@ -1248,6 +1248,9 @@ assert ag["controleur"]["etat"] == "attente" and ag["sujets"]["etat"] == "demand
 assert d["graphes"]["par_heure"]["Articles rédigés"][11] == 1 and d["graphes"]["par_heure"]["Articles rédigés"][14] is None  # 11 h à Madrid ; futur vide
 html_statut = statut.page(d)
 assert 'id="editeur_x"' in html_statut and "2 agents bloqués" in html_statut  # Éditeur X et Veilleur
+assert d["kpi"][-1] == ("Quota Typefully (mois)", "–", None)  # quota illisible : tuile vide
+_q = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"), quota=(450, 1000, 900, True))
+assert "⚠️ 450/1000 · ~900 fin du mois" in statut.page(_q)
 print("OK tableau de bord")
 
 # validation des faits depuis le tableau de bord : lecture de l'issue, rangement sans jamais supprimer, secours « À classer »

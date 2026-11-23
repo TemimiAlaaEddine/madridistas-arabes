@@ -147,6 +147,7 @@ jobs:
       - run: python statut.py
         env:
           GH_TOKEN: ${{ github.token }}
+          TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }} # quota du mois (lecture seule)
           PYTHONIOENCODING: utf-8
       - uses: actions/upload-pages-artifact@v3
         with:

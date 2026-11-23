@@ -12,6 +12,16 @@ import threads as t
 from commun import DB_PATH, maintenant, restaurer_base
 
 
+def quota_typefully():
+    """(publications du mois, quota, projection à la fin du mois au rythme actuel, alerte à 80 %) d'après l'API Typefully."""
+    q = t.typefully_api("").get("publishing_quota") or {}
+    utilise, reste = q.get("used", 0), q.get("remaining", 0)
+    total, now = utilise + reste, maintenant()
+    ecoule = max(now.day - 1 + now.hour / 24, 1)  # jours écoulés dans le mois (1 au moins : début de mois trop bruité)
+    projection = round(utilise / ecoule * calendar.monthrange(now.year, now.month)[1])
+    return utilise, total, projection, bool(total and projection >= 0.8 * total)
+
+
 def detail(err):
     return err.read().decode("utf-8", "replace")[:200] if hasattr(err, "read") else ""
 
@@ -84,12 +94,7 @@ def sante(con):
         lignes.append("- Typefully : clé ou compte absent, rien n'est envoyé sur X.")
     else:
         try:
-            q = t.typefully_api("").get("publishing_quota") or {}
-            utilise, reste = q.get("used", 0), q.get("remaining", 0)
-            total, now = utilise + reste, maintenant()
-            ecoule = max(now.day - 1 + now.hour / 24, 1)  # jours écoulés dans le mois (1 au moins : début de mois trop bruité)
-            projection = round(utilise / ecoule * calendar.monthrange(now.year, now.month)[1])
-            alerte = total and projection >= 0.8 * total
+            utilise, total, projection, alerte = quota_typefully()
             lignes.append(f"- {'⚠️' if alerte else '✅'} Quota Typefully : {utilise} publications sur {total} ce mois-ci, "
                           f"environ {projection} à la fin du mois au rythme actuel"
                           + (" : plus de 80 % du quota, à surveiller." if alerte else "."))
