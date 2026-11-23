@@ -16,6 +16,8 @@ import socket
 import sqlite3
 import sys
 import time
+import urllib.parse
+import urllib.request
 from collections import Counter
 from concurrent.futures import ThreadPoolExecutor
 
@@ -66,17 +68,34 @@ MÉDIAS CITÉS DANS NOS ARTICLES SANS ÊTRE SUIVIS (nom arabe : nombre de citati
 
 Propose :
 - "retirer" : les flux à supprimer (en panne, muets, sans rapport avec le Real, ou qui ne produisent rien de publié), avec la raison en une phrase. Ne propose pas de retirer un flux qui marche et publie.
-- "ajouter" : au plus 6 sources qui manquent vraiment, en priorité celles que nos articles citent souvent, chacune avec l'adresse exacte de son flux RSS (ou sitemap / API WordPress) si tu la connais, son pays (code ISO à 2 lettres en minuscules), son nom en arabe tel que le public arabe l'écrit ("nom_ar"), s'il s'agit d'une rubrique d'opinion, et la raison en une phrase. N'invente pas d'adresse : si tu ne la connais pas, laisse "url" vide.
+- "ajouter" : au plus 6 sources qui manquent vraiment, en priorité celles que nos articles citent souvent, chacune avec l'adresse exacte de son flux RSS (ou sitemap / API WordPress) si tu la connais, l'adresse de sa page d'accueil ("site", où chercher le flux sinon), son pays (code ISO à 2 lettres en minuscules), son nom en arabe tel que le public arabe l'écrit ("nom_ar"), s'il s'agit d'une rubrique d'opinion, et la raison en une phrase. N'invente pas d'adresse : si tu ne la connais pas, laisse "url" vide.
 - "remarques" : une ou deux phrases au plus.
 
 Réponds UNIQUEMENT avec un objet JSON entre crochets, sans texte autour :
-[{{"retirer": [{{"flux": "...", "raison": "..."}}], "ajouter": [{{"nom": "...", "nom_ar": "...", "url": "...", "pays": "es", "opinion": false, "raison": "..."}}], "remarques": "..."}}]
+[{{"retirer": [{{"flux": "...", "raison": "..."}}], "ajouter": [{{"nom": "...", "nom_ar": "...", "url": "...", "site": "https://...", "pays": "es", "opinion": false, "raison": "..."}}], "remarques": "..."}}]
 """
 
 
+def decouvrir(site):
+    """Flux annoncé par la page d'accueil (<link rel="alternate" type="application/rss+xml">), ou ""."""
+    try:
+        req = urllib.request.Request(site, headers={"User-Agent": "Mozilla/5.0"})
+        with urllib.request.urlopen(req, timeout=20) as r:
+            html = r.read(1_000_000).decode("utf-8", "replace")
+    except (OSError, ValueError):
+        return ""
+    for balise in re.findall(r"<link\b[^>]*>", html, re.I):
+        if re.search(r"application/(rss|atom)\+xml", balise, re.I) and (m := re.search(r"href=[\"']([^\"']+)", balise)):
+            return urllib.parse.urljoin(site, m.group(1))
+    return ""
+
+
 def verifier(proposition):
-    """Un flux proposé est lu pour de vrai : recommandé seulement s'il répond et parle du Real."""
+    """Un flux proposé est lu pour de vrai : recommandé seulement s'il répond et parle du Real. Sans adresse, celle que
+    sa page d'accueil annonce (gardée dans la proposition pour la case à cocher)."""
     url = proposition.get("url") or ""
+    if not url.startswith(("http://", "https://")) and str(proposition.get("site", "")).startswith(("http://", "https://")):
+        url = proposition["url"] = decouvrir(proposition["site"])
     if not url.startswith(("http://", "https://")):
         return "adresse à trouver"
     if any(f["url"] == url for f in CONFIG["flux"]):
@@ -104,6 +123,7 @@ def modifications(avis, ajouts):
 
 
 DECISION = re.compile(r"^\s*- \[[xX]\] (Retirer le flux|Ajouter le flux|Ajouter la graphie) `(.+)`\s*$", re.M)
+CORRECTION = re.compile(r"^\s*- \[[xX]\] Corriger la publication `([^`]+)`\s*:?\s*(.*?)\s*$", re.M)  # cases de l'audit (audit.py)
 
 
 def appliquer(corps, config):
@@ -136,6 +156,8 @@ def appliquer(corps, config):
                 if isinstance(ar, str) and ar.strip() and nom not in config.setdefault("noms_ar", {}):
                     config["noms_ar"][nom] = ar.strip()
                     resume.append(f"- 🔤 graphie ajoutée : {nom} → {ar.strip()}")
+    # publications déjà parues sur X ou Facebook : rien n'est modifié ici, le résumé de fermeture sert de liste à faire
+    resume += [f"- ✏️ à corriger à la main : {pub}" + (f" ({quoi})" if quoi else "") for pub, quoi in CORRECTION.findall(corps or "")]
     return config, resume
 
 

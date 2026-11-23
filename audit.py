@@ -33,7 +33,11 @@ Règles :
 - Si une règle de X ou de Meta a pu changer ou si tu n'es pas sûr, écris « incertain » et recommande l'option la plus prudente.
 - Ne signale que les écarts. Réponds en français, en Markdown, sans titre de niveau 1 ni 2 : un tableau
   | Publication | Point | Gravité (faible, moyenne, élevée) | Écart constaté | Correction proposée |
-  puis trois lignes de synthèse au plus. S'il n'y a aucun écart, écris seulement « Aucun écart sur cet échantillon. »
+  puis trois lignes de synthèse au plus, puis la ligne « **À décider** : coche les corrections que tu valides ; `/appliquer`
+  les rappelle dans le résumé de fermeture (à faire à la main). » suivie d'une case par publication de gravité moyenne ou élevée,
+  la plus grave d'abord, exactement sous cette forme (repère recopié de l'en-tête de la publication) :
+  - [ ] Corriger la publication `X n° 8, article 1234` : la correction en une phrase (ou « retirer »)
+  S'il n'y a aucun écart, écris seulement « Aucun écart sur cet échantillon. »
 
 PUBLICATIONS
 {publications}
