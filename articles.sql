@@ -9537,4 +9537,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/las-dudas-en
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/23/roberto-gomez-real-madrid-barcelona-quejan-basta.html','Roberto Gómez, contra Real Madrid y Barcelona: "¿De qué se quejan? ¡Basta ya!"','2026-11-23T07:31:42');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/23/jornal-espanhol-se-empolga-com-volta-de-vini-jr-ao-real-reacendeu-a-chama.ghtml','Jornal espanhol se empolga com volta de Vini Jr. ao Real Madrid: "Reacendeu a chama"','2026-11-23T08:46:05');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/barrio-sesamo-explica-negreira/','Barrio Sésamo explica Negreira','2026-11-23T09:01:33');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/champions-league/2026/11/23/superordenador-desconfia-real-madrid-champions.html','El superordenador ''desconfía'' del Real Madrid en la Champions','2026-11-23T09:05:56');
 COMMIT;
