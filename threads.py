@@ -696,6 +696,25 @@ def conference_publiee(con, article_id, tweet, heures=6, club=False):
 DIRECT = ("Marca", "AS")  # conférence en direct : chaque article de ces journaux (une déclaration forte) devient un tweet
 
 
+def medias_thread(t, couvertures, dossier_couv):
+    """Identifiants Typefully des photos de l'article source (à remplacer dans Typefully avant la publication), sinon de sa
+    couverture. Une photo refusée est passée ; les autres erreurs remontent à l'envoi du thread."""
+    medias = []
+    for i, url in enumerate(images_thread(t)):
+        try:
+            medias.append(typefully_image(*telecharger_image(url, f"{t['article_id']}-{i}")))
+        except (OSError, ValueError) as err:
+            print(f"  ! Typefully : image de l'article refusée ({err})")
+    medias = [m for m in medias if m]
+    couv = couvertures.get(t["article_id"])
+    if not medias and not couv:  # pas de couverture d'avance pour un article avec image : faite à la demande
+        from couvertures import generer_couvertures
+        couv = generer_couvertures([t], dossier_couv.parent, menage=False).get(t["article_id"])
+    if not medias and couv:
+        medias = [m for m in [typefully_image(couv, (dossier_couv / couv).read_bytes())] if m]
+    return medias
+
+
 def ecarter(con, article_id, motif):
     """Thread jamais déposé dans Typefully (« sans ») : rien à relire ni à supprimer à la main."""
     con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
@@ -758,19 +777,7 @@ def vers_typefully(con, couvertures, dossier_couv):
             plafond = True  # reporté au passage suivant, sans être bloqué
             continue
         try:
-            medias = []
-            for i, url in enumerate(images_thread(t)):  # photos de l'article source, à remplacer dans Typefully avant la publication
-                try:
-                    medias.append(typefully_image(*telecharger_image(url, f"{t['article_id']}-{i}")))
-                except (OSError, ValueError) as err:
-                    print(f"  ! Typefully : image de l'article refusée ({err})")
-            medias = [m for m in medias if m]
-            couv = couvertures.get(t["article_id"])
-            if not medias and not couv:  # pas de couverture d'avance pour un article avec image : faite à la demande
-                from couvertures import generer_couvertures
-                couv = generer_couvertures([t], dossier_couv.parent, menage=False).get(t["article_id"])
-            if not medias and couv:
-                medias = [m for m in [typefully_image(couv, (dossier_couv / couv).read_bytes())] if m]
+            medias = medias_thread(t, couvertures, dossier_couv)
             if quand == "now" and not motifs:
                 tweets, quand = sans_tweet_de_lien(tweets)
             posts = [{"text": tw} for tw in tweets]
