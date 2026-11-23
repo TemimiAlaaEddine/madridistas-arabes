@@ -43,7 +43,7 @@ REGLES = """- Tweet 1, l'accroche, écrit comme les comptes foot arabes les plus
   section mercato, et toute information de transfert ou de prolongation quelle que soit la section : « 🔄 ميركاتو | », et, seulement si le texte annonce un transfert ou une prolongation en cours (pas pour une analyse, un bilan ou une opération déjà conclue), juste avant la source et seul sur sa ligne, son stade d'après le texte : « 🟢 اتفاق » accord ou opération avancée, « 🟡 مفاوضات » contacts ou intérêt, « 🔴 شائعة » simple rumeur ;
   section tactique : « 🧠 قراءة | » ; section club : « 🏟️ برنابيو | » (stade), « 🏛️ الإدارة | » (direction, institutions) ou « 💶 مالية النادي | » (argent) ;
   section debats et autres opinions : « 🔥 نقاش | » avec une vraie question en accroche, et le dernier tweet du thread finit, sur sa propre ligne, par « ما رأيكم؟ 👇 ».
-- Source : une seule, celle qui a révélé l'information ou porté l'avis. Si le texte dit qu'un média en cite un autre (« نقلت إي إس بي إن عن ليكيب »), ne garde que le média d'origine : (ليكيب). La source est donnée une seule fois, au tweet 1 : les tweets suivants ne la redisent pas (pas de « بحسب ماركا » au tweet 2), sauf pour une information venue d'un autre média. Jamais de chaîne « نقلًا عن... عن... » ni deux médias pour la même information.
+- Source : une seule, celle qui a révélé l'information ou porté l'avis. Si le texte dit qu'un média en cite un autre (« نقلت إي إس بي إن عن ليكيب »), ne garde que le média d'origine : (ليكيب). La source est donnée une seule fois, au tweet 1 : les tweets suivants ne la redisent pas (pas de « بحسب ماركا » au tweet 2), sauf pour une information venue d'un autre média. Jamais de chaîne « نقلًا عن... عن... » ni deux médias pour la même information. Exception : une conférence de presse (« 🎙️ مؤتمر ») n'a aucune source, ni ligne entre parenthèses ni média cité (choix de l'utilisateur, 2026-11-23).
 - Tweets suivants : chacun apporte du nouveau, sans redire l'accroche ni la source du tweet 1 ; fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. Deux ou trois lignes courtes valent mieux qu'un bloc ; une énumération (notes des joueurs, chiffres, noms) va à la ligne, chaque élément précédé de « ▪️ ». L'avis reste attribué à son auteur, par son nom de famille ou une tournure (في نظره، يذهب أبعد من ذلك) : n'écris jamais « الكاتب » ni « الصحفي », et ne recite pas le journal. Le dernier porte la conclusion ou la phrase la plus marquante.
 - Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, au moins 4 et sans plafond pour une conférence de presse (toutes ses déclarations fortes, une par tweet ; le thème annoncé avant une citation est celui de la question posée, sans en inventer un pour la suite d'une même réponse).
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces et retours à la ligne compris. Pas de lien, pas de numérotation, aucun hashtag en dehors de la dernière ligne du tweet 1, pas d'intertitre « ## », aucun émoji en dehors de ceux prévus ci-dessus.
@@ -97,9 +97,16 @@ def tags_a_la_fin(texte):
 
 def assembler(a, tweets):
     """Réunit les tweets écrits par Claude en un seul tweet long, suivi du tweet de crédit (avec le lien) publié en réponse :
-    il peut être retiré à l'envoi et ajouté à la main. None si c'est trop long pour X ou si le thread est vide."""
+    il peut être retiré à l'envoi et ajouté à la main. Conférence de presse : pas de source, donc pas de crédit.
+    None si c'est trop long pour X ou si le thread est vide."""
     long = tags_a_la_fin("\n\n".join(t for t in (str(t).strip() for t in tweets) if t))
-    return [long, credit(a)] if long and longueur(long) <= LIMITE_LONG and longueur(credit(a)) <= LIMITE else None
+    if not long or longueur(long) > LIMITE_LONG or longueur(credit(a)) > LIMITE:
+        return None
+    return [long] if est_conference(long) else [long, credit(a)]
+
+
+def est_conference(tweet):
+    return tweet.lstrip().startswith("🎙")  # étiquette « 🎙️ مؤتمر [nom] | » mise par Claude (REGLES)
 
 
 def connexion_threads(con):
@@ -202,7 +209,7 @@ def controler_thread(con, article_id, tweets, officiel=False):
     motifs = []
     if longueur(tweets[0]) > LIMITE_LONG or any(longueur(x) > LIMITE for x in tweets[1:]):
         motifs.append("tweet trop long")
-    if not SOURCE.search(tweets[0]):
+    if not SOURCE.search(tweets[0]) and not est_conference(tweets[0]):
         motifs.append("source absente du 1er tweet")
     if any(APPATS.search(x) for x in tweets):
         motifs.append("appel à l'engagement")

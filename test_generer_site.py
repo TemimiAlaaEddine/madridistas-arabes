@@ -596,6 +596,8 @@ def envoye(i, accroche, statut="immédiat"):
                 (i, json.dumps([f"{accroche}\n\n(ماركا)"]), statut, *[t.maintenant().isoformat(timespec="seconds")] * 2))
 assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود إلى التدريبات\n\n(ماركا)"]) == []
 assert t.controler_thread(con, 1, ["مبابي يعود إلى التدريبات"]) == ["source absente du 1er tweet"]
+assert t.controler_thread(con, 1, ["🎙️ مؤتمر مورينيو | «نحن جاهزون»"]) == []  # conférence : jamais de source
+assert t.assembler(art, ["🎙️ مؤتمر مورينيو | «نحن جاهزون»", "«الفريق بخير»"]) == ["🎙️ مؤتمر مورينيو | «نحن جاهزون»\n\n«الفريق بخير»"]  # ni crédit ni lien
 assert t.controler_thread(con, 1, ["📰 خبر | زلزال في برنابيو!\n\n(ماركا)"]) == []  # ton libre depuis le 21 nov.
 assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود\n\n(ماركا)", "ريتويت"]) == ["appel à l'engagement"]
 envoye(10, "📰 خبر | مبابي يعود إلى التدريبات الجماعية مع الفريق")
