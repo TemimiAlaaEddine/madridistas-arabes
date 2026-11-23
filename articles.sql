@@ -7221,6 +7221,7 @@ INSERT INTO "liens_x" VALUES('12133507','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12134291','https://x.com/ElMadridistAlaa/status/2124859871870976041','2026-11-23T13:37:26.454Z');
 INSERT INTO "liens_x" VALUES('12134660','https://x.com/ElMadridistAlaa/status/2124863626242846824','2026-11-23T13:52:21.568Z');
 INSERT INTO "liens_x" VALUES('12136985','https://x.com/ElMadridistAlaa/status/2124883798479552526','2026-11-23T15:12:30.985Z');
+INSERT INTO "liens_x" VALUES('12136988','https://x.com/ElMadridistAlaa/status/2124884433593655406','2026-11-23T15:15:05.291Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -9940,4 +9941,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8751026535163650313-real-
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/actualidad/mourinho-y-un-jugador-compareceran-en-rueda-de-prensa-despues-del-entrenamiento-22-11-2026','Mourinho y un jugador comparecerán en rueda de prensa después del entrenamiento','2026-11-23T15:12:24');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-rey-del-manicomio-f202611-n/','El rey del manicomio','2026-11-23T15:12:24');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1678923663048309452-ligue-des-champions-le-groupe-du-real-madrid-face-au-psv-devoile','Ligue des Champions : le groupe du Real Madrid face au PSV dévoilé','2026-11-23T15:12:24');
+INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50573054/real-madrid-mourinho-vinicius-jr-does-not-mvp','Real Madrid''s Mourinho: Vinícius Jr. ''doesn''t have to be MVP'' to deliver','2026-11-23T15:16:35');
 COMMIT;
