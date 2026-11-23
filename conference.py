@@ -38,6 +38,8 @@ ATTENTE = timedelta(hours=3, minutes=30)
 AVANCE = timedelta(minutes=45)
 ATTENTE_DETECTION = timedelta(minutes=30)  # direct lancé sur un article : attente d'une vraie déclaration de conférence
 APRES_MATCH = (timedelta(hours=1, minutes=30), timedelta(hours=4))  # après le coup d'envoi : fenêtre de la conférence d'après-match
+FIN_MATCH = timedelta(hours=1, minutes=45)  # après le coup d'envoi : direct d'après-match lancé à cette heure (fin du match)
+ATTENTE_APRES = timedelta(hours=1, minutes=30)  # après-match : de la fin du match à la première déclaration, au plus
 MEME_CONFERENCE = timedelta(hours=6)  # même conférence : un direct peut durer 45 min + 3 h 30 + 90 min
 
 
@@ -99,6 +101,18 @@ def apres_match(utc):
     return any(APRES_MATCH[0] <= utc - datetime.fromisoformat(m["debut"]) < APRES_MATCH[1] for m in matchs)
 
 
+def fin_de_match(utc):
+    """Fin (UTC) du match de matchs.json dont le direct d'après-match est à lancer maintenant : de 45 min avant la fin
+    (coup d'envoi + 1 h 45) à la fin de l'attente de la conférence ; None sinon. Heure de match fixée seulement."""
+    from calendrier import FICHIER
+    try:
+        matchs = json.loads(FICHIER.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+    fins = [datetime.fromisoformat(m["debut"]) + FIN_MATCH for m in matchs if m.get("heure_fixee")]
+    return next((f for f in fins if f - AVANCE < utc < f + ATTENTE_APRES), None)
+
+
 def en_salle_de_presse(lien, resume):
     """L'article rapporte-t-il la conférence (salle de presse), et non une interview télé d'après-match (Movistar, DAZN...) ?"""
     from generer_site import texte_complet
@@ -108,7 +122,8 @@ def en_salle_de_presse(lien, resume):
 
 def a_lancer(utc=None, page=None):
     """Ce que le direct doit faire maintenant (le journal est toujours choisi à la première vraie déclaration) :
-    "auto <heure UTC>" : conférence d'avant-match annoncée, entraînement dans moins de 45 min (le direct attend cette heure) ;
+    "auto <heure UTC>" : conférence d'avant-match annoncée, entraînement dans moins de 45 min, ou conférence d'après-match,
+    fin du match (coup d'envoi + 1 h 45) dans moins de 45 min ou passée depuis moins de 1 h 30 (le direct attend cette heure) ;
     "auto" : une déclaration vient de paraître (après un match : seulement si elle vient de la salle de presse) ; "" : rien.
     Une session finie sans aucun tweet (faux départ) n'empêche pas d'en lancer une autre."""
     from calendrier import URL, conferences, direct_actif
@@ -125,6 +140,9 @@ def a_lancer(utc=None, page=None):
     proches = [h for h in prevues if utc < h <= utc + AVANCE]
     if proches:
         return f"auto {proches[0].isoformat()}"
+    fin = fin_de_match(utc)
+    if fin:  # après-match : lancé à la fin du match, il attend la conférence (les interviews télé sont écartées : HORS)
+        return f"auto {fin.isoformat()}"
     salle = apres_match(utc)
     if any(not salle or en_salle_de_presse(d[2], d[3]) for j in FLUX for d in declarations(j, utc - FRAIS)):
         return "auto"
@@ -226,7 +244,8 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
     if heure and heure > horloge():
         print(f"Attente de l'entraînement ({heure:%H:%M} UTC) : {(heure - horloge()).seconds // 60} min")
         dormir((heure - horloge()).total_seconds())
-    attente = ATTENTE if heure else ATTENTE_DETECTION
+    # heure = fin d'un match (après-match) : 1 h 30 ; heure = entraînement (avant-match) : 3 h 30 ; lancé sur un article : 30 min
+    attente = (ATTENTE_APRES if apres_match(heure) else ATTENTE) if heure else ATTENTE_DETECTION
     if publier:  # base et conference.json à jour après l'attente (le passage principal a pu publier entre-temps)
         subprocess.run(["git", "pull", "-q", "--rebase", "--autostash"], capture_output=True, timeout=60, cwd=BASE)
     etat = lire_etat()

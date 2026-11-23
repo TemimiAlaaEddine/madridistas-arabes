@@ -52,8 +52,16 @@ try:
     c.declarations = lambda j, depuis: []
     assert c.a_lancer(datetime(2026, 11, 23, 9, 10), page=CAL) == "", "plus de 45 min avant : trop tôt"
     assert c.a_lancer(T0, page="") == ""
-    # après-match : seule une déclaration venue de la salle de presse lance le direct (l'interview Movistar passe par le passage normal)
-    calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-23T10:00:00", "heure_fixee": True}]), encoding="utf-8")
+    # après-match programmé : lancé de 45 min avant la fin du match (coup d'envoi + 1 h 45) à 1 h 30 après, avec l'heure de fin
+    c.declarations = lambda j, depuis: []
+    calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-24T20:00:00", "heure_fixee": True}]), encoding="utf-8")
+    assert c.a_lancer(datetime(2026, 11, 24, 21, 5), page="") == "auto 2026-11-24T21:45:00"
+    assert c.a_lancer(datetime(2026, 11, 24, 23, 0), page="") == "auto 2026-11-24T21:45:00", "lancé en retard : encore utile"
+    assert c.a_lancer(datetime(2026, 11, 24, 20, 55), page="") == "" and c.a_lancer(datetime(2026, 11, 24, 23, 20), page="") == ""
+    assert c.apres_match(datetime(2026, 11, 24, 21, 45)), "heure de fin : attente d'après-match (1 h 30)"
+    # après-match sans heure fixée : seule une déclaration venue de la salle de presse lance le direct (l'interview Movistar
+    # passe par le passage normal)
+    calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-23T10:00:00", "heure_fixee": False}]), encoding="utf-8")
     c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "a Movistar")] if j == "Marca" else []
     vrai_salle = c.en_salle_de_presse
     c.en_salle_de_presse = lambda lien, resume: "Movistar" not in resume
@@ -120,6 +128,16 @@ try:
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
     assert not s["tweets"] and s["journal"] is None and (horloge[0] - T0) == c.ATTENTE_DETECTION
     print("OK attente avant-match")
+
+    # après-match programmé : attend la fin du match, puis 1 h 30 au plus (pas 3 h 30)
+    FIN = datetime(2026, 11, 24, 21, 45)
+    calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-24T20:00:00", "heure_fixee": True}]), encoding="utf-8")
+    horloge[0] = FIN - timedelta(minutes=10)
+    c.declarations = lambda j, depuis: []
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=FIN)
+    assert s["debut"] == FIN.isoformat() and (horloge[0] - FIN) == c.ATTENTE_APRES and not s["tweets"]
+    calendrier.FICHIER.write_text("[]", encoding="utf-8")
+    print("OK attente après-match")
 
     # tweet de fin : avant le prochain match, ou après le match commencé il y a moins de 6 h
     vrai_cal = (calendrier.FICHIER, calendrier.nom_arabe_claude)
