@@ -9892,4 +9892,5 @@ INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/prime
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mou-tenia-ganas-hoy-de-hablar-de-dinero-sus-respuestas-sobre-su-sueldo-y-el-de-los-jugadores-f202611-v/','Mou tenía ganas hoy de hablar de dinero: sus respuestas sobre su sueldo y el de los jugadores','2026-11-23T13:41:24');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a223172969551546767-real-madrid-thibaut-courtois-previent-vinicius-jr','Real Madrid : Thibaut Courtois prévient Vinicius Jr','2026-11-23T13:46:00');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/rueda-prensa-jugador-23-11-2026','Courtois: “La remontada en Roma fue clave para creer más en nosotros”','2026-11-23T13:52:14');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7094242701615243629-zlatan-ibrahimovic-va-jouer-un-mechant-dans-la-serie-mobland','Zlatan Ibrahimović va jouer un méchant dans la série MobLand','2026-11-23T14:11:08');
 COMMIT;
