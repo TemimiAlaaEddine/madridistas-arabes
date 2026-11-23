@@ -51,6 +51,7 @@ jobs:
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+          BRIGHTDATA_API_TOKEN: ${{ secrets.BRIGHTDATA_API_TOKEN }} # direct écrit d'AS : sa page refuse les programmes (403)
           PYTHONIOENCODING: utf-8
           PYTHONUNBUFFERED: 1
         run: |

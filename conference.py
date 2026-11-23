@@ -11,6 +11,7 @@ nouvelles du passage principal sont retenues jusqu'à la fin.
     python conference.py --suivre auto     (workflow dédié) ; --a-blanc : affiche les tweets sans les publier
 """
 import calendar
+import html
 import json
 import re
 import subprocess
@@ -28,7 +29,15 @@ FLUX = {"Marca": ["https://e00-marca.uecdn.es/rss/futbol/real-madrid.xml"],
                "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/portada/"]}  # tout le football : vite renouvelé
 INTERVALLE = 60
 FRAIS = timedelta(minutes=30)  # un article plus vieux ne lance pas de direct
-SILENCE = timedelta(minutes=10)  # fin du direct : 10 min sans nouvelle déclaration (20, jugé trop long le 23 nov.)
+# fin du direct : 15 min sans nouvelle déclaration (direct écrit d'AS du 23 nov. : 4 min au plus entre deux réponses, 2 min
+# au changement d'orateur Courtois -> Mourinho)
+SILENCE = timedelta(minutes=15)
+# direct écrit d'AS (« Rueda de prensa de Mourinho y Courtois ... en directo ») : chaque réponse 1 à 2 min après, avec la
+# question ; listé sur sa page Real Madrid dès sa création ; la page du direct refuse le programme (403) : lue par Bright Data
+LISTE_AS = "https://as.com/noticias/real-madrid/"
+DIRECT_AS = re.compile(r"https://as\.com/[\w/-]*rueda-de-prensa[\w-]*-d/")
+UNITE = re.compile(r'<div id="([0-9a-f]{32})"[^>]*?data-sort-time="(\d+)"[^>]*?class="ev-unit[^"]*"[^>]*>(.*?)(?=<div id="[0-9a-f]{32}"|\Z)', re.S)
+VIEUX_DIRECT = timedelta(hours=12)  # un direct sans entrée depuis 12 h est celui d'une autre conférence
 DUREE_MAX = timedelta(minutes=90)  # après la première déclaration
 # avant-match : de l'heure de l'entraînement à la première déclaration, au plus (23 nov. : entraînement 11 h, conférence vers
 # 13 h 10, premier article d'AS à 13 h 38, heure de Madrid ; 2 h 30 aurait coupé trop tôt)
@@ -63,6 +72,37 @@ def declarations(journal, depuis):
             if quand and quand >= depuis and est_declaration(e.get("title", ""), e.get("summary", "")):
                 sortie.setdefault(e.get("link", ""), (quand, e.get("title", ""), e.get("link", ""), e.get("summary", "")))
     return sorted(sortie.values())
+
+
+def entrees_direct(page):
+    """[(id, publié UTC, question, texte)] d'un direct écrit d'AS, du plus ancien au plus récent ; question "" pour une entrée
+    de commentaire (« Comienza la rueda de prensa », « Y hasta aquí, Courtois »)."""
+    net = lambda h: html.unescape(re.sub(r"\s+", " ", re.sub(r"<[^>]+>", " ", h))).strip()
+    sortie = {}
+    for id_, ms, bloc in UNITE.findall(page):
+        bloc = bloc.split('<div class="ev-foo')[0]  # sans le pied de l'entrée (« Comenta ») ni le reste de la page
+        q = re.search(r'<p class="ev-title">(.*?)</p>', bloc, re.S)
+        corps = re.sub(r'<p class="ev-title">.*?</p>', " ", bloc, flags=re.S)
+        sortie.setdefault(id_, (id_, datetime.fromtimestamp(int(ms) / 1000, timezone.utc).replace(tzinfo=None),
+                                net(q[1]) if q else "", net(corps)))  # entrée épinglée : deux fois dans la page
+    return sorted(sortie.values(), key=lambda e: e[1])
+
+
+def lire_direct(url):
+    from match import bright_data
+    return entrees_direct(bright_data(url))
+
+
+def trouver_direct_as(utc, vus):
+    """URL du direct écrit d'AS sur une conférence, listé sur sa page Real Madrid, ou None. Un vieux direct encore listé va
+    dans `vus` : il ne coûte pas une requête Bright Data par minute."""
+    from commun import lire_page
+    for url in dict.fromkeys(DIRECT_AS.findall(lire_page(LISTE_AS))):
+        if url not in vus:
+            if any(e[1] >= utc - VIEUX_DIRECT for e in lire_direct(url)):
+                return url
+            vus.append(url)
+    return None
 
 
 def lire_etat():
@@ -175,6 +215,46 @@ Titre : {titre}
 """
 
 
+PROMPT_DIRECT = """Tu écris en direct, pour le compte X « المدريديستا علاء » (supporters arabes du Real Madrid), un tweet sur une
+réponse donnée en conférence de presse du Real Madrid, d'après le direct écrit d'AS ci-dessous.
+
+Forme, en arabe :
+ligne 1 : « 🎙️ مؤتمر <nom de l'orateur en arabe> | » puis la phrase la plus forte de la réponse, traduite fidèlement entre «».
+ligne vide, puis la question du journaliste traduite exactement.
+ligne vide, puis la réponse complète traduite exactement entre «», sans la résumer ni la couper (les indications entre
+parenthèses, rires ou pauses, peuvent être omises).
+ligne vide, puis : #<nom de l'orateur en arabe, espaces remplacés par _> #ريال_مدريد
+Pas de source, pas de média cité, pas de lien, aucun autre émoji, aucun fait absent du direct. Pas de limite de longueur.
+Noms arabes connus : {noms}
+
+L'orateur se déduit du fil : le direct annonce chaque orateur (« Y hasta aquí, Courtois. ¡LLEGA THE SPECIAL ONE! » : Mourinho
+parle ensuite). Si tu ne peux pas savoir qui parle, ou si l'entrée n'est pas une réponse de la conférence, réponds seulement HORS.
+Sinon, réponds UNIQUEMENT avec le texte du tweet.
+
+FIL DU DIRECT (entrées précédentes, de la plus ancienne à la plus récente) :
+{fil}
+
+ENTRÉE À TWEETER
+Question : {question}
+Réponse : {reponse}
+"""
+
+
+def tweet_direct(entree, fil):
+    """Tweet d'une réponse du direct écrit d'AS (question et réponse traduites, orateur déduit du fil), ou "HORS"."""
+    noms = ", ".join(f"{k.capitalize()} = {v['nom']}" for k, v in CONFIG.get("personnes", {}).items()
+                     if isinstance(v, dict) and v.get("nom"))
+    fil = "\n".join(f"- {'Q : ' + q + ' / R : ' if q else ''}{t[:300]}" for _, _, q, t in fil) or "(début du direct)"
+    r = appeler_claude(PROMPT_DIRECT.format(noms=noms or "(aucun)", fil=fil, question=entree[2], reponse=entree[3][:6000]),
+                       CONFIG.get("modele_redaction", "sonnet"), "low").strip()
+    return "HORS" if not r or r[:10].strip() == "HORS" else r
+
+
+def orateurs(tweets):
+    """Noms arabes des orateurs, dans l'ordre, d'après la 1re ligne des tweets (« 🎙️ مؤتمر كورتوا | ... »)."""
+    return list(dict.fromkeys(m[1].strip() for t in tweets if (m := re.match(r"🎙️ مؤتمر (.+?)\s*\|", t))))
+
+
 def tweet(titre, texte, deja):
     """Texte du tweet, ou "DOUBLON" (déclaration déjà tweetée) ou "HORS" (pas une déclaration de la conférence : interview
     télé, vieille phrase... ; elle passe alors par le passage normal)."""
@@ -186,7 +266,7 @@ def tweet(titre, texte, deja):
     return "DOUBLON" if "DOUBLON" in r[:20] else "HORS" if not r or r[:10].strip() == "HORS" else r
 
 
-def tweet_de_fin(utc):
+def tweet_de_fin(utc, noms=None):
     """« 🎙️ نهاية المؤتمر الصحفي لمورينيو قبل/بعد مباراة ريال مدريد و... » d'après matchs.json : un match commencé il y a moins
     de 6 h -> conférence d'après-match, sinon celle d'avant le prochain match."""
     from calendrier import FICHIER, nom_arabe_claude
@@ -199,11 +279,12 @@ def tweet_de_fin(utc):
     apres = [m for m in matchs if timedelta(0) <= utc - datetime.fromisoformat(m["debut"]) < timedelta(hours=6)]
     avant = [m for m in matchs if datetime.fromisoformat(m["debut"]) > utc]
     m, quand = (apres[-1], "بعد") if apres else (avant[0], "قبل") if avant else (None, "")
-    texte = f"🎙️ نهاية المؤتمر الصحفي ل{nom_ar}"
+    noms = noms or [nom_ar]  # orateurs du direct (Mourinho et un joueur), sinon l'entraîneur
+    texte = "🎙️ نهاية المؤتمر الصحفي ل" + " و".join(noms)
     if m:
         equipes = [("ريال مدريد" if e.strip() == "Real Madrid" else nom_arabe_claude(e.strip())) for e in m["match"].split(" vs ")]
         texte += f" {quand} مباراة {' و'.join(equipes)}"
-    return f"{texte}\n\n#{nom_ar.replace(' ', '_')} #ريال_مدريد"
+    return texte + "\n\n" + " ".join(f"#{n.replace(' ', '_')}" for n in noms) + " #ريال_مدريد"
 
 
 def sauver(etat, message):
@@ -235,10 +316,11 @@ def deja_publies(depuis):
 
 
 def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=None, heure=None):
-    """Lit chaque minute le flux de `journal` ("auto" : Marca et AS jusqu'à la première déclaration, puis ce journal seul) et
-    tweete chaque nouvelle déclaration. heure (UTC) : entraînement annoncé avec conférence, attendu avant de commencer.
+    """Lit chaque minute le direct écrit d'AS dès qu'il est listé (une réponse tweetée par minute, orateurs successifs compris),
+    sinon le flux de `journal` ("auto" : Marca et AS jusqu'à la première déclaration, puis ce journal seul), et tweete chaque
+    nouvelle déclaration. heure (UTC) : entraînement annoncé avec conférence, attendu avant de commencer.
     Avant la première déclaration : attente jusqu'à 3 h 30 après l'entraînement (30 min pour un direct lancé sur un
-    article) ; ensuite, jusqu'à 10 min sans déclaration (90 min au plus après la première), puis le tweet de fin."""
+    article) ; ensuite, jusqu'à 15 min sans déclaration (90 min au plus après la première), puis le tweet de fin."""
     import threads
     from generer_site import texte_complet
     horloge = horloge or maintenant
@@ -270,18 +352,27 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
             break
         h = instant.strftime("%H:%M:%S")
         try:
-            journaux = [session["journal"]] if session["journal"] else list(FLUX)
-            nouvelles = sorted(d + (j,) for j in journaux for d in declarations(j, debut - FRAIS) if d[2] not in session["vus"])
+            if not session.get("direct_as"):
+                session["direct_as"] = trouver_direct_as(instant, session["vus"])
+            if session["direct_as"]:  # direct écrit d'AS : seul suivi, une réponse par minute (rattrapage compris)
+                entrees = lire_direct(session["direct_as"])
+                reponses = [e for e in entrees if e[2] and e[1] >= debut - FRAIS and e[0] not in session["vus"]]
+                nouvelles = [(e[1], e[2], e[0], "", "AS", lambda e=e: tweet_direct(e, [x for x in entrees if x[1] < e[1]][-8:]))
+                             for e in reponses[:1]]
+            else:  # pas de direct écrit : articles de Marca et d'AS
+                journaux = [session["journal"]] if session["journal"] else list(FLUX)
+                nouvelles = [d + (None,) for d in sorted(d + (j,) for j in journaux for d in declarations(j, debut - FRAIS)
+                                                         if d[2] not in session["vus"])]
             if not nouvelles:  # signe de vie dans le journal du workflow
                 print(f"{h} en attente de la conférence (jusqu'à {limite:%H:%M} UTC)" if premiere is None else
                       f"{h} aucune nouvelle déclaration ({session['journal']}), fin dans "
                       f"{(SILENCE - (instant - derniere)).seconds // 60} min sans déclaration")
-            for quand, titre, lien, resume, j in nouvelles:
-                if session["journal"] and j != session["journal"]:
-                    continue  # journal choisi plus tôt dans cette même lecture
+            for quand, titre, lien, resume, j, rediger in nouvelles:
+                if session["journal"] and j != session["journal"] and not rediger:
+                    continue  # journal choisi plus tôt dans cette même lecture (le direct écrit d'AS passe toujours)
                 session["vus"].append(lien)  # noté avant l'envoi : un tweet raté n'est pas retenté en boucle
                 it = {"lien": lien, "texte_flux": resume, "type": "conference"}
-                texte = tweet(titre, texte_complet(it), session["tweets"])
+                texte = rediger() if rediger else tweet(titre, texte_complet(it), session["tweets"])
                 if texte == "HORS":
                     print(f"{h} hors conférence, laissé au passage normal : {titre[:80]}")
                     continue
@@ -308,11 +399,11 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
                 session["tweets"].append(texte)
                 print(f"{h} >> tweet{'' if publier else ' (à blanc)'} :\n   " + texte.replace("\n", "\n   "))
                 enregistrer(f"Conférence en direct : {len(session['tweets'])} déclaration(s)")
-        except (OSError, ValueError, KeyError, ErreurClaude) as err:  # lecture ou envoi raté : minute suivante
+        except (OSError, ValueError, KeyError, ErreurClaude, subprocess.SubprocessError) as err:  # lecture ou envoi raté : minute suivante
             print(f"{h} ! {err!r} : réessayé dans {INTERVALLE} s")
         dormir(INTERVALLE)
     if session["tweets"]:  # la conférence a été tweetée : on annonce sa fin
-        fin = tweet_de_fin(horloge())
+        fin = tweet_de_fin(horloge(), orateurs(session["tweets"]))
         try:
             if publier:
                 threads.typefully_api("drafts", {"draft_title": "نهاية المؤتمر", "publish_at": "now",

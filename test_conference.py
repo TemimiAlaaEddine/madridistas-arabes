@@ -2,7 +2,7 @@
 import json
 import sqlite3
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 import conference as c
 import generer_site
@@ -27,7 +27,9 @@ print("OK déclarations")
 T0 = datetime(2026, 11, 23, 12, 0)
 vrai = (c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet, c.tweet_de_fin)
 vrai_fin = c.tweet_de_fin
-c.tweet_de_fin = lambda utc: "🎙️ نهاية"  # sans appel à Claude (nom arabe de l'adversaire)
+c.tweet_de_fin = lambda utc, noms=None: "🎙️ نهاية"  # sans appel à Claude (nom arabe de l'adversaire)
+vrai_trouver = c.trouver_direct_as
+c.trouver_direct_as = lambda utc, vus: None  # pas de direct écrit d'AS : articles de Marca et d'AS
 import calendrier
 vrai_actif = calendrier.direct_actif
 calendrier.direct_actif = lambda w="": False
@@ -87,7 +89,7 @@ try:
     assert c.a_lancer(T0, page="") == "auto" and c.session_recente(T0) is None
     print("OK lancement")
 
-    # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 10 min de silence
+    # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 15 min de silence
     horloge = [T0]
     flux = {0: [], 2: [(T0, "Mourinho: «1»", "m1", "")], 4: [(T0, "Mourinho: «1»", "m1", ""), (T0, "Mourinho: «2»", "m2", "")],
             6: [(T0, "Mourinho: «1»", "m1", ""), (T0, "Mourinho: «2»", "m2", ""), (T0, "Mourinho: «3»", "m3", ""), (T0, "Mourinho: «0»", "m0", "")]}
@@ -102,7 +104,7 @@ try:
                  sauvegarder=lambda etat, m: sauvegardes.append((m, json.dumps(etat[-1]))))
     assert s["tweets"] == ["🎙️ مؤتمر مورينيو | «0»", "🎙️ مؤتمر مورينيو | «1»", "🎙️ مؤتمر مورينيو | «3»"], s["tweets"]
     assert s["liens"] == ["m0", "m1", "m2", "m3"] and s["fini"] and s["journal"] == "Marca"
-    assert 15 <= (horloge[0] - T0).total_seconds() / 60 <= 18, "fin 10 min après la dernière déclaration (min 6)"
+    assert 21 <= (horloge[0] - T0).total_seconds() / 60 <= 23, "fin 15 min après la dernière déclaration (min 6)"
     assert sauvegardes[0][0].endswith("suivie sur Marca") and "fin" in sauvegardes[-1][0]
     print("OK boucle")
 
@@ -120,7 +122,7 @@ try:
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=T0)
     assert s["journal"] == "AS" and s["tweets"] == ["🎙️ مؤتمر مورينيو | «x»"], s
     assert "m-tv" in s["vus"] and "m-tv" not in s["liens"] and "m-z" not in s["vus"], "Marca ignoré une fois AS choisi"
-    assert 60 <= (horloge[0] - T0).total_seconds() / 60 <= 62, "pas de fin de silence pendant l'attente (50 min), puis 10 min"
+    assert 65 <= (horloge[0] - T0).total_seconds() / 60 <= 67, "pas de fin de silence pendant l'attente (50 min), puis 15 min"
     horloge[0] = T0 - timedelta(minutes=40)
     c.declarations = lambda j, depuis: []
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=T0)
@@ -178,8 +180,41 @@ try:
     assert [p.get("media_ids") for p in posts] == [["media1"], None, None, None], posts
     assert posts[-1]["text"] == "🎙️ نهاية" and len(posts) == 4, "3 déclarations (0, 1, 3) puis la fin"
     print("OK photo et fin")
+
+    # direct écrit d'AS (23 nov.) : entrées lues dans la page (épinglée en double, classes en plus), une réponse par minute
+    # même en rattrapage, titres de rubrique écartés (HORS), Courtois puis Mourinho, fin à 15 min de silence
+    def unite(i, minute, q, texte, classe="ev-unit"):
+        ms = int((T0 + timedelta(minutes=minute)).replace(tzinfo=timezone.utc).timestamp() * 1000)
+        return (f'<div id="{i:032x}" data-les-card="default" data-sort-time="{ms}" class="{classe}" data-is-key-card="false">'
+                f'<div class="ev-main"><div class="ev-text">' + (f'<p class="ev-title">{q}</p>' if q else "") +
+                f'<p>{texte}</p></div></div><div class="ev-foo ev-foo__social"><span>Comenta</span></div></div>\n')
+    page = (unite(9, 3, "", "«Gracias»", "ev-unit ev-pinned") + unite(1, 0, "¡SALE COURTOIS!", "Comienza") +
+            unite(2, 0, "¿Renovación?", "Estoy &quot;muy&quot; feliz") + unite(3, 0, "¿Balón de Oro?", "No sé") +
+            unite(4, 1, "¡AHORA, MOURINHO!", "Y hasta aquí, Courtois") + unite(5, 2, "¿El PSV?", "Buen equipo") +
+            unite(9, 3, "", "«Gracias»", "ev-unit ev-pinned"))
+    e = c.entrees_direct(page)
+    assert [x[0][-1] for x in e] == ["1", "2", "3", "4", "5", "9"] and e[1][1] == T0 and e[5][1] == T0 + timedelta(minutes=3)
+    assert e[1][2:] == ("¿Renovación?", 'Estoy "muy" feliz') and e[5][2:] == ("", "«Gracias»")
+    horloge[0] = T0
+    c.trouver_direct_as = lambda utc, vus: "https://as.com/rueda-de-prensa-d/"
+    c.lire_direct = lambda url: [x for x in c.entrees_direct(page) if x[1] <= horloge[0]]
+    fils = []
+    def faux_direct(entree, fil):
+        fils.append([x[2] for x in fil])
+        return "HORS" if entree[2].startswith("¡") else f"🎙️ مؤتمر {'مورينيو' if entree[2] == '¿El PSV?' else 'كورتوا'} | {entree[2]}"
+    c.tweet_direct = faux_direct
+    c.declarations = lambda j, depuis: (_ for _ in ()).throw(AssertionError("articles lus malgré le direct écrit"))
+    noms_fin = []
+    c.tweet_de_fin = lambda utc, noms=None: (noms_fin.append(noms), "🎙️ نهاية")[1]
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    assert s["tweets"] == ["🎙️ مؤتمر كورتوا | ¿Renovación?", "🎙️ مؤتمر كورتوا | ¿Balón de Oro?", "🎙️ مؤتمر مورينيو | ¿El PSV?"], s
+    assert s["journal"] == "AS" and noms_fin == [["كورتوا", "مورينيو"]] and fils[-1][-1] == "¡AHORA, MOURINHO!"
+    assert 18 <= (horloge[0] - T0).total_seconds() / 60 <= 20, "une réponse par minute (min 0 à 3), puis 15 min de silence"
+    assert c.orateurs(["🎙️ مؤتمر كورتوا | a", "x", "🎙️ مؤتمر كورتوا | b"]) == ["كورتوا"]
+    print("OK direct écrit d'AS")
 finally:
     c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet, c.tweet_de_fin = vrai
+    c.trouver_direct_as = vrai_trouver
     calendrier.direct_actif = vrai_actif
     calendrier.FICHIER = vrai_fichier
 
