@@ -120,12 +120,17 @@ def a_lancer(utc=None, page=None):
     "auto <heure UTC>" : conférence d'avant-match annoncée, entraînement dans moins de 45 min, ou conférence d'après-match,
     fin du match (coup d'envoi + 1 h 45) dans moins de 45 min ou passée depuis moins de 1 h 30 (le direct attend cette heure) ;
     "auto" : une déclaration vient de paraître (après un match : seulement si elle vient de la salle de presse) ; "" : rien.
-    Une session finie sans aucun tweet (faux départ) n'empêche pas d'en lancer une autre."""
+    Une session finie sans aucun tweet (faux départ) n'empêche pas d'en lancer une autre ; une session qui a tweeté bloque le
+    reste de la journée (heure de Madrid) : une seule conférence par jour."""
     from calendrier import URL, conferences, direct_actif
     from commun import lire_page
+    from threads import heure_madrid
     utc = utc or maintenant()
     s = session_recente(utc)
     if (s and (not s.get("fini") or s.get("tweets"))) or direct_actif("conference_direct.yml"):
+        return ""
+    jour = heure_madrid(utc).date()
+    if any(x.get("tweets") and heure_madrid(datetime.fromisoformat(x["debut"])).date() == jour for x in lire_etat()):
         return ""
     try:
         prevues = conferences(page if page is not None else lire_page(URL), utc)
