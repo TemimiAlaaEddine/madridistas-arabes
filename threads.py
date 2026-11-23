@@ -39,7 +39,7 @@ REGLES = """- Tweet 1, l'accroche, écrit comme les comptes foot arabes les plus
     opinion et débat (🔥 نقاش, chroniques, 🧠 قراءة hors match précis) : aucun hashtag, la ligne n'existe pas ;
     sinon : #ريال_مدريد seul.
 - Étiquette de la ligne 1, selon le contenu :
-  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » seulement pour une annonce officielle du club ou de la fédération (communiqué, signature, prolongation, sanction), jamais pour un compte rendu ; « 📝 القائمة | » liste des convoqués pour un match (présents, absents notables, le match et son heure) ; « 🏋️ تدريبات | » séance d'entraînement (qui revient, qui manque, ce qui a été travaillé) ; « 🏥 إصابة | » blessure, « 💪 عودة | » retour de blessure ; « 📋 التشكيلة | » composition officielle (une ligne par ligne de jeu, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom] | » quand l'accroche est une déclaration «» ; « 🎙️ مؤتمر [nom] | » conférence de presse ; « 📊 رقم | » information bâtie sur une statistique ; sinon « 📰 خبر | » ;
+  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » seulement pour une annonce officielle du club ou de la fédération (communiqué, signature, prolongation, sanction), jamais pour un compte rendu ; « 📝 القائمة | » tout article sur la liste des convoqués pour un match : une ligne d'accroche (le match, l'absent ou le retour notable), puis TOUS les convoqués que donne le texte, sans en omettre un, une ligne par poste commençant par « ▪️ » (▪️ الحراس: …، … puis الدفاع، الوسط، الهجوم), noms séparés par « ، », puis les absents en une ligne (la limite de 240 caractères ne s'applique pas) ; « 🏋️ تدريبات | » séance d'entraînement (qui revient, qui manque, ce qui a été travaillé) ; « 🏥 إصابة | » blessure, « 💪 عودة | » retour de blessure ; « 📋 التشكيلة | » composition officielle (une ligne par ligne de jeu, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom] | » quand l'accroche est une déclaration «» ; « 🎙️ مؤتمر [nom] | » conférence de presse ; « 📊 رقم | » information bâtie sur une statistique ; sinon « 📰 خبر | » ;
   section mercato, et toute information de transfert ou de prolongation quelle que soit la section : « 🔄 ميركاتو | », et, seulement si le texte annonce un transfert ou une prolongation en cours (pas pour une analyse, un bilan ou une opération déjà conclue), juste avant la source et seul sur sa ligne, son stade d'après le texte : « 🟢 اتفاق » accord ou opération avancée, « 🟡 مفاوضات » contacts ou intérêt, « 🔴 شائعة » simple rumeur ;
   section tactique : « 🧠 قراءة | » ; section club : « 🏟️ برنابيو | » (stade), « 🏛️ الإدارة | » (direction, institutions) ou « 💶 مالية النادي | » (argent) ;
   section debats et autres opinions : « 🔥 نقاش | » avec une vraie question en accroche, et le dernier tweet du thread finit, sur sa propre ligne, par « ما رأيكم؟ 👇 ».
@@ -111,6 +111,12 @@ def est_conference(tweet):
 
 def est_liste(tweet):
     return tweet.lstrip().startswith("📝")  # « 📝 القائمة | » : liste des convoqués, sans source (choix de l'utilisateur, 2026-11-23)
+
+
+def convoques(tweet):
+    """Noms des lignes de poste (« ▪️ الحراس: كورتوا، لونين ») : une liste complète en compte 18 à 26."""
+    return sum(len([n for n in l.split(":", 1)[-1].split("،") if n.strip()])
+               for l in tweet.splitlines() if l.startswith("▪️") and ":" in l)
 
 
 def connexion_threads(con):
@@ -217,7 +223,9 @@ def controler_thread(con, article_id, tweets, officiel=False):
         motifs.append("source absente du 1er tweet")
     if any(APPATS.search(x) for x in tweets):
         motifs.append("appel à l'engagement")
-    if est_liste(tweets[0]):  # une seule liste par match, la première arrivée (publiée deux fois le 23 nov.), même celle du club
+    if est_liste(tweets[0]):  # une seule liste par match, la première COMPLÈTE (publiée deux fois le 23 nov.), même celle du club
+        if convoques(tweets[0]) < 18:  # Foot Mercato, 23 nov. : 8 noms seulement ; la liste complète arrive plus tard
+            return motifs + ["doublon : liste incomplète"]
         deja = next((r[0] for r in con.execute(
             f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
             " AND envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-24 hours')", (article_id,))
