@@ -16,12 +16,11 @@ import re
 import subprocess
 import sys
 import time
-import unicodedata
 from datetime import datetime, timedelta, timezone
 
 import feedparser
 
-from commun import BASE, CONFIG, ErreurClaude, appeler_claude, maintenant
+from commun import BASE, CONFIG, ErreurClaude, appeler_claude, maintenant, plat
 
 ETAT = BASE / "conference.json"  # sessions de direct : journal suivi, articles déjà tweetés ; partagé avec le passage principal
 FLUX = {"Marca": ["https://e00-marca.uecdn.es/rss/futbol/real-madrid.xml"],
@@ -41,10 +40,6 @@ APRES_MATCH = (timedelta(hours=1, minutes=30), timedelta(hours=4))  # après le 
 FIN_MATCH = timedelta(hours=1, minutes=45)  # après le coup d'envoi : direct d'après-match lancé à cette heure (fin du match)
 ATTENTE_APRES = timedelta(hours=1, minutes=30)  # après-match : de la fin du match à la première déclaration, au plus
 MEME_CONFERENCE = timedelta(hours=6)  # même conférence : un direct peut durer 45 min + 3 h 30 + 90 min
-
-
-def plat(texte):
-    return unicodedata.normalize("NFKD", texte or "").encode("ascii", "ignore").decode().lower()
 
 
 def est_declaration(titre, resume=""):

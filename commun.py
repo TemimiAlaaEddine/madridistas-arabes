@@ -11,6 +11,7 @@ import sqlite3
 import subprocess
 import sys
 import time
+import unicodedata
 import urllib.request
 import xml.etree.ElementTree as ET
 from concurrent.futures import ThreadPoolExecutor
@@ -52,6 +53,10 @@ def maintenant():
 def e(t):
     return html.escape(t or "")
 
+
+def plat(texte):
+    """Minuscules ASCII sans accents (« José » -> « jose ») ; les lettres non latines disparaissent."""
+    return unicodedata.normalize("NFKD", texte or "").encode("ascii", "ignore").decode().lower()
 
 
 # ---------- base de données (articles déjà traités) ----------

@@ -18,7 +18,6 @@ import os
 import re
 import sqlite3
 import time
-import unicodedata
 import urllib.parse
 import urllib.request
 from collections import Counter, defaultdict
@@ -31,7 +30,7 @@ from html.parser import HTMLParser
 import threads
 from calendrier import match_en_cours, suivre_match
 from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClaude, appeler_claude, collecter, dedoublonner, e,
-                    extraire_json, maintenant, marquer_vus, nettoyer, normaliser_titre, restaurer_base)
+                    extraire_json, maintenant, marquer_vus, nettoyer, normaliser_titre, plat, restaurer_base)
 from couvertures import generer_couvertures, vignette
 
 DB = BASE / "articles.db"
@@ -288,7 +287,7 @@ def trier(items, deja=()):
         # conférence de l'entraîneur : un seul thread, tiré de Marca ou AS (choix du 20 nov.) ; gardés d'office pour ne pas
         # être écartés en doublon d'un autre journal, les autres journaux écartés (sinon « déjà publié » bloquerait Marca/AS)
         # shortcut: repérée au nom de l'entraîneur dans le titre, à revoir si un titre Marca/AS ne le nomme pas
-        elif ENTRAINEUR in unicodedata.normalize("NFKD", it["titre"]).encode("ascii", "ignore").decode().lower():
+        elif ENTRAINEUR in plat(it["titre"]):
             if journal(it) in ("Marca", "AS"):
                 choix[i] = choix.get(i) or "info"
             elif choix.get(i) == "conference":
@@ -514,8 +513,7 @@ CSS = (GABARITS / "style.css").read_text(encoding="utf-8")
 
 
 def slug(texte):
-    s = unicodedata.normalize("NFKD", texte).encode("ascii", "ignore").decode().lower()
-    return re.sub(r"[^a-z0-9]+", "-", s).strip("-") or "auteur"
+    return re.sub(r"[^a-z0-9]+", "-", plat(texte)).strip("-") or "auteur"
 
 
 
