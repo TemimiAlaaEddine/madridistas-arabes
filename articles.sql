@@ -7111,6 +7111,7 @@ INSERT INTO "liens_x" VALUES('12131966','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12132920','https://x.com/ElMadridistAlaa/status/2124847201298051152','2026-11-23T12:47:05.539Z');
 INSERT INTO "liens_x" VALUES('12133115','https://x.com/ElMadridistAlaa/status/2124848469282377940','2026-11-23T12:52:07.882Z');
 INSERT INTO "liens_x" VALUES('12133244','https://x.com/ElMadridistAlaa/status/2124849674427478494','2026-11-23T12:56:55.207Z');
+INSERT INTO "liens_x" VALUES('12133507','https://x.com/ElMadridistAlaa/status/2124852975197970727','2026-11-23T13:10:04.952Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -9802,4 +9803,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Touche-a-l-
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/copa-del-rey/2026-11-23/copa-del-rey-segunda-ronda-1tps_4470730/','Numancia-Athletic, Arosa-Celta, Paso-Sevilla y Extremadura-Betis, duelos destacados del sorteo copero','2026-11-23T13:06:07');
 INSERT INTO "vus" VALUES('https://cadenaser.com/video/nacional/2026/11/23/mourinho-sobre-las-lesiones-graves-en-el-futbol-si-queremos-pasta-tenemos-que-trabajar-mucho-correr-riesgos-es-la-vida-cadena-ser/','Mourinho, sobre las lesiones graves en el fútbol: "Si queremos pasta, tenemos que trabajar mucho, correr riesgos... es la vida"','2026-11-23T13:06:07');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/kiyans-observations/115652/five-bullet-points-from-real-madrids-win-over-celta-vigo','Five Bullet Points From Real Madrid’s Win Over Celta Vigo','2026-11-23T13:07:05');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/courtois-kijkt-uit-naar-treffen-met-psv-als-favoriete-club-uit-nederland','Courtois kijkt uit naar treffen met ''favoriete club uit Nederland''','2026-11-23T13:11:31');
 COMMIT;
