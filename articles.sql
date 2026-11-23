@@ -9664,4 +9664,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a6108290554414731911-real-
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2272127689573535414-real-madrid-blessure-musculaire-pour-endrick','Real Madrid : blessure musculaire pour Endrick','2026-11-23T11:51:15');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/dumfries-ontbreekt-richting-weerzien-met-psv-op-training-real-madrid','Dumfries ontbreekt richting weerzien met PSV op training Real Madrid','2026-11-23T12:01:33');
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/champions-league/tricela-tatica-dilemas-real-madrid-ataque-testados-psv-champions/','Trivela Tática: Como dilemas do Real Madrid no ataque podem ser testados pelo PSV na Champions','2026-11-23T12:06:49');
+INSERT INTO "vus" VALUES('https://www.vi.nl/video/beelden-real-madrid-traint-zonder-dumfries-voor-duel-met-psv','Beelden: Real Madrid traint zonder Dumfries voor duel met PSV','2026-11-23T12:16:00');
 COMMIT;
