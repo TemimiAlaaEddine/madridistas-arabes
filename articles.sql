@@ -9538,4 +9538,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/23/roberto-gomez-r
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/23/jornal-espanhol-se-empolga-com-volta-de-vini-jr-ao-real-reacendeu-a-chama.ghtml','Jornal espanhol se empolga com volta de Vini Jr. ao Real Madrid: "Reacendeu a chama"','2026-11-23T08:46:05');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/barrio-sesamo-explica-negreira/','Barrio Sésamo explica Negreira','2026-11-23T09:01:33');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/champions-league/2026/11/23/superordenador-desconfia-real-madrid-champions.html','El superordenador ''desconfía'' del Real Madrid en la Champions','2026-11-23T09:05:56');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115687/real-madrid-nico-paz-decision-2026','Real Madrid yet to make final decision about Nico Paz -report','2026-11-23T09:26:02');
 COMMIT;
