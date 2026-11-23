@@ -9488,4 +9488,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115671/open-thr
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/premios-marca/2026/11/23/mbappe-lamine-aprovechan-penaltis.html','Mbappé y Lamine no aprovechan los penaltis','2026-11-22T23:31:33');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115682/we-could-be-in-for-a-title-race-for-the-ages','We could be in for a title race for the ages','2026-11-23T05:01:57');
 INSERT INTO "vus" VALUES('https://elpais.com/deportes/futbol/2026-11-23/imperdonablemente-te-quiero-un-whatsapp-sin-enviar-en-el-bernabeu.html','Imperdonablemente te quiero: un whatsapp sin enviar en el Bernabéu','2026-11-23T05:12:01');
+INSERT INTO "vus" VALUES('https://www.hln.be/club-brugge/marc-degryse-kijkt-uit-naar-champions-league-duel-tussen-club-brugge-en-liverpool-dit-wordt-groter-dan-tegen-real-madrid-man-city-of-barcelona~a6348e23/','Marc Degryse kijkt uit naar Champions League-duel tussen Club Brugge en Liverpool:“Dit wordt groter dan tegen Real Madrid, Man City, of Barcelona”','2026-11-23T06:21:07');
 COMMIT;
