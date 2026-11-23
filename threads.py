@@ -45,7 +45,7 @@ REGLES = """- Tweet 1, l'accroche, écrit comme les comptes foot arabes les plus
   section debats et autres opinions : « 🔥 نقاش | » avec une vraie question en accroche, et le dernier tweet du thread finit, sur sa propre ligne, par « ما رأيكم؟ 👇 ».
 - Source : une seule, celle qui a révélé l'information ou porté l'avis. Si le texte dit qu'un média en cite un autre (« نقلت إي إس بي إن عن ليكيب »), ne garde que le média d'origine : (ليكيب). La source est donnée une seule fois, au tweet 1 : les tweets suivants ne la redisent pas (pas de « بحسب ماركا » au tweet 2), sauf pour une information venue d'un autre média. Jamais de chaîne « نقلًا عن... عن... » ni deux médias pour la même information. Exception : une conférence de presse (« 🎙️ مؤتمر ») n'a aucune source, ni ligne entre parenthèses ni média cité (choix de l'utilisateur, 2026-11-23).
 - Tweets suivants : chacun apporte du nouveau, sans redire l'accroche ni la source du tweet 1 ; fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. Deux ou trois lignes courtes valent mieux qu'un bloc ; une énumération (notes des joueurs, chiffres, noms) va à la ligne, chaque élément précédé de « ▪️ ». L'avis reste attribué à son auteur, par son nom de famille ou une tournure (في نظره، يذهب أبعد من ذلك) : n'écris jamais « الكاتب » ni « الصحفي », et ne recite pas le journal. Le dernier porte la conclusion ou la phrase la plus marquante.
-- Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, au moins 4 et sans plafond pour une conférence de presse (toutes ses déclarations fortes, une par tweet ; le thème annoncé avant une citation est celui de la question posée, sans en inventer un pour la suite d'une même réponse).
+- Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, pour une conférence de presse rapportée par Marca ou AS (le direct : un article par déclaration), UN seul tweet : « 🎙️ مؤتمر [nom] | » et la déclaration forte que l'article met en avant entre «», ligne vide, une ou deux phrases courtes de contexte (la question posée, le match), puis les hashtags ; pour la conférence complète du site du club (le récapitulatif), au moins 4 et sans plafond (toutes ses déclarations fortes, une par tweet ; le thème annoncé avant une citation est celui de la question posée, sans en inventer un pour la suite d'une même réponse).
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces et retours à la ligne compris. Pas de lien, pas de numérotation, aucun hashtag en dehors de la dernière ligne du tweet 1, pas d'intertitre « ## », aucun émoji en dehors de ceux prévus ci-dessus.
 - Les tweets sont réunis à l'envoi en un seul tweet long, un paragraphe chacun : le tweet 1 est ce qu'on lit avant « Afficher plus ».
 - N'ajoute aucun fait ni avis absent du texte. Pas d'exagération ni de point d'exclamation."""
@@ -682,14 +682,18 @@ def orateur(tweet):
     return re.sub(r"[^\w\s]", "", m[0]).replace("مؤتمر", "").strip() if m else ""
 
 
-def conference_publiee(con, article_id, tweet, heures=6):
+def conference_publiee(con, article_id, tweet, heures=6, club=False):
     """Un thread des dernières heures où la même personne parle (même conférence ou interview) est déjà parti : un seul
-    thread par conférence. X interdit de publier des réponses par l'API (403, 20 nov.) : les suivantes ne partent plus."""
+    thread par conférence. X interdit de publier des réponses par l'API (403, 20 nov.) : les suivantes ne partent plus.
+    club : récapitulatif du site du club, que seul un autre récapitulatif du club empêche (le direct de Marca/AS ne compte pas)."""
     qui = orateur(tweet)
     return bool(qui) and any(orateur(json.loads(tw)[0]) == qui for (tw,) in con.execute(
         f"SELECT t.tweets FROM threads t JOIN articles a ON a.id = t.article_id WHERE {ENVOYES}"
-        " AND a.mode = 'conference' AND t.article_id != ? AND t.envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)",
-        (article_id, f"-{heures} hours")))
+        " AND a.mode = 'conference' AND t.article_id != ? AND t.envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)"
+        + (" AND a.lien LIKE '%://www.realmadrid.com/%'" if club else ""), (article_id, f"-{heures} hours")))
+
+
+DIRECT = ("Marca", "AS")  # conférence en direct : chaque article de ces journaux (une déclaration forte) devient un tweet
 
 
 def vers_typefully(con, couvertures, dossier_couv):
@@ -704,7 +708,8 @@ def vers_typefully(con, couvertures, dossier_couv):
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
-        if t["mode"] == "conference" and conference_publiee(con, t["article_id"], tweets[0]):
+        if t["mode"] == "conference" and t["journal"] not in DIRECT and conference_publiee(
+                con, t["article_id"], tweets[0], club=est_officiel(t)):
             print(f"  Typefully : article {t['article_id']} écarté, conférence déjà publiée")
             con.execute("UPDATE threads SET typefully = 'sans', statut = 'bloqué : conférence déjà publiée', envoye = ? WHERE article_id = ?",
                         (maintenant().isoformat(timespec="seconds"), t["article_id"]))

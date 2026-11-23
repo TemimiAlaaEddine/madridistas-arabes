@@ -636,7 +636,7 @@ print("OK contrôles avant envoi")
 # conférence : un seul thread par personne sur 6 h (X interdit les réponses par l API)
 assert t.orateur("🎙️ مؤتمر مورينيو | «نص»") == t.orateur("🗣️ مورينيو | «نص آخر»") == "مورينيو" and t.orateur("بلا تسمية") == ""
 con = sqlite3.connect(":memory:")
-con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, mode TEXT)")
+con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, mode TEXT, lien TEXT)")
 con.execute("CREATE TABLE liens_x (typefully TEXT PRIMARY KEY, url TEXT, date TEXT)")
 t.connexion_threads(con)
 from datetime import timedelta
@@ -644,13 +644,17 @@ _m = lambda h: (t.maintenant() - timedelta(hours=h)).isoformat(timespec="seconds
 for i, mode, tw, st, h in ((1, "conference", "🎙️ مؤتمر مورينيو | «أ»", "immédiat", 1), (2, "conference", "🗣️ مورينيو | «ب»", "immédiat", 0.5),
                            (3, "conference", "🗣️ روديغر | «ج»", "immédiat", 1), (4, "conference", "🗣️ فالفيردي | «د»", "immédiat", 8),
                            (5, "conference", "🗣️ كورتوا | «هـ»", "bloqué : test", 1)):
-    con.execute("INSERT INTO articles VALUES (?, ?)", (i, mode))
+    con.execute("INSERT INTO articles VALUES (?, ?, 'https://www.marca.com/x')", (i, mode))
     con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully, envoye) VALUES (?, ?, ?, ?, ?, ?)",
                 (i, json.dumps([tw]), st, _m(h), str(100 + i), _m(h)))
 assert t.conference_publiee(con, 9, "🗣️ مورينيو | «جديد»") and t.conference_publiee(con, 9, "🎙️ مؤتمر روديغر | «جديد»")
 assert not t.conference_publiee(con, 9, "🗣️ فالفيردي | «جديد»")  # il y a 8 h : nouveau thread
 assert not t.conference_publiee(con, 9, "🗣️ كورتوا | «جديد»")  # thread bloqué : ne compte pas
 assert not t.conference_publiee(con, 9, "📰 خبر | بلا متحدث")
+# récapitulatif du club : le direct de Marca/AS ne l'empêche pas, un autre récapitulatif du club oui
+assert not t.conference_publiee(con, 9, "🎙️ مؤتمر مورينيو | «كل شيء»", club=True)
+con.execute("UPDATE articles SET lien = 'https://www.realmadrid.com/es-ES/noticias/ruedas-de-prensa/x' WHERE id = 2")
+assert t.conference_publiee(con, 9, "🎙️ مؤتمر مورينيو | «كل شيء»", club=True)
 con.close()
 # conférence de l'entraîneur au tri : Marca/AS gardés d'office, les autres journaux écartés
 _vrai = g.appeler_claude
