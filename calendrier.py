@@ -28,6 +28,18 @@ def prochains(page, apres, n=5):
     return [{"match": nom, "debut": d, "heure_fixee": fixe} for d, nom, fixe in matchs[:n]]
 
 
+# entraînement suivi d'une conférence : « "tv":{"html":"<p>Rueda de prensa: sí, Mourinho y un jugador, después del entrenamiento" »
+# shortcut: suit l'ordre des champs vu le 23 nov. (dateTime, dateTxt, eventLocation, tv) ; à revoir si le club le change
+CONF = re.compile(r'"dateTime":"([^"]+)","dateTxt":[^,]*,"eventLocation":(?:"[^"]*"|null),"tv":\{"html":"((?:[^"\\]|\\.)*)"\}')
+
+
+def conferences(page, apres):
+    """Heures (UTC) des entraînements annoncés avec une conférence de presse (« Rueda de prensa: sí ») à partir de `apres`.
+    Le club ne donne pas l'heure de la conférence, seulement « après l'entraînement »."""
+    return sorted({datetime.fromisoformat(d[:19]) for d, tv in CONF.findall(page)
+                   if re.search(r"Rueda de prensa:(?:&nbsp;|\s)*s[íi]", tv) and datetime.fromisoformat(d[:19]) >= apres})
+
+
 def match_courant(utc):
     """Le match de matchs.json en cours (du coup d'envoi à 2 h 30 après, heure fixée seulement), sinon None."""
     try:

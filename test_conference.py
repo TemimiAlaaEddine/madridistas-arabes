@@ -27,19 +27,45 @@ c.tweet_de_fin = lambda utc: "🎙️ نهاية"  # sans appel à Claude (nom a
 import calendrier
 vrai_actif = calendrier.direct_actif
 calendrier.direct_actif = lambda w="": False
+import tempfile
+from pathlib import Path
+_tmp = tempfile.TemporaryDirectory()
+vrai_fichier = calendrier.FICHIER
+calendrier.FICHIER = Path(_tmp.name) / "matchs.json"
+calendrier.FICHIER.write_text("[]", encoding="utf-8")
+# calendrier du club : entraînement de 11 h (10 h UTC) suivi d'une conférence, comme le 23 nov.
+CAL = ('"dateTime":"2026-11-23T10:00:00.000Z","dateTxt":null,"eventLocation":"Ciudad Real Madrid","tv":{"html":"\\u003Cp>Rueda de '
+       'prensa:&nbsp;sí, Mourinho y un jugador, después del entrenamiento (en directo por Realmadrid TV).\\u003C\\u002Fp>\\n"},'
+       '"dateTime":"2026-11-22T10:00:00.000Z","dateTxt":null,"eventLocation":"Ciudad Real Madrid","tv":{"html":"\\u003Cp>Rueda de prensa: no\\u003C\\u002Fp>"}')
+assert calendrier.conferences(CAL, datetime(2026, 11, 20)) == [datetime(2026, 11, 23, 10)]
 try:
     c.lire_etat = lambda: []
     c.declarations = lambda j, depuis: {"Marca": [(T0 - timedelta(minutes=3), "Mourinho: «a»", "m1", "")],
                                         "AS": [(T0 - timedelta(minutes=8), "Mourinho: «b»", "a1", "")]}[j]
-    assert c.a_lancer(T0) == "AS", "AS a publié le premier"
+    assert c.a_lancer(T0, page="") == "AS", "AS a publié le premier"
+    assert c.a_lancer(datetime(2026, 11, 23, 10, 5), page=CAL) == "auto", "avant-match : dès l'heure de l'entraînement"
+    assert c.a_lancer(datetime(2026, 11, 23, 9, 55), page=CAL) == "AS", "avant l'heure annoncée : détection habituelle"
     c.declarations = lambda j, depuis: []
-    assert c.a_lancer(T0) == ""
+    assert c.a_lancer(T0, page="") == "" and c.a_lancer(datetime(2026, 11, 23, 12, 29), page=CAL) == "auto"
+    assert c.a_lancer(datetime(2026, 11, 23, 12, 31), page=CAL) == "", "2 h 30 après l'entraînement : plus d'attente"
+    # après-match : seule une déclaration venue de la salle de presse lance le direct (l'interview Movistar passe par le passage normal)
+    calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-23T10:00:00", "heure_fixee": True}]), encoding="utf-8")
+    c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "a Movistar")] if j == "Marca" else []
+    vrai_salle = c.en_salle_de_presse
+    c.en_salle_de_presse = lambda lien, resume: "Movistar" not in resume
+    assert c.a_lancer(T0, page="") == "", "interview télé : pas de direct"
+    c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "en rueda de prensa")] if j == "Marca" else []
+    assert c.a_lancer(T0, page="") == "Marca"
+    c.en_salle_de_presse = vrai_salle
+    calendrier.FICHIER.write_text("[]", encoding="utf-8")
     c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "")] if j == "Marca" else []
     c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": True}]
-    assert c.a_lancer(T0) == "", "même conférence : pas de second direct"
+    assert c.a_lancer(T0, page="") == "", "même conférence : pas de second direct"
     assert c.session_recente(T0)["journal"] == "AS" and not c.en_direct(T0)
-    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=4)).isoformat(), "liens": [], "fini": True}]
-    assert c.a_lancer(T0) == "Marca" and c.session_recente(T0) is None
+    c.lire_etat = lambda: [{"journal": None, "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": False}]
+    assert not c.en_direct(T0), "attente de la conférence : pas encore en direct"
+    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=5)).isoformat(), "liens": [], "fini": True}]
+    assert c.a_lancer(T0, page="") == "Marca" and c.session_recente(T0) is None
     print("OK lancement")
 
     # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 10 min de silence
@@ -48,7 +74,7 @@ try:
             6: [(T0, "Mourinho: «1»", "m1", ""), (T0, "Mourinho: «2»", "m2", ""), (T0, "Mourinho: «3»", "m3", ""), (T0, "Mourinho: «0»", "m0", "")]}
     c.declarations = lambda j, depuis: flux[max(k for k in flux if k <= (horloge[0] - T0).total_seconds() / 60)]
     c.deja_publies = lambda depuis: (["m0"], ["🎙️ مؤتمر مورينيو | «0»"])
-    c.tweet = lambda titre, texte, deja: None if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
+    c.tweet = lambda titre, texte, deja: "DOUBLON" if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
     generer_site.texte_complet = lambda it: "نص"
     sauvegardes = []
     def dormir(s):
@@ -61,9 +87,28 @@ try:
     assert sauvegardes[0][0].endswith("suivie sur Marca") and "fin" in sauvegardes[-1][0]
     print("OK boucle")
 
+    # « auto » (avant-match) : attente sans fin de silence, l'interview hors conférence laissée au passage normal, puis le
+    # premier journal à publier une déclaration est suivi seul
+    horloge[0] = T0
+    flux_auto = {0: [], 30: [(T0, "Mourinho: «tv»", "m-tv", "")], 50: [(T0, "Mourinho: «tv»", "m-tv", ""), (T0, "Mourinho: «x»", "a-x", "")]}
+    def decl_auto(j, depuis):
+        lot = flux_auto[max(k for k in flux_auto if k <= (horloge[0] - T0).total_seconds() / 60)]
+        return [d for d in lot if (d[2].startswith("a-") if j == "AS" else d[2].startswith("m-"))] + \
+               ([(T0, "Mourinho: «m»", "m-z", "")] if j == "Marca" and (horloge[0] - T0).total_seconds() >= 52 * 60 else [])
+    c.declarations = decl_auto
+    c.deja_publies = lambda depuis: ([], [])
+    c.tweet = lambda titre, texte, deja: "HORS" if "«tv»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    assert s["journal"] == "AS" and s["tweets"] == ["🎙️ مؤتمر مورينيو | «x»"], s
+    assert "m-tv" in s["vus"] and "m-tv" not in s["liens"] and "m-z" not in s["vus"], "Marca ignoré une fois AS choisi"
+    assert 60 <= (horloge[0] - T0).total_seconds() / 60 <= 62, "pas de fin de silence pendant l'attente (50 min), puis 10 min"
+    horloge[0] = T0
+    c.declarations = lambda j, depuis: []
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    assert not s["tweets"] and (horloge[0] - T0) == c.ATTENTE and s["journal"] is None, "pas de conférence : fin de l'attente"
+    print("OK attente avant-match")
+
     # tweet de fin : avant le prochain match, ou après le match commencé il y a moins de 6 h
-    import tempfile
-    from pathlib import Path
     vrai_cal = (calendrier.FICHIER, calendrier.nom_arabe_claude)
     with tempfile.TemporaryDirectory() as tmp:
         calendrier.FICHIER = Path(tmp) / "matchs.json"
@@ -81,6 +126,8 @@ try:
     # publication : photo sur le 1er tweet seulement, puis le tweet de fin
     horloge[0] = T0
     c.deja_publies = lambda depuis: ([], [])
+    c.declarations = lambda j, depuis: flux[max(k for k in flux if k <= (horloge[0] - T0).total_seconds() / 60)]
+    c.tweet = lambda titre, texte, deja: "DOUBLON" if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
     def texte_avec_image(it):
         it["image"] = "https://marca.com/photo.jpg"
         return "نص"
@@ -99,6 +146,7 @@ try:
 finally:
     c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet, c.tweet_de_fin = vrai
     calendrier.direct_actif = vrai_actif
+    calendrier.FICHIER = vrai_fichier
 
 # passage principal pendant le direct : articles du journal suivi laissés au direct, autre journal et déjà tweetés écartés,
 # autres nouvelles retenues jusqu'à la fin du direct
@@ -135,6 +183,14 @@ try:
     c.session_recente, calendrier.direct_actif = (lambda utc=None: None), (lambda w="": True)
     envois.clear()
     assert t.vers_typefully(con, {}, None) == 0 and not envois
+    # attente de la conférence (avant-match) : Marca/AS laissés au direct, les autres nouvelles partent ; un article jugé
+    # hors conférence par le direct (interview télé) part aussi par le passage normal
+    calendrier.direct_actif = lambda w="": True  # le workflow tourne, mais conference.json dit « en attente » : pas de rétention
+    c.session_recente = lambda utc=None: {"journal": None, "liens": [], "vus": ["a1"], "fini": False}
+    c.en_direct = lambda utc=None: False
+    t.vers_typefully(con, {}, None)
+    assert {r[0] for r in con.execute("SELECT article_id FROM threads WHERE typefully = '1'")} == {3, 4}, \
+        "El País (4) et l'interview AS hors conférence (3) partent ; Marca (1, 2) attend le direct"
 finally:
     (t.typefully_api, t.reglage, c.session_recente, c.en_direct, calendrier.direct_actif, t.images_thread, t.telecharger_image,
      t.typefully_image) = vrais

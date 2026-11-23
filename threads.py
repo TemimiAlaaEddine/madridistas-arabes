@@ -707,17 +707,21 @@ def vers_typefully(con, couvertures, dossier_couv):
     n, plafond, echec = 0, False, None
     import conference
     from calendrier import direct_actif
+    session = conference.session_recente()
+    suivie = session if session and session.get("journal") else None  # conférence commencée : journal choisi
+    attente = bool(session and not session.get("fini") and not session.get("journal"))  # avant-match : conférence pas commencée
     # workflow lancé mais conference.json pas encore poussé : déjà en direct, journal suivi encore inconnu
-    session, direct = conference.session_recente(), conference.en_direct() or direct_actif("conference_direct.yml")
+    direct = conference.en_direct() or (session is None and direct_actif("conference_direct.yml"))
+    hors = set(session.get("vus", [])) - set(session.get("liens", [])) if session else set()  # jugés hors conférence par le direct
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
         # conférence suivie en direct (conference.py) : ses articles sont tweetés par le direct, l'autre journal est ignoré
-        if (session or direct) and t["mode"] == "conference" and t["journal"] in DIRECT:
-            if direct and (not session or (t["journal"] == session["journal"] and t["lien"] not in session["liens"])):
+        if (suivie or direct or attente) and t["mode"] == "conference" and t["journal"] in DIRECT and t["lien"] not in hors:
+            if (direct or attente) and (not suivie or (t["journal"] == suivie["journal"] and t["lien"] not in suivie["liens"])):
                 continue  # le direct va le tweeter ; repris après le direct s'il l'a manqué
-            if t["lien"] in session["liens"] or t["journal"] != session["journal"]:
-                motif = "publiée en direct" if t["lien"] in session["liens"] else f"conférence suivie sur {session['journal']}"
+            if t["lien"] in suivie["liens"] or t["journal"] != suivie["journal"]:
+                motif = "publiée en direct" if t["lien"] in suivie["liens"] else f"conférence suivie sur {suivie['journal']}"
                 print(f"  Typefully : article {t['article_id']} écarté ({motif})")
                 con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
                             (f"bloqué : {motif}", maintenant().isoformat(timespec="seconds"), t["article_id"]))

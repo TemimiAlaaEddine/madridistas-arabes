@@ -1,10 +1,14 @@
-"""Conférence de presse de l'entraîneur en direct (workflow conference_direct.yml, lancé par le passage principal) : dès qu'un
-article « Mourinho: "..." » de Marca ou d'AS paraît, ce journal est suivi pour toute la conférence (l'autre est ignoré) ; son
-flux est lu chaque minute et chaque nouvelle déclaration part tout de suite en tweet court, sans source. Pendant ce temps, les
-autres nouvelles du passage principal vont dans la file Typefully au lieu de partir tout de suite.
+"""Conférence de presse de l'entraîneur en direct (workflow conference_direct.yml, lancé par le passage principal). Lancement :
+- avant-match : à l'heure de l'entraînement que le calendrier du club annonce suivi d'une conférence (« Rueda de prensa: sí ») ;
+  les flux de Marca et d'AS sont lus chaque minute, le premier des deux à publier une déclaration est suivi seul ensuite ;
+- après-match : à la première déclaration dont l'article parle de la salle de presse (les interviews télé d'avant la
+  conférence passent par le passage normal) ;
+- sinon : à la première déclaration « Mourinho: "..." » de Marca ou d'AS.
+Chaque déclaration part tout de suite en tweet (question et réponse traduites), sans source ; pendant le direct, les autres
+nouvelles du passage principal sont retenues jusqu'à la fin.
 
-    python conference.py --a-lancer        (passage principal : journal à suivre maintenant, ou rien)
-    python conference.py --suivre Marca    (workflow dédié) ; --a-blanc : affiche les tweets sans les publier
+    python conference.py --a-lancer        (passage principal : Marca, AS, auto, ou rien)
+    python conference.py --suivre auto     (workflow dédié) ; --a-blanc : affiche les tweets sans les publier
 """
 import calendar
 import json
@@ -26,8 +30,10 @@ FLUX = {"Marca": ["https://e00-marca.uecdn.es/rss/futbol/real-madrid.xml"],
 INTERVALLE = 60
 FRAIS = timedelta(minutes=30)  # un article plus vieux ne lance pas de direct
 SILENCE = timedelta(minutes=10)  # fin du direct : 10 min sans nouvelle déclaration (20, jugé trop long le 23 nov.)
-DUREE_MAX = timedelta(minutes=90)
-MEME_CONFERENCE = timedelta(hours=3)  # pas de nouveau direct dans les 3 h qui suivent le début du précédent
+DUREE_MAX = timedelta(minutes=90)  # après la première déclaration
+ATTENTE = timedelta(hours=2, minutes=30)  # avant-match : de l'heure de l'entraînement à la première déclaration, au plus
+APRES_MATCH = (timedelta(hours=1, minutes=30), timedelta(hours=4))  # après le coup d'envoi : fenêtre de la conférence d'après-match
+MEME_CONFERENCE = timedelta(hours=4)  # pas de nouveau direct dans les 4 h qui suivent le début du précédent
 
 
 def plat(texte):
@@ -70,19 +76,47 @@ def session_recente(utc=None):
 
 
 def en_direct(utc=None):
-    """Un direct de conférence est-il en cours ? Le passage principal envoie alors les autres nouvelles dans la file Typefully."""
+    """La conférence a-t-elle commencé (première déclaration tweetée, journal choisi) sans être finie ? Le passage principal
+    retient alors les autres nouvelles. L'attente d'avant la conférence ne compte pas."""
     s = session_recente(utc)
-    return bool(s and not s.get("fini"))
+    return bool(s and not s.get("fini") and s.get("journal"))
 
 
-def a_lancer(utc=None):
-    """Journal à suivre en direct maintenant (le premier, de Marca ou AS, à publier une déclaration fraîche), ou ""."""
-    from calendrier import direct_actif
+def apres_match(utc):
+    """Un match de matchs.json a-t-il commencé il y a 1 h 30 à 4 h ? (fenêtre de la conférence d'après-match)"""
+    from calendrier import FICHIER
+    try:
+        matchs = json.loads(FICHIER.read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return False
+    return any(APRES_MATCH[0] <= utc - datetime.fromisoformat(m["debut"]) < APRES_MATCH[1] for m in matchs)
+
+
+def en_salle_de_presse(lien, resume):
+    """L'article rapporte-t-il la conférence (salle de presse), et non une interview télé d'après-match (Movistar, DAZN...) ?"""
+    from generer_site import texte_complet
+    texte = texte_complet({"lien": lien, "texte_flux": resume, "type": "conference"})
+    return bool(re.search(r"rueda de prensa|sala de prensa|conferencia de prensa", plat(texte)))
+
+
+def a_lancer(utc=None, page=None):
+    """Ce que le direct doit suivre maintenant : "auto" (conférence d'avant-match annoncée par le calendrier du club), "Marca" ou
+    "AS" (journal de la première déclaration ; après un match, seulement si elle vient de la salle de presse), ou ""."""
+    from calendrier import URL, conferences, direct_actif
+    from commun import lire_page
     utc = utc or maintenant()
     if session_recente(utc) or direct_actif("conference_direct.yml"):
         return ""
-    premiers = [(d[0][0], j) for j in FLUX if (d := declarations(j, utc - FRAIS))]
-    return min(premiers)[1] if premiers else ""
+    try:
+        prevues = conferences(page if page is not None else lire_page(URL), utc - ATTENTE)
+    except OSError as err:  # calendrier illisible : on garde la détection par les déclarations
+        print(f"  ! calendrier du club illisible ({err})")
+        prevues = []
+    if any(h <= utc < h + ATTENTE for h in prevues):
+        return "auto"
+    salle = apres_match(utc)
+    premiers = sorted((d[0], j) for j in FLUX for d in declarations(j, utc - FRAIS) if not salle or en_salle_de_presse(d[2], d[3]))
+    return premiers[0][1] if premiers else ""
 
 
 PROMPT = """Tu écris en direct, pour le compte X « المدريديستا علاء » (supporters arabes du Real Madrid), un tweet sur une déclaration
@@ -99,7 +133,8 @@ Pas de source, pas de média cité, pas de lien, aucun autre émoji, aucun fait 
 Déjà publiés pendant cette conférence :
 {deja}
 
-Si l'article ne rapporte pas une déclaration de {nom} faite aujourd'hui en conférence de presse, réponds seulement HORS.
+Si l'article ne rapporte pas une déclaration de {nom} faite aujourd'hui en conférence de presse (en salle de presse : une
+interview télé au bord du terrain ou en zone mixte, Movistar, DAZN, Real Madrid TV, n'en est pas une), réponds seulement HORS.
 Si la déclaration mise en avant est la même qu'un tweet déjà publié, réponds seulement DOUBLON.
 Sinon, réponds UNIQUEMENT avec le texte du tweet.
 
@@ -110,13 +145,14 @@ Titre : {titre}
 
 
 def tweet(titre, texte, deja):
-    """Texte du tweet, ou None (doublon d'une déclaration déjà tweetée, ou article hors conférence)."""
+    """Texte du tweet, ou "DOUBLON" (déclaration déjà tweetée) ou "HORS" (pas une déclaration de la conférence : interview
+    télé, vieille phrase... ; elle passe alors par le passage normal)."""
     nom = CONFIG.get("entraineur", "mourinho")
     nom_ar = CONFIG.get("personnes", {}).get(nom, {}).get("nom", nom)
     r = appeler_claude(PROMPT.format(nom=nom.capitalize(), nom_ar=nom_ar, hashtag=nom_ar.replace(" ", "_"), titre=titre,
                                      texte=texte[:6000], deja="\n---\n".join(deja) or "(aucun)"),
                        CONFIG.get("modele_redaction", "sonnet"), "low").strip()
-    return None if not r or "DOUBLON" in r[:20] or r[:10].strip() == "HORS" else r
+    return "DOUBLON" if "DOUBLON" in r[:20] else "HORS" if not r or r[:10].strip() == "HORS" else r
 
 
 def tweet_de_fin(utc):
@@ -168,7 +204,9 @@ def deja_publies(depuis):
 
 
 def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=None):
-    """Lit le flux de `journal` chaque minute et tweete chaque nouvelle déclaration, jusqu'à 10 min sans déclaration (90 min au plus)."""
+    """Lit chaque minute le flux de `journal` ("auto" : Marca et AS jusqu'à la première déclaration, puis ce journal seul) et
+    tweete chaque nouvelle déclaration. Avant la première : attente jusqu'à 2 h 30 ; ensuite, jusqu'à 10 min sans
+    déclaration (90 min au plus après la première), puis le tweet de fin."""
     import threads
     from generer_site import texte_complet
     horloge = horloge or maintenant
@@ -176,24 +214,46 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
     enregistrer = lambda message: (sauvegarder or (sauver if publier else (lambda e, m: None)))(etat, message)
     debut = horloge()
     liens, tweets = deja_publies(debut - FRAIS)
-    session = {"journal": journal, "debut": debut.isoformat(timespec="seconds"), "liens": liens, "tweets": tweets, "fini": False}
+    suivi = None if journal == "auto" else journal
+    # liens : tweetés ou doublons (le passage principal les écarte) ; vus : tous ceux déjà lus, HORS compris
+    session = {"journal": suivi, "debut": debut.isoformat(timespec="seconds"), "liens": liens, "vus": list(liens),
+               "tweets": tweets, "fini": False}
     etat.append(session)
-    enregistrer(f"Conférence en direct : suivie sur {journal}")
-    derniere = debut
-    while horloge() - derniere < SILENCE and horloge() - debut < DUREE_MAX:
-        h = horloge().strftime("%H:%M:%S")
+    enregistrer(f"Conférence en direct : suivie sur {suivi}" if suivi else "Conférence en direct : attente de la conférence")
+    premiere = derniere = debut if suivi or tweets else None
+    while True:
+        instant = horloge()
+        if premiere is None and instant - debut >= ATTENTE:
+            print("Pas de déclaration : fin de l'attente")
+            break
+        if premiere is not None and (instant - derniere >= SILENCE or instant - premiere >= DUREE_MAX):
+            break
+        h = instant.strftime("%H:%M:%S")
         try:
-            nouvelles = [d for d in declarations(journal, debut - FRAIS) if d[2] not in session["liens"]]
+            journaux = [session["journal"]] if session["journal"] else list(FLUX)
+            nouvelles = sorted(d + (j,) for j in journaux for d in declarations(j, debut - FRAIS) if d[2] not in session["vus"])
             if not nouvelles:  # signe de vie dans le journal du workflow
-                print(f"{h} aucune nouvelle déclaration ({journal}), fin dans {(SILENCE - (horloge() - derniere)).seconds // 60} min sans déclaration")
-            for quand, titre, lien, resume in nouvelles:
-                session["liens"].append(lien)  # noté avant l'envoi : un tweet raté n'est pas retenté en boucle
+                print(f"{h} en attente de la conférence (jusqu'à {(debut + ATTENTE):%H:%M})" if premiere is None else
+                      f"{h} aucune nouvelle déclaration ({session['journal']}), fin dans "
+                      f"{(SILENCE - (instant - derniere)).seconds // 60} min sans déclaration")
+            for quand, titre, lien, resume, j in nouvelles:
+                if session["journal"] and j != session["journal"]:
+                    continue  # journal choisi plus tôt dans cette même lecture
+                session["vus"].append(lien)  # noté avant l'envoi : un tweet raté n'est pas retenté en boucle
                 it = {"lien": lien, "texte_flux": resume, "type": "conference"}
                 texte = tweet(titre, texte_complet(it), session["tweets"])
-                derniere = horloge()
-                if not texte:
-                    print(f"{h} écarté (doublon ou hors conférence) : {titre[:80]}")
+                if texte == "HORS":
+                    print(f"{h} hors conférence, laissé au passage normal : {titre[:80]}")
                     continue
+                session["liens"].append(lien)
+                derniere = horloge()
+                if texte == "DOUBLON":
+                    print(f"{h} doublon écarté : {titre[:80]}")
+                    continue
+                if not session["journal"]:
+                    session["journal"] = j
+                    print(f"{h} conférence commencée : suivie sur {j}")
+                premiere = premiere or derniere
                 if publier:
                     post = {"text": texte}
                     try:  # photo de l'article sur le 1er tweet de la conférence seulement ; il part sans elle si elle est refusée
@@ -223,13 +283,16 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
     session["fini"] = True
     session["fin"] = horloge().isoformat(timespec="seconds")
     enregistrer(f"Conférence en direct : fin ({len(session['tweets'])} déclarations)")
-    print(f"Fin du direct ({journal}) : {len(session['tweets'])} tweet(s)")
+    print(f"Fin du direct ({session['journal'] or 'aucun journal'}) : {len(session['tweets'])} tweet(s)")
     return session
 
 
 if __name__ == "__main__":
     sys.stdout.reconfigure(encoding="utf-8")
     if sys.argv[1:2] == ["--a-lancer"]:
-        print(a_lancer())
+        import contextlib
+        with contextlib.redirect_stdout(sys.stderr):  # seule la réponse va sur la sortie : le workflow la lit
+            reponse = a_lancer()
+        print(reponse)
     elif sys.argv[1:2] == ["--suivre"]:
         suivre(sys.argv[2], publier="--a-blanc" not in sys.argv)

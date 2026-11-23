@@ -1,16 +1,17 @@
 name: Conférence de presse en direct
 
-# Lancé par le workflow principal (mise_a_jour.yml) dès qu'un article « Mourinho: "..." » de Marca ou d'AS paraît : ce journal
-# est suivi pour toute la conférence, son flux lu chaque minute, chaque déclaration tweetée tout de suite (conference.py).
-# Bouton « Run workflow » : test à blanc (a_blanc coché) sur le journal choisi.
+# Lancé par le workflow principal (mise_a_jour.yml) : à l'heure de l'entraînement suivi d'une conférence (calendrier du club,
+# « auto » : Marca et AS lus jusqu'à la première déclaration), ou à la première déclaration de Marca ou d'AS (après un match :
+# venue de la salle de presse). Flux lu chaque minute, chaque déclaration tweetée tout de suite (conference.py).
+# Bouton « Run workflow » : test à blanc (a_blanc coché).
 on:
   workflow_dispatch:
     inputs:
       journal:
-        description: "Journal suivi (Marca ou AS)"
+        description: "Journal suivi (auto : le premier de Marca ou AS à publier)"
         required: true
         type: choice
-        options: [Marca, AS]
+        options: [auto, Marca, AS]
       a_blanc:
         description: "Test à blanc : affiche les tweets sans les publier"
         type: boolean
@@ -27,7 +28,7 @@ permissions:
 jobs:
   direct:
     runs-on: ubuntu-latest
-    timeout-minutes: 120
+    timeout-minutes: 250 # attente de la conférence (2 h 30 au plus) puis 90 min de direct au plus
     steps:
       - uses: actions/checkout@v7
         with:
@@ -43,7 +44,7 @@ jobs:
           key: npm-${{ github.run_id }}
           restore-keys: npm-
       - run: npm install -g @anthropic-ai/claude-code
-      - name: Une lecture du flux par minute, jusqu'à 10 min sans déclaration
+      - name: Une lecture par minute, jusqu'à 10 min sans déclaration
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
