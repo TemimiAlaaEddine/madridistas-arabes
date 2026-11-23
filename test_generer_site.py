@@ -1238,13 +1238,19 @@ con.executemany("INSERT INTO articles (date, section, journal) VALUES (?, ?, ?)"
                 [("2026-11-17T10:00:00", "actus", "Marca"), ("2026-11-16T22:30:00", "actus", "AS"),  # 23 h 30 à Madrid : hier
                  ("2026-11-16T12:00:00", "tactique", "AS")])
 con.executemany("INSERT INTO threads (article_id, tweets, statut, date, typefully) VALUES (?, '[]', ?, ?, ?)",
-                [(1, "immédiat", "2026-11-17T10:05:00", "11"), (2, "bloqué : test", "2026-11-17T10:06:00", "12")])
+                [(1, "immédiat", "2026-11-17T10:05:00", "11"), (2, "bloqué : test", "2026-11-17T10:06:00", "12"),
+                 (3, "bloqué : doublon", "2026-11-17T10:07:00", "sans")])  # sans brouillon : rien à relire
 t.noter(con, "Typefully", "erreur 500")
 d = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"))
 ag = {a["id"]: a for a in d["agents"]}
 assert ag["redacteur"]["rangs"] == [("Hier", "2 articles rédigés"), ("Aujourd'hui", "1 article rédigé (1 actus)")], ag["redacteur"]["rangs"]
 assert ag["editeur_x"]["etat"] == "bloque" and "erreur 500" in ag["editeur_x"]["blocages"][0]
 assert ag["controleur"]["etat"] == "attente" and ag["sujets"]["etat"] == "demande"
+assert ag["controleur"]["blocages"] == ["1 thread mis en brouillon à relire dans Typefully (48 h)"], ag["controleur"]["blocages"]
+_d = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"), brouillons=set())
+assert {a["id"]: a for a in _d["agents"]}["controleur"]["etat"] == "ok"  # brouillon déjà publié ou supprimé dans Typefully : plus rien à relire
+_d = statut.donnees(con, _dt(2026, 11, 17, 12), [], None, Path("nulle-part"), Path("nulle-part"), Path("nulle-part"), brouillons={12})
+assert {a["id"]: a for a in _d["agents"]}["controleur"]["etat"] == "attente"
 assert d["graphes"]["par_heure"]["Articles rédigés"][11] == 1 and d["graphes"]["par_heure"]["Articles rédigés"][14] is None  # 11 h à Madrid ; futur vide
 html_statut = statut.page(d)
 assert 'id="editeur_x"' in html_statut and "2 agents bloqués" in html_statut  # Éditeur X et Veilleur

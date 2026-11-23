@@ -117,7 +117,7 @@ SERIES = {  # nom : (table, colonne de date, condition)
 
 
 def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=BASE / "videos", connaissance=BASE / "connaissance.md",
-            alertes_gh=(), revues=(), quota=None):
+            alertes_gh=(), revues=(), quota=None, brouillons=None):
     dec = heure_madrid(utc) - utc
     madrid = utc + dec
     j0 = datetime.combine(madrid.date(), time()) - dec  # minuit à Madrid, en UTC
@@ -143,7 +143,11 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
     th, ta = deux("threads", "coalesce(envoye, date)", ENVOYES)
     imm = compter(con, "threads", "coalesce(envoye, date)", j0, demain, "statut = 'immédiat'")
     bh, ba = deux("threads", "date", "statut LIKE 'bloqu%'")
-    b48 = compter(con, "threads", "date", utc - timedelta(hours=48), demain, "statut LIKE 'bloqu%'")
+    # seuls les bloqués déposés en brouillon t'attendent ; « sans » (doublon, conférence déjà publiée) n'a rien à relire, et un
+    # brouillon que tu as publié ou supprimé non plus (brouillons = ids encore en brouillon dans Typefully, None si illisible)
+    b48 = sum(brouillons is None or int(i) in brouillons for (i,) in lignes(
+        con, "SELECT typefully FROM threads WHERE date >= ? AND date < ? AND statut LIKE 'bloqu%' AND typefully GLOB '[0-9]*'",
+        iso(utc - timedelta(hours=48)), iso(demain)))
     pfh, pfa = deux("page_facebook", "date")
     xh, xa = deux("liens_x", "date")
 
@@ -461,8 +465,15 @@ def main():
     except (OSError, ValueError) as err:  # clé absente ou refusée : tuile « – », le tableau de bord sort quand même
         print(f"! quota Typefully illisible ({err})")
         quota = None
+    try:
+        from threads import typefully_api
+        # shortcut: 50 brouillons lus au plus, paginer si la file de brouillons grossit
+        brouillons = {b["id"] for b in typefully_api("drafts?status=draft&limit=50").get("results", [])}
+    except (OSError, ValueError) as err:  # illisible : on compte tous les bloqués déposés en brouillon, comme avant
+        print(f"! brouillons Typefully illisibles ({err})")
+        brouillons = None
     con = sqlite3.connect(DB_PATH)
-    d = donnees(con, utc, passages, revue, alertes_gh=alertes, revues=revues, quota=quota)
+    d = donnees(con, utc, passages, revue, alertes_gh=alertes, revues=revues, quota=quota, brouillons=brouillons)
     con.close()
     SORTIE.mkdir(exist_ok=True)
     (SORTIE / "index.html").write_text(page(d), encoding="utf-8")
