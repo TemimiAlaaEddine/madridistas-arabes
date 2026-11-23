@@ -10310,4 +10310,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champi
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/general/115730/open-thread-november-24-2026','OPEN THREAD | NOVEMBER 24, 2026','2026-11-23T23:11:13');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/manu-carreno-en-contra-del-clima-contra-los-arbitros-de-barca-y-real-madrid-ante-la-debilidad-del-estamento-pretenden-pescar-en-aguas-revueltas-cadena-ser/','Manu Carreño, en contra del clima arbitral de Barça y Real Madrid: "Ante la debilidad del estamento, pretenden pescar en aguas revueltas"','2026-11-23T23:21:35');
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/24/david-sanchez-senala-mourinho-le-diga-club.html','David Sánchez señala a Mourinho: "Va a hacer lo que le diga el club"','2026-11-23T23:31:42');
+INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/thibaut-courtois-doet-opvallende-onthulling-psv-is-mijn-favoriete-club-in-nederland~abc7a0ad/','Thibaut Courtois doet opvallende onthulling: “PSV is mijn favoriete club in Nederland”','2026-11-23T23:51:03');
 COMMIT;
