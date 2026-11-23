@@ -9576,4 +9576,5 @@ INSERT INTO "vus" VALUES('https://www.marca.com/futbol/champions-league/2026/11/
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115687/real-madrid-nico-paz-decision-2026','Real Madrid yet to make final decision about Nico Paz -report','2026-11-23T09:26:02');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/la-doctrina-migueli-confirma-hubo-penalti-a-kylian/','La doctrina Migueli confirma: hubo penalti a Kylian','2026-11-23T09:36:44');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/carne-madridista-por-puntos-f202611-n/','Carné Madridista por puntos','2026-11-23T09:46:19');
+INSERT INTO "vus" VALUES('https://trivela.com.br/franca/invasao-francesa-elite-europeia-o-que-explica-raizes-fenomeno/','Mbappé e cia: Como a França virou a maior fábrica de talentos da Europa','2026-11-23T10:05:55');
 COMMIT;
