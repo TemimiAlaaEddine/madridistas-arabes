@@ -7,15 +7,14 @@ Les données sont dans le JSON __NEXT_DATA__ de la page.
 import collections
 import json
 import re
-import subprocess
 import sys
 from datetime import datetime
 
+import galerie
 from threads import heure_madrid
 
 EQUIPE = 8633  # Real Madrid sur FotMob
 SITE = "https://www.fotmob.com"
-NAVIGATEUR = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0 Safari/537.36"
 STATS = {  # lignes gardées, dans l'ordre d'affichage
     "Ball possession": "possession (%)", "Expected goals (xG)": "xG", "xG open play": "xG dans le jeu", "xG set play": "xG sur CPA",
     "xG on target (xGOT)": "xG des tirs cadrés", "Total shots": "tirs", "Big chances": "grosses occasions",
@@ -26,9 +25,7 @@ STATS = {  # lignes gardées, dans l'ordre d'affichage
 
 
 def page(chemin):
-    r = subprocess.run(["curl", "-s", "-f", "-m", "60", "-A", NAVIGATEUR, SITE + chemin], capture_output=True, check=True,
-                       creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0))
-    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', r.stdout.decode("utf-8", "replace"), re.S)
+    m = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', galerie.lire(SITE + chemin).decode("utf-8", "replace"), re.S)
     if not m:
         raise ValueError(f"FotMob : pas de données dans {chemin}")
     return json.loads(m.group(1))["props"]["pageProps"]

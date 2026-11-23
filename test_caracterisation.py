@@ -53,7 +53,6 @@ subprocess.run = _vrai_run
 for (cmd, k), url in zip(_appels, (fotmob.SITE + "/matches/a", "https://www.realmadrid.com/x")):
     assert cmd == ["curl", "-s", "-f", "-m", "60", "-A", galerie.NAVIGATEUR, url], cmd
     assert k == {"capture_output": True, "check": True, "creationflags": getattr(subprocess, "CREATE_NO_WINDOW", 0)}, k
-assert fotmob.NAVIGATEUR == galerie.NAVIGATEUR
 subprocess.run = lambda cmd, **k: subprocess.CompletedProcess(cmd, 0, b"<html></html>", b"")
 try:
     fotmob.page("/vide")
