@@ -9971,4 +9971,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7436375564083057275-renne
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2417029384772505498-real-madrid-la-reaction-folle-de-kylian-mbappe-apres-son-penalty-manque-contre-le-celta','Real Madrid : la réaction folle de Kylian Mbappé après son penalty manqué contre le Celta','2026-11-23T16:56:17');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-pillada-en-los-microfonos-de-dazn-a-mbappe-tras-el-penalti-fallado-f202611-v/','La ‘pillada’ en los micrófonos de DAZN a Mbappé tras el penalti fallado','2026-11-23T17:05:51');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/bosz-wil-niet-in-negatieve-scenario-s-denken-hou-op-we-hebben-een-goede-ploeg','Bosz wil niet in negatieve scenario''s denken: ''Hou op, we hebben een goede ploeg''','2026-11-23T17:56:01');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6512798716200884980-le-real-madrid-vient-de-recevoir-une-offre-dingue-pour-endrick','Le Real Madrid vient de recevoir une offre dingue pour Endrick !','2026-11-23T18:01:33');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6831706970881011454-psg-la-petite-blague-de-jose-mourinho-sur-luis-enrique','PSG : la petite blague de José Mourinho sur Luis Enrique','2026-11-23T18:01:33');
 COMMIT;
