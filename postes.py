@@ -206,11 +206,7 @@ def construire_reperes():
     """Repères par rôle (moyenne, écart) et habitudes de chaque joueur, sur les matchs entiers (45 minutes au moins) de matchs/."""
     par_role, par_joueur, n = {}, {}, 0
     for f in sorted(ICI.glob("matchs/*/whoscored.html")):
-        d = whoscored.lire(f.read_text(encoding="utf-8"))
-        fm_f = f.parent / "fotmob.json"
-        fm = json.loads(fm_f.read_text(encoding="utf-8")) if fm_f.exists() else None
-        actions, xg, xgot = preparer(d, fm)
-        fin = max(e["t"] for e in actions) + 0.1
+        d, actions, xg, xgot, fin = charger(f.parent)
         n += 1
         for cote in ("home", "away"):
             for pid, role, m, _, v in evaluer_equipe(d, actions, xg, xgot, cote, 0, fin, mini=45):
@@ -443,11 +439,8 @@ if __name__ == "__main__":
         n, roles = construire_reperes()
         print(f"{REPERES.name} : {n} matchs ; joueurs par rôle (matchs entiers, 45 min au moins) : {roles}")
     elif len(sys.argv) == 2:
-        dossier = Path(sys.argv[1])
-        d = whoscored.lire((dossier / "whoscored.html").read_text(encoding="utf-8"))
-        fm = json.loads((dossier / "fotmob.json").read_text(encoding="utf-8")) if (dossier / "fotmob.json").exists() else None
-        actions, xg, xgot = preparer(d, fm)
-        fin, mi = max(e["t"] for e in actions) + 0.1, 45 + bascules.horloge(d)[1]
+        d, actions, xg, xgot, fin = charger(sys.argv[1])
+        mi = 45 + bascules.horloge(d)[1]
         print("\n".join(rapport(d, actions, xg, xgot, fin, mi)))
     else:
         sys.exit(__doc__)
