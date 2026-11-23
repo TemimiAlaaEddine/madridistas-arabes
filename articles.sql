@@ -9893,4 +9893,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mou-tenia-ganas-hoy-de-ha
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a223172969551546767-real-madrid-thibaut-courtois-previent-vinicius-jr','Real Madrid : Thibaut Courtois prévient Vinicius Jr','2026-11-23T13:46:00');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/rueda-prensa-jugador-23-11-2026','Courtois: “La remontada en Roma fue clave para creer más en nosotros”','2026-11-23T13:52:14');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7094242701615243629-zlatan-ibrahimovic-va-jouer-un-mechant-dans-la-serie-mobland','Zlatan Ibrahimović va jouer un méchant dans la série MobLand','2026-11-23T14:11:08');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/courtois-debe-el-futbol-un-balon-de-oro-a-un-portero-en-2022-esperaba-estar-mas-arriba-cadena-ser/','Courtois: "¿Debe el fútbol un Balón de Oro a un portero? En 2022 esperaba estar más arriba..."','2026-11-23T14:21:12');
 COMMIT;
