@@ -31,9 +31,14 @@ INTERVALLE = 60
 FRAIS = timedelta(minutes=30)  # un article plus vieux ne lance pas de direct
 SILENCE = timedelta(minutes=10)  # fin du direct : 10 min sans nouvelle déclaration (20, jugé trop long le 23 nov.)
 DUREE_MAX = timedelta(minutes=90)  # après la première déclaration
-ATTENTE = timedelta(hours=2, minutes=30)  # avant-match : de l'heure de l'entraînement à la première déclaration, au plus
+# avant-match : de l'heure de l'entraînement à la première déclaration, au plus (23 nov. : entraînement 11 h, conférence vers
+# 13 h 10, premier article d'AS à 13 h 38, heure de Madrid ; 2 h 30 aurait coupé trop tôt)
+ATTENTE = timedelta(hours=3, minutes=30)
+# le calendrier du club retire l'entraînement dès qu'il commence (vu le 23 nov.) : le direct est lancé avant et attend l'heure
+AVANCE = timedelta(minutes=45)
+ATTENTE_DETECTION = timedelta(minutes=30)  # direct lancé sur un article : attente d'une vraie déclaration de conférence
 APRES_MATCH = (timedelta(hours=1, minutes=30), timedelta(hours=4))  # après le coup d'envoi : fenêtre de la conférence d'après-match
-MEME_CONFERENCE = timedelta(hours=4)  # pas de nouveau direct dans les 4 h qui suivent le début du précédent
+MEME_CONFERENCE = timedelta(hours=6)  # même conférence : un direct peut durer 45 min + 3 h 30 + 90 min
 
 
 def plat(texte):
@@ -41,12 +46,14 @@ def plat(texte):
 
 
 def est_declaration(titre, resume=""):
-    """« Mourinho: "..." » (forme de Marca), ou un titre qui n'est qu'une citation « “...” » dont le chapeau nomme l'entraîneur
-    (forme d'AS). shortcut: une vieille phrase reprise ou une citation d'un autre peut passer ; Claude écarte ce qui n'est
-    pas une déclaration de conférence (réponse HORS)."""
+    """Titre qui commence par l'entraîneur et contient une citation (« Mourinho: "..." », « Mourinho responde a Comesaña:
+    “...” », « Mourinho y el calendario: "..." », vus le 23 nov.), ou titre qui n'est qu'une citation dont le chapeau le nomme
+    (forme d'AS). shortcut: une vidéo d'entraînement ou une vieille phrase passe aussi ; Claude écarte ce qui n'est pas une
+    déclaration de conférence (réponse HORS)."""
     nom = CONFIG.get("entraineur", "mourinho")
-    return bool(re.match(rf"\s*(jose\s+)?{nom}\s*:", plat(titre))
-                or (re.match(r"\s*[\"“«]", titre or "") and nom in plat(resume)))
+    titre = titre or ""
+    return bool((re.match(rf"\s*(jose\s+)?{nom}\b", plat(titre)) and re.search(r"[\"“”«]", titre))
+                or (re.match(r"\s*[\"“«]", titre) and nom in plat(resume)))
 
 
 def declarations(journal, depuis):
@@ -100,23 +107,28 @@ def en_salle_de_presse(lien, resume):
 
 
 def a_lancer(utc=None, page=None):
-    """Ce que le direct doit suivre maintenant : "auto" (conférence d'avant-match annoncée par le calendrier du club), "Marca" ou
-    "AS" (journal de la première déclaration ; après un match, seulement si elle vient de la salle de presse), ou ""."""
+    """Ce que le direct doit faire maintenant (le journal est toujours choisi à la première vraie déclaration) :
+    "auto <heure UTC>" : conférence d'avant-match annoncée, entraînement dans moins de 45 min (le direct attend cette heure) ;
+    "auto" : une déclaration vient de paraître (après un match : seulement si elle vient de la salle de presse) ; "" : rien.
+    Une session finie sans aucun tweet (faux départ) n'empêche pas d'en lancer une autre."""
     from calendrier import URL, conferences, direct_actif
     from commun import lire_page
     utc = utc or maintenant()
-    if session_recente(utc) or direct_actif("conference_direct.yml"):
+    s = session_recente(utc)
+    if (s and (not s.get("fini") or s.get("tweets"))) or direct_actif("conference_direct.yml"):
         return ""
     try:
-        prevues = conferences(page if page is not None else lire_page(URL), utc - ATTENTE)
+        prevues = conferences(page if page is not None else lire_page(URL), utc)
     except OSError as err:  # calendrier illisible : on garde la détection par les déclarations
         print(f"  ! calendrier du club illisible ({err})")
         prevues = []
-    if any(h <= utc < h + ATTENTE for h in prevues):
-        return "auto"
+    proches = [h for h in prevues if utc < h <= utc + AVANCE]
+    if proches:
+        return f"auto {proches[0].isoformat()}"
     salle = apres_match(utc)
-    premiers = sorted((d[0], j) for j in FLUX for d in declarations(j, utc - FRAIS) if not salle or en_salle_de_presse(d[2], d[3]))
-    return premiers[0][1] if premiers else ""
+    if any(not salle or en_salle_de_presse(d[2], d[3]) for j in FLUX for d in declarations(j, utc - FRAIS)):
+        return "auto"
+    return ""
 
 
 PROMPT = """Tu écris en direct, pour le compte X « المدريديستا علاء » (supporters arabes du Real Madrid), un tweet sur une déclaration
@@ -203,16 +215,24 @@ def deja_publies(depuis):
     return [l for l, _ in lignes], [json.loads(tw)[0] for _, tw in lignes]
 
 
-def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=None):
+def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=None, heure=None):
     """Lit chaque minute le flux de `journal` ("auto" : Marca et AS jusqu'à la première déclaration, puis ce journal seul) et
-    tweete chaque nouvelle déclaration. Avant la première : attente jusqu'à 2 h 30 ; ensuite, jusqu'à 10 min sans
-    déclaration (90 min au plus après la première), puis le tweet de fin."""
+    tweete chaque nouvelle déclaration. heure (UTC) : entraînement annoncé avec conférence, attendu avant de commencer.
+    Avant la première déclaration : attente jusqu'à 3 h 30 après l'entraînement (30 min pour un direct lancé sur un
+    article) ; ensuite, jusqu'à 10 min sans déclaration (90 min au plus après la première), puis le tweet de fin."""
     import threads
     from generer_site import texte_complet
     horloge = horloge or maintenant
+    if heure and heure > horloge():
+        print(f"Attente de l'entraînement ({heure:%H:%M} UTC) : {(heure - horloge()).seconds // 60} min")
+        dormir((heure - horloge()).total_seconds())
+    attente = ATTENTE if heure else ATTENTE_DETECTION
+    if publier:  # base et conference.json à jour après l'attente (le passage principal a pu publier entre-temps)
+        subprocess.run(["git", "pull", "-q", "--rebase", "--autostash"], capture_output=True, timeout=60, cwd=BASE)
     etat = lire_etat()
     enregistrer = lambda message: (sauvegarder or (sauver if publier else (lambda e, m: None)))(etat, message)
     debut = horloge()
+    limite = max((heure or debut) + attente, debut + ATTENTE_DETECTION)  # fin de l'attente de la première déclaration
     liens, tweets = deja_publies(debut - FRAIS)
     suivi = None if journal == "auto" else journal
     # liens : tweetés ou doublons (le passage principal les écarte) ; vus : tous ceux déjà lus, HORS compris
@@ -223,7 +243,7 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
     premiere = derniere = debut if suivi or tweets else None
     while True:
         instant = horloge()
-        if premiere is None and instant - debut >= ATTENTE:
+        if premiere is None and instant >= limite:
             print("Pas de déclaration : fin de l'attente")
             break
         if premiere is not None and (instant - derniere >= SILENCE or instant - premiere >= DUREE_MAX):
@@ -233,7 +253,7 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
             journaux = [session["journal"]] if session["journal"] else list(FLUX)
             nouvelles = sorted(d + (j,) for j in journaux for d in declarations(j, debut - FRAIS) if d[2] not in session["vus"])
             if not nouvelles:  # signe de vie dans le journal du workflow
-                print(f"{h} en attente de la conférence (jusqu'à {(debut + ATTENTE):%H:%M})" if premiere is None else
+                print(f"{h} en attente de la conférence (jusqu'à {limite:%H:%M} UTC)" if premiere is None else
                       f"{h} aucune nouvelle déclaration ({session['journal']}), fin dans "
                       f"{(SILENCE - (instant - derniere)).seconds // 60} min sans déclaration")
             for quand, titre, lien, resume, j in nouvelles:
@@ -294,5 +314,7 @@ if __name__ == "__main__":
         with contextlib.redirect_stdout(sys.stderr):  # seule la réponse va sur la sortie : le workflow la lit
             reponse = a_lancer()
         print(reponse)
-    elif sys.argv[1:2] == ["--suivre"]:
-        suivre(sys.argv[2], publier="--a-blanc" not in sys.argv)
+    elif sys.argv[1:2] == ["--suivre"]:  # --suivre auto|Marca|AS [--heure <UTC>] [--a-blanc]
+        a = sys.argv
+        h = a[a.index("--heure") + 1] if "--heure" in a and a[a.index("--heure") + 1:] else ""
+        suivre(a[2], publier="--a-blanc" not in a, heure=datetime.fromisoformat(h) if h else None)

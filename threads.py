@@ -709,9 +709,11 @@ def vers_typefully(con, couvertures, dossier_couv):
     from calendrier import direct_actif
     session = conference.session_recente()
     suivie = session if session and session.get("journal") else None  # conférence commencée : journal choisi
-    attente = bool(session and not session.get("fini") and not session.get("journal"))  # avant-match : conférence pas commencée
-    # workflow lancé mais conference.json pas encore poussé : déjà en direct, journal suivi encore inconnu
-    direct = conference.en_direct() or (session is None and direct_actif("conference_direct.yml"))
+    # direct lancé, conférence pas encore commencée (ou conference.json pas encore poussé) : seuls les articles de conférence
+    # de Marca/AS lui sont laissés, les autres nouvelles partent
+    attente = bool(session and not session.get("fini") and not session.get("journal")) or (
+        (session is None or session.get("fini")) and direct_actif("conference_direct.yml"))
+    direct = conference.en_direct()
     hors = set(session.get("vus", [])) - set(session.get("liens", [])) if session else set()  # jugés hors conférence par le direct
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():

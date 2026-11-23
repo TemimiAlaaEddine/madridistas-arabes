@@ -76,16 +76,17 @@ jobs:
             echo "Suivi en direct lancé : $debut"
             gh workflow run suivi_direct.yml --ref "${{ github.ref_name }}" -f debut="$debut"
           fi
-      - name: Conférence de presse en direct à lancer ? (première déclaration de Marca ou AS ; une lecture par minute ensuite)
+      - name: Conférence de presse en direct à lancer ? (entraînement annoncé avec conférence, ou première déclaration de Marca ou AS)
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
           PYTHONIOENCODING: utf-8
         run: |
-          journal=$(python conference.py --a-lancer)
-          if [ -n "$journal" ]; then
-            echo "Conférence en direct lancée, suivie sur $journal"
-            gh workflow run conference_direct.yml --ref "${{ github.ref_name }}" -f journal="$journal"
+          sortie=$(python conference.py --a-lancer)
+          if [ -n "$sortie" ]; then
+            read -r journal heure <<< "$sortie"
+            echo "Conférence en direct lancée : $sortie"
+            gh workflow run conference_direct.yml --ref "${{ github.ref_name }}" -f journal="$journal" -f heure="$heure"
           fi
       - name: Analyse d'après-match à lancer ? (la planification GitHub de apres_match.yml saute des passages)
         if: always()

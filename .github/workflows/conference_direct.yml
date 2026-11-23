@@ -1,9 +1,9 @@
 name: Conférence de presse en direct
 
-# Lancé par le workflow principal (mise_a_jour.yml) : à l'heure de l'entraînement suivi d'une conférence (calendrier du club,
-# « auto » : Marca et AS lus jusqu'à la première déclaration), ou à la première déclaration de Marca ou d'AS (après un match :
-# venue de la salle de presse). Flux lu chaque minute, chaque déclaration tweetée tout de suite (conference.py).
-# Bouton « Run workflow » : test à blanc (a_blanc coché).
+# Lancé par le workflow principal (mise_a_jour.yml) : jusqu'à 45 min avant l'entraînement annoncé avec conférence (calendrier
+# du club, qui le retire dès qu'il commence ; heure = cet entraînement, attendu ici), ou à la première déclaration de Marca ou
+# d'AS (après un match : venue de la salle de presse). Marca et AS lus chaque minute ; le premier à publier une vraie déclaration
+# est suivi seul ; chaque déclaration tweetée tout de suite (conference.py). Bouton « Run workflow » : test à blanc.
 on:
   workflow_dispatch:
     inputs:
@@ -12,6 +12,9 @@ on:
         required: true
         type: choice
         options: [auto, Marca, AS]
+      heure:
+        description: "Heure UTC de l'entraînement suivi d'une conférence (AAAA-MM-JJTHH:MM:SS), vide si lancé sur un article"
+        default: ""
       a_blanc:
         description: "Test à blanc : affiche les tweets sans les publier"
         type: boolean
@@ -28,7 +31,7 @@ permissions:
 jobs:
   direct:
     runs-on: ubuntu-latest
-    timeout-minutes: 250 # attente de la conférence (2 h 30 au plus) puis 90 min de direct au plus
+    timeout-minutes: 360 # 45 min avant l'entraînement, attente de la conférence (3 h 30 au plus), puis 90 min de direct au plus
     steps:
       - uses: actions/checkout@v7
         with:
@@ -53,4 +56,4 @@ jobs:
         run: |
           git config user.name "conference-direct"
           git config user.email "actions@users.noreply.github.com"
-          python conference.py --suivre "${{ inputs.journal }}" ${{ inputs.a_blanc && '--a-blanc' || '' }}
+          python conference.py --suivre "${{ inputs.journal }}" --heure "${{ inputs.heure }}" ${{ inputs.a_blanc && '--a-blanc' || '' }}

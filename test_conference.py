@@ -14,6 +14,10 @@ sys.stdout.reconfigure(encoding="utf-8")
 assert c.est_declaration('Mourinho: "Es más fácil jugar con el apoyo del Bernabéu"')
 assert c.est_declaration("José Mourinho: “Después del 1-1 fue una avalancha”")
 assert not c.est_declaration("Mourinho y por qué Mbappé y Espí no pueden jugar más juntos")
+# titres de la conférence du 23 nov., manqués par la première version
+assert c.est_declaration("Mourinho responde a Santi Comesaña: “Tiene amnesia”")
+assert c.est_declaration('Mourinho y el calendario: "Es un conflicto, pero al final es el plin plin"')
+assert not c.est_declaration("Mourinhista de corazón")
 assert not c.est_declaration('Carlos Espí: "Estaba agachado"')
 assert c.est_declaration("“Es un grupo de amigos”", "Mourinho, en rueda de prensa tras el partido")  # forme d'AS
 assert not c.est_declaration("“El banquillo del Real Madrid nos ha matado”", "El técnico del Celta, tras la derrota")
@@ -42,12 +46,12 @@ try:
     c.lire_etat = lambda: []
     c.declarations = lambda j, depuis: {"Marca": [(T0 - timedelta(minutes=3), "Mourinho: «a»", "m1", "")],
                                         "AS": [(T0 - timedelta(minutes=8), "Mourinho: «b»", "a1", "")]}[j]
-    assert c.a_lancer(T0, page="") == "AS", "AS a publié le premier"
-    assert c.a_lancer(datetime(2026, 11, 23, 10, 5), page=CAL) == "auto", "avant-match : dès l'heure de l'entraînement"
-    assert c.a_lancer(datetime(2026, 11, 23, 9, 55), page=CAL) == "AS", "avant l'heure annoncée : détection habituelle"
+    assert c.a_lancer(T0, page="") == "auto", "une déclaration : direct lancé, journal choisi à la première vraie déclaration"
+    # avant-match : lancé jusqu'à 45 min avant l'entraînement (le calendrier le retire dès qu'il commence)
+    assert c.a_lancer(datetime(2026, 11, 23, 9, 20), page=CAL) == "auto 2026-11-23T10:00:00"
     c.declarations = lambda j, depuis: []
-    assert c.a_lancer(T0, page="") == "" and c.a_lancer(datetime(2026, 11, 23, 12, 29), page=CAL) == "auto"
-    assert c.a_lancer(datetime(2026, 11, 23, 12, 31), page=CAL) == "", "2 h 30 après l'entraînement : plus d'attente"
+    assert c.a_lancer(datetime(2026, 11, 23, 9, 10), page=CAL) == "", "plus de 45 min avant : trop tôt"
+    assert c.a_lancer(T0, page="") == ""
     # après-match : seule une déclaration venue de la salle de presse lance le direct (l'interview Movistar passe par le passage normal)
     calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-23T10:00:00", "heure_fixee": True}]), encoding="utf-8")
     c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "a Movistar")] if j == "Marca" else []
@@ -55,17 +59,20 @@ try:
     c.en_salle_de_presse = lambda lien, resume: "Movistar" not in resume
     assert c.a_lancer(T0, page="") == "", "interview télé : pas de direct"
     c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "en rueda de prensa")] if j == "Marca" else []
-    assert c.a_lancer(T0, page="") == "Marca"
+    assert c.a_lancer(T0, page="") == "auto"
     c.en_salle_de_presse = vrai_salle
     calendrier.FICHIER.write_text("[]", encoding="utf-8")
     c.declarations = lambda j, depuis: [(T0, "Mourinho: «a»", "m1", "")] if j == "Marca" else []
-    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": True}]
+    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "tweets": ["x"], "fini": True}]
     assert c.a_lancer(T0, page="") == "", "même conférence : pas de second direct"
+    c.lire_etat = lambda: [{"journal": None, "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "tweets": [], "fini": True}]
+    assert c.a_lancer(T0, page="") == "auto", "faux départ (aucun tweet) : il ne bloque pas le vrai direct (23 nov.)"
+    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": True}]
     assert c.session_recente(T0)["journal"] == "AS" and not c.en_direct(T0)
     c.lire_etat = lambda: [{"journal": None, "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": False}]
     assert not c.en_direct(T0), "attente de la conférence : pas encore en direct"
-    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=5)).isoformat(), "liens": [], "fini": True}]
-    assert c.a_lancer(T0, page="") == "Marca" and c.session_recente(T0) is None
+    c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=7)).isoformat(), "liens": [], "fini": True}]
+    assert c.a_lancer(T0, page="") == "auto" and c.session_recente(T0) is None
     print("OK lancement")
 
     # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 10 min de silence
@@ -98,14 +105,20 @@ try:
     c.declarations = decl_auto
     c.deja_publies = lambda depuis: ([], [])
     c.tweet = lambda titre, texte, deja: "HORS" if "«tv»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
-    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=T0)
     assert s["journal"] == "AS" and s["tweets"] == ["🎙️ مؤتمر مورينيو | «x»"], s
     assert "m-tv" in s["vus"] and "m-tv" not in s["liens"] and "m-z" not in s["vus"], "Marca ignoré une fois AS choisi"
     assert 60 <= (horloge[0] - T0).total_seconds() / 60 <= 62, "pas de fin de silence pendant l'attente (50 min), puis 10 min"
-    horloge[0] = T0
+    horloge[0] = T0 - timedelta(minutes=40)
     c.declarations = lambda j, depuis: []
-    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=T0)
+    assert s["debut"] == T0.isoformat(), "attend l'heure de l'entraînement avant de commencer"
     assert not s["tweets"] and (horloge[0] - T0) == c.ATTENTE and s["journal"] is None, "pas de conférence : fin de l'attente"
+    horloge[0] = T0  # lancé sur un article (vidéo d'entraînement du 23 nov.) : 30 min d'attente d'une vraie déclaration, pas 10
+    c.declarations = lambda j, depuis: [(T0, "“Dean, estás dormido”", "a-video", "Mourinho")] if j == "AS" else []
+    c.tweet = lambda titre, texte, deja: "HORS"
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    assert not s["tweets"] and s["journal"] is None and (horloge[0] - T0) == c.ATTENTE_DETECTION
     print("OK attente avant-match")
 
     # tweet de fin : avant le prochain match, ou après le match commencé il y a moins de 6 h
@@ -178,11 +191,13 @@ try:
     c.session_recente = lambda utc=None: {"journal": "Marca", "liens": ["m1"], "fini": True}
     t.vers_typefully(con, {}, None)
     assert {r[0] for r in con.execute("SELECT article_id FROM threads WHERE typefully = '1'")} == {2, 4}
-    # workflow lancé mais conference.json pas encore là : tout ce qui touche Marca/AS et les nouvelles attendent
+    # workflow lancé mais conference.json pas encore là : les articles de conférence de Marca/AS attendent le direct, les
+    # autres nouvelles partent (la conférence n'a pas forcément commencé)
     con.execute("UPDATE threads SET typefully = NULL, statut = 'a_envoyer'")
     c.session_recente, calendrier.direct_actif = (lambda utc=None: None), (lambda w="": True)
-    envois.clear()
-    assert t.vers_typefully(con, {}, None) == 0 and not envois
+    assert t.vers_typefully(con, {}, None) == 1
+    assert {r[0] for r in con.execute("SELECT article_id FROM threads WHERE typefully = '1'")} == {4}
+    con.execute("UPDATE threads SET typefully = NULL, statut = 'a_envoyer'")
     # attente de la conférence (avant-match) : Marca/AS laissés au direct, les autres nouvelles partent ; un article jugé
     # hors conférence par le direct (interview télé) part aussi par le passage normal
     calendrier.direct_actif = lambda w="": True  # le workflow tourne, mais conference.json dit « en attente » : pas de rétention
