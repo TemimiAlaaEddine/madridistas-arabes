@@ -696,6 +696,13 @@ def conference_publiee(con, article_id, tweet, heures=6, club=False):
 DIRECT = ("Marca", "AS")  # conférence en direct : chaque article de ces journaux (une déclaration forte) devient un tweet
 
 
+def ecarter(con, article_id, motif):
+    """Thread jamais déposé dans Typefully (« sans ») : rien à relire ni à supprimer à la main."""
+    con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
+                (f"bloqué : {motif}", maintenant().isoformat(timespec="seconds"), article_id))
+    con.commit()
+
+
 def vers_typefully(con, couvertures, dossier_couv):
     """Dépose les nouveaux threads dans Typefully, la photo de l'article source sur le 1er tweet (sinon la couverture) :
     au prochain créneau libre de sa file (publiés seuls, le plus ancien d'abord) si "typefully_publish_at" vaut
@@ -725,9 +732,7 @@ def vers_typefully(con, couvertures, dossier_couv):
             if t["lien"] in suivie["liens"] or t["journal"] != suivie["journal"]:
                 motif = "publiée en direct" if t["lien"] in suivie["liens"] else f"conférence suivie sur {suivie['journal']}"
                 print(f"  Typefully : article {t['article_id']} écarté ({motif})")
-                con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
-                            (f"bloqué : {motif}", maintenant().isoformat(timespec="seconds"), t["article_id"]))
-                con.commit()
+                ecarter(con, t["article_id"], motif)
                 continue
         elif direct and not est_officiel(t):
             # la conférence d'abord : la file Typefully publie toutes les 5 min, une nouvelle y sortirait au milieu du direct ;
@@ -736,17 +741,13 @@ def vers_typefully(con, couvertures, dossier_couv):
         if t["mode"] == "conference" and t["journal"] not in DIRECT and conference_publiee(
                 con, t["article_id"], tweets[0], club=est_officiel(t)):
             print(f"  Typefully : article {t['article_id']} écarté, conférence déjà publiée")
-            con.execute("UPDATE threads SET typefully = 'sans', statut = 'bloqué : conférence déjà publiée', envoye = ? WHERE article_id = ?",
-                        (maintenant().isoformat(timespec="seconds"), t["article_id"]))
-            con.commit()
+            ecarter(con, t["article_id"], "conférence déjà publiée")
             continue
         motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
         doublon = next((m for m in motifs if m.startswith("doublon")), None)
         if doublon:  # confirmé par Claude : pas de brouillon à supprimer à la main
             print(f"  Typefully : article {t['article_id']} écarté ({doublon})")
-            con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
-                        (f"bloqué : {doublon}", maintenant().isoformat(timespec="seconds"), t["article_id"]))
-            con.commit()
+            ecarter(con, t["article_id"], doublon)
             continue
         # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
