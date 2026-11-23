@@ -1,0 +1,52 @@
+name: Conférence de presse en direct
+
+# Lancé par le workflow principal (mise_a_jour.yml) dès qu'un article « Mourinho: "..." » de Marca ou d'AS paraît : ce journal
+# est suivi pour toute la conférence, son flux lu chaque minute, chaque déclaration tweetée tout de suite (conference.py).
+# Bouton « Run workflow » : test à blanc (a_blanc coché) sur le journal choisi.
+on:
+  workflow_dispatch:
+    inputs:
+      journal:
+        description: "Journal suivi (Marca ou AS)"
+        required: true
+        type: choice
+        options: [Marca, AS]
+      a_blanc:
+        description: "Test à blanc : affiche les tweets sans les publier"
+        type: boolean
+        default: false
+
+concurrency: conference_direct # un seul direct à la fois
+
+permissions:
+  contents: write # conference.json : direct en cours et articles déjà tweetés, lus par le passage principal
+
+jobs:
+  direct:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.ref_name }}
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.14"
+      - run: pip install feedparser pillow
+      - name: Paquets npm déjà téléchargés
+        uses: actions/cache@v6
+        with:
+          path: ~/.npm
+          key: npm-${{ github.run_id }}
+          restore-keys: npm-
+      - run: npm install -g @anthropic-ai/claude-code
+      - name: Une lecture du flux par minute, jusqu'à 20 min sans déclaration
+        env:
+          CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}
+          PYTHONIOENCODING: utf-8
+          PYTHONUNBUFFERED: 1
+        run: |
+          git config user.name "conference-direct"
+          git config user.email "actions@users.noreply.github.com"
+          python conference.py --suivre "${{ inputs.journal }}" ${{ inputs.a_blanc && '--a-blanc' || '' }}

@@ -705,9 +705,28 @@ def vers_typefully(con, couvertures, dossier_couv):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
     n, plafond, echec = 0, False, None
+    import conference
+    from calendrier import direct_actif
+    # workflow lancé mais conference.json pas encore poussé : déjà en direct, journal suivi encore inconnu
+    session, direct = conference.session_recente(), conference.en_direct() or direct_actif("conference_direct.yml")
     for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
+        # conférence suivie en direct (conference.py) : ses articles sont tweetés par le direct, l'autre journal est ignoré
+        if (session or direct) and t["mode"] == "conference" and t["journal"] in DIRECT:
+            if direct and (not session or (t["journal"] == session["journal"] and t["lien"] not in session["liens"])):
+                continue  # le direct va le tweeter ; repris après le direct s'il l'a manqué
+            if t["lien"] in session["liens"] or t["journal"] != session["journal"]:
+                motif = "publiée en direct" if t["lien"] in session["liens"] else f"conférence suivie sur {session['journal']}"
+                print(f"  Typefully : article {t['article_id']} écarté ({motif})")
+                con.execute("UPDATE threads SET typefully = 'sans', statut = ?, envoye = ? WHERE article_id = ?",
+                            (f"bloqué : {motif}", maintenant().isoformat(timespec="seconds"), t["article_id"]))
+                con.commit()
+                continue
+        elif direct and not est_officiel(t):
+            # la conférence d'abord : la file Typefully publie toutes les 5 min, une nouvelle y sortirait au milieu du direct ;
+            # retenue, elle part au premier passage après le direct (le récapitulatif du club attend, lui, sa page complète)
+            continue
         if t["mode"] == "conference" and t["journal"] not in DIRECT and conference_publiee(
                 con, t["article_id"], tweets[0], club=est_officiel(t)):
             print(f"  Typefully : article {t['article_id']} écarté, conférence déjà publiée")

@@ -226,10 +226,10 @@ def lire_direct():
         return {}
 
 
-def direct_actif():
+def direct_actif(workflow="suivi_direct.yml"):
     """Le workflow du suivi dédié tourne-t-il (ou attend-il) ? False si gh est absent ou refuse : le passage principal tweete."""
     try:
-        r = subprocess.run(["gh", "run", "list", "--workflow", "suivi_direct.yml", "--limit", "5", "--json", "status"],
+        r = subprocess.run(["gh", "run", "list", "--workflow", workflow, "--limit", "5", "--json", "status"],
                            capture_output=True, text=True, timeout=30)
         return r.returncode == 0 and any(x["status"] in ("in_progress", "queued", "waiting", "pending") for x in json.loads(r.stdout))
     except (OSError, ValueError, subprocess.SubprocessError):
