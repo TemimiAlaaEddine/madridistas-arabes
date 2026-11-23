@@ -40,7 +40,7 @@ try:
     assert c.a_lancer(T0) == "Marca" and c.session_recente(T0) is None
     print("OK lancement")
 
-    # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 20 min de silence
+    # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 10 min de silence
     horloge = [T0]
     flux = {0: [], 2: [(T0, "Mourinho: «1»", "m1", "")], 4: [(T0, "Mourinho: «1»", "m1", ""), (T0, "Mourinho: «2»", "m2", "")],
             6: [(T0, "Mourinho: «1»", "m1", ""), (T0, "Mourinho: «2»", "m2", ""), (T0, "Mourinho: «3»", "m3", ""), (T0, "Mourinho: «0»", "m0", "")]}
@@ -55,7 +55,7 @@ try:
                  sauvegarder=lambda etat, m: sauvegardes.append((m, json.dumps(etat[-1]))))
     assert s["tweets"] == ["🎙️ مؤتمر مورينيو | «0»", "🎙️ مؤتمر مورينيو | «1»", "🎙️ مؤتمر مورينيو | «3»"], s["tweets"]
     assert s["liens"] == ["m0", "m1", "m2", "m3"] and s["fini"] and s["journal"] == "Marca"
-    assert 25 <= (horloge[0] - T0).total_seconds() / 60 <= 28, "fin 20 min après la dernière déclaration (min 6)"
+    assert 15 <= (horloge[0] - T0).total_seconds() / 60 <= 18, "fin 10 min après la dernière déclaration (min 6)"
     assert sauvegardes[0][0].endswith("suivie sur Marca") and "fin" in sauvegardes[-1][0]
     print("OK boucle")
 finally:

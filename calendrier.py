@@ -227,11 +227,13 @@ def lire_direct():
 
 
 def direct_actif(workflow="suivi_direct.yml"):
-    """Le workflow du suivi dédié tourne-t-il (ou attend-il) ? False si gh est absent ou refuse : le passage principal tweete."""
+    """Le workflow du suivi dédié tourne-t-il (ou attend-il) ? False si gh est absent ou refuse : le passage principal tweete.
+    Un run « à blanc » (dans son nom) ne compte pas : il ne publie rien."""
     try:
-        r = subprocess.run(["gh", "run", "list", "--workflow", workflow, "--limit", "5", "--json", "status"],
+        r = subprocess.run(["gh", "run", "list", "--workflow", workflow, "--limit", "5", "--json", "status,displayTitle"],
                            capture_output=True, text=True, timeout=30)
-        return r.returncode == 0 and any(x["status"] in ("in_progress", "queued", "waiting", "pending") for x in json.loads(r.stdout))
+        return r.returncode == 0 and any(x["status"] in ("in_progress", "queued", "waiting", "pending")
+                                         and "à blanc" not in x.get("displayTitle", "") for x in json.loads(r.stdout))
     except (OSError, ValueError, subprocess.SubprocessError):
         return False
 

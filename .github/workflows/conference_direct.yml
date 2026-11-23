@@ -16,6 +16,9 @@ on:
         type: boolean
         default: false
 
+# « à blanc » dans le nom : le passage principal ignore ce run (calendrier.direct_actif) et ne retient pas les nouvelles
+run-name: ${{ inputs.a_blanc && 'Conférence à blanc' || 'Conférence en direct' }} (${{ inputs.journal }})
+
 concurrency: conference_direct # un seul direct à la fois
 
 permissions:
@@ -40,7 +43,7 @@ jobs:
           key: npm-${{ github.run_id }}
           restore-keys: npm-
       - run: npm install -g @anthropic-ai/claude-code
-      - name: Une lecture du flux par minute, jusqu'à 20 min sans déclaration
+      - name: Une lecture du flux par minute, jusqu'à 10 min sans déclaration
         env:
           CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
           TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }}

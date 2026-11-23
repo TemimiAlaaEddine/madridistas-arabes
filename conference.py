@@ -25,7 +25,7 @@ FLUX = {"Marca": ["https://e00-marca.uecdn.es/rss/futbol/real-madrid.xml"],
                "https://feeds.as.com/mrss-s/pages/as/site/as.com/section/futbol/portada/"]}  # tout le football : vite renouvelé
 INTERVALLE = 60
 FRAIS = timedelta(minutes=30)  # un article plus vieux ne lance pas de direct
-SILENCE = timedelta(minutes=20)  # fin du direct : 20 min sans nouvelle déclaration
+SILENCE = timedelta(minutes=10)  # fin du direct : 10 min sans nouvelle déclaration (20, jugé trop long le 23 nov.)
 DUREE_MAX = timedelta(minutes=90)
 MEME_CONFERENCE = timedelta(hours=3)  # pas de nouveau direct dans les 3 h qui suivent le début du précédent
 
@@ -148,7 +148,7 @@ def deja_publies(depuis):
 
 
 def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=None):
-    """Lit le flux de `journal` chaque minute et tweete chaque nouvelle déclaration, jusqu'à 20 min sans déclaration (90 min au plus)."""
+    """Lit le flux de `journal` chaque minute et tweete chaque nouvelle déclaration, jusqu'à 10 min sans déclaration (90 min au plus)."""
     import threads
     from generer_site import texte_complet
     horloge = horloge or maintenant
@@ -163,9 +163,10 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
     while horloge() - derniere < SILENCE and horloge() - debut < DUREE_MAX:
         h = horloge().strftime("%H:%M:%S")
         try:
-            for quand, titre, lien, resume in declarations(journal, debut - FRAIS):
-                if lien in session["liens"]:
-                    continue
+            nouvelles = [d for d in declarations(journal, debut - FRAIS) if d[2] not in session["liens"]]
+            if not nouvelles:  # signe de vie dans le journal du workflow
+                print(f"{h} aucune nouvelle déclaration ({journal}), fin dans {(SILENCE - (horloge() - derniere)).seconds // 60} min sans déclaration")
+            for quand, titre, lien, resume in nouvelles:
                 session["liens"].append(lien)  # noté avant l'envoi : un tweet raté n'est pas retenté en boucle
                 it = {"lien": lien, "texte_flux": resume, "type": "conference"}
                 texte = tweet(titre, texte_complet(it), session["tweets"])
