@@ -75,6 +75,8 @@ try:
     assert c.a_lancer(T0, page="") == "", "même conférence : pas de second direct"
     c.lire_etat = lambda: [{"journal": None, "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "tweets": [], "fini": True}]
     assert c.a_lancer(T0, page="") == "auto", "faux départ (aucun tweet) : il ne bloque pas le vrai direct (23 nov.)"
+    c.lire_etat = lambda: [{"journal": None, "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "vus": ["m1"], "tweets": [], "fini": True}]
+    assert c.a_lancer(T0, page="") == "", "article déjà vu, republié avec une date fraîche : pas de direct (23 nov.)"
     c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": True}]
     assert c.session_recente(T0)["journal"] == "AS" and not c.en_direct(T0)
     c.lire_etat = lambda: [{"journal": None, "debut": (T0 - timedelta(hours=1)).isoformat(), "liens": [], "fini": False}]

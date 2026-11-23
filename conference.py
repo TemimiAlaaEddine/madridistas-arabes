@@ -139,7 +139,8 @@ def a_lancer(utc=None, page=None):
     if fin:  # après-match : lancé à la fin du match, il attend la conférence (les interviews télé sont écartées : HORS)
         return f"auto {fin.isoformat()}"
     salle = apres_match(utc)
-    if any(not salle or en_salle_de_presse(d[2], d[3]) for j in FLUX for d in declarations(j, utc - FRAIS)):
+    vus = {lien for x in lire_etat() for lien in x.get("vus", [])}  # article republié avec une date fraîche (AS, 23 nov.)
+    if any(d[2] not in vus and (not salle or en_salle_de_presse(d[2], d[3])) for j in FLUX for d in declarations(j, utc - FRAIS)):
         return "auto"
     return ""
 
