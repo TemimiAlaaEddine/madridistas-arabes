@@ -9956,4 +9956,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a1678923663048309452-ligue
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50573054/real-madrid-mourinho-vinicius-jr-does-not-mvp','Real Madrid''s Mourinho: Vinícius Jr. ''doesn''t have to be MVP'' to deliver','2026-11-23T15:16:35');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115713/real-madrid-psv-2026-squad-list','Real Madrid announce squad for Champions League match against PSV Eindhoven','2026-11-23T15:36:03');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/la-oferta-del-milan-por-endrick-es-firme-70-millones-de-euros-para-llevarselo-en-invierno-cadena-ser/','La oferta del Milan por Endrick es firme: 70 millones de euros para llevárselo en invierno','2026-11-23T15:41:23');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champions-real-madrid-jose-mourinho-defend-vinicius-avant-real-madrid-psv-s-il-donne-tout-ce-qu-il-a-il-n-a-pas-besoin-d-etre-l-homme-du-match-a-chaqu/20246164#at_medium=RSS_feeds','Mourinho monte au créneau pour défendre Vinicius','2026-11-23T15:46:11');
 COMMIT;
