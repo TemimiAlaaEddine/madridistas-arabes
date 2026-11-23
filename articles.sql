@@ -9633,4 +9633,5 @@ INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/prime
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/robar-el-barca-imposible/','¿Robar el Barça? Imposible','2026-11-23T11:03:00');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6108290554414731911-real-madrid-jose-mourinho-secoue-ses-joueurs-a-lentrainement','Real Madrid : José Mourinho secoue ses joueurs à l’entraînement','2026-11-23T11:03:00');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2272127689573535414-real-madrid-blessure-musculaire-pour-endrick','Real Madrid : blessure musculaire pour Endrick','2026-11-23T11:51:15');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/dumfries-ontbreekt-richting-weerzien-met-psv-op-training-real-madrid','Dumfries ontbreekt richting weerzien met PSV op training Real Madrid','2026-11-23T12:01:33');
 COMMIT;
