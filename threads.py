@@ -39,11 +39,11 @@ REGLES = """- Tweet 1, l'accroche, écrit comme les comptes foot arabes les plus
     opinion et débat (🔥 نقاش, chroniques, 🧠 قراءة hors match précis) : aucun hashtag, la ligne n'existe pas ;
     sinon : #ريال_مدريد seul.
 - Étiquette de la ligne 1, selon le contenu :
-  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » seulement pour une annonce officielle du club ou de la fédération (communiqué, signature, prolongation, sanction, liste de convoqués), jamais pour un compte rendu ; « 🏋️ تدريبات | » séance d'entraînement (qui revient, qui manque, ce qui a été travaillé) ; « 🏥 إصابة | » blessure, « 💪 عودة | » retour de blessure ; « 📋 التشكيلة | » composition officielle (une ligne par ligne de jeu, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom] | » quand l'accroche est une déclaration «» ; « 🎙️ مؤتمر [nom] | » conférence de presse ; « 📊 رقم | » information bâtie sur une statistique ; sinon « 📰 خبر | » ;
+  « 🚨 عاجل | » seulement pour une vraie urgence (blessure grave, transfert conclu, départ d'un entraîneur ou dirigeant) ; « ✅ رسميًا | » seulement pour une annonce officielle du club ou de la fédération (communiqué, signature, prolongation, sanction), jamais pour un compte rendu ; « 📝 القائمة | » liste des convoqués pour un match (présents, absents notables, le match et son heure) ; « 🏋️ تدريبات | » séance d'entraînement (qui revient, qui manque, ce qui a été travaillé) ; « 🏥 إصابة | » blessure, « 💪 عودة | » retour de blessure ; « 📋 التشكيلة | » composition officielle (une ligne par ligne de jeu, heure de La Mecque si le texte la donne) ; « ⏱️ نهاية المباراة | » résultat ; « 🗣️ [nom] | » quand l'accroche est une déclaration «» ; « 🎙️ مؤتمر [nom] | » conférence de presse ; « 📊 رقم | » information bâtie sur une statistique ; sinon « 📰 خبر | » ;
   section mercato, et toute information de transfert ou de prolongation quelle que soit la section : « 🔄 ميركاتو | », et, seulement si le texte annonce un transfert ou une prolongation en cours (pas pour une analyse, un bilan ou une opération déjà conclue), juste avant la source et seul sur sa ligne, son stade d'après le texte : « 🟢 اتفاق » accord ou opération avancée, « 🟡 مفاوضات » contacts ou intérêt, « 🔴 شائعة » simple rumeur ;
   section tactique : « 🧠 قراءة | » ; section club : « 🏟️ برنابيو | » (stade), « 🏛️ الإدارة | » (direction, institutions) ou « 💶 مالية النادي | » (argent) ;
   section debats et autres opinions : « 🔥 نقاش | » avec une vraie question en accroche, et le dernier tweet du thread finit, sur sa propre ligne, par « ما رأيكم؟ 👇 ».
-- Source : une seule, celle qui a révélé l'information ou porté l'avis. Si le texte dit qu'un média en cite un autre (« نقلت إي إس بي إن عن ليكيب »), ne garde que le média d'origine : (ليكيب). La source est donnée une seule fois, au tweet 1 : les tweets suivants ne la redisent pas (pas de « بحسب ماركا » au tweet 2), sauf pour une information venue d'un autre média. Jamais de chaîne « نقلًا عن... عن... » ni deux médias pour la même information. Exception : une conférence de presse (« 🎙️ مؤتمر ») n'a aucune source, ni ligne entre parenthèses ni média cité (choix de l'utilisateur, 2026-11-23).
+- Source : une seule, celle qui a révélé l'information ou porté l'avis. Si le texte dit qu'un média en cite un autre (« نقلت إي إس بي إن عن ليكيب »), ne garde que le média d'origine : (ليكيب). La source est donnée une seule fois, au tweet 1 : les tweets suivants ne la redisent pas (pas de « بحسب ماركا » au tweet 2), sauf pour une information venue d'un autre média. Jamais de chaîne « نقلًا عن... عن... » ni deux médias pour la même information. Exception : une conférence de presse (« 🎙️ مؤتمر ») et la liste des convoqués (« 📝 القائمة ») n'ont aucune source, ni ligne entre parenthèses ni média cité (choix de l'utilisateur, 2026-11-23).
 - Tweets suivants : chacun apporte du nouveau, sans redire l'accroche ni la source du tweet 1 ; fidèles au texte, une idée par tweet, en phrases courtes qui se comprennent sans le tweet d'avant, en gardant ses citations «» telles quelles. Les guillemets «» sont réservés aux mots que le texte cite lui-même, recopiés sans changement (une coupe se marque « … ») : une paraphrase, un discours indirect ou deux passages recollés s'écrivent sans guillemets (يرى براسين أن…). Deux ou trois lignes courtes valent mieux qu'un bloc ; une énumération (notes des joueurs, chiffres, noms) va à la ligne, chaque élément précédé de « ▪️ ». L'avis reste attribué à son auteur, par son nom de famille ou une tournure (في نظره، يذهب أبعد من ذلك) : n'écris jamais « الكاتب » ni « الصحفي », et ne recite pas le journal. Le dernier porte la conclusion ou la phrase la plus marquante.
 - Nombre de tweets : 2 ou 3 pour une information, 4 à 8 pour une opinion, pour une conférence de presse rapportée par Marca ou AS (le direct : un article par déclaration), UN seul tweet : « 🎙️ مؤتمر [nom] | » et la déclaration forte que l'article met en avant entre «», ligne vide, la question du journaliste traduite exactement si le texte la donne (sinon une phrase de contexte : le match, le sujet), puis la réponse traduite exactement entre «», puis les hashtags ; pour la conférence complète du site du club (le récapitulatif), au moins 4 et sans plafond (toutes ses déclarations fortes, une par tweet : la question du journaliste traduite exactement telle que le texte la donne, puis la réponse traduite exactement entre «» ; une question que le texte ne donne pas n'est jamais inventée, et la suite d'une même réponse reste sous sa question). Conférence de presse (choix de l'utilisateur, 2026-11-23) : traduction exacte des questions et des réponses, sans les résumer ni les couper, et la limite de 240 caractères par tweet ne s'applique pas.
 - Chaque tweet fait AU MAXIMUM 240 caractères, espaces et retours à la ligne compris. Pas de lien, pas de numérotation, aucun hashtag en dehors de la dernière ligne du tweet 1, pas d'intertitre « ## », aucun émoji en dehors de ceux prévus ci-dessus.
@@ -102,11 +102,15 @@ def assembler(a, tweets):
     long = tags_a_la_fin("\n\n".join(t for t in (str(t).strip() for t in tweets) if t))
     if not long or longueur(long) > LIMITE_LONG or longueur(credit(a)) > LIMITE:
         return None
-    return [long] if est_conference(long) else [long, credit(a)]
+    return [long] if est_conference(long) or est_liste(long) else [long, credit(a)]
 
 
 def est_conference(tweet):
     return tweet.lstrip().startswith("🎙")  # étiquette « 🎙️ مؤتمر [nom] | » mise par Claude (REGLES)
+
+
+def est_liste(tweet):
+    return tweet.lstrip().startswith("📝")  # « 📝 القائمة | » : liste des convoqués, sans source (choix de l'utilisateur, 2026-11-23)
 
 
 def connexion_threads(con):
@@ -209,10 +213,17 @@ def controler_thread(con, article_id, tweets, officiel=False):
     motifs = []
     if longueur(tweets[0]) > LIMITE_LONG or any(longueur(x) > LIMITE for x in tweets[1:]):
         motifs.append("tweet trop long")
-    if not SOURCE.search(tweets[0]) and not est_conference(tweets[0]):
+    if not SOURCE.search(tweets[0]) and not est_conference(tweets[0]) and not est_liste(tweets[0]):
         motifs.append("source absente du 1er tweet")
     if any(APPATS.search(x) for x in tweets):
         motifs.append("appel à l'engagement")
+    if est_liste(tweets[0]):  # une seule liste par match, la première arrivée (publiée deux fois le 23 nov.), même celle du club
+        deja = next((r[0] for r in con.execute(
+            f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
+            " AND envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-24 hours')", (article_id,))
+            if est_liste(json.loads(r[1])[0])), None)
+        if deja:
+            return motifs + [f"doublon de la liste de l'article {deja}"]
     nouvelle = accroche(tweets[0])
     for r in con.execute(f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
                          " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-48 hours')", (article_id,)):
@@ -753,7 +764,7 @@ def vers_typefully(con, couvertures, dossier_couv):
                 print(f"  Typefully : article {t['article_id']} écarté ({motif})")
                 ecarter(con, t["article_id"], motif)
                 continue
-        elif direct and not est_officiel(t):
+        elif direct and not est_officiel(t) and not est_liste(tweets[0]):  # la liste part dès qu'elle sort
             # la conférence d'abord : la file Typefully publie toutes les 5 min, une nouvelle y sortirait au milieu du direct ;
             # retenue, elle part au premier passage après le direct (le récapitulatif du club attend, lui, sa page complète)
             continue

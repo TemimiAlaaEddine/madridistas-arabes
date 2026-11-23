@@ -601,6 +601,12 @@ assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود إلى ا�
 assert t.controler_thread(con, 1, ["مبابي يعود إلى التدريبات"]) == ["source absente du 1er tweet"]
 assert t.controler_thread(con, 1, ["🎙️ مؤتمر مورينيو | «نحن جاهزون»"]) == []  # conférence : jamais de source
 assert t.assembler(art, ["🎙️ مؤتمر مورينيو | «نحن جاهزون»", "«الفريق بخير»"]) == ["🎙️ مؤتمر مورينيو | «نحن جاهزون»\n\n«الفريق بخير»"]  # ni crédit ni lien
+liste = "📝 القائمة | قائمة ريال مدريد أمام بي إس في: إندريك غائب"
+assert t.assembler(art, [liste]) == [liste] and t.controler_thread(con, 1, [liste]) == []  # liste : sans source ni crédit
+con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully, envoye) VALUES (2, ?, 'immédiat', ?, '1', ?)",
+            (json.dumps([liste]), *[t.maintenant().isoformat(timespec="seconds")] * 2))
+assert t.controler_thread(con, 3, ["📝 القائمة | دمفريز حاضر وإندريك خارج القائمة"], officiel=True) == ["doublon de la liste de l'article 2"]
+con.execute("DELETE FROM threads WHERE article_id = 2")
 assert t.controler_thread(con, 1, ["📰 خبر | زلزال في برنابيو!\n\n(ماركا)"]) == []  # ton libre depuis le 21 nov.
 assert t.controler_thread(con, 1, ["📰 خبر | مبابي يعود\n\n(ماركا)", "ريتويت"]) == ["appel à l'engagement"]
 envoye(10, "📰 خبر | مبابي يعود إلى التدريبات الجماعية مع الفريق")
