@@ -9896,4 +9896,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7094242701615243629-zlata
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/courtois-debe-el-futbol-un-balon-de-oro-a-un-portero-en-2022-esperaba-estar-mas-arriba-cadena-ser/','Courtois: "¿Debe el fútbol un Balón de Oro a un portero? En 2022 esperaba estar más arriba..."','2026-11-23T14:21:12');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/despues-de-mbappe-toca-evanilson-f202611-n/','Después de Mbappé toca Evanilson','2026-11-23T14:25:57');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/courtois-ervaart-dat-mourinho-kalmer-is-geworden','Courtois ervaart dat Mourinho kalmer is geworden','2026-11-23T14:36:22');
+INSERT INTO "vus" VALUES('https://trivela.com.br/europa/champions-league/mourinho-vinicius-junior-real-madrid-processo-evolucao/','Mourinho: ‘Foi isso que interrompeu o processo de evolução do Vinícius Junior’','2026-11-23T14:45:54');
 COMMIT;
