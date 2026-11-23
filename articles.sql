@@ -9897,4 +9897,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/courtois-deb
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/despues-de-mbappe-toca-evanilson-f202611-n/','Después de Mbappé toca Evanilson','2026-11-23T14:25:57');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/courtois-ervaart-dat-mourinho-kalmer-is-geworden','Courtois ervaart dat Mourinho kalmer is geworden','2026-11-23T14:36:22');
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/champions-league/mourinho-vinicius-junior-real-madrid-processo-evolucao/','Mourinho: ‘Foi isso que interrompeu o processo de evolução do Vinícius Junior’','2026-11-23T14:45:54');
+INSERT INTO "vus" VALUES('https://www.vi.nl/video/mourinho-ziet-een-duidelijke-identiteit-bij-psv','Mourinho ziet een duidelijke identiteit bij PSV','2026-11-23T14:55:56');
 COMMIT;
