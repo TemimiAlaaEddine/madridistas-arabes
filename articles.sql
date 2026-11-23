@@ -10143,4 +10143,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/video/dest-gevraagd-naar-dumfries-kn
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/23/dumfries-entra-convocatoria-duda-partido-especial.html','Dumfries entra en la convocatoria, pero es duda para su partido más especial','2026-11-23T18:46:21');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/bellingham-haaland-y-ekitike-visitan-a-musiala-en-el-hospital-cadena-ser/','Bellingham, Haaland y Ekitike visitan a Musiala en el hospital','2026-11-23T18:46:43');
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/una-supercomputadora-predijo-quien-ganara-esta-champions-league-su-vaticinio-real-madrid-federico-valverde-que-se-encuentra-primero-n6064870','Una supercomputadora predijo quién ganará esta Champions League: su vaticinio sobre Real Madrid de Federico Valverde que se encuentra primero','2026-11-23T18:50:54');
+INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/convocatorias/convocatoria-del-real-madrid-ante-el-psv-23-11-2026','Convocatoria del Real Madrid ante el PSV','2026-11-23T19:20:00');
 COMMIT;

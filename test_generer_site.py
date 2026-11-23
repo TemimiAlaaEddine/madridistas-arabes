@@ -588,6 +588,25 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "publish_at" not in appels[0] and appels[0]["draft_title"].startswith("⛔ appel à l'engagement")
     assert appels[0]["platforms"]["x"]["posts"][0]["text"] == "إصابة جديدة في التدريب! (آس)"  # « ! » accepté depuis le 21 nov.
     assert con.execute("SELECT statut FROM threads WHERE article_id = ?", (aid,)).fetchone()[0].startswith("bloqué")
+    # liste des convoqués : le visuel du club à la place de l'image de l'article, attendu 30 min au plus
+    noms = "▪️ الحراس: " + "، ".join(f"لاعب{i}" for i in range(23))
+    con.commit()
+    g.enregistrer([{"id": 1, "section": "actus", "titre": "القائمة", "texte": "ن", "tweets": [f"📝 القائمة | قائمة المباراة\n\n{noms}"]}],
+                  [{"lien": "https://as.com/11", "titre": "T11", "auteur": "", "source": "AS", "pays": "es", "type": "info"}], db)
+    aid = con.execute("SELECT id FROM articles WHERE lien = 'https://as.com/11'").fetchone()[0]
+    vrai_visuel, appels[:] = t.visuel_convocation, []
+    t.telecharger_image = lambda url, i: (url, b"jpg")
+    try:
+        t.visuel_convocation = lambda: None  # pas encore publié par le club : la liste attend
+        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 0 and not appels
+        t.visuel_convocation = lambda: "https://pbs.twimg.com/media/convocados.jpg?name=orig"
+        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1
+        assert appels[0]["platforms"]["x"]["posts"][0]["media_ids"] == ["https://pbs.twimg.com/media/convocados.jpg?name=orig"]
+        con.execute("UPDATE threads SET typefully = NULL, date = '2026-01-01T00:00:00' WHERE article_id = ?", (aid,))
+        t.visuel_convocation, appels[:] = (lambda: None), []  # plus de 30 min sans visuel : part avec l'image de l'article
+        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1 and appels[0]["platforms"]["x"]["posts"][0]["media_ids"] == ["c.png"]
+    finally:
+        t.visuel_convocation = vrai_visuel
     con.close()
 print("OK Typefully")
 

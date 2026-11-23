@@ -656,6 +656,41 @@ def telecharger_image(url, article_id):
     return f"article-{article_id}.{ext}", contenu
 
 
+def bright_data_api(chemin, corps=None):
+    """Appel à l'API Web Scraper de Bright Data (curl : sur le PC, Python refuse le certificat d'api.brightdata.com)."""
+    import subprocess
+    commande = ["curl", "-s", "-f", "-m", "120", f"https://api.brightdata.com/datasets/v3/{chemin}",
+                "-H", f"Authorization: Bearer {reglage('brightdata_api_token')}"]
+    if corps is not None:
+        commande += ["-H", "Content-Type: application/json", "-d", json.dumps(corps)]
+    return json.loads(subprocess.run(commande, capture_output=True, check=True, timeout=130).stdout)
+
+
+def visuel_convocation():
+    """Image du post « ¡Nuestros convocados! » publié par @realmadrid sur X dans les dernières 24 h (lu par Bright Data :
+    1 à 2 min, une quinzaine de posts facturés), sinon None."""
+    jour = datetime.now(timezone.utc)
+    try:
+        posts = bright_data_api(
+            "scrape?dataset_id=gd_lwxkxvnf1cynvib9co&type=discover_new&discover_by=profile_url&format=json",
+            {"input": [{"url": "https://x.com/realmadrid", "num_of_posts": 20, "start_date": f"{jour - timedelta(days=1):%Y-%m-%d}",
+                        "end_date": f"{jour + timedelta(days=1):%Y-%m-%d}"}]})
+        if isinstance(posts, dict):  # pas fini en 1 min : snapshot à attendre
+            snap = posts["snapshot_id"]
+            for _ in range(12):
+                time.sleep(10)
+                if bright_data_api(f"progress/{snap}").get("status") in ("ready", "failed"):
+                    break
+            posts = bright_data_api(f"snapshot/{snap}?format=json")
+    except Exception as err:  # Bright Data en panne ou quota épuisé : la liste part avec l'image de l'article
+        print(f"  ! visuel de la convocation illisible ({err})")
+        return None
+    limite = f"{jour - timedelta(hours=24):%Y-%m-%dT%H:%M:%S}"
+    trouves = sorted((p for p in posts if isinstance(p, dict) and p.get("photos") and (p.get("date_posted") or "") >= limite
+                      and "convocados" in (p.get("description") or "").lower()), key=lambda p: p["date_posted"])
+    return trouves[-1]["photos"][0] + "?name=orig" if trouves else None
+
+
 def images_thread(t):
     """Photo principale puis galerie (séances d'entraînement du club), sans doublon, au plus "max_images_tweet" (20 sur X
     depuis le 12 nov. 2026, essai via Typefully réussi le 18 nov.)."""
@@ -760,7 +795,7 @@ def vers_typefully(con, couvertures, dossier_couv):
         (session is None or session.get("fini")) and direct_actif("conference_direct.yml"))
     direct = conference.en_direct()
     hors = set(session.get("vus", [])) - set(session.get("liens", [])) if session else set()  # jugés hors conférence par le direct
-    for t in con.execute("SELECT t.article_id, t.tweets, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
+    for t in con.execute("SELECT t.article_id, t.tweets, t.date AS cree, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
         # conférence suivie en direct (conference.py) : ses articles sont tweetés par le direct, l'autre journal est ignoré
@@ -787,6 +822,11 @@ def vers_typefully(con, couvertures, dossier_couv):
             print(f"  Typefully : article {t['article_id']} écarté ({doublon})")
             ecarter(con, t["article_id"], doublon)
             continue
+        visuel = visuel_convocation() if est_liste(tweets[0]) and not motifs else None
+        if est_liste(tweets[0]) and not motifs and not visuel and t["cree"] >= (
+                maintenant() - timedelta(minutes=30)).isoformat(timespec="seconds"):
+            print(f"  Typefully : liste de l'article {t['article_id']} en attente du visuel du club")
+            continue  # le club publie son visuel avec la liste : attendu 30 min au plus, puis la liste part avec l'image de l'article
         # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
         quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
@@ -796,7 +836,12 @@ def vers_typefully(con, couvertures, dossier_couv):
             plafond = True  # reporté au passage suivant, sans être bloqué
             continue
         try:
-            medias = medias_thread(t, couvertures, dossier_couv)
+            medias = []
+            try:
+                medias = [m for m in [typefully_image(*telecharger_image(visuel, t["article_id"]))] if m] if visuel else []
+            except (OSError, ValueError) as err:
+                print(f"  ! Typefully : visuel de la convocation refusé ({err})")
+            medias = medias or medias_thread(t, couvertures, dossier_couv)
             if quand == "now" and not motifs:
                 tweets, quand = sans_tweet_de_lien(tweets)
             posts = [{"text": tw} for tw in tweets]
