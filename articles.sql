@@ -9588,4 +9588,5 @@ INSERT INTO "vus" VALUES('https://www.lagalerna.com/la-doctrina-migueli-confirma
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/carne-madridista-por-puntos-f202611-n/','Carné Madridista por puntos','2026-11-23T09:46:19');
 INSERT INTO "vus" VALUES('https://trivela.com.br/franca/invasao-francesa-elite-europeia-o-que-explica-raizes-fenomeno/','Mbappé e cia: Como a França virou a maior fábrica de talentos da Europa','2026-11-23T10:05:55');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/23/endrick-dumfries-bajas-ultimo-entrenamiento-madrid-previo-psv.html','Endrick y Dumfries, bajas en el último entrenamiento del Madrid previo al PSV','2026-11-23T10:36:10');
+INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-equipo-se-esta-entrenando-23-11-2026','El equipo se está entrenando','2026-11-23T10:51:30');
 COMMIT;
