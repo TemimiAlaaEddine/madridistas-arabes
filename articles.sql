@@ -9957,4 +9957,5 @@ INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50573054/real-m
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115713/real-madrid-psv-2026-squad-list','Real Madrid announce squad for Champions League match against PSV Eindhoven','2026-11-23T15:36:03');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/23/la-oferta-del-milan-por-endrick-es-firme-70-millones-de-euros-para-llevarselo-en-invierno-cadena-ser/','La oferta del Milan por Endrick es firme: 70 millones de euros para llevárselo en invierno','2026-11-23T15:41:23');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champions-real-madrid-jose-mourinho-defend-vinicius-avant-real-madrid-psv-s-il-donne-tout-ce-qu-il-a-il-n-a-pas-besoin-d-etre-l-homme-du-match-a-chaqu/20246164#at_medium=RSS_feeds','Mourinho monte au créneau pour défendre Vinicius','2026-11-23T15:46:11');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7436375564083057275-rennes-se-frotte-les-mains-avec-le-phenomene-marocain-yassir-zabiri','Rennes se frotte les mains avec le phénomène marocain Yassir Zabiri','2026-11-23T16:05:56');
 COMMIT;
