@@ -9898,4 +9898,6 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/despues-de-mbappe-toca-e
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/courtois-ervaart-dat-mourinho-kalmer-is-geworden','Courtois ervaart dat Mourinho kalmer is geworden','2026-11-23T14:36:22');
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/champions-league/mourinho-vinicius-junior-real-madrid-processo-evolucao/','Mourinho: ‘Foi isso que interrompeu o processo de evolução do Vinícius Junior’','2026-11-23T14:45:54');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/mourinho-ziet-een-duidelijke-identiteit-bij-psv','Mourinho ziet een duidelijke identiteit bij PSV','2026-11-23T14:55:56');
+INSERT INTO "vus" VALUES('https://cadenaser.com/galicia/2026/11/23/el-conclave-celeste-despues-del-bernabeu-radio-vigo/','El Cónclave Celeste después del Bernabéu','2026-11-23T15:01:39');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/la-contundente-respuesta-de-mourinho-al-escuchar-el-nombre-de-nico-paz-en-la-sala-de-prensa-f202611-v/','La contundente respuesta de Mourinho al escuchar el nombre de Nico Paz en la sala de prensa','2026-11-23T15:01:43');
 COMMIT;
