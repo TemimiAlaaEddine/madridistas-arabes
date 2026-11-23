@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 33
+Dernier fait relu : 36
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -85,7 +85,7 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 - 2026-11-07, J12 : Valence 0-3 Real Madrid à Mestalla. Valverde (28e), Güler (36e), Mbappé (75e, 13e but en Liga) ; Gayà expulsé (79e). Source : Foot Mercato (Jordan Pardon).
 - 2026-11-07, J12 : Güler meilleure note du match (9,2 : 1 but, 1 passe décisive, 3 passes clés) ; tirs 19 contre 4 (11 cadrés contre 2). Source : WhoScored.
 - 2026-11-21, J13 : après Real Madrid 2-1 Celta, le Real a gagné ses 9 derniers matchs toutes compétitions (Villarreal, Roma, Séville, Leipzig, Barcelone, Racing, AEK, Valence, Celta), depuis la défaite contre l'Atlético le 20 septembre. Source : résultats de cette page, confirmés par le calendrier FotMob ; vérifié le 2026-11-22.
-- 2026-11-21, J13 : Real Madrid 2-1 Celta Vigo au Bernabéu, en revenant de 0-1. Pablo Durán ouvre le score pour le Celta (6e), Bellingham égalise (66e, sur une passe de Mbappé), Carlos Espí, entré en jeu, marque le but de la victoire (85e). Mbappé a manqué un penalty (mentionné par une seule source). Sources : ESPN (Alex Kirkland), Marca (Miguel Ángel García, Joel del Río), Foot Mercato (Allan Brevi), Managing Madrid (passe de Mbappé, entrée en jeu d'Espí), AS (Luis Nieto, penalty manqué).
+- 2026-11-21, J13 : Real Madrid 2-1 Celta Vigo au Bernabéu, en revenant de 0-1. Pablo Durán ouvre le score pour le Celta (6e), Bellingham égalise (66e, sur une passe de Mbappé), Carlos Espí, entré en jeu, marque le but de la victoire (85e pour la plupart des sources, 86e selon Managing Madrid, Kiyan Sobhani). Mbappé a manqué un penalty en fin de première période (Foot Mercato, Aurélien Macedo ; AS, Luis Nieto). Sources : ESPN (Alex Kirkland), Marca (Miguel Ángel García, Joel del Río), Foot Mercato (Allan Brevi, Aurélien Macedo), Managing Madrid (Kiyan Sobhani ; passe de Mbappé, entrée en jeu d'Espí), AS (Luis Nieto, penalty manqué).
 
 ## Journalistes et médias (qui pense quoi)
 Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après les titres et chapeaux de la base (n° = article) ; validé par l'utilisateur le 2026-11-20. Sert à relativiser une opinion selon la ligne habituelle de son auteur, pas à la disqualifier.
