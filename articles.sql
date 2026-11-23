@@ -9942,4 +9942,5 @@ INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/prime
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/el-rey-del-manicomio-f202611-n/','El rey del manicomio','2026-11-23T15:12:24');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1678923663048309452-ligue-des-champions-le-groupe-du-real-madrid-face-au-psv-devoile','Ligue des Champions : le groupe du Real Madrid face au PSV dévoilé','2026-11-23T15:12:24');
 INSERT INTO "vus" VALUES('https://www.espn.com/soccer/story/_/id/50573054/real-madrid-mourinho-vinicius-jr-does-not-mvp','Real Madrid''s Mourinho: Vinícius Jr. ''doesn''t have to be MVP'' to deliver','2026-11-23T15:16:35');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115713/real-madrid-psv-2026-squad-list','Real Madrid announce squad for Champions League match against PSV Eindhoven','2026-11-23T15:36:03');
 COMMIT;
