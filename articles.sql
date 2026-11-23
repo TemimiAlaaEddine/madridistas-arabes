@@ -9771,4 +9771,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115699/official-endrick
 INSERT INTO "vus" VALUES('https://as.com/futbol/champions/mourinho-responde-a-comesana-tiene-amnesia-f202611-n/','Mourinho responde a Santi Comesaña: “Tiene amnesia”','2026-11-23T12:51:59');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/champions-league/2026/11/23/6b0426a1fdddff9b5e8b4586.html','Mourinho, el calendario y las huelgas: "Si queremos pasta, hay que trabajar. Es el ''plin-plin''..."','2026-11-23T12:55:58');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/23/mourinho-calendario-conflicto-final-plin-plin.html','Mourinho y el calendario: "Es un conflicto, pero al final es el plin plin"','2026-11-23T12:56:47');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Touche-a-l-adducteur-gauche-endrick-devrait-etre-forfait-pour-le-match-de-ligue-des-champions-du-real-madrid-face-au-psv/1745576#at_medium=RSS_feeds','Touché à l''adducteur gauche, Endrick devrait être forfait pour le match de Ligue des champions du Real Madrid face au PSV','2026-11-23T13:01:49');
 COMMIT;
