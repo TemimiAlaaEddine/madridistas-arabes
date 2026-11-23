@@ -10258,4 +10258,5 @@ INSERT INTO "vus" VALUES('https://trivela.com.br/europa/mourinho-ma-fase-viniciu
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/champions-league/2026/11/23/6b0489f1e9cf4a60608b457f.html','El trauma del Real Madrid en Eindhoven: un haptoterapeuta para Van Breukelen y unos bóxer de la mala suerte para Mendoza','2026-11-23T21:46:38');
 INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/endrick-real-madrid-outra-lesao-futuro/','Endrick tem outra lesão que pode transformar seu futuro no Real Madrid','2026-11-23T22:11:35');
 INSERT INTO "vus" VALUES('https://as.com/futbol/alineacion-posible-del-real-madrid-contra-el-psv-eindhoven-en-champions-league-f202611-n/','Alineación posible del Real Madrid contra el PSV Eindhoven en Champions League','2026-11-23T22:11:59');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champions-real-madrid-thibaut-courtois-apres-sa-prolongation-au-real-madrid-mes-objectifs-sont-de-reporter-une-nouvelle-ligue-des-champions-et-de-term/20246169#at_medium=RSS_feeds','Courtois : «Je veux terminer ma carrière ici»','2026-11-23T22:31:24');
 COMMIT;
