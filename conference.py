@@ -90,9 +90,11 @@ de {nom} en conférence de presse, à partir de l'article ci-dessous.
 
 Forme, en arabe :
 ligne 1 : « 🎙️ مؤتمر {nom_ar} | » puis la déclaration forte que l'article met en avant, traduite fidèlement entre «».
-ligne vide, puis une ou deux phrases courtes de contexte tirées de l'article (la question posée, le match).
+ligne vide, puis la question du journaliste traduite exactement, si l'article la donne (sinon une phrase de contexte tirée de
+l'article : le match, le sujet ; une question absente de l'article n'est jamais inventée).
+ligne vide, puis la réponse complète de {nom} à cette question, traduite exactement entre «», sans la résumer ni la couper.
 ligne vide, puis : #{hashtag} #ريال_مدريد
-Pas de source, pas de média cité, pas de lien, aucun autre émoji, aucun fait absent de l'article. 280 caractères au plus.
+Pas de source, pas de média cité, pas de lien, aucun autre émoji, aucun fait absent de l'article. Pas de limite de longueur (tweet long).
 
 Déjà publiés pendant cette conférence :
 {deja}
