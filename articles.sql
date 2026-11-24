@@ -11490,4 +11490,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/heri-frade-comen
 INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-plots-gaat-het-snel-kylian-mbappe-schiet-thibaut-courtois-en-co-op-3-1~abc7a0ad/','MULTILIVE. Plots gaat het snel: Kylian Mbappé schiet Thibaut Courtois en co op 3-1','2026-11-24T21:25:53');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a31931361831198291-real-madrid-le-but-exceptionnel-de-jude-bellingham-face-au-psv','Real Madrid : le but exceptionnel de Jude Bellingham face au PSV','2026-11-24T21:31:28');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8749217569031078788-le-plan-du-real-madrid-pour-michael-olise','Le plan du Real Madrid pour Michael Olise','2026-11-24T21:31:33');
+INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/mira-el-golazo-federico-valverde-real-madrid-psv-eindhoven-la-champions-league-n6065016','Mirá el golazo de Federico Valverde para Real Madrid ante PSV Eindhoven por la Champions League','2026-11-24T21:36:18');
 COMMIT;
