@@ -8286,6 +8286,7 @@ INSERT INTO "liens_x" VALUES('12160112','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12162331','https://x.com/ElMadridistAlaa/status/2125229205545951453','2026-11-24T14:05:05.437Z');
 INSERT INTO "liens_x" VALUES('12162334','https://x.com/ElMadridistAlaa/status/2125230461589020839','2026-11-24T14:10:04.741Z');
 INSERT INTO "liens_x" VALUES('12164389','https://x.com/ElMadridistAlaa/status/2125243831335710902','2026-11-24T15:03:09.540Z');
+INSERT INTO "liens_x" VALUES('12164391','https://x.com/ElMadridistAlaa/status/2125244303735963757','2026-11-24T15:05:04.973Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -11236,4 +11237,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/video/waarom-psv-wel-degelijk-kansen
 INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/pedro-martinez-alerta-peligros-zalgiris-sus-jugadores-ganaron-en-barcelona-vencieron-por-16-en-pista-mismo-besiktas-derroto-madrid_346942_102.html','Pedro Martínez alerta de los peligros del Zalgiris a sus jugadores: ganaron en Barcelona y vencieron por 16 en la pista del mismo Besiktas que derrotó al Madrid','2026-11-24T15:01:36');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/courtois-punto-perder-compra-reggiana-consorcio-brescia-esta-muy-cerca-adquirir-75-acciones-equipo-queria-quedarse-portero-madrid_346939_102.html','Courtois, a punto de perder la compra del Reggiana: un consorcio de Brescia está muy cerca de adquirir el 75% de las acciones del equipo que quería quedarse el portero del Madrid','2026-11-24T15:03:01');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/mourinho-ha-decidido-mbappe-carlos-espi-vinicius-diomande-tienen-repartirse-obligaciones-defensivas-poder-juntar-dos-delanteros_346937_102.html','Mourinho ha decidido que Mbappé, Carlos Espí, Vinicius y Diomande tienen que repartirse las obligaciones defensivas para poder juntar dos delanteros','2026-11-24T15:03:01');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a3598869182116942493-cest-une-consequence-de-son-attitude-davide-ancelotti-revient-sur-la-suspension-dethan-mbappe','"C’est une conséquence de son attitude" : Davide Ancelotti revient sur la suspension d’Éthan Mbappé','2026-11-24T15:06:00');
 COMMIT;
