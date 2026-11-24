@@ -1525,7 +1525,7 @@ with tempfile.TemporaryDirectory() as d:
               (evt(6, "inprogress", "1st half", 0, 0), []), (evt(6, "inprogress", "1st half", 0, 1), []),  # but au score, pas encore en incident
               (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
               (evt(31, "inprogress", "Halftime", 0, 1), [but(1, 6, "Durán", 0, 1)]),
-              (evt(7, "inprogress", "2nd half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
+              (evt(7, "inprogress", "2nd half", 0, 1), [but(1, 6, "Durán", 0, 1), {"id": 3, "incidentType": "substitution", "time": 46}]),  # changement de la pause : 46e
               (evt(100, "finished", "Ended", 1, 1), [but(1, 6, "Durán", 0, 1), but(2, 66, "Bellingham", 1, 1)])]
     pas, horloge, appels, sauves, attentes = [0], [datetime(2026, 11, 21, 19, 58)], [], [], []
     def sofa_minute(chemin):

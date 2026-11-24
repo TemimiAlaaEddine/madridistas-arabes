@@ -170,8 +170,9 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     if statut.get("code") == MI_TEMPS:
         suite = "ريال مدريد في المقدمة 🤍" if real > adv else "ما زال أمامنا شوط كامل 💪" if real < adv else "الكلمة للشوط الثاني 💪"
         tweets.append(("mi-temps", f"⏸️ نهاية الشوط الأول\n\n{score}\n\n{suite}{tag}"))
-    # reprise : seulement avant le 1er fait du 2e acte (rattrapée plus tard, elle partirait après ses buts)
-    if statut.get("code") == 7 and not any((i.get("time") or 0) > 45 for i in incidents):
+    # reprise : seulement avant le 1er but ou carton du 2e acte (rattrapée plus tard, elle partirait après ses buts) ;
+    # les changements faits à la pause sont datés de la 46e (Real-Celta) : ils ne comptent pas
+    if statut.get("code") == 7 and not any(i.get("incidentType") in ("goal", "card") and (i.get("time") or 0) > 45 for i in incidents):
         tweets.append(("reprise", f"▶️ انطلاق الشوط الثاني\n\n{score}\n\nفاموس ريال! 💪{tag}"))
     if statut.get("type") == "finished":
         suite = "فوز ريال مدريد! هلا مدريد 🤍" if real > adv else "تعادل، والموسم طويل 💪" if real == adv else "خسارة مؤلمة، وسنعود أقوى 🤍"
