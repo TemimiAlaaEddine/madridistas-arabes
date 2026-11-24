@@ -11472,4 +11472,5 @@ INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/alineacion-con
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115760/real-madrid-vs-psv-eindhoven-2026-champions-league-live-online-stream','CONFIRMED lineups: Real Madrid vs PSV Eindhoven, 2026 Champions League','2026-11-24T19:06:06');
 INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-thibaut-courtois-uiteraard-onder-de-lat-bij-real-ook-maarten-vandevoordt-leipzig-en-charles-vanhoutte-feyenoord-starten~abc7a0ad/','MULTILIVE. Thibaut Courtois uiteraard onder de lat bij Real, ook Maarten Vandevoordt (Leipzig) en Charles Vanhoutte (Feyenoord) starten','2026-11-24T19:06:06');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/actualidad/once-inicial-del-real-madrid-ante-el-psv-24-11-2026','Once inicial del Real Madrid ante el PSV','2026-11-24T19:16:09');
+INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-aftrap-houdt-thibaut-courtois-zn-netten-schoon-tegen-psv~abc7a0ad/','MULTILIVE. Aftrap! Houdt Thibaut Courtois z’n netten schoon tegen PSV?','2026-11-24T20:01:20');
 COMMIT;
