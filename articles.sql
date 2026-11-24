@@ -11466,4 +11466,6 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/el-once-ideal-de-la-
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/el-cambio-de-look-radical-de-diomande-f202611-v/','El cambio de look radical de Diomande','2026-11-24T18:46:14');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bosz-kiest-in-bernabeu-voor-wanner-als-vervanger-mauro-junior','Bosz kiest in Bernabéu voor Wanner als vervanger Mauro Júnior','2026-11-24T18:51:01');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/es-oficial-mourinho-pone-como-titulares-vinicius-rudiger-militao-deja-en-banquillo-bellingham-en-partido-contra-psv-en-bernabeu_346951_102.html','Es oficial: Mourinho pone como titulares a Vinicius, Rüdiger y Militao y deja en el banquillo a Bellingham en el partido contra el PSV en el Bernabéu','2026-11-24T18:51:33');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/A-quelle-heure-et-sur-quelle-chaine-voir-real-madrid-psv-eindhoven-en-ligue-des-champions/1745537#at_medium=RSS_feeds','Où voir Real Madrid -PSV Eindhoven ?','2026-11-24T18:55:49');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a3426866065773501946-real-madrid-psv-eindhoven-les-compositions-officielles','Real Madrid - PSV Eindhoven : les compositions officielles','2026-11-24T18:55:53');
 COMMIT;
