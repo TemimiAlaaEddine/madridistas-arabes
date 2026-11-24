@@ -851,6 +851,37 @@ def vers_typefully(con, couvertures, dossier_couv):
     return n
 
 
+def bright_data_api(chemin, corps=None):
+    """Appel à l'API Web Scraper de Bright Data (curl : sur le PC, Python refuse le certificat d'api.brightdata.com)."""
+    import subprocess
+    commande = ["curl", "-s", "-f", "-m", "120", f"https://api.brightdata.com/datasets/v3/{chemin}",
+                "-H", f"Authorization: Bearer {reglage('brightdata_api_token')}"]
+    if corps is not None:
+        commande += ["-H", "Content-Type: application/json", "-d", json.dumps(corps)]
+    return json.loads(subprocess.run(commande, capture_output=True, check=True, timeout=130).stdout)
+
+
+def visuel_bright_data(depuis):
+    """Secours de visuel_convocation quand X refuse sa page d'intégration : mêmes posts lus par Bright Data (1 à 2 min,
+    une quinzaine de posts facturés). (id du post, image) ou None."""
+    jour = maintenant()
+    posts = bright_data_api(
+        "scrape?dataset_id=gd_lwxkxvnf1cynvib9co&type=discover_new&discover_by=profile_url&format=json",
+        {"input": [{"url": "https://x.com/realmadrid", "num_of_posts": 20, "start_date": f"{depuis:%Y-%m-%d}",
+                    "end_date": f"{jour + timedelta(days=1):%Y-%m-%d}"}]})
+    if isinstance(posts, dict):  # pas fini en 1 min : snapshot à attendre
+        snap = posts["snapshot_id"]
+        for _ in range(12):
+            time.sleep(10)
+            if bright_data_api(f"progress/{snap}").get("status") in ("ready", "failed"):
+                break
+        posts = bright_data_api(f"snapshot/{snap}?format=json")
+    trouves = sorted((p for p in posts if isinstance(p, dict) and p.get("photos") and p.get("id")
+                      and (p.get("date_posted") or "") >= depuis.isoformat()
+                      and "convocados" in (p.get("description") or "").lower()), key=lambda p: p["date_posted"])
+    return (str(trouves[-1]["id"]), trouves[-1]["photos"][0] + "?name=orig") if trouves else None
+
+
 def fenetre_convocation(heures=72, maintenant=maintenant):
     """Début de la fenêtre où le club peut publier la convocation du prochain match de matchs.json : 72 h avant le coup
     d'envoi (Supercoupe à l'étranger : liste publiée avant le voyage, environ 48 h avant), jamais avant la fin du match
@@ -877,9 +908,19 @@ def visuel_liste(con):
         return  # hors fenêtre, ou visuel de ce match déjà publié
     try:
         trouve = visuel_convocation(debut)
-    except (OSError, ValueError, KeyError) as err:
-        print(f"  ! visuel de la convocation : {err}")
-        return
+    except (OSError, ValueError, KeyError) as err:  # refus de X (429) ou page changée : Bright Data en secours
+        print(f"  ! visuel de la convocation : {err}, recherche par Bright Data")
+        con.execute("CREATE TABLE IF NOT EXISTS secours_convocation (cle TEXT PRIMARY KEY, dernier TEXT)")
+        dernier = con.execute("SELECT dernier FROM secours_convocation WHERE cle = 'bright_data'").fetchone()
+        if dernier and dernier[0] > (maintenant() - timedelta(minutes=15)).isoformat():
+            return  # au plus une recherche par quart d'heure : chacune est facturée
+        con.execute("INSERT OR REPLACE INTO secours_convocation VALUES ('bright_data', ?)", (maintenant().isoformat(timespec="seconds"),))
+        con.commit()
+        try:
+            trouve = visuel_bright_data(debut)
+        except Exception as err2:  # noqa: BLE001 - Bright Data en panne ou quota épuisé : réessayé plus tard
+            print(f"  ! visuel de la convocation : Bright Data aussi en échec ({err2})")
+            return
     if not trouve or con.execute("SELECT 1 FROM visuels_convocation WHERE tweet_id = ?", (trouve[0],)).fetchone():
         return
     try:

@@ -607,6 +607,20 @@ with tempfile.TemporaryDirectory() as tmp:
         assert appels[0]["publish_at"] == "now" and "media_ids" not in appels[1]["platforms"]["x"]["posts"][0]
         t.vers_typefully(con, {}, Path(tmp))
         assert len(appels) == 2  # une seule fois par post du club
+        # X refuse (429) : Bright Data en secours dès le 1er refus, au plus une fois par quart d'heure
+        def refus(depuis):
+            raise OSError("HTTP Error 429")
+        secours, vrai_bd = [], t.visuel_bright_data
+        t.visuel_convocation, t.visuel_bright_data = refus, lambda depuis: secours.append(1) or ("222", image)
+        con.execute("DELETE FROM visuels_convocation")  # nouveau match : rien de publié dans sa fenêtre
+        try:
+            t.vers_typefully(con, {}, Path(tmp))
+            assert secours == [1] and len(appels) == 3  # le visuel d'un autre post du club (id 222) part
+            con.execute("DELETE FROM visuels_convocation")
+            t.vers_typefully(con, {}, Path(tmp))
+            assert secours == [1] and len(appels) == 3  # 2e refus moins de 15 min après : pas de nouvelle recherche facturée
+        finally:
+            t.visuel_bright_data = vrai_bd
     finally:
         t.visuel_convocation, t.fenetre_convocation = (lambda depuis: None), fenetre
     con.close()
