@@ -656,39 +656,25 @@ def telecharger_image(url, article_id):
     return f"article-{article_id}.{ext}", contenu
 
 
-def bright_data_api(chemin, corps=None):
-    """Appel à l'API Web Scraper de Bright Data (curl : sur le PC, Python refuse le certificat d'api.brightdata.com)."""
-    import subprocess
-    commande = ["curl", "-s", "-f", "-m", "120", f"https://api.brightdata.com/datasets/v3/{chemin}",
-                "-H", f"Authorization: Bearer {reglage('brightdata_api_token')}"]
-    if corps is not None:
-        commande += ["-H", "Content-Type: application/json", "-d", json.dumps(corps)]
-    return json.loads(subprocess.run(commande, capture_output=True, check=True, timeout=130).stdout)
+FIL_CLUB = "https://syndication.twitter.com/srv/timeline-profile/screen-name/realmadrid"
 
 
-def visuel_convocation():
-    """Image du post « ¡Nuestros convocados! » publié par @realmadrid sur X dans les dernières 24 h (lu par Bright Data :
-    1 à 2 min, une quinzaine de posts facturés), sinon None."""
-    jour = datetime.now(timezone.utc)
-    try:
-        posts = bright_data_api(
-            "scrape?dataset_id=gd_lwxkxvnf1cynvib9co&type=discover_new&discover_by=profile_url&format=json",
-            {"input": [{"url": "https://x.com/realmadrid", "num_of_posts": 20, "start_date": f"{jour - timedelta(days=1):%Y-%m-%d}",
-                        "end_date": f"{jour + timedelta(days=1):%Y-%m-%d}"}]})
-        if isinstance(posts, dict):  # pas fini en 1 min : snapshot à attendre
-            snap = posts["snapshot_id"]
-            for _ in range(12):
-                time.sleep(10)
-                if bright_data_api(f"progress/{snap}").get("status") in ("ready", "failed"):
-                    break
-            posts = bright_data_api(f"snapshot/{snap}?format=json")
-    except Exception as err:  # Bright Data en panne ou quota épuisé : la liste part avec l'image de l'article
-        print(f"  ! visuel de la convocation illisible ({err})")
-        return None
-    limite = f"{jour - timedelta(hours=24):%Y-%m-%dT%H:%M:%S}"
-    trouves = sorted((p for p in posts if isinstance(p, dict) and p.get("photos") and (p.get("date_posted") or "") >= limite
-                      and "convocados" in (p.get("description") or "").lower()), key=lambda p: p["date_posted"])
-    return trouves[-1]["photos"][0] + "?name=orig" if trouves else None
+def visuel_convocation(heures=12):
+    """(id du post, image) du dernier post « ¡Nuestros convocados! » de @realmadrid des `heures` dernières heures, sinon None.
+    Lu sur la page publique d'intégration du fil (20 derniers posts, sans compte ni Bright Data, moins d'une seconde) :
+    pas une API officielle, X peut la couper."""
+    page = lire_page(FIL_CLUB)
+    donnees = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', page, re.S)
+    if not donnees:
+        raise ValueError("fil du club illisible (page d'intégration de X changée ?)")
+    limite = datetime.now(timezone.utc) - timedelta(hours=heures)
+    for e in json.loads(donnees.group(1))["props"]["pageProps"]["timeline"]["entries"]:
+        tw = e.get("content", {}).get("tweet", {})
+        medias = tw.get("extended_entities", tw.get("entities", {})).get("media", [])
+        if ("convocados" in (tw.get("full_text") or tw.get("text") or "").lower() and medias
+                and datetime.strptime(tw["created_at"], "%a %b %d %H:%M:%S %z %Y") >= limite):
+            return tw["id_str"], medias[0]["media_url_https"] + "?name=orig"
+    return None
 
 
 def images_thread(t):
@@ -784,6 +770,7 @@ def vers_typefully(con, couvertures, dossier_couv):
     if not reglage("typefully_api_key") or not CONFIG.get("typefully_social_set"):
         print("  ! Typefully : TYPEFULLY_API_KEY ou typefully_social_set manquant, dépôt ignoré")
         return 0
+    visuel_liste(con)  # le visuel du club d'abord : il sort avant la liste en texte
     n, plafond, echec = 0, False, None
     import conference
     from calendrier import direct_actif
@@ -831,7 +818,7 @@ def vers_typefully(con, couvertures, dossier_couv):
             plafond = True  # reporté au passage suivant, sans être bloqué
             continue
         try:
-            # la liste part en texte seul ; le visuel du club suit dans son propre post (visuel_liste)
+            # la liste part en texte seul ; le visuel du club a son propre post (visuel_liste)
             medias = [] if est_liste(tweets[0]) else medias_thread(t, couvertures, dossier_couv)
             if quand == "now" and not motifs:
                 tweets, quand = sans_tweet_de_lien(tweets)
@@ -861,46 +848,32 @@ def vers_typefully(con, couvertures, dossier_couv):
               " la suite au prochain passage")
     if n or echec:  # panne seulement si rien n'est passé : un thread refusé seul ne l'est pas
         noter(con, "Typefully", None if n else echec)
-    visuel_liste(con)
     return n
 
 
-def visuel_liste(con, essais=9, ecart=10):
-    """2e post de la convocation : le visuel « convocados » de @realmadrid et une ligne de texte, publié dès que le club
-    le sort, une fois par liste. Cherché au plus `essais` fois, toutes les `ecart` minutes (Bright Data : 1 à 2 min et
-    une quinzaine de posts facturés par essai), après l'envoi de la liste en texte."""
-    con.execute("CREATE TABLE IF NOT EXISTS convocations (article_id INTEGER PRIMARY KEY, essais INTEGER, dernier TEXT,"
-                " visuel TEXT, typefully TEXT)")
-    liste = next(((r[0], json.loads(r[1])[0]) for r in con.execute(
-        f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-24 hours')"
-        " ORDER BY envoye DESC") if est_liste(json.loads(r[1])[0])), None)
-    if not liste:
-        return
-    con.execute("INSERT OR IGNORE INTO convocations (article_id, essais) VALUES (?, 0)", (liste[0],))
-    nb, dernier, visuel, envoye = con.execute("SELECT essais, dernier, visuel, typefully FROM convocations WHERE article_id = ?",
-                                              (liste[0],)).fetchone()
-    if envoye or (not visuel and (nb >= essais or (dernier or "") > (maintenant() - timedelta(minutes=ecart)).isoformat())):
-        return
-    if not visuel:
-        visuel = visuel_convocation()
-        con.execute("UPDATE convocations SET essais = essais + 1, dernier = ?, visuel = ? WHERE article_id = ?",
-                    (maintenant().isoformat(timespec="seconds"), visuel, liste[0]))
-        con.commit()
-        if not visuel:
-            print(f"  Typefully : visuel de la convocation pas encore publié par le club (essai {nb + 1}/{essais})")
-            return
-    tags = next((l for l in reversed(liste[1].splitlines()) if l.startswith("#")), "#ريال_مدريد")
+def visuel_liste(con):
+    """1er post de la convocation : le visuel « convocados » de @realmadrid avec une ligne, publié dès que le club le sort
+    (vérifié à chaque passage), une fois par post du club. La liste en texte suit quand elle arrive (« 📝 القائمة »)."""
+    con.execute("DROP TABLE IF EXISTS convocations")  # ancienne version (recherche par Bright Data, 23 nov.)
+    con.execute("CREATE TABLE IF NOT EXISTS visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT)")
     try:
-        media = typefully_image(*telecharger_image(visuel, f"convocation-{liste[0]}"))
+        trouve = visuel_convocation()
+    except (OSError, ValueError, KeyError) as err:
+        print(f"  ! visuel de la convocation : {err}")
+        return
+    if not trouve or con.execute("SELECT 1 FROM visuels_convocation WHERE tweet_id = ?", (trouve[0],)).fetchone():
+        return
+    try:
+        media = typefully_image(*telecharger_image(trouve[1], f"convocation-{trouve[0]}"))
         if not media:  # image pas prête chez Typefully : sans elle, ce post n'a pas lieu d'être
             raise ValueError("image pas prête")
         d = typefully_api("drafts", {"draft_title": "📋 قائمة ريال مدريد (visuel du club)", "publish_at": "now",
                                      "platforms": {"x": {"enabled": True, "posts": [
-                                         {"text": f"📋 قائمة ريال مدريد\n\n{tags}", "media_ids": [media]}]}}})
-    except (OSError, KeyError, ValueError) as err:  # repris au prochain passage, sans nouvelle recherche du visuel
+                                         {"text": "📋 قائمة ريال مدريد\n\n#ريال_مدريد", "media_ids": [media]}]}}})
+    except (OSError, KeyError, ValueError) as err:  # repris au passage suivant
         print(f"  ! Typefully : visuel de la convocation non envoyé ({err})")
         return
-    con.execute("UPDATE convocations SET typefully = ? WHERE article_id = ?", (str(d["id"]), liste[0]))
+    con.execute("INSERT INTO visuels_convocation VALUES (?, ?, ?)", (trouve[0], str(d["id"]), maintenant().isoformat(timespec="seconds")))
     con.commit()
     print("  Typefully : visuel de la convocation publié")
 

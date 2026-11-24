@@ -201,6 +201,7 @@ print("OK directs et doublons d'opinion")
 import sqlite3
 import threads as t
 TELECHARGER = t.telecharger_image  # vraie fonction : des tests plus bas la remplacent sans la remettre
+VISUEL, t.visuel_convocation = t.visuel_convocation, lambda: None  # pas de lecture du fil X du club pendant les tests
 assert t.longueur("ريال مدريد") == 10 and t.longueur("https://www.marca.com/" + "x" * 200) == 23 and t.longueur("🔥") == 2
 art = {"auteur_ar": "خوانما كاستانيو", "auteur": "Juanma Castaño", "journal": "Marca", "lien": "https://marca.com/a"}
 th = t.assembler(art, ["فكرة أولى", "فكرة ثانية"])
@@ -595,26 +596,18 @@ with tempfile.TemporaryDirectory() as tmp:
                     "tweets": [f"📝 القائمة | قائمة المباراة\n\n{noms}\n\n#ريال_مدريد_بي_إس_في #دوري_أبطال_أوروبا"]}],
                   [{"lien": "https://as.com/11", "titre": "T11", "auteur": "", "source": "AS", "pays": "es", "type": "info"}], db)
     aid = con.execute("SELECT id FROM articles WHERE lien = 'https://as.com/11'").fetchone()[0]
-    vrai_visuel, appels[:], cherches = t.visuel_convocation, [], []
+    appels[:] = []
     t.telecharger_image = lambda url, i: (url, b"jpg")
+    image = "https://pbs.twimg.com/media/convocados.jpg?name=orig"
     try:
-        t.visuel_convocation = lambda: cherches.append(1)  # pas encore publié par le club (None)
-        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1 and len(appels) == 1 and cherches == [1]
-        assert "media_ids" not in appels[0]["platforms"]["x"]["posts"][0]  # texte seul, sans attendre le visuel
-        assert t.vers_typefully(con, {}, Path(tmp)) == 0 and cherches == [1]  # pas de nouvel essai avant 10 min
-        con.execute("UPDATE convocations SET dernier = '2026-01-01T00:00:00'")
-        t.visuel_convocation = lambda: "https://pbs.twimg.com/media/convocados.jpg?name=orig"
+        t.visuel_convocation = lambda: ("111", image)  # le club a publié : le visuel part d'abord, puis la liste en texte seul
+        assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1 and len(appels) == 2
+        assert appels[0]["platforms"]["x"]["posts"][0] == {"text": "📋 قائمة ريال مدريد\n\n#ريال_مدريد", "media_ids": [image]}
+        assert appels[0]["publish_at"] == "now" and "media_ids" not in appels[1]["platforms"]["x"]["posts"][0]
         t.vers_typefully(con, {}, Path(tmp))
-        post = appels[1]["platforms"]["x"]["posts"][0]
-        assert post == {"text": "📋 قائمة ريال مدريد\n\n#ريال_مدريد_بي_إس_في #دوري_أبطال_أوروبا",
-                        "media_ids": ["https://pbs.twimg.com/media/convocados.jpg?name=orig"]} and appels[1]["publish_at"] == "now"
-        t.vers_typefully(con, {}, Path(tmp))
-        assert len(appels) == 2  # une seule fois par liste
-        con.execute("UPDATE convocations SET typefully = NULL, visuel = NULL, essais = 9, dernier = '2026-01-01T00:00:00'")
-        t.vers_typefully(con, {}, Path(tmp))
-        assert len(appels) == 2  # 9 essais sans visuel : on n'en cherche plus
+        assert len(appels) == 2  # une seule fois par post du club
     finally:
-        t.visuel_convocation = vrai_visuel
+        t.visuel_convocation = lambda: None
     con.close()
 print("OK Typefully")
 
