@@ -95,7 +95,7 @@ try:
             6: [(T0, "Mourinho: «1»", "m1", ""), (T0, "Mourinho: «2»", "m2", ""), (T0, "Mourinho: «3»", "m3", ""), (T0, "Mourinho: «0»", "m0", "")]}
     c.declarations = lambda j, depuis: flux[max(k for k in flux if k <= (horloge[0] - T0).total_seconds() / 60)]
     c.deja_publies = lambda depuis: (["m0"], ["🎙️ مؤتمر مورينيو | «0»"])
-    c.tweet = lambda titre, texte, deja: "DOUBLON" if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
+    c.tweet = lambda titre, texte, deja, suite=False: "DOUBLON" if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
     generer_site.texte_complet = lambda it: "نص"
     sauvegardes = []
     def dormir(s):
@@ -108,6 +108,23 @@ try:
     assert sauvegardes[0][0].endswith("suivie sur Marca") and "fin" in sauvegardes[-1][0]
     print("OK boucle")
 
+    # article complété au fil de la conférence (AS après le PSV, 24 nov.) : relu chaque minute, une réponse de plus à chaque
+    # ajout, plus relu après 15 min sans changement
+    horloge[0] = T0
+    c.declarations = lambda j, depuis: [(T0, "Mourinho: «vegas»", "a1", "")]
+    corps = lambda: "Q1R1" + ("Q2R2" if horloge[0] >= T0 + timedelta(minutes=3) else "") + ("Q3R3" if horloge[0] >= T0 + timedelta(minutes=5) else "")
+    lectures = []
+    generer_site.texte_complet = lambda it: lectures.append(horloge[0]) or corps()
+    def tweet_relu(titre, texte, deja, suite=False):
+        reste = [r for r in ("R1", "R2", "R3") if r in texte and r not in deja]
+        return reste[0] if reste else "DOUBLON"
+    c.tweet = tweet_relu
+    c.deja_publies = lambda depuis: ([], [])
+    s = c.suivre("AS", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    assert s["tweets"] == ["R1", "R2", "R3"], s["tweets"]
+    assert max(lectures) - T0 <= timedelta(minutes=5 + 15), "plus relu 15 min après le dernier ajout"
+    print("OK article complété")
+
     # « auto » (avant-match) : attente sans fin de silence, l'interview hors conférence laissée au passage normal, puis le
     # premier journal à publier une déclaration est suivi seul
     horloge[0] = T0
@@ -118,7 +135,7 @@ try:
                ([(T0, "Mourinho: «m»", "m-z", "")] if j == "Marca" and (horloge[0] - T0).total_seconds() >= 52 * 60 else [])
     c.declarations = decl_auto
     c.deja_publies = lambda depuis: ([], [])
-    c.tweet = lambda titre, texte, deja: "HORS" if "«tv»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
+    c.tweet = lambda titre, texte, deja, suite=False: "HORS" if "«tv»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=T0)
     assert s["journal"] == "AS" and s["tweets"] == ["🎙️ مؤتمر مورينيو | «x»"], s
     assert "m-tv" in s["vus"] and "m-tv" not in s["liens"] and "m-z" not in s["vus"], "Marca ignoré une fois AS choisi"
@@ -130,7 +147,7 @@ try:
     assert not s["tweets"] and (horloge[0] - T0) == c.ATTENTE and s["journal"] is None, "pas de conférence : fin de l'attente"
     horloge[0] = T0  # lancé sur un article (vidéo d'entraînement du 23 nov.) : 30 min d'attente d'une vraie déclaration, pas 10
     c.declarations = lambda j, depuis: [(T0, "“Dean, estás dormido”", "a-video", "Mourinho")] if j == "AS" else []
-    c.tweet = lambda titre, texte, deja: "HORS"
+    c.tweet = lambda titre, texte, deja, suite=False: "HORS"
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
     assert not s["tweets"] and s["journal"] is None and (horloge[0] - T0) == c.ATTENTE_DETECTION
     print("OK attente avant-match")
@@ -164,7 +181,7 @@ try:
     horloge[0] = T0
     c.deja_publies = lambda depuis: ([], [])
     c.declarations = lambda j, depuis: flux[max(k for k in flux if k <= (horloge[0] - T0).total_seconds() / 60)]
-    c.tweet = lambda titre, texte, deja: "DOUBLON" if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
+    c.tweet = lambda titre, texte, deja, suite=False: "DOUBLON" if "«2»" in titre else f"🎙️ مؤتمر مورينيو | {titre[10:]}"
     def texte_avec_image(it):
         it["image"] = "https://marca.com/photo.jpg"
         return "نص"

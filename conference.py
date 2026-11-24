@@ -255,13 +255,21 @@ def orateurs(tweets):
     return list(dict.fromkeys(m[1].strip() for t in tweets if (m := re.match(r"🎙️ مؤتمر (.+?)\s*\|", t))))
 
 
-def tweet(titre, texte, deja):
+SUITE = """
+CET ARTICLE A ÉTÉ COMPLÉTÉ depuis les tweets déjà publiés : ne prends pas la déclaration mise en avant par le titre, mais la
+première réponse de {nom} en salle de presse qui n'est dans aucun tweet déjà publié (question et réponse comme ci-dessus).
+S'il n'y en a aucune, réponds seulement DOUBLON.
+"""
+
+
+def tweet(titre, texte, deja, suite=False):
     """Texte du tweet, ou "DOUBLON" (déclaration déjà tweetée) ou "HORS" (pas une déclaration de la conférence : interview
-    télé, vieille phrase... ; elle passe alors par le passage normal)."""
+    télé, vieille phrase... ; elle passe alors par le passage normal). suite=True : article relu, réponse suivante."""
     nom = CONFIG.get("entraineur", "mourinho")
     nom_ar = CONFIG.get("personnes", {}).get(nom, {}).get("nom", nom)
-    r = appeler_claude(PROMPT.format(nom=nom.capitalize(), nom_ar=nom_ar, hashtag=nom_ar.replace(" ", "_"), titre=titre,
-                                     texte=texte[:6000], deja="\n---\n".join(deja) or "(aucun)"),
+    prompt = PROMPT.replace("\nARTICLE\n", SUITE.format(nom=nom.capitalize()) + "\nARTICLE\n") if suite else PROMPT
+    r = appeler_claude(prompt.format(nom=nom.capitalize(), nom_ar=nom_ar, hashtag=nom_ar.replace(" ", "_"), titre=titre,
+                                     texte=texte[:12000], deja="\n---\n".join(deja) or "(aucun)"),
                        CONFIG.get("modele_redaction", "sonnet"), "low").strip()
     return "DOUBLON" if "DOUBLON" in r[:20] else "HORS" if not r or r[:10].strip() == "HORS" else r
 
@@ -343,6 +351,15 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
     etat.append(session)
     enregistrer(f"Conférence en direct : suivie sur {suivi}" if suivi else "Conférence en direct : attente de la conférence")
     premiere = derniere = debut if suivi or tweets else None
+
+    def suite(r, corps):
+        """Réponse suivante d'un article relu, ou HORS (rien de nouveau : le texte actuel ne sera plus soumis à Claude)."""
+        texte = tweet(r["titre"], corps, session["tweets"], suite=True)
+        if texte in ("HORS", "DOUBLON"):  # DOUBLON compté comme HORS : il ne prolonge pas le direct
+            r["long"] = len(corps)
+            return "HORS"
+        return texte
+
     while True:
         instant = horloge()
         if premiere is None and instant >= limite:
@@ -363,6 +380,13 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
                 journaux = [session["journal"]] if session["journal"] else list(FLUX)
                 nouvelles = [d + (None,) for d in sorted(d + (j,) for j in journaux for d in declarations(j, debut - FRAIS)
                                                          if d[2] not in session["vus"])]
+                # article complété au fil de la conférence (AS après le PSV, 24 nov.) : relu chaque minute tant qu'il grandit,
+                # 15 min au plus sans changement (coût Bright Data quand la page est refusée)
+                for lien, r in session.get("relus", {}).items():
+                    if (session["journal"] in (None, r["journal"]) and instant - datetime.fromisoformat(r["vu"]) < SILENCE
+                            and len(corps := texte_complet({"lien": lien, "texte_flux": "", "type": "conference"})) > r["long"]):
+                        r["vu"] = instant.isoformat(timespec="seconds")
+                        nouvelles.append((instant, r["titre"], lien, "", r["journal"], lambda r=r, corps=corps: suite(r, corps)))
             if not nouvelles:  # signe de vie dans le journal du workflow
                 print(f"{h} en attente de la conférence (jusqu'à {limite:%H:%M} UTC)" if premiere is None else
                       f"{h} aucune nouvelle déclaration ({session['journal']}), fin dans "
@@ -372,7 +396,11 @@ def suivre(journal, publier=True, dormir=time.sleep, horloge=None, sauvegarder=N
                     continue  # journal choisi plus tôt dans cette même lecture (le direct écrit d'AS passe toujours)
                 session["vus"].append(lien)  # noté avant l'envoi : un tweet raté n'est pas retenté en boucle
                 it = {"lien": lien, "texte_flux": resume, "type": "conference"}
-                texte = rediger() if rediger else tweet(titre, texte_complet(it), session["tweets"])
+                if not rediger:
+                    corps = texte_complet(it)
+                    session.setdefault("relus", {})[lien] = {"titre": titre, "journal": j, "long": len(corps),
+                                                             "vu": instant.isoformat(timespec="seconds")}
+                texte = rediger() if rediger else tweet(titre, corps, session["tweets"])
                 if texte == "HORS":
                     print(f"{h} hors conférence, laissé au passage normal : {titre[:80]}")
                     continue
