@@ -601,33 +601,30 @@ with tempfile.TemporaryDirectory() as tmp:
     image = "https://pbs.twimg.com/media/convocados.jpg?name=orig"
     try:
         fenetre, t.fenetre_convocation = t.fenetre_convocation, lambda: t.maintenant() - t.timedelta(hours=1)
+        con.execute("DROP TABLE IF EXISTS verif_convocation")  # pas de vérification récente
         t.visuel_convocation = lambda depuis: ("111", image)  # le club a publié : le visuel part d'abord, puis la liste en texte seul
         assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1 and len(appels) == 2
         assert appels[0]["platforms"]["x"]["posts"][0] == {"text": "📋 قائمة ريال مدريد\n\n#ريال_مدريد", "media_ids": [image]}
         assert appels[0]["publish_at"] == "now" and "media_ids" not in appels[1]["platforms"]["x"]["posts"][0]
         t.vers_typefully(con, {}, Path(tmp))
         assert len(appels) == 2  # une seule fois par post du club
-        # X refuse (429) : Bright Data jusqu'à la remise à zéro annoncée par X (15 min au plus), puis retour à X
-        import email.message
-        en_tetes = email.message.Message()
-        en_tetes["x-rate-limit-reset"] = str(int((t.datetime.now(t.timezone.utc) + t.timedelta(minutes=6)).timestamp()))
+        # une vérification par quart d'heure ; X refuse (429) : Bright Data dans la même vérification
         lus_x, secours, vrai_bd = [], [], t.visuel_bright_data
         def refus(depuis):
             lus_x.append(1)
-            raise urllib.error.HTTPError(t.FIL_CLUB, 429, "Too Many Requests", en_tetes, None)
+            raise OSError("HTTP Error 429")
         t.visuel_convocation, t.visuel_bright_data = refus, lambda depuis: secours.append(1)
         con.execute("DELETE FROM visuels_convocation")  # nouveau match : rien de publié dans sa fenêtre
+        con.execute("DELETE FROM verif_convocation")
         try:
             t.vers_typefully(con, {}, Path(tmp))
-            assert lus_x == [1] and secours == [1]  # refus : Bright Data dans le même passage
-            jusqua = con.execute("SELECT jusqua FROM pause_x").fetchone()[0]
-            assert 5 <= (t.datetime.fromisoformat(jusqua) - t.maintenant()).total_seconds() / 60 <= 6  # heure donnée par X
+            assert lus_x == [1] and secours == [1]  # refus : Bright Data tout de suite
             t.vers_typefully(con, {}, Path(tmp))
-            assert lus_x == [1] and secours == [1, 1]  # pendant la pause : Bright Data seul, X n'est pas relu
-            con.execute("UPDATE pause_x SET jusqua = '2026-01-01T00:00:00'")
+            assert lus_x == [1] and secours == [1]  # passage suivant, moins de 14 min après : aucune vérification
+            con.execute("UPDATE verif_convocation SET dernier = '2026-01-01T00:00:00'")
             t.visuel_convocation = lambda depuis: lus_x.append(1) or ("222", image)
             t.vers_typefully(con, {}, Path(tmp))
-            assert lus_x == [1, 1] and secours == [1, 1] and len(appels) == 3  # pause finie : retour à X, visuel publié
+            assert lus_x == [1, 1] and secours == [1] and len(appels) == 3  # quart d'heure suivant : X répond, visuel publié
         finally:
             t.visuel_bright_data = vrai_bd
     finally:

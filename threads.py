@@ -906,30 +906,25 @@ def visuel_liste(con):
     debut = fenetre_convocation()
     if not debut or con.execute("SELECT 1 FROM visuels_convocation WHERE envoye >= ?", (debut.isoformat(),)).fetchone():
         return  # hors fenêtre, ou visuel de ce match déjà publié
-    # page d'intégration de X d'abord ; après un refus, Bright Data jusqu'à la remise à zéro de la limite de X (heure
-    # donnée par sa réponse, sinon 15 min), puis retour à la page d'intégration (idée de l'utilisateur, 24 nov.)
-    con.execute("DROP TABLE IF EXISTS secours_convocation")  # version du 24 nov. matin (une recherche par quart d'heure)
-    con.execute("CREATE TABLE IF NOT EXISTS pause_x (cle TEXT PRIMARY KEY, jusqua TEXT)")
-    pause = con.execute("SELECT jusqua FROM pause_x WHERE cle = 'convocation'").fetchone()
-    trouve = None
-    if not pause or pause[0] <= maintenant().isoformat():
-        try:
-            trouve = visuel_convocation(debut)
-            pause = None
-        except (OSError, ValueError, KeyError) as err:  # refus de X (429) ou page changée
-            reset = getattr(err, "headers", None) and err.headers.get("x-rate-limit-reset")
-            jusqua = (datetime.fromtimestamp(int(reset), timezone.utc).replace(tzinfo=None) if reset and reset.isdigit()
-                      else maintenant() + timedelta(minutes=15))
-            jusqua = min(jusqua, maintenant() + timedelta(minutes=15))  # une heure de remise à zéro aberrante n'allonge pas la pause
-            con.execute("INSERT OR REPLACE INTO pause_x VALUES ('convocation', ?)", (jusqua.isoformat(timespec="seconds"),))
-            con.commit()
-            print(f"  ! visuel de la convocation : page d'intégration de X refusée ({err}), Bright Data jusqu'à {jusqua:%H:%M} UTC")
-            pause = True
-    if pause:
+    # une vérification par quart d'heure (quelques minutes de retard ne gênent pas, choix de l'utilisateur du 24 nov.) :
+    # la page d'intégration de X, et Bright Data seulement si X refuse ; 14 min et non 15 : les passages dérivent de
+    # quelques secondes, une vérification ne doit pas glisser au passage suivant
+    con.execute("DROP TABLE IF EXISTS secours_convocation")
+    con.execute("DROP TABLE IF EXISTS pause_x")  # versions du 24 nov. matin
+    con.execute("CREATE TABLE IF NOT EXISTS verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT)")
+    dernier = con.execute("SELECT dernier FROM verif_convocation WHERE cle = 'visuel'").fetchone()
+    if dernier and dernier[0] > (maintenant() - timedelta(minutes=14)).isoformat():
+        return
+    con.execute("INSERT OR REPLACE INTO verif_convocation VALUES ('visuel', ?)", (maintenant().isoformat(timespec="seconds"),))
+    con.commit()
+    try:
+        trouve = visuel_convocation(debut)
+    except (OSError, ValueError, KeyError) as err:  # refus de X (429) ou page changée : Bright Data en plan B
+        print(f"  ! visuel de la convocation : page d'intégration de X refusée ({err}), recherche par Bright Data")
         try:
             trouve = visuel_bright_data(debut)
-        except Exception as err:  # noqa: BLE001 - Bright Data en panne ou quota épuisé : réessayé au passage suivant
-            print(f"  ! visuel de la convocation : Bright Data aussi en échec ({err})")
+        except Exception as err2:  # noqa: BLE001 - Bright Data en panne ou quota épuisé : vérification suivante
+            print(f"  ! visuel de la convocation : Bright Data aussi en échec ({err2})")
             return
     if not trouve or con.execute("SELECT 1 FROM visuels_convocation WHERE tweet_id = ?", (trouve[0],)).fetchone():
         return
