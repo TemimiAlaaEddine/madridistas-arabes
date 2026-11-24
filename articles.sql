@@ -8310,6 +8310,7 @@ INSERT INTO "liens_x" VALUES('12162331','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12162334','https://x.com/ElMadridistAlaa/status/2125230461589020839','2026-11-24T14:10:04.741Z');
 INSERT INTO "liens_x" VALUES('12164389','https://x.com/ElMadridistAlaa/status/2125243831335710902','2026-11-24T15:03:09.540Z');
 INSERT INTO "liens_x" VALUES('12164391','https://x.com/ElMadridistAlaa/status/2125244303735963757','2026-11-24T15:05:04.973Z');
+INSERT INTO "liens_x" VALUES('12165110','https://x.com/ElMadridistAlaa/status/2125251852451410284','2026-11-24T15:35:04.668Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -11264,4 +11265,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/mourin
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3598869182116942493-cest-une-consequence-de-son-attitude-davide-ancelotti-revient-sur-la-suspension-dethan-mbappe','"C’est une conséquence de son attitude" : Davide Ancelotti revient sur la suspension d’Éthan Mbappé','2026-11-24T15:06:00');
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/champions-league/maiores-artilheiros-historia-liga-campeoes/','Os maiores artilheiros da história da Champions League','2026-11-24T15:11:00');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/managing-madrid-editorials/115677/celta-vigo-real-madrid-high-press','How Celta Vigo played through Real Madrid’s high press','2026-11-24T15:31:47');
+INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/24/el-milan-vol-fitxar-endrick-per-70-milions-deuros-al-mercat-dhivern-pensava-que-era-fum-pero-ens-consta-una-oferta-formal-sercat/','El Milan vol fitxar Endrick per 70 milions d''euros al mercat d''hivern: "Pensava que era fum, però ens consta una oferta formal"','2026-11-24T15:35:53');
 COMMIT;
