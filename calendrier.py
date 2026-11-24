@@ -277,10 +277,29 @@ def sauver_direct(message):
         print(f"  ! direct.json non poussé ({err})")
 
 
+def avec_incidents(e, incidents):
+    """L'événement mis à jour d'après les incidents (seuls lus chaque minute par le suivi dédié) : score du dernier but ou de
+    la dernière fin de période, et mi-temps dès l'incident « HT » tant que le statut lu date de la 1re mi-temps."""
+    e = dict(e)
+    marques = [i for i in incidents if i.get("incidentType") in ("goal", "period") and i.get("homeScore") is not None]
+    if marques:
+        d = max(marques, key=lambda i: (i.get("time") or 0, i.get("addedTime") or 0))
+        e["homeScore"], e["awayScore"] = {**e.get("homeScore", {}), "current": d["homeScore"]}, {**e.get("awayScore", {}), "current": d["awayScore"]}
+    if e["status"].get("code") == 6 and any(i.get("incidentType") == "period" and i.get("text") == "HT" for i in incidents):
+        e["status"] = {"code": MI_TEMPS, "type": "inprogress", "description": "Halftime"}
+    return e
+
+
+def fin_de_periode(incidents):
+    """Une fin de période autre que la mi-temps (« FT », prolongation…) : le statut dira si le match est vraiment fini."""
+    return any(i.get("incidentType") == "period" and i.get("text") != "HT" for i in incidents)
+
+
 def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVALLE, dormir=time.sleep, horloge=None):
     """Lit Sofascore toutes les `intervalle` secondes, du coup d'envoi à la fin, et tweete chaque fait une seule fois, dans
-    l'ordre : coup d'envoi, buts, cartons rouges, mi-temps, reprise, fin. Le détail des incidents n'est relu que si le score ou le statut
-    change, ou toutes les 5 lectures (un carton rouge ne change ni l'un ni l'autre). publier=False : affiche sans tweeter."""
+    l'ordre : coup d'envoi, buts, cartons rouges, mi-temps, reprise, fin. Seuls les incidents sont lus chaque minute ; le statut
+    ne l'est qu'avant le coup d'envoi, après la pause jusqu'à la reprise, et après une fin de période jusqu'à « terminé ».
+    publier=False : affiche sans tweeter."""
     import threads
     from match import sofascore
     horloge = horloge or maintenant
@@ -292,23 +311,26 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
     etat = lire_direct()
     suivi = etat.setdefault(debut, {"cles": [], "fini": False})
     e = id_match = None
-    avant, incidents, n, pause_faite = None, [], 0, False
+    avant, incidents, pause_faite, lire_statut = None, [], False, True
     while horloge() < t0 + timedelta(hours=2, minutes=45) and not suivi["fini"]:
         h = horloge().strftime("%H:%M:%S")
         try:
             if id_match is None:
                 e = evenement(debut, equipe)
                 id_match = e["id"] if e else None
-            else:
+            elif lire_statut:
                 e = sofascore(f"event/{id_match}")["event"]
             if not e:
                 print(f"{h} ! match introuvable sur Sofascore")
             else:
-                cle_etat = (e["status"].get("code"), e.get("homeScore", {}).get("current"), e.get("awayScore", {}).get("current"))
-                # but déjà au score mais pas encore dans les incidents (Liverpool-Man United, 22 nov. : 2 min de retard) : relus la minute suivante
-                manque = sum(i.get("incidentType") == "goal" for i in incidents) < (cle_etat[1] or 0) + (cle_etat[2] or 0)
-                if e["status"].get("type") != "notstarted" and (cle_etat != avant or manque or n % 5 == 0):
+                if e["status"].get("type") != "notstarted":
                     incidents = sofascore(f"event/{id_match}/incidents").get("incidents", [])
+                    if fin_de_periode(incidents) and not lire_statut and e["status"].get("type") != "finished":
+                        e = sofascore(f"event/{id_match}")["event"]  # fin vérifiée tout de suite, pas à la minute suivante
+                    e = avec_incidents(e, incidents)
+                # shortcut: après « FT », statut relu chaque minute jusqu'à « terminé » (2 requêtes/min en prolongation, rare)
+                lire_statut = e["status"].get("type") == "notstarted" or e["status"].get("code") == MI_TEMPS or fin_de_periode(incidents)
+                cle_etat = (e["status"].get("code"), e.get("homeScore", {}).get("current"), e.get("awayScore", {}).get("current"))
                 if cle_etat != avant:
                     print(f"{h} {e['homeTeam']['name']} {cle_etat[1]}-{cle_etat[2]} {e['awayTeam']['name']}, "
                           f"« {e['status'].get('description')} » (code {cle_etat[0]})")
@@ -327,7 +349,6 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
                         sauver_direct(f"Direct : {cle}")
         except (OSError, ValueError, KeyError, subprocess.SubprocessError) as err:  # lecture ou envoi raté : minute suivante
             print(f"{h} ! {err!r} : réessayé dans {intervalle} s")
-        n += 1
         # pause une seule fois, et seulement une fois le tweet de mi-temps parti (un suivi relancé en 2e mi-temps a déjà la clé)
         mi_temps = not pause_faite and bool(e) and e["status"].get("code") == MI_TEMPS and "mi-temps" in suivi["cles"]
         pause_faite = pause_faite or mi_temps
