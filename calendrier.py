@@ -135,7 +135,7 @@ def hashtags_match(e, dom, ext):
 
 
 def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
-    """[(clé, texte)] des tweets que l'état du match appelle, dans l'ordre : début, buts et cartons rouges (chronologiques),
+    """[(clé, texte)] des tweets que l'état du match appelle, dans l'ordre : début, buts, cartons rouges et changements du Real (chronologiques),
     mi-temps, reprise, fin. L'appelant écarte les clés déjà parties."""
     dom, ext = nom_arabe(e["homeTeam"]), nom_arabe(e["awayTeam"])
     real_dom = e["homeTeam"].get("id") == equipe
@@ -167,6 +167,10 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
             second = " (إنذار ثانٍ)" if i["incidentClass"] == "yellowRed" else ""
             suite = "ريال مدريد بعشرة لاعبين، وكلنا مع الفريق 🤍" if bool(i.get("isHome")) == real_dom else "ريال مدريد في تفوق عددي 💪"
             tweets.append((f"rouge:{cle}", f"🟥 بطاقة حمراء\n\n{joueur(i)} ({equipe}) {minute(i)}{second}\n\n{suite}{tag}"))
+        elif i.get("incidentType") == "substitution" and bool(i.get("isHome")) == real_dom:  # changements du Real seulement
+            entre, sort = (joueur({"player": i.get(k)}) for k in ("playerIn", "playerOut"))
+            blesse = " (إصابة)" if i.get("injury") else ""
+            tweets.append((f"changement:{cle}", f"🔄 تبديل في ريال مدريد {minute(i)}\n\n🟢⬆️ {entre}\n🔴⬇️ {sort}{blesse}{tag}"))
     if statut.get("code") == MI_TEMPS:
         suite = "ريال مدريد في المقدمة 🤍" if real > adv else "ما زال أمامنا شوط كامل 💪" if real < adv else "الكلمة للشوط الثاني 💪"
         tweets.append(("mi-temps", f"⏸️ نهاية الشوط الأول\n\n{score}\n\n{suite}{tag}"))
@@ -183,7 +187,7 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
 def suivre_match(con, utc=None):
     """Pendant un match (fenêtre de match_courant), à chaque passage : l'état lu sur Sofascore est noté dans suivi_match quand
     il change, et les tweets du direct partent tout de suite sur X, chacun une seule fois (table tweets_match) : coup
-    d'envoi, chaque but (célébré si c'est le Real), chaque carton rouge, mi-temps, reprise, fin avec les buteurs."""
+    d'envoi, chaque but (célébré si c'est le Real), chaque carton rouge, chaque changement du Real, mi-temps, reprise, fin avec les buteurs."""
     import subprocess
     import threads
     from match import sofascore
@@ -297,7 +301,7 @@ def fin_de_periode(incidents):
 
 def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVALLE, dormir=time.sleep, horloge=None):
     """Lit Sofascore toutes les `intervalle` secondes, du coup d'envoi à la fin, et tweete chaque fait une seule fois, dans
-    l'ordre : coup d'envoi, buts, cartons rouges, mi-temps, reprise, fin. Seuls les incidents sont lus chaque minute ; le statut
+    l'ordre : coup d'envoi, buts, cartons rouges, changements du Real, mi-temps, reprise, fin. Seuls les incidents sont lus chaque minute ; le statut
     ne l'est qu'avant le coup d'envoi, après la pause jusqu'à la reprise, et après une fin de période jusqu'à « terminé ».
     publier=False : affiche sans tweeter."""
     import threads

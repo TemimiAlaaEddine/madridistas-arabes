@@ -1522,12 +1522,15 @@ with tempfile.TemporaryDirectory() as d:
     assert tw["but:9"].startswith("⚽🔥 هدددف لريال مدريد!") and "Starfelt 30' (ضد مرماه)" in tw["but:9"] and "سيلتا فيغو 0 - 1 ريال مدريد" in tw["but:9"]
     # suivi dédié : incidents lus chaque minute ; statut seulement avant le coup d'envoi, après la pause et à la fin ; chaque fait une fois, dans l'ordre
     ht = {"incidentType": "period", "text": "HT", "time": 45, "addedTime": 999, "homeScore": 0, "awayScore": 1}
+    changement_real = {"id": 4, "incidentType": "substitution", "time": 79, "isHome": True, "injury": True,  # celui de l'adversaire (id 3) : pas de tweet
+                       "playerIn": {"name": "Carlos Espí", "fieldTranslations": {"nameTranslation": {"ar": "كارلوس إسبي"}}},
+                       "playerOut": {"name": "Eduardo Camavinga"}}
     etapes = [(evt(0, "notstarted", "Not started"), []), (evt(6, "inprogress", "1st half", 0, 0), []),
               (evt(6, "inprogress", "1st half", 0, 0), []), (evt(6, "inprogress", "1st half", 0, 1), []),  # but au score, pas encore en incident
               (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
               (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1), ht]),  # mi-temps vue par l'incident « HT » seul
               (evt(7, "inprogress", "2nd half", 0, 1), [but(1, 6, "Durán", 0, 1), ht, {"id": 3, "incidentType": "substitution", "time": 46}]),  # changement de la pause : 46e
-              (evt(100, "finished", "Ended", 1, 1), [but(1, 6, "Durán", 0, 1), ht, but(2, 66, "Bellingham", 1, 1),
+              (evt(100, "finished", "Ended", 1, 1), [but(1, 6, "Durán", 0, 1), ht, but(2, 66, "Bellingham", 1, 1), changement_real,
                                                      {"incidentType": "period", "text": "FT", "time": 90, "addedTime": 999, "homeScore": 1, "awayScore": 1}])]
     pas, horloge, appels, sauves, attentes = [0], [datetime(2026, 11, 21, 19, 58)], [], [], []
     def sofa_minute(chemin):
@@ -1546,10 +1549,11 @@ with tempfile.TemporaryDirectory() as d:
         cles = calendrier.suivre_en_direct("2026-11-21T20:00:00", dormir=minute_suivante, horloge=lambda: horloge[0])
     finally:
         mt.sofascore, t.typefully_api, calendrier.sauver_direct = vrai2
-    assert cles == ["début", "but:1", "mi-temps", "reprise", "but:2", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
+    assert cles == ["début", "but:1", "mi-temps", "reprise", "but:2", "changement:4", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
     assert attentes.count(calendrier.PAUSE_MI_TEMPS) == 1, attentes  # pas de lecture pendant la mi-temps, une seule pause
-    assert textes()[-3].startswith("▶️ انطلاق الشوط الثاني") and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-3]
-    assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 6  # rien ne part deux fois, arrêt à la fin
+    assert textes()[-4].startswith("▶️ انطلاق الشوط الثاني") and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-4]
+    assert textes()[-2].startswith("🔄 تبديل في ريال مدريد 79'") and "🟢⬆️ كارلوس إسبي" in textes()[-2] and "🔴⬇️ Eduardo Camavinga (إصابة)" in textes()[-2], textes()[-2]
+    assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 7  # rien ne part deux fois, arrêt à la fin
     assert appels[0] == "team/2829/events/next/0" and "team/2829/events/next/0" not in appels[1:]  # ensuite : event/77 seul
     assert appels.count("event/77/incidents") == 7, appels  # chaque minute dès le coup d'envoi
     assert appels.count("event/77") == 3, appels  # statut : coup d'envoi, reprise après la pause, fin confirmée après « FT »
