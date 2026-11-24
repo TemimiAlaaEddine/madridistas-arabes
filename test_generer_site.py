@@ -607,18 +607,27 @@ with tempfile.TemporaryDirectory() as tmp:
         assert appels[0]["publish_at"] == "now" and "media_ids" not in appels[1]["platforms"]["x"]["posts"][0]
         t.vers_typefully(con, {}, Path(tmp))
         assert len(appels) == 2  # une seule fois par post du club
-        # X refuse (429) : Bright Data en secours dès le 1er refus, au plus une fois par quart d'heure
+        # X refuse (429) : Bright Data jusqu'à la remise à zéro annoncée par X (15 min au plus), puis retour à X
+        import email.message
+        en_tetes = email.message.Message()
+        en_tetes["x-rate-limit-reset"] = str(int((t.datetime.now(t.timezone.utc) + t.timedelta(minutes=6)).timestamp()))
+        lus_x, secours, vrai_bd = [], [], t.visuel_bright_data
         def refus(depuis):
-            raise OSError("HTTP Error 429")
-        secours, vrai_bd = [], t.visuel_bright_data
-        t.visuel_convocation, t.visuel_bright_data = refus, lambda depuis: secours.append(1) or ("222", image)
+            lus_x.append(1)
+            raise urllib.error.HTTPError(t.FIL_CLUB, 429, "Too Many Requests", en_tetes, None)
+        t.visuel_convocation, t.visuel_bright_data = refus, lambda depuis: secours.append(1)
         con.execute("DELETE FROM visuels_convocation")  # nouveau match : rien de publié dans sa fenêtre
         try:
             t.vers_typefully(con, {}, Path(tmp))
-            assert secours == [1] and len(appels) == 3  # le visuel d'un autre post du club (id 222) part
-            con.execute("DELETE FROM visuels_convocation")
+            assert lus_x == [1] and secours == [1]  # refus : Bright Data dans le même passage
+            jusqua = con.execute("SELECT jusqua FROM pause_x").fetchone()[0]
+            assert 5 <= (t.datetime.fromisoformat(jusqua) - t.maintenant()).total_seconds() / 60 <= 6  # heure donnée par X
             t.vers_typefully(con, {}, Path(tmp))
-            assert secours == [1] and len(appels) == 3  # 2e refus moins de 15 min après : pas de nouvelle recherche facturée
+            assert lus_x == [1] and secours == [1, 1]  # pendant la pause : Bright Data seul, X n'est pas relu
+            con.execute("UPDATE pause_x SET jusqua = '2026-01-01T00:00:00'")
+            t.visuel_convocation = lambda depuis: lus_x.append(1) or ("222", image)
+            t.vers_typefully(con, {}, Path(tmp))
+            assert lus_x == [1, 1] and secours == [1, 1] and len(appels) == 3  # pause finie : retour à X, visuel publié
         finally:
             t.visuel_bright_data = vrai_bd
     finally:
