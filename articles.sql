@@ -10713,4 +10713,6 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/spaanse-media-real-madrid-op-
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-psv-tegen-real-madrid-in-champions-league','VI Live: PSV wacht heerlijke Champions League-kraker tegen Real Madrid','2026-11-24T07:41:12');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/la-estela-del-cometa/','La estela del cometa','2026-11-24T07:42:17');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/champions-league/2026/11/24/ex-barcelona-enfrenta-malos-recuerdos-madrid-hay-primera-vez.html','Un ex del Barcelona se enfrenta a sus malos recuerdos del Madrid: "Para todo hay una primera vez"','2026-11-24T07:42:17');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7185845574280056604-mourinho-souhaite-quun-club-vienne-chercher-vinicius-jr-un-ancien-du-real-madrid-balance','« Mourinho souhaite qu’un club vienne chercher Vinicius Jr » : un ancien du Real Madrid balance','2026-11-24T07:50:59');
+INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/24/roberto-gomez-flick-mourinho-les-tendria-caer-cara-vergueenza.html','Roberto Gómez, contra Flick y Mourinho: "Se les tendría que caer la cara de vergüenza"','2026-11-24T07:51:02');
 COMMIT;
