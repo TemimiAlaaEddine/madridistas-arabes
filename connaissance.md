@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 36
+Dernier fait relu : 37
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -116,6 +116,7 @@ Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après le
 - 2026-11-04 : Rafa Nadal proposé au conseil d'administration (socio d'honneur n° 67778) ; ratification à l'assemblée extraordinaire du 21 novembre, seul point de son ordre du jour. Rôle de conseiller, non exécutif, au départ. Sources : ABC, Managing Madrid (Lucas Navarrete), Foot Mercato (d'après DAZN).
 - Statuts, article 40 : 20 ans d'ancienneté de socio pour se présenter à la présidence (15 pour vice-président, 10 pour le conseil), et une garantie bancaire d'au moins 15 % du budget de dépenses. Nadal est socio d'honneur depuis 2011, donc éligible en 2031 si l'ancienneté compte depuis cette date. Si la présidence devient vacante, le conseil choisit l'un de ses membres et l'assemblée le ratifie. Source : Marca (Juan Ignacio García-Ochoa).
 - 2026-11-14 : Ballon d'Or 2026 : Harry Kane gagne, Kylian Mbappé termine deuxième à 28 points. Source : Foot Mercato (Jordan Pardon).
+- 2026-11-24 : En 1988, le Real Madrid a été éliminé par le PSV en demi-finale de la Coupe d'Europe (1-1 à Madrid, 0-0 à Eindhoven) à cause de la règle des buts à l'extérieur. Source : ABC (Rubén Cañizares).
 
 ## Préférences pour les scripts
 - 2026-11-08 : utiliser les stats WhoScored (notes, passes clés, dribbles, système de jeu) pour l'analyse des matchs. Source à citer : Opta (« أوبتا »), le fournisseur des données de WhoScored et de FotMob, jamais WhoScored ni FotMob (2026-11-22).
