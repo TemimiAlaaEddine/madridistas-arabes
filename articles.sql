@@ -11478,4 +11478,5 @@ INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-ruben-va
 INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-thibaut-courtois-moet-zich-omdraaien-ivan-perisic-vloert-rode-duivel-vanop-de-stip~abc7a0ad/','MULTILIVE. Thibaut Courtois moet zich omdraaien: Ivan Perisic vloert Rode Duivel vanop de stip','2026-11-24T20:35:55');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a3676943549114194982-psg-florenzi-donne-le-gros-defaut-de-neymar-et-mbappe','PSG : Florenzi donne le gros défaut de Neymar et Mbappé','2026-11-24T20:46:04');
 INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-thibaut-courtois-moet-zich-omdraaien-oude-bekende-ivan-perisic-vloert-rode-duivel-vanop-de-stip~abc7a0ad/','MULTILIVE. Thibaut Courtois moet zich omdraaien: oude bekende Ivan Perisic vloert Rode Duivel vanop de stip','2026-11-24T20:46:04');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/psv-er-perisic-schrijft-historie-in-bernabeu-met-openingstreffer-tegen-real-madrid','Perisic schrijft historie in Bernabeu','2026-11-24T20:51:10');
 COMMIT;
