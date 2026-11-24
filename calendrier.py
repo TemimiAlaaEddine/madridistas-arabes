@@ -5,6 +5,7 @@ import re
 import subprocess
 import sys
 import time
+from collections import Counter, defaultdict
 from functools import lru_cache
 from datetime import datetime, timedelta, timezone
 
@@ -134,9 +135,37 @@ def hashtags_match(e, dom, ext):
     return f"{match} {comp}" if comp else match
 
 
-def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
+def contexte_but(r0, a0, r1, a1, pour_real, adversaire, buts_joueur, menee, tardif):
+    """Ligne qui dit ce que le but change (score avant/après côté Real), en voix de supporter : jamais de critique du Real."""
+    if pour_real:
+        if r1 == a1:
+            ligne = "التعادل! ريال مدريد يعود في النتيجة 💪"
+        elif r1 < a1:
+            ligne = "ريال مدريد يقلّص الفارق، والعودة ممكنة 💪"
+        elif r0 == a0:
+            ligne = ("ريمونتادا! ريال مدريد يقلب الطاولة 🔥" if menee else "ريال مدريد يفتتح التسجيل 🔥" if r0 == 0
+                     else "ريال مدريد يتقدم من جديد 🔥")
+        else:
+            ligne = f"ريال مدريد يوسّع الفارق إلى {r1 - a1} أهداف 🔥" if r1 - a1 >= 3 else "ريال مدريد يعزز تقدمه 🔥"
+        if tardif and r1 - a1 in (0, 1):
+            ligne += "\nفي الوقت القاتل! ⏱️"
+        if buts_joueur == 2:
+            ligne += "\nثنائية! ✌️"
+        elif buts_joueur == 3:
+            ligne += "\nهاتريك! 🎩"
+        return ligne
+    if a1 == r1:
+        return f"التعادل لـ{adversaire}، والمباراة ما زالت مفتوحة\n\nفاموس ريال! 💪"
+    if a1 < r1:
+        return f"{adversaire} يقلّص الفارق، وريال مدريد ما زال متقدماً\n\nفاموس ريال! 💪"
+    return ("ما زال الوقت أمامنا، ونثق في العودة\n\nفاموس ريال! 💪" if a1 - r1 == 1
+            else "المهمة صعبة، لكن ريال مدريد اعتاد العودة\n\nفاموس ريال! 💪")
+
+
+def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE, deja=()):
     """[(clé, texte)] des tweets que l'état du match appelle, dans l'ordre : début, buts, cartons rouges et changements du Real (chronologiques),
-    mi-temps, reprise, fin. L'appelant écarte les clés déjà parties."""
+    mi-temps, reprise, fin. L'appelant écarte les clés déjà parties ; `deja` (clés déjà parties) sert à regrouper les
+    changements du Real faits à la même minute dans un seul tweet, sans republier ceux déjà tweetés."""
     dom, ext = nom_arabe(e["homeTeam"]), nom_arabe(e["awayTeam"])
     real_dom = e["homeTeam"].get("id") == equipe
     adversaire = ext if real_dom else dom
@@ -148,29 +177,46 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     real, adv = (sd, se) if real_dom else (se, sd)
     if statut.get("type") == "inprogress":  # pas de « coup d'envoi » rattrapé une fois le match fini
         tweets.append(("début", f"▶️ انطلاق المباراة\n\n{dom} - {ext}\n\nهلا مدريد! 🤍{tag}"))
+    cle_de = lambda i: f"{i.get('id') or minute(i)}"
+    # changements du Real pas encore tweetés, par minute : ceux de la pause (3 d'un coup à la 46e) partent ensemble
+    partis = {c for k in deja if k.startswith("changement:") for c in k[len("changement:"):].split("+")}
+    changements = defaultdict(list)
     for i in sorted(incidents, key=lambda i: (i.get("time", 0), i.get("addedTime") or 0)):
-        cle = f"{i.get('id') or minute(i)}"
+        if i.get("incidentType") == "substitution" and bool(i.get("isHome")) == real_dom and cle_de(i) not in partis:
+            changements[minute(i)].append(i)
+    marqueurs, menee = Counter(), False
+    for i in sorted(incidents, key=lambda i: (i.get("time", 0), i.get("addedTime") or 0)):
+        cle = cle_de(i)
         if i.get("incidentType") == "goal":
             apres = (i.get("homeScore", avant[0]), i.get("awayScore", avant[1]))
             # côté qui marque d'après le score (sûr même pour un but contre son camp), sinon isHome
             domicile = apres[0] > avant[0] if apres != avant else bool(i.get("isHome"))
+            (r0, a0), (r1, a1) = (avant, apres) if real_dom else (avant[::-1], apres[::-1])
             avant = apres
             pour_real = domicile == real_dom
+            if pour_real and i.get("incidentClass") != "ownGoal":
+                marqueurs[joueur(i)] += 1
             ligne = f"{joueur(i)} {minute(i)}" + {"penalty": " (ركلة جزاء)", "ownGoal": " (ضد مرماه)"}.get(i.get("incidentClass"), "")
             buts.append(f"⚽ {ligne}" + ("" if pour_real else f" ({adversaire})"))
             courant = f"{dom} {apres[0]} - {apres[1]} {ext}"
-            texte = (f"⚽🔥 هدددف لريال مدريد!\n\n{ligne}\n\n{courant}" if pour_real
-                     else f"⚽ هدف لـ{adversaire}\n\n{ligne}\n\n{courant}\n\nفاموس ريال! 💪")
+            contexte = contexte_but(r0, a0, r1, a1, pour_real, adversaire,
+                                    marqueurs[joueur(i)] if pour_real and i.get("incidentClass") != "ownGoal" else 0,
+                                    menee, (i.get("time") or 0) >= 85)
+            menee = menee or r1 < a1
+            texte = (f"⚽🔥 هدددف لريال مدريد!\n\n{ligne}\n\n{courant}\n\n{contexte}" if pour_real
+                     else f"⚽ هدف لـ{adversaire}\n\n{ligne}\n\n{courant}\n\n{contexte}")
             tweets.append((f"but:{cle}", texte + tag))
         elif i.get("incidentType") == "card" and i.get("incidentClass") in ("red", "yellowRed"):
             equipe = dom if i.get("isHome") else ext
             second = " (إنذار ثانٍ)" if i["incidentClass"] == "yellowRed" else ""
             suite = "ريال مدريد بعشرة لاعبين، وكلنا مع الفريق 🤍" if bool(i.get("isHome")) == real_dom else "ريال مدريد في تفوق عددي 💪"
             tweets.append((f"rouge:{cle}", f"🟥 بطاقة حمراء\n\n{joueur(i)} ({equipe}) {minute(i)}{second}\n\n{suite}{tag}"))
-        elif i.get("incidentType") == "substitution" and bool(i.get("isHome")) == real_dom:  # changements du Real seulement
-            entre, sort = (joueur({"player": i.get(k)}) for k in ("playerIn", "playerOut"))
-            blesse = " (إصابة)" if i.get("injury") else ""
-            tweets.append((f"changement:{cle}", f"🔄 تبديل في ريال مدريد {minute(i)}\n\n🟢⬆️ {entre}\n🔴⬇️ {sort}{blesse}{tag}"))
+        elif i.get("incidentType") == "substitution" and changements.get(minute(i), [None])[0] is i:  # Real seulement, un tweet par minute
+            lot = changements[minute(i)]
+            paires = "\n\n".join(f"🟢⬆️ {joueur({'player': c.get('playerIn')})}\n🔴⬇️ {joueur({'player': c.get('playerOut')})}"
+                                 + (" (إصابة)" if c.get("injury") else "") for c in lot)
+            titre = "تبديل" if len(lot) == 1 else "تبديلان" if len(lot) == 2 else f"{len(lot)} تبديلات"
+            tweets.append(("changement:" + "+".join(cle_de(c) for c in lot), f"🔄 {titre} لريال مدريد {minute(i)}\n\n{paires}{tag}"))
     if statut.get("code") == MI_TEMPS:
         suite = "ريال مدريد في المقدمة 🤍" if real > adv else "ما زال أمامنا شوط كامل 💪" if real < adv else "الكلمة للشوط الثاني 💪"
         tweets.append(("mi-temps", f"⏸️ نهاية الشوط الأول\n\n{score}\n\n{suite}{tag}"))
@@ -223,7 +269,7 @@ def suivre_match(con, utc=None):
     deja ={r[0] for r in con.execute("SELECT cle FROM tweets_match WHERE debut = ?", (m["debut"],))}
     deja |= set(lire_direct().get(m["debut"], {}).get("cles", []))  # déjà partis par le suivi dédié
     n = 0
-    for cle, texte in tweets_du_match(e, incidents):
+    for cle, texte in tweets_du_match(e, incidents, deja=deja):
         if cle in deja:
             continue
         try:
@@ -339,7 +385,7 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
                     print(f"{h} {e['homeTeam']['name']} {cle_etat[1]}-{cle_etat[2]} {e['awayTeam']['name']}, "
                           f"« {e['status'].get('description')} » (code {cle_etat[0]})")
                 avant = cle_etat
-                for cle, texte in tweets_du_match(e, incidents, equipe):
+                for cle, texte in tweets_du_match(e, incidents, equipe, suivi["cles"]):
                     if cle in suivi["cles"]:
                         continue
                     if publier:
@@ -348,6 +394,8 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
                     print(f"{h} >> tweet « {cle} »{'' if publier else ' (à blanc, non publié)'} :\n   " + texte.replace("\n", "\n   "))
                     suivi["cles"].append(cle)
                     suivi["fini"] = cle == "fin"
+                    if suivi["fini"]:  # heure réelle de fin (prolongation) : la conférence d'après-match est cherchée 30 min après
+                        suivi["fin_a"] = horloge().isoformat(timespec="seconds")
                     if publier:
                         DIRECT.write_text(json.dumps(etat, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
                         sauver_direct(f"Direct : {cle}")

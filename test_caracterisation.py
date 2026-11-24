@@ -83,9 +83,9 @@ _prompts = []
 for reponse, attendu in (("  DOUBLON  ", "DOUBLON"), ("C'est un DOUBLON", "DOUBLON"), ("HORS", "HORS"), ("", "HORS"),
                          ("🎙️ مؤتمر | «x»\n", "🎙️ مؤتمر | «x»"), ("HORSAIN texte", "HORSAIN texte")):
     c.appeler_claude = lambda p, *a, r=reponse: (_prompts.append((p, a)), r)[1]
-    assert c.tweet("T", "x" * 7000, ["a", "b"]) == attendu, reponse
+    assert c.tweet("T", "x" * 13000, ["a", "b"]) == attendu, reponse
 _p, _a = _prompts[0]
-assert "Titre : T\n" + "x" * 6000 + "\n" in _p and "x" * 6001 not in _p and "a\n---\nb" in _p and _a[1] == "low"
+assert "Titre : T\n" + "x" * 12000 + "\n" in _p and "x" * 12001 not in _p and "a\n---\nb" in _p and _a[1] == "low"
 c.tweet("T", "t", [])
 assert "(aucun)" in _prompts[-1][0]
 c.appeler_claude = commun.appeler_claude

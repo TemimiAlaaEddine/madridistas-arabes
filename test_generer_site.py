@@ -1472,6 +1472,7 @@ with tempfile.TemporaryDirectory() as d:
                              {"id": 5, "incidentType": "card", "incidentClass": "yellow", "time": 20, "isHome": True, "player": {"name": "X"}}]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 15)) == 1  # carton jaune : pas de tweet
         assert textes()[-1].startswith("⚽ هدف لـسيلتا فيغو") and "بابلو دوران 6'" in textes()[-1] and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-1]
+        assert "ما زال الوقت أمامنا" in textes()[-1]  # but encaissé : contexte de soutien
         assert "فاموس ريال! 💪" in textes()[-1] and "هلا مدريد! 🤍" in textes()[0]  # voix de supporter : soutien après un but encaissé
         sofa["panne"] = True
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 40)) == 0  # Bright Data refuse : repris au passage suivant
@@ -1496,10 +1497,12 @@ with tempfile.TemporaryDirectory() as d:
         assert textes()[-2].startswith("🟥 بطاقة حمراء") and "Starfelt (سيلتا فيغو) 60' (إنذار ثانٍ)" in textes()[-2]
         assert "ريال مدريد في تفوق عددي 💪" in textes()[-2]  # rouge pour l'adversaire
         assert textes()[-1].startswith("⚽🔥 هدددف لريال مدريد!") and "Jude Bellingham 66'" in textes()[-1]
+        assert "التعادل! ريال مدريد يعود في النتيجة" in textes()[-1], textes()[-1]  # contexte du but : égalisation
         sofa["next"], sofa["last"] = [], [evt(100, "finished", "Ended", 2, 1)]  # fini : passé dans events/last
         sofa["incidents"].append(but(3, 85, "Carlos Espí", 2, 1, "penalty", "كارلوس إسبي"))
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 21, 55)) == 2  # dernier but puis fin
         assert "كارلوس إسبي 85' (ركلة جزاء)" in textes()[-2]
+        assert "ريمونتادا!" in textes()[-2] and "في الوقت القاتل!" in textes()[-2], textes()[-2]  # mené puis devant, à la 85e
         assert textes()[-1] == ("🏁 نهاية المباراة\n\nريال مدريد 2 - 1 سيلتا فيغو\n\nفوز ريال مدريد! هلا مدريد 🤍\n\n⚽ بابلو دوران 6' (سيلتا فيغو)"
                                 "\n⚽ Jude Bellingham 66'\n⚽ كارلوس إسبي 85' (ركلة جزاء)\n\n#ريال_مدريد_سيلتا_فيغو #الليغا"), textes()[-1]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 22, 0)) == 0 and len(envois) == 7  # rien ne part deux fois
@@ -1520,6 +1523,20 @@ with tempfile.TemporaryDirectory() as d:
     assert calendrier.hashtags_match({"homeTeam": {"id": 2817}, "awayTeam": {"id": 2829}}, "برشلونة", "ريال مدريد") == "#برشلونة_ريال_مدريد #الكلاسيكو"
     assert calendrier.hashtags_match({"homeTeam": {}, "awayTeam": {}}, "ريال مدريد", "ب.ج") == "#ريال_مدريد_ب_ج", "compétition inconnue, ponctuation"
     assert tw["but:9"].startswith("⚽🔥 هدددف لريال مدريد!") and "Starfelt 30' (ضد مرماه)" in tw["but:9"] and "سيلتا فيغو 0 - 1 ريال مدريد" in tw["but:9"]
+    assert "ريال مدريد يفتتح التسجيل" in tw["but:9"] and "ثنائية" not in tw["but:9"], tw["but:9"]  # csc : pas compté au buteur
+    # doublé, puis changements de la pause (même minute) regroupés ; ceux déjà partis ne sont pas republiés
+    sub = lambda i, n: {"id": i, "incidentType": "substitution", "time": 46, "isHome": True, "playerIn": {"name": f"In{n}"}, "playerOut": {"name": f"Out{n}"}}
+    domicile = evt(7, "inprogress", "2nd half", 2, 0)
+    calendrier.appeler_claude = lambda *a: "سيلتا فيغو"
+    try:
+        tw = dict(calendrier.tweets_du_match(domicile, [but(1, 10, "Mbappé", 1, 0), but(2, 30, "Mbappé", 2, 0), sub(5, 1), sub(6, 2), sub(7, 3)]))
+        tw2 = dict(calendrier.tweets_du_match(domicile, [sub(5, 1), sub(6, 2), sub(7, 3)], deja=["changement:5"]))
+    finally:
+        calendrier.appeler_claude = vrai[1]
+    assert "ريال مدريد يعزز تقدمه" in tw["but:2"] and "ثنائية!" in tw["but:2"] and "ثنائية" not in tw["but:1"], tw["but:2"]
+    assert [k for k in tw if k.startswith("changement")] == ["changement:5+6+7"], list(tw)
+    assert tw["changement:5+6+7"].startswith("🔄 3 تبديلات لريال مدريد 46'") and "🟢⬆️ In3\n🔴⬇️ Out3" in tw["changement:5+6+7"]
+    assert list(k for k in tw2 if k.startswith("changement")) == ["changement:6+7"] and tw2["changement:6+7"].startswith("🔄 تبديلان لريال مدريد")
     # suivi dédié : incidents lus chaque minute ; statut seulement avant le coup d'envoi, après la pause et à la fin ; chaque fait une fois, dans l'ordre
     ht = {"incidentType": "period", "text": "HT", "time": 45, "addedTime": 999, "homeScore": 0, "awayScore": 1}
     changement_real = {"id": 4, "incidentType": "substitution", "time": 79, "isHome": True, "injury": True,  # celui de l'adversaire (id 3) : pas de tweet
@@ -1552,12 +1569,13 @@ with tempfile.TemporaryDirectory() as d:
     assert cles == ["début", "but:1", "mi-temps", "reprise", "but:2", "changement:4", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
     assert attentes.count(calendrier.PAUSE_MI_TEMPS) == 1, attentes  # pas de lecture pendant la mi-temps, une seule pause
     assert textes()[-4].startswith("▶️ انطلاق الشوط الثاني") and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-4]
-    assert textes()[-2].startswith("🔄 تبديل في ريال مدريد 79'") and "🟢⬆️ كارلوس إسبي" in textes()[-2] and "🔴⬇️ Eduardo Camavinga (إصابة)" in textes()[-2], textes()[-2]
+    assert textes()[-2].startswith("🔄 تبديل لريال مدريد 79'") and "🟢⬆️ كارلوس إسبي" in textes()[-2] and "🔴⬇️ Eduardo Camavinga (إصابة)" in textes()[-2], textes()[-2]
     assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 7  # rien ne part deux fois, arrêt à la fin
     assert appels[0] == "team/2829/events/next/0" and "team/2829/events/next/0" not in appels[1:]  # ensuite : event/77 seul
     assert appels.count("event/77/incidents") == 7, appels  # chaque minute dès le coup d'envoi
     assert appels.count("event/77") == 3, appels  # statut : coup d'envoi, reprise après la pause, fin confirmée après « FT »
-    assert calendrier.lire_direct()["2026-11-21T20:00:00"] == {"cles": cles, "fini": True}
+    fin_direct = calendrier.lire_direct()["2026-11-21T20:00:00"]
+    assert fin_direct["cles"] == cles and fin_direct["fini"] and fin_direct["fin_a"] == horloge[0].isoformat(timespec="seconds"), fin_direct
     calendrier.DIRECT.write_text(json.dumps({"2026-11-21T20:00:00": {"cles": ["début"], "fini": False}}), encoding="utf-8")
     calendrier.direct_actif = lambda: False
     assert calendrier.direct_a_lancer(datetime(2026, 11, 21, 19, 50)) == "2026-11-21T20:00:00"  # 15 min avant : lancé

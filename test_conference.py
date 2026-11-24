@@ -57,10 +57,22 @@ try:
     # après-match programmé : lancé de 45 min avant la fin du match (coup d'envoi + 1 h 45) à 1 h 30 après, avec l'heure de fin
     c.declarations = lambda j, depuis: []
     calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-24T20:00:00", "heure_fixee": True}]), encoding="utf-8")
-    assert c.a_lancer(datetime(2026, 11, 24, 21, 5), page="") == "auto 2026-11-24T21:45:00"
-    assert c.a_lancer(datetime(2026, 11, 24, 23, 0), page="") == "auto 2026-11-24T21:45:00", "lancé en retard : encore utile"
-    assert c.a_lancer(datetime(2026, 11, 24, 20, 55), page="") == "" and c.a_lancer(datetime(2026, 11, 24, 23, 20), page="") == ""
-    assert c.apres_match(datetime(2026, 11, 24, 21, 45)), "heure de fin : attente d'après-match (1 h 30)"
+    # après-match : lancé 2 h 30 après le coup d'envoi (choix de l'utilisateur, 24 nov.), ou 30 min après une prolongation
+    vrai_direct = calendrier.lire_direct
+    calendrier.lire_direct = lambda: {}  # pas de suivi du match : coup d'envoi + 2 h 30
+    assert c.a_lancer(datetime(2026, 11, 24, 22, 25), page="") == "", "avant 2 h 30 : rien"
+    assert c.a_lancer(datetime(2026, 11, 24, 22, 30), page="") == "auto 2026-11-24T22:30:00"
+    assert c.a_lancer(datetime(2026, 11, 24, 23, 55), page="") == "auto 2026-11-24T22:30:00", "lancé en retard : encore utile"
+    assert c.a_lancer(datetime(2026, 11, 25, 0, 0), page="") == ""
+    calendrier.lire_direct = lambda: {"2026-11-24T20:00:00": {"cles": ["début"], "fini": False}}
+    assert c.a_lancer(datetime(2026, 11, 24, 22, 40), page="") == "", "prolongation en cours : on attend la fin"
+    calendrier.lire_direct = lambda: {"2026-11-24T20:00:00": {"cles": ["fin"], "fini": True, "fin_a": "2026-11-24T22:50:00"}}
+    assert c.a_lancer(datetime(2026, 11, 24, 23, 0), page="") == "", "30 min après la fin réelle seulement"
+    assert c.a_lancer(datetime(2026, 11, 24, 23, 20), page="") == "auto 2026-11-24T23:20:00"
+    calendrier.lire_direct = lambda: {"2026-11-24T20:00:00": {"cles": ["fin"], "fini": True, "fin_a": "2026-11-24T21:52:00"}}
+    assert c.a_lancer(datetime(2026, 11, 24, 22, 25), page="") == "", "fin normale : 2 h 30 après le coup d'envoi"
+    calendrier.lire_direct = vrai_direct
+    assert c.apres_match(datetime(2026, 11, 24, 22, 30)), "heure de lancement : attente d'après-match (1 h 30)"
     # après-match sans heure fixée : seule une déclaration venue de la salle de presse lance le direct (l'interview Movistar
     # passe par le passage normal)
     calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs PSV", "debut": "2026-11-23T10:00:00", "heure_fixee": False}]), encoding="utf-8")
