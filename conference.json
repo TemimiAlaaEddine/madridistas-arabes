@@ -20,5 +20,13 @@
   "tweets": [],
   "fini": true,
   "fin": "2026-11-23T18:27:03"
+ },
+ {
+  "journal": null,
+  "debut": "2026-11-24T21:45:01",
+  "liens": [],
+  "vus": [],
+  "tweets": [],
+  "fini": false
  }
 ]
