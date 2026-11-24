@@ -96,10 +96,18 @@ def texte_complet(it):
     page = ""
     try:
         req = urllib.request.Request(it["lien"], headers={"User-Agent": "Mozilla/5.0"})
-        with urllib.request.urlopen(req, timeout=20) as r:
-            p = Paragraphes()
-            brut = r.read().decode(r.headers.get_content_charset() or "utf-8", "replace")  # ex. presse turque en windows-1254
-            p.feed(brut)
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                brut = r.read().decode(r.headers.get_content_charset() or "utf-8", "replace")  # ex. presse turque en windows-1254
+        except urllib.error.HTTPError:
+            # conférence d'après-PSV (24 nov.) : AS refusait sa page (403), Claude n'a vu que le titre (interview Movistar) et a
+            # répondu HORS ; seulement pour une conférence : relire chaque page refusée épuiserait le quota Bright Data
+            if it.get("type") != "conference":
+                raise
+            from match import bright_data
+            brut = bright_data(it["lien"])
+        p = Paragraphes()
+        p.feed(brut)
         page = "\n".join(p.morceaux)
         modifie = re.search(r'"dateModified"\s*:\s*"([^"]+)"', brut)  # page du club complétée au fil d'une conférence
         if modifie:
