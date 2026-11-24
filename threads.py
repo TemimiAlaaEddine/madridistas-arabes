@@ -854,7 +854,7 @@ def vers_typefully(con, couvertures, dossier_couv):
 def fenetre_convocation(heures=72, maintenant=maintenant):
     """Début de la fenêtre où le club peut publier la convocation du prochain match de matchs.json : 72 h avant le coup
     d'envoi (Supercoupe à l'étranger : liste publiée avant le voyage, environ 48 h avant), jamais avant la fin du match
-    précédent (coup d'envoi + 2 h). None hors fenêtre."""
+    précédent (coup d'envoi + 8 h, choix de l'utilisateur du 24 nov.). None hors fenêtre."""
     try:
         debuts = sorted(datetime.fromisoformat(m["debut"]) for m in json.loads((BASE / "matchs.json").read_text(encoding="utf-8")))
     except (OSError, ValueError, KeyError):
@@ -863,7 +863,7 @@ def fenetre_convocation(heures=72, maintenant=maintenant):
     prochain = next((d for d in debuts if d > now), None)
     if not prochain:
         return None
-    debut = max([prochain - timedelta(hours=heures)] + [d + timedelta(hours=2) for d in debuts if d < prochain])
+    debut = max([prochain - timedelta(hours=heures)] + [d + timedelta(hours=8) for d in debuts if d < prochain])
     return debut if now >= debut else None
 
 

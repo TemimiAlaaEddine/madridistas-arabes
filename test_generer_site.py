@@ -623,7 +623,8 @@ with tempfile.TemporaryDirectory() as tmp:
         assert t.fenetre_convocation(maintenant=a("2027-02-02T19:00:00")) == datetime(2027, 2, 1, 19)  # 48 h avant : dans la fenêtre
         assert t.fenetre_convocation(maintenant=a("2027-02-04T20:00:00")) is None  # match en cours : fenêtre du suivant pas ouverte
         assert t.fenetre_convocation(maintenant=a("2027-02-05T21:00:00")) == datetime(2027, 2, 5, 20)  # 72 h avant le 8
-        assert t.fenetre_convocation(maintenant=a("2027-02-08T23:00:00")) == datetime(2027, 2, 8, 22)  # après la fin du match du 8
+        assert t.fenetre_convocation(maintenant=a("2027-02-08T23:00:00")) is None  # moins de 8 h après le match du 8
+        assert t.fenetre_convocation(maintenant=a("2027-02-09T05:00:00")) == datetime(2027, 2, 9, 4)  # 8 h après le coup d'envoi du 8
     finally:
         t.BASE = base
 print("OK fenêtre de la convocation")
