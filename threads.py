@@ -659,15 +659,15 @@ def telecharger_image(url, article_id):
 FIL_CLUB = "https://syndication.twitter.com/srv/timeline-profile/screen-name/realmadrid"
 
 
-def visuel_convocation(heures=12):
-    """(id du post, image) du dernier post « ¡Nuestros convocados! » de @realmadrid des `heures` dernières heures, sinon None.
+def visuel_convocation(depuis):
+    """(id du post, image) du dernier post « ¡Nuestros convocados! » de @realmadrid publié après `depuis` (UTC), sinon None.
     Lu sur la page publique d'intégration du fil (20 derniers posts, sans compte ni Bright Data, moins d'une seconde) :
     pas une API officielle, X peut la couper."""
     page = lire_page(FIL_CLUB)
     donnees = re.search(r'<script id="__NEXT_DATA__"[^>]*>(.*?)</script>', page, re.S)
     if not donnees:
         raise ValueError("fil du club illisible (page d'intégration de X changée ?)")
-    limite = datetime.now(timezone.utc) - timedelta(hours=heures)
+    limite = depuis.replace(tzinfo=timezone.utc)
     for e in json.loads(donnees.group(1))["props"]["pageProps"]["timeline"]["entries"]:
         tw = e.get("content", {}).get("tweet", {})
         medias = tw.get("extended_entities", tw.get("entities", {})).get("media", [])
@@ -851,13 +851,32 @@ def vers_typefully(con, couvertures, dossier_couv):
     return n
 
 
+def fenetre_convocation(heures=72, maintenant=maintenant):
+    """Début de la fenêtre où le club peut publier la convocation du prochain match de matchs.json : 72 h avant le coup
+    d'envoi (Supercoupe à l'étranger : liste publiée avant le voyage, environ 48 h avant), jamais avant la fin du match
+    précédent (coup d'envoi + 2 h). None hors fenêtre."""
+    try:
+        debuts = sorted(datetime.fromisoformat(m["debut"]) for m in json.loads((BASE / "matchs.json").read_text(encoding="utf-8")))
+    except (OSError, ValueError, KeyError):
+        return None
+    now = maintenant()
+    prochain = next((d for d in debuts if d > now), None)
+    if not prochain:
+        return None
+    debut = max([prochain - timedelta(hours=heures)] + [d + timedelta(hours=2) for d in debuts if d < prochain])
+    return debut if now >= debut else None
+
+
 def visuel_liste(con):
     """1er post de la convocation : le visuel « convocados » de @realmadrid avec une ligne, publié dès que le club le sort
     (vérifié à chaque passage), une fois par post du club. La liste en texte suit quand elle arrive (« 📝 القائمة »)."""
     con.execute("DROP TABLE IF EXISTS convocations")  # ancienne version (recherche par Bright Data, 23 nov.)
     con.execute("CREATE TABLE IF NOT EXISTS visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT)")
+    debut = fenetre_convocation()
+    if not debut or con.execute("SELECT 1 FROM visuels_convocation WHERE envoye >= ?", (debut.isoformat(),)).fetchone():
+        return  # hors fenêtre, ou visuel de ce match déjà publié
     try:
-        trouve = visuel_convocation()
+        trouve = visuel_convocation(debut)
     except (OSError, ValueError, KeyError) as err:
         print(f"  ! visuel de la convocation : {err}")
         return

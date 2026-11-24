@@ -201,7 +201,7 @@ print("OK directs et doublons d'opinion")
 import sqlite3
 import threads as t
 TELECHARGER = t.telecharger_image  # vraie fonction : des tests plus bas la remplacent sans la remettre
-VISUEL, t.visuel_convocation = t.visuel_convocation, lambda: None  # pas de lecture du fil X du club pendant les tests
+VISUEL, t.visuel_convocation = t.visuel_convocation, lambda depuis: None  # pas de lecture du fil X du club pendant les tests
 assert t.longueur("ريال مدريد") == 10 and t.longueur("https://www.marca.com/" + "x" * 200) == 23 and t.longueur("🔥") == 2
 art = {"auteur_ar": "خوانما كاستانيو", "auteur": "Juanma Castaño", "journal": "Marca", "lien": "https://marca.com/a"}
 th = t.assembler(art, ["فكرة أولى", "فكرة ثانية"])
@@ -600,16 +600,33 @@ with tempfile.TemporaryDirectory() as tmp:
     t.telecharger_image = lambda url, i: (url, b"jpg")
     image = "https://pbs.twimg.com/media/convocados.jpg?name=orig"
     try:
-        t.visuel_convocation = lambda: ("111", image)  # le club a publié : le visuel part d'abord, puis la liste en texte seul
+        fenetre, t.fenetre_convocation = t.fenetre_convocation, lambda: t.maintenant() - t.timedelta(hours=1)
+        t.visuel_convocation = lambda depuis: ("111", image)  # le club a publié : le visuel part d'abord, puis la liste en texte seul
         assert t.vers_typefully(con, {aid: "c.png"}, Path(tmp)) == 1 and len(appels) == 2
         assert appels[0]["platforms"]["x"]["posts"][0] == {"text": "📋 قائمة ريال مدريد\n\n#ريال_مدريد", "media_ids": [image]}
         assert appels[0]["publish_at"] == "now" and "media_ids" not in appels[1]["platforms"]["x"]["posts"][0]
         t.vers_typefully(con, {}, Path(tmp))
         assert len(appels) == 2  # une seule fois par post du club
     finally:
-        t.visuel_convocation = lambda: None
+        t.visuel_convocation, t.fenetre_convocation = (lambda depuis: None), fenetre
     con.close()
 print("OK Typefully")
+
+# fenêtre de la convocation : 72 h avant le coup d'envoi, jamais avant la fin du match précédent
+with tempfile.TemporaryDirectory() as tmp:
+    base, t.BASE = t.BASE, Path(tmp)
+    try:
+        (Path(tmp) / "matchs.json").write_text(json.dumps([{"debut": "2027-02-04T19:00:00"}, {"debut": "2027-02-08T20:00:00"},
+                                                          {"debut": "2027-02-10T20:00:00"}]), encoding="utf-8")
+        a = lambda iso: (lambda: datetime.fromisoformat(iso))
+        assert t.fenetre_convocation(maintenant=a("2027-02-01T18:00:00")) is None  # plus de 72 h avant (Supercoupe le 4)
+        assert t.fenetre_convocation(maintenant=a("2027-02-02T19:00:00")) == datetime(2027, 2, 1, 19)  # 48 h avant : dans la fenêtre
+        assert t.fenetre_convocation(maintenant=a("2027-02-04T20:00:00")) is None  # match en cours : fenêtre du suivant pas ouverte
+        assert t.fenetre_convocation(maintenant=a("2027-02-05T21:00:00")) == datetime(2027, 2, 5, 20)  # 72 h avant le 8
+        assert t.fenetre_convocation(maintenant=a("2027-02-08T23:00:00")) == datetime(2027, 2, 8, 22)  # après la fin du match du 8
+    finally:
+        t.BASE = base
+print("OK fenêtre de la convocation")
 
 # contrôles avant envoi : source, appel à l'engagement, doublon (les threads bloqués ne comptent pas)
 con = sqlite3.connect(":memory:")
