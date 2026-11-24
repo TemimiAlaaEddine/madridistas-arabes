@@ -11491,4 +11491,5 @@ INSERT INTO "vus" VALUES('https://www.hln.be/champions-league/multilive-plots-ga
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a31931361831198291-real-madrid-le-but-exceptionnel-de-jude-bellingham-face-au-psv','Real Madrid : le but exceptionnel de Jude Bellingham face au PSV','2026-11-24T21:31:28');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8749217569031078788-le-plan-du-real-madrid-pour-michael-olise','Le plan du Real Madrid pour Michael Olise','2026-11-24T21:31:33');
 INSERT INTO "vus" VALUES('https://www.elobservador.com.uy/futbol-internacional/mira-el-golazo-federico-valverde-real-madrid-psv-eindhoven-la-champions-league-n6065016','Mirá el golazo de Federico Valverde para Real Madrid ante PSV Eindhoven por la Champions League','2026-11-24T21:36:18');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/24/obra-maestra-jude-ingles-on-fire.html','La obra maestra de Jude: el inglés está ''on fire''','2026-11-24T21:41:10');
 COMMIT;
