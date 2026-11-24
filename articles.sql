@@ -11078,4 +11078,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/24/que-thi-jugu
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/liga/2026-11-24/carlos-espi-real-madrid-goleador-moda-banquillo_4471249/','Carlos Espí o cómo pasar a ser el delantero de moda en todo un Real Madrid... pero saliendo desde el banquillo','2026-11-24T11:11:44');
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/24/ricardo-reyes-da-clave-recuperar-vinicius-hay-darle-minutos-darle-carino.html','Ricardo Reyes da con la clave para recuperar a Vinicius: "Hay que darle minutos, darle cariño"','2026-11-24T11:16:15');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/mourinho-evenaart-tegen-psv-nederlands-record-van-voormalig-rivaal-wenger','Mourinho evenaart tegen PSV ''Nederlands'' record van voormalig rivaal Wenger','2026-11-24T11:41:29');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7520316760420945945-algerie-brahim-hemdani-refuse-de-partir','Algérie : Brahim Hemdani refuse de partir','2026-11-24T12:15:53');
 COMMIT;
