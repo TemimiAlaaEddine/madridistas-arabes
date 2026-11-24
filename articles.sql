@@ -11377,4 +11377,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/susana
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/ni-vinicius-ni-mbappe-ni-bellingham-valverde-puede-ser-pieza-clave-psv-con-sus-movimientos-interiores_346940_102.html','Ni Vinicius, ni Mbappé ni Bellingham: Valverde puede ser la pieza clave ante el PSV con sus movimientos interiores','2026-11-24T16:03:17');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/latest-news/115757/madrid-daily-hugo-sanchez-and-martin-vazquez-revisit-the-psv-heartbreak','Madrid Daily: Hugo Sánchez and Martín Vázquez revisit the PSV heartbreak','2026-11-24T16:46:27');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/knap-resultaat-psv-in-youth-league-na-hattrick-bro-hansen','Knap resultaat PSV in Youth League na hattrick Bro Hansen','2026-11-24T16:56:04');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/resumen-y-goles-del-real-madrid-vs-psv-de-la-youth-legue-f202611-v/','Resumen y goles del Real Madrid vs. PSV de la Youth Legue','2026-11-24T17:06:04');
 COMMIT;
