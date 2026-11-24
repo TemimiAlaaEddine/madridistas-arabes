@@ -1472,7 +1472,7 @@ with tempfile.TemporaryDirectory() as d:
                              {"id": 5, "incidentType": "card", "incidentClass": "yellow", "time": 20, "isHome": True, "player": {"name": "X"}}]
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 15)) == 1  # carton jaune : pas de tweet
         assert textes()[-1].startswith("⚽ هدف لـسيلتا فيغو") and "بابلو دوران 6'" in textes()[-1] and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-1]
-        assert "هيا يا ريال! 💪" in textes()[-1] and "هلا مدريد! 🤍" in textes()[0]  # voix de supporter : soutien après un but encaissé
+        assert "فاموس ريال! 💪" in textes()[-1] and "هلا مدريد! 🤍" in textes()[0]  # voix de supporter : soutien après un but encaissé
         sofa["panne"] = True
         assert calendrier.suivre_match(cs, datetime(2026, 11, 21, 20, 40)) == 0  # Bright Data refuse : repris au passage suivant
         del sofa["panne"]
@@ -1525,13 +1525,15 @@ with tempfile.TemporaryDirectory() as d:
               (evt(6, "inprogress", "1st half", 0, 0), []), (evt(6, "inprogress", "1st half", 0, 1), []),  # but au score, pas encore en incident
               (evt(6, "inprogress", "1st half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
               (evt(31, "inprogress", "Halftime", 0, 1), [but(1, 6, "Durán", 0, 1)]),
+              (evt(7, "inprogress", "2nd half", 0, 1), [but(1, 6, "Durán", 0, 1)]),
               (evt(100, "finished", "Ended", 1, 1), [but(1, 6, "Durán", 0, 1), but(2, 66, "Bellingham", 1, 1)])]
-    pas, horloge, appels, sauves = [0], [datetime(2026, 11, 21, 19, 58)], [], []
+    pas, horloge, appels, sauves, attentes = [0], [datetime(2026, 11, 21, 19, 58)], [], [], []
     def sofa_minute(chemin):
         appels.append(chemin)
         e, inc = etapes[min(pas[0], len(etapes) - 1)]
         return {"incidents": inc} if chemin.endswith("/incidents") else {"event": e} if chemin == "event/77" else {"events": [e]}
     def minute_suivante(secondes):
+        attentes.append(secondes)
         horloge[0] += timedelta(seconds=secondes)
         pas[0] += 1
     envois.clear()
@@ -1542,11 +1544,13 @@ with tempfile.TemporaryDirectory() as d:
         cles = calendrier.suivre_en_direct("2026-11-21T20:00:00", dormir=minute_suivante, horloge=lambda: horloge[0])
     finally:
         mt.sofascore, t.typefully_api, calendrier.sauver_direct = vrai2
-    assert cles == ["début", "but:1", "mi-temps", "but:2", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
-    assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 5  # rien ne part deux fois, arrêt à la fin
+    assert cles == ["début", "but:1", "mi-temps", "reprise", "but:2", "fin"] and sauves == [f"Direct : {c}" for c in cles], (cles, sauves)
+    assert attentes.count(calendrier.PAUSE_MI_TEMPS) == 1, attentes  # pas de lecture pendant la mi-temps, une seule pause
+    assert textes()[-3].startswith("▶️ انطلاق الشوط الثاني") and "ريال مدريد 0 - 1 سيلتا فيغو" in textes()[-3]
+    assert textes()[-1].startswith("🏁 نهاية المباراة") and len(envois) == 6  # rien ne part deux fois, arrêt à la fin
     assert appels[0] == "team/2829/events/next/0" and "team/2829/events/next/0" not in appels[1:]  # ensuite : event/77 seul
-    # relus au début, au changement de score puis la minute suivante (but pas encore en incident), à la mi-temps et à la fin
-    assert appels.count("event/77/incidents") == 5, appels
+    # relus au début, au changement de score puis la minute suivante (but pas encore en incident), à la mi-temps, à la reprise et à la fin
+    assert appels.count("event/77/incidents") == 6, appels
     assert calendrier.lire_direct()["2026-11-21T20:00:00"] == {"cles": cles, "fini": True}
     calendrier.DIRECT.write_text(json.dumps({"2026-11-21T20:00:00": {"cles": ["début"], "fini": False}}), encoding="utf-8")
     calendrier.direct_actif = lambda: False

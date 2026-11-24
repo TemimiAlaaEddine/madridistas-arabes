@@ -16,6 +16,7 @@ DUREE = timedelta(hours=2, minutes=30)  # prolongation et arrêts de jeu compris
 SOFA_EQUIPE = 2829  # Real Madrid sur Sofascore
 MI_TEMPS = 31  # status.code Sofascore de la mi-temps (« Halftime ») ; « 1st half » est 6, « 2nd half » 7
 DIRECT = BASE / "direct.json"  # tweets du direct déjà partis, par match : partagé entre le suivi dédié et le passage principal
+PAUSE_MI_TEMPS = 12 * 60  # suivi dédié : pas de lecture pendant la mi-temps (15 min), reprise avant le 2e coup d'envoi
 INTERVALLE = 60  # suivi dédié : une lecture de Sofascore par minute (un but est tweeté 1 à 2 min après, délai de Sofascore compris)
 # chaque match est un objet JSON de la page : "Real Madrid vs Celta de Vigo", coup d'envoi en UTC, heure fixée ou non (date seule)
 MATCH = re.compile(r'"description":\{"plaintext":"([^"]+)"\},"week":[^,]*,"weekAsText":[^,]*,"dateTime":"([^"]+)",'
@@ -135,7 +136,7 @@ def hashtags_match(e, dom, ext):
 
 def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     """[(clé, texte)] des tweets que l'état du match appelle, dans l'ordre : début, buts et cartons rouges (chronologiques),
-    mi-temps, fin. L'appelant écarte les clés déjà parties."""
+    mi-temps, reprise, fin. L'appelant écarte les clés déjà parties."""
     dom, ext = nom_arabe(e["homeTeam"]), nom_arabe(e["awayTeam"])
     real_dom = e["homeTeam"].get("id") == equipe
     adversaire = ext if real_dom else dom
@@ -159,7 +160,7 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
             buts.append(f"⚽ {ligne}" + ("" if pour_real else f" ({adversaire})"))
             courant = f"{dom} {apres[0]} - {apres[1]} {ext}"
             texte = (f"⚽🔥 هدددف لريال مدريد!\n\n{ligne}\n\n{courant}" if pour_real
-                     else f"⚽ هدف لـ{adversaire}\n\n{ligne}\n\n{courant}\n\nهيا يا ريال! 💪")
+                     else f"⚽ هدف لـ{adversaire}\n\n{ligne}\n\n{courant}\n\nفاموس ريال! 💪")
             tweets.append((f"but:{cle}", texte + tag))
         elif i.get("incidentType") == "card" and i.get("incidentClass") in ("red", "yellowRed"):
             equipe = dom if i.get("isHome") else ext
@@ -169,6 +170,9 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
     if statut.get("code") == MI_TEMPS:
         suite = "ريال مدريد في المقدمة 🤍" if real > adv else "ما زال أمامنا شوط كامل 💪" if real < adv else "الكلمة للشوط الثاني 💪"
         tweets.append(("mi-temps", f"⏸️ نهاية الشوط الأول\n\n{score}\n\n{suite}{tag}"))
+    # reprise : seulement avant le 1er fait du 2e acte (rattrapée plus tard, elle partirait après ses buts)
+    if statut.get("code") == 7 and not any((i.get("time") or 0) > 45 for i in incidents):
+        tweets.append(("reprise", f"▶️ انطلاق الشوط الثاني\n\n{score}\n\nفاموس ريال! 💪{tag}"))
     if statut.get("type") == "finished":
         suite = "فوز ريال مدريد! هلا مدريد 🤍" if real > adv else "تعادل، والموسم طويل 💪" if real == adv else "خسارة مؤلمة، وسنعود أقوى 🤍"
         tweets.append(("fin", f"🏁 نهاية المباراة\n\n{score}\n\n{suite}" + ("\n\n" + "\n".join(buts) if buts else "") + tag))
@@ -178,7 +182,7 @@ def tweets_du_match(e, incidents, equipe=SOFA_EQUIPE):
 def suivre_match(con, utc=None):
     """Pendant un match (fenêtre de match_courant), à chaque passage : l'état lu sur Sofascore est noté dans suivi_match quand
     il change, et les tweets du direct partent tout de suite sur X, chacun une seule fois (table tweets_match) : coup
-    d'envoi, chaque but (célébré si c'est le Real), chaque carton rouge, mi-temps, fin avec les buteurs."""
+    d'envoi, chaque but (célébré si c'est le Real), chaque carton rouge, mi-temps, reprise, fin avec les buteurs."""
     import subprocess
     import threads
     from match import sofascore
@@ -274,7 +278,7 @@ def sauver_direct(message):
 
 def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVALLE, dormir=time.sleep, horloge=None):
     """Lit Sofascore toutes les `intervalle` secondes, du coup d'envoi à la fin, et tweete chaque fait une seule fois, dans
-    l'ordre : coup d'envoi, buts, cartons rouges, mi-temps, fin. Le détail des incidents n'est relu que si le score ou le statut
+    l'ordre : coup d'envoi, buts, cartons rouges, mi-temps, reprise, fin. Le détail des incidents n'est relu que si le score ou le statut
     change, ou toutes les 5 lectures (un carton rouge ne change ni l'un ni l'autre). publier=False : affiche sans tweeter."""
     import threads
     from match import sofascore
@@ -287,7 +291,7 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
     etat = lire_direct()
     suivi = etat.setdefault(debut, {"cles": [], "fini": False})
     e = id_match = None
-    avant, incidents, n = None, [], 0
+    avant, incidents, n, pause_faite = None, [], 0, False
     while horloge() < t0 + timedelta(hours=2, minutes=45) and not suivi["fini"]:
         h = horloge().strftime("%H:%M:%S")
         try:
@@ -323,8 +327,11 @@ def suivre_en_direct(debut, equipe=SOFA_EQUIPE, publier=True, intervalle=INTERVA
         except (OSError, ValueError, KeyError, subprocess.SubprocessError) as err:  # lecture ou envoi raté : minute suivante
             print(f"{h} ! {err!r} : réessayé dans {intervalle} s")
         n += 1
+        # pause une seule fois, et seulement une fois le tweet de mi-temps parti (un suivi relancé en 2e mi-temps a déjà la clé)
+        mi_temps = not pause_faite and bool(e) and e["status"].get("code") == MI_TEMPS and "mi-temps" in suivi["cles"]
+        pause_faite = pause_faite or mi_temps
         if not suivi["fini"]:
-            dormir(intervalle)
+            dormir(PAUSE_MI_TEMPS if mi_temps else intervalle)
     print("Fin du suivi :", suivi["cles"])
     return suivi["cles"]
 

@@ -1,7 +1,7 @@
 name: Suivi du match en direct
 
 # Lancé par le workflow principal (mise_a_jour.yml) 15 min avant le coup d'envoi d'un match de matchs.json : lit Sofascore une
-# fois par minute jusqu'à la fin et tweete chaque fait (coup d'envoi, buts, cartons rouges, mi-temps, fin), une seule fois.
+# fois par minute jusqu'à la fin et tweete chaque fait (coup d'envoi, buts, cartons rouges, mi-temps, reprise, fin ; pas de lecture pendant la pause), une seule fois.
 # Bouton « Run workflow » : test à blanc sur n'importe quel match (equipe = identifiant Sofascore, a_blanc coché).
 on:
   workflow_dispatch:
