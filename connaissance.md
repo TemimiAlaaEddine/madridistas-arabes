@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 37
+Dernier fait relu : 38
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -32,6 +32,7 @@ Dernier fait relu : 37
 - 2026-11-19 : Le Real Madrid a officialisé le 19 novembre 2026 la prolongation d'Aurélien Tchouaméni jusqu'au 30 juin 2032, comme Arda Güler (contrat jusqu'en 2032, novembre 2026). Sources : Marca (NACHO LABARGA), AS (Frédéric Hermel).
 - 2026-11-19 : Jude Bellingham a remporté le prix Mahou Five-Star Player d'octobre 2026, mois où le Real Madrid a gagné ses cinq matchs. Source : Managing Madrid (Kiyan Sobhani).
 - Avant la J13 (Celta, 2026-11-21) : Arda Güler est 2e de la Liga aux grosses occasions créées (14). Source : Opta (« أوبتا », fait d'avant-match lu sur FotMob) ; validé par l'utilisateur le 2026-11-22.
+- 2026-11-24 : Endrick est blessé et sera absent environ 2 à 3 semaines (novembre 2026). Source : Defensa Central (Borja Díaz).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
