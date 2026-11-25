@@ -12584,4 +12584,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/rudiger-militao-
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/david-jorquera-periodista-bernardo-silva-arda-guler-han-demostrado-mourinho-se-equivocaba-dos-pueden-jugar-en-centro-campo-madrid-hacer-buen-futbol_346973_102.html','David Jorquera, periodista: "Bernardo Silva y Arda Güler le han demostrado a Mourinho que se equivocaba, los dos pueden jugar en el centro del campo del Madrid y hacer buen fútbol"','2026-11-25T07:04:21');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/van-bommel-liet-zien-dat-hij-op-termijn-echt-een-stap-kan-maken','''Van Bommel liet zien dat hij op termijn echt een stap kan maken''','2026-11-25T07:31:15');
 INSERT INTO "vus" VALUES('https://as.com/futbol/champions/vinicius-acaricia-la-reconciliacion-f202611-n/','Vinicius acaricia la reconciliación','2026-11-25T07:31:59');
+INSERT INTO "vus" VALUES('https://www.vi.nl/video/bosz-verklaart-waarom-hij-fitte-pepi-toch-op-de-bank-hield','Bosz verklaart waarom hij fitte Pepi toch op de bank hield','2026-11-25T07:46:03');
 COMMIT;
