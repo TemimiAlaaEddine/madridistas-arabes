@@ -9299,6 +9299,7 @@ INSERT INTO "liens_x" VALUES('12178388','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12178889','https://x.com/ElMadridistAlaa/status/2125470794985906508','2026-11-25T06:05:04.742Z');
 INSERT INTO "liens_x" VALUES('12178908','https://x.com/ElMadridistAlaa/status/2125472053793079424','2026-11-25T06:10:04.789Z');
 INSERT INTO "liens_x" VALUES('12179224','https://x.com/ElMadridistAlaa/status/2125475828662460758','2026-11-25T06:25:04.796Z');
+INSERT INTO "liens_x" VALUES('12179495','https://x.com/ElMadridistAlaa/status/2125480867556688327','2026-11-25T06:45:06.145Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12481,4 +12482,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/25/es-un-tiron-
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bellingham-vond-psv-sterk-in-eerste-helft-mourinho-was-een-beetje-boos','Bellingham onder indruk van eerste helft PSV: ''Mourinho was een beetje boos''','2026-11-25T06:31:09');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/mourinho-kent-geen-twijfel-bellingham-beste-middenvelder-ter-wereld','Mourinho kent geen twijfel: ''Bellingham beste middenvelder ter wereld''','2026-11-25T06:41:08');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/25/dios-salve-bellingham.html','Dios salve a Bellingham','2026-11-25T06:41:53');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a5344602344989383594-real-madrid-lespagne-designe-jude-bellingham-comme-le-nouveau-zidane','Real Madrid : l’Espagne désigne Jude Bellingham comme le nouveau Zidane !','2026-11-25T06:50:58');
 COMMIT;
