@@ -10332,6 +10332,7 @@ INSERT INTO "liens_x" VALUES('12195896','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12195897','https://x.com/ElMadridistAlaa/status/2125674021996183664','2026-11-25T19:32:34.957Z');
 INSERT INTO "liens_x" VALUES('12196354','https://x.com/ElMadridistAlaa/status/2125682188364722622','2026-11-25T20:05:04.774Z');
 INSERT INTO "liens_x" VALUES('12196355','https://x.com/ElMadridistAlaa/status/2125683447062839635','2026-11-25T20:10:04.868Z');
+INSERT INTO "liens_x" VALUES('12199183','https://x.com/ElMadridistAlaa/status/2125726815738310682','2026-11-25T23:02:21.948Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -10988,6 +10989,7 @@ INSERT INTO "resumes" VALUES('2026-11-21','12095801');
 INSERT INTO "resumes" VALUES('2026-11-22','12117687');
 INSERT INTO "resumes" VALUES('2026-11-23','12145976');
 INSERT INTO "resumes" VALUES('2026-11-24','12173575');
+INSERT INTO "resumes" VALUES('2026-11-25','12199183');
 CREATE TABLE suivi_match (debut TEXT, vu TEXT, statut TEXT, score TEXT, typefully TEXT);
 INSERT INTO "suivi_match" VALUES('2026-11-21T20:00:00','2026-11-21T20:01:32','live','0-0',NULL);
 INSERT INTO "suivi_match" VALUES('2026-11-24T20:00:00','2026-11-24T21:57:41','Ended','5-1',NULL);
@@ -13724,4 +13726,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a2425427791978430331-ligue
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-barcelona-al-vroeg-op-de-avond-ook-psg-bayern-en-liverpool-spelen','VI Live: Real Madrid al zeker van volgende ronde CL, PSV en Feyenoord zakken weg','2026-11-25T22:21:03');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Freine-par-l-as-rome-le-psg-laisse-filer-le-real-en-tete-du-classement-de-la-phase-de-ligue/1746208#at_medium=RSS_feeds','Freiné par l''AS Rome, le PSG laisse filer le Real Madrid en tête du classement de la phase de ligue de Ligue des champions','2026-11-25T22:41:07');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/champions-league/2026/11/25/6b075b4821efa0132b8b45a4.html','El empate de la Roma ante el PSG (2-2) deja al Real Madrid como líder en solitario','2026-11-25T22:41:11');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/real-madrid-zeker-van-volgende-ronde-champions-league-psv-en-feyenoord-zakken-weg','Real Madrid zeker van volgende ronde Champions League, PSV en Feyenoord zakken weg','2026-11-25T23:02:01');
+INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/pedro-martinez-25-11-2026','Pedro Martínez: “Hemos estado muy concentrados y sólidos”','2026-11-25T23:02:04');
 COMMIT;
