@@ -10238,6 +10238,7 @@ INSERT INTO "liens_x" VALUES('12192945','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12194438','https://x.com/ElMadridistAlaa/status/2125649807276654826','2026-11-25T17:56:21.676Z');
 INSERT INTO "liens_x" VALUES('12194586','https://x.com/ElMadridistAlaa/status/2125651989283684430','2026-11-25T18:05:04.800Z');
 INSERT INTO "liens_x" VALUES('12194593','https://x.com/ElMadridistAlaa/status/2125653248862482918','2026-11-25T18:10:05.071Z');
+INSERT INTO "liens_x" VALUES('12194597','https://x.com/ElMadridistAlaa/status/2125654506348453953','2026-11-25T18:15:04.858Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -13601,4 +13602,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/onesim
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/jorge-picon-senala-antonio-rudiger-afirma-no-esta-ni-50-su-nivel-cada-vez-aporta-menos_347008_102.html','Jorge Picón señala a Antonio Rüdiger, afirma que no está ni al 50% de su nivel y que cada vez aporta menos','2026-11-25T18:04:01');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/irene-junquera-periodista-abrazo-plantilla-con-vini-marcar-su-gol-demuestra-aprecio-tienen-son-equipo_346992_102.html','Irene Junquera, periodista: "El abrazo de la plantilla con Vini al marcar su gol demuestra el aprecio que le tienen y que son un equipo"','2026-11-25T18:04:01');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Sadio-mane-brahim-diaz-l-arbitre-jean-jacques-ndala-ngambo-que-sont-devenus-les-acteurs-majeurs-de-la-finale-de-la-can-maroc-senegal/1746143#at_medium=RSS_feeds','Sadio Mané, Brahim Diaz, l''arbitre Jean-Jacques Ndala Ngambo... Que sont devenus les acteurs majeurs de la finale de la CAN Maroc-Sénégal ?','2026-11-25T18:06:21');
+INSERT INTO "vus" VALUES('https://as.com/futbol/gross-es-el-as-en-la-manga-para-hacer-al-atleti-colider-f202611-n/','Gross, un genio anda suelto para situar al Atleti en lo más alto','2026-11-25T18:16:07');
 COMMIT;
