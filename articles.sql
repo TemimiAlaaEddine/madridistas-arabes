@@ -10120,6 +10120,8 @@ INSERT INTO "liens_x" VALUES('12191001','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12191005','https://x.com/ElMadridistAlaa/status/2125611723914883297','2026-11-25T15:25:04.709Z');
 INSERT INTO "liens_x" VALUES('12191226','https://x.com/ElMadridistAlaa/status/2125613420334706783','2026-11-25T15:31:46.345Z');
 INSERT INTO "liens_x" VALUES('12191927','https://x.com/ElMadridistAlaa/status/2125623049747865674','2026-11-25T16:10:05.100Z');
+INSERT INTO "liens_x" VALUES('12191928','https://x.com/ElMadridistAlaa/status/2125624312396960085','2026-11-25T16:15:06.107Z');
+INSERT INTO "liens_x" VALUES('12191934','https://x.com/ElMadridistAlaa/status/2125625565839593583','2026-11-25T16:20:04.886Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -13462,4 +13464,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/antoni
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/rodrigo-faez-experto-en-futbol-mourinho-ha-recuperado-causa-arda-guler-huijsen-ahora-tiene-entre-ceja-ceja-recuperar-vinicius-es-posible-haga_346999_102.html','Rodrigo Fáez, experto en fútbol: "Mourinho ha recuperado para la causa a Arda Güler y a Huijsen, ahora tiene entre ceja y ceja recuperar a Vinicius y es posible que lo haga"','2026-11-25T16:08:09');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/manolo-sanchis-61-anos-exfutbolista-el-cambio-imagen-madrid-primer-tiempo-psv-segundo-es-jugadores-se-hagan-mirar-actitud-no-se-puede-regatear-nunca_346989_102.html','Manolo Sanchís (61 años), exfutbolista: "El cambio de imagen del Madrid del primer tiempo del PSV al segundo es para que los jugadores se lo hagan mirar, la actitud no se puede regatear nunca"','2026-11-25T16:08:09');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champions-real-madrid-jude-bellingham-auteur-d-un-but-splendide-contre-le-psv-eindhoven-etre-le-meilleur-joueur-du-monde-n-a-aucune-importance-pour-mo/20246283#at_medium=RSS_feeds','Bellingham : «Être le meilleur joueur du monde n’a aucune importance pour moi»','2026-11-25T16:11:25');
+INSERT INTO "vus" VALUES('https://www.relevo.com/podcast/segunda-jugada-episodio-8-espi-lamine-derbi.html','‘Segunda Jugada’ (ep. 8): el recurso Espí, el derbi sevillano y la irrupción de Zabiri','2026-11-25T16:25:57');
 COMMIT;
