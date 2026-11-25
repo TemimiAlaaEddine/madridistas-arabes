@@ -11719,7 +11719,7 @@ INSERT INTO "unes" VALUES('2026-11-25','as','[{"es": "AHÍ QUEDA ESO — Real Ma
 INSERT INTO "unes" VALUES('2026-11-26','marca',NULL,NULL,NULL);
 INSERT INTO "unes" VALUES('2026-11-26','as',NULL,NULL,NULL);
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-25T22:51:00');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-25T23:11:00');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
@@ -13728,4 +13728,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Freine-par-
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/champions-league/2026/11/25/6b075b4821efa0132b8b45a4.html','El empate de la Roma ante el PSG (2-2) deja al Real Madrid como líder en solitario','2026-11-25T22:41:11');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/real-madrid-zeker-van-volgende-ronde-champions-league-psv-en-feyenoord-zakken-weg','Real Madrid zeker van volgende ronde Champions League, PSV en Feyenoord zakken weg','2026-11-25T23:02:01');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/pedro-martinez-25-11-2026','Pedro Martínez: “Hemos estado muy concentrados y sólidos”','2026-11-25T23:02:04');
+INSERT INTO "vus" VALUES('https://trivela.com.br/europa/mercado-bola-europeu-maresca-responde-criticas-city-real-madrid-elogiado/','Mercado da bola europeu: Maresca responde a críticas no City, Real Madrid é elogiado e mais','2026-11-25T23:11:00');
 COMMIT;
