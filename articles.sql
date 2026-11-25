@@ -9898,6 +9898,7 @@ INSERT INTO "liens_x" VALUES('12186839','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12186840','https://x.com/ElMadridistAlaa/status/2125576492654719001','2026-11-25T13:05:05.044Z');
 INSERT INTO "liens_x" VALUES('12186899','https://x.com/ElMadridistAlaa/status/2125576827733516553','2026-11-25T13:06:22.004Z');
 INSERT INTO "liens_x" VALUES('12186847','https://x.com/ElMadridistAlaa/status/2125577750975287682','2026-11-25T13:10:05.096Z');
+INSERT INTO "liens_x" VALUES('12187000','https://x.com/ElMadridistAlaa/status/2125579017227268189','2026-11-25T13:15:06.866Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -13204,4 +13205,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Pas-d-accor
 INSERT INTO "vus" VALUES('https://cadenaser.com/cataluna/2026/11/25/el-barca-ja-te-preparada-la-querella-contra-florentino-perez-sercat/','El Barça ja té preparada la querella contra Florentino Pérez','2026-11-25T13:06:14');
 INSERT INTO "vus" VALUES('https://trivela.com.br/europa/champions-league/real-madrid-atencao-thierry-henry-mourinho-time-campeoes/','Henry: ‘O Real Madrid é um sério candidato à Champions League’','2026-11-25T13:11:06');
 INSERT INTO "vus" VALUES('https://www.cope.es/programas/el-partidazo-de-cope/noticias/mbappe-referente-goleador-no-lider-natural-bellingham-20261125_3481458.html','"Mbappé es referente goleador, pero no es un líder natural; Bellingham sí lo es"','2026-11-25T13:11:45');
+INSERT INTO "vus" VALUES('https://www.hln.be/serie-a/hij-is-op-dit-moment-echt-buitengewoon-donyell-malen-maakt-indruk-bij-as-roma-en-doet-zelfs-beter-dan-kylian-mbappe-lamine-yamal-en-harry-kane~ae322d24/','“Hij is op dit moment echt buitengewoon”: Donyell Malen maakt indruk bij AS Roma en doet zelfs beter dan Kylian Mbappé, Lamine Yamal en Harry Kane','2026-11-25T13:16:39');
 COMMIT;
