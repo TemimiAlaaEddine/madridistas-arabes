@@ -11717,7 +11717,7 @@ INSERT INTO "unes" VALUES('2026-11-25','as','[{"es": "AHÍ QUEDA ESO — Real Ma
 INSERT INTO "unes" VALUES('2026-11-26','marca',NULL,NULL,NULL);
 INSERT INTO "unes" VALUES('2026-11-26','as',NULL,NULL,NULL);
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-25T21:52:08');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-25T22:11:14');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
@@ -13719,4 +13719,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3948632104774265575-il-se
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1821167830900046525-caf-awards-2026-lagent-dismaila-sarr-dezingue-la-caf','Caf Awards 2026 : l’agent d’Ismaïla Sarr dézingue la CAF !','2026-11-25T21:41:12');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8789080327122827212-ligue-des-champions-le-psg-doit-conceder-le-nul-contre-la-roma','Ligue des Champions : le PSG doit concéder le nul contre la Roma','2026-11-25T21:56:00');
 INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/real-madrid-pedro-martinez-vuelve-grande-en-euroliga-vence-sin-problemas-zalgiris-kaunas-108-93-en-movistar-arena_347026_102.html','El Real Madrid de Pedro Martínez vuelve a lo grande en la Euroliga y vence sin problemas al Zalgiris Kaunas (108-93) en el Movistar Arena','2026-11-25T22:01:29');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2468433388829431249-ligue-des-champions-psg-la-reaction-de-joao-neves','Ligue des Champions, PSG : la réaction de João Neves','2026-11-25T22:11:08');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a2425427791978430331-ligue-des-champions-le-classement-apres-la-5e-journee','Ligue des Champions : le classement après la 5e journée','2026-11-25T22:11:13');
 COMMIT;
