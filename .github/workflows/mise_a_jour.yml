@@ -145,7 +145,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TYPEFULLY_API_KEY: ${{ secrets.TYPEFULLY_API_KEY }} # quota du mois (lecture seule)
           PYTHONIOENCODING: utf-8
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: statut
 
@@ -164,4 +164,4 @@ jobs:
       url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - id: deploiement
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
