@@ -9822,6 +9822,7 @@ INSERT INTO "liens_x" VALUES('12184751','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12185040','https://x.com/ElMadridistAlaa/status/2125557616927797406','2026-11-25T11:50:04.644Z');
 INSERT INTO "liens_x" VALUES('12185385','https://x.com/ElMadridistAlaa/status/2125560614483566854','2026-11-25T12:01:56.473Z');
 INSERT INTO "liens_x" VALUES('12185658','https://x.com/ElMadridistAlaa/status/2125563063932006685','2026-11-25T12:11:40.509Z');
+INSERT INTO "liens_x" VALUES('12185763','https://x.com/ElMadridistAlaa/status/2125565167379612098','2026-11-25T12:20:04.804Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -13109,4 +13110,6 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/25/el-secreto-d
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7855300512799167329-real-madrid-le-possible-depart-dendrick-va-faire-les-affaires-dun-joueur','Real Madrid : le possible départ d’Endrick va faire les affaires d’un joueur','2026-11-25T12:01:48');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/bellingham-moet-lachen-om-zidane-vergelijking-hij-was-zo-veel-beter','Bellingham moet lachen om Zidane-vergelijking: ''Hij was zo veel beter''','2026-11-25T12:11:20');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/bellingham-indiscutible-jugador-momento-mejor-centrocampista-mundo-20261125130342-nt.html','Bellingham, el indiscutible jugador del momento: «Es el mejor centrocampista del mundo»','2026-11-25T12:17:00');
+INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/liga/2026-11-25/barca-florentino-perez-sin-acuerdo-conciliacion-negreira_4472252/','El caso Negreira encalla en los juzgados tras no llegar a un acuerdo y Laporta vuelve a atizar al Real Madrid','2026-11-25T12:20:58');
+INSERT INTO "vus" VALUES('https://www.lagalerna.com/laportismo-sistemico/','Laportismo sistémico','2026-11-25T12:21:03');
 COMMIT;
