@@ -12585,4 +12585,6 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/david-
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/van-bommel-liet-zien-dat-hij-op-termijn-echt-een-stap-kan-maken','''Van Bommel liet zien dat hij op termijn echt een stap kan maken''','2026-11-25T07:31:15');
 INSERT INTO "vus" VALUES('https://as.com/futbol/champions/vinicius-acaricia-la-reconciliacion-f202611-n/','Vinicius acaricia la reconciliación','2026-11-25T07:31:59');
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/bosz-verklaart-waarom-hij-fitte-pepi-toch-op-de-bank-hield','Bosz verklaart waarom hij fitte Pepi toch op de bank hield','2026-11-25T07:46:03');
+INSERT INTO "vus" VALUES('https://turkish-football.com/arda-guler-provides-two-assists-as-real-madrid-rout-psv-5-1-in-champions-league/','Arda Güler Provides Two Assists as Real Madrid Rout PSV 5-1 in Champions League','2026-11-25T07:56:07');
+INSERT INTO "vus" VALUES('https://as.com/futbol/fotorrelato/real-madrid-psv-bellingham-y-el-gol-que-solo-imagina-un-crack-todo-en-imagenes-f202611-f/','Real Madrid-PSV: Bellingham y el gol que sólo imagina un crack, todo en imágenes','2026-11-25T07:56:07');
 COMMIT;
