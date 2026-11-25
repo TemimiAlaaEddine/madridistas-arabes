@@ -132,11 +132,6 @@ jobs:
     permissions:
       contents: read
       actions: read
-      pages: write
-      id-token: write
-    environment:
-      name: github-pages
-      url: ${{ steps.deploiement.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
         with:
@@ -153,5 +148,20 @@ jobs:
       - uses: actions/upload-pages-artifact@v3
         with:
           path: statut
+
+  # déploiement dans un job à part : juste après l'envoi, dans le même job, l'artefact est parfois encore
+  # invisible (« No artifacts named github-pages », actions/deploy-pages#451) ; les quelques secondes d'écart suffisent
+  tableau_deploiement:
+    needs: tableau
+    continue-on-error: true
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deploiement.outputs.page_url }}
+    steps:
       - id: deploiement
         uses: actions/deploy-pages@v4
