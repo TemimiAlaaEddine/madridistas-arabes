@@ -9275,6 +9275,7 @@ INSERT INTO "liens_x" VALUES('12178387','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12178388','https://x.com/ElMadridistAlaa/status/2125461991225700437','2026-11-25T05:30:05.747Z');
 INSERT INTO "liens_x" VALUES('12178889','https://x.com/ElMadridistAlaa/status/2125470794985906508','2026-11-25T06:05:04.742Z');
 INSERT INTO "liens_x" VALUES('12178908','https://x.com/ElMadridistAlaa/status/2125472053793079424','2026-11-25T06:10:04.789Z');
+INSERT INTO "liens_x" VALUES('12179224','https://x.com/ElMadridistAlaa/status/2125475828662460758','2026-11-25T06:25:04.796Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12453,4 +12454,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/primera/quien-es-mejor-bellingha
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/tomas-roncero-militao-me-ha-preocupado-porque-no-he-visto-ni-50-su-nivel-pero-madrid-tiene-valverde-es-mejor-lateral-derecho-mundo-bellingham-lider-equipo_346968_102.html','Tomás Roncero: "Militao me ha preocupado porque no le he visto ni al 50% de su nivel, pero el Madrid tiene a Valverde que es el mejor lateral derecho del mundo y a Bellingham, el líder del equipo"','2026-11-25T06:02:45');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/fernando-morientes-exfutbolista-bellingham-es-mejor-centrocampista-mundo-tanto-guler-como-bernardo-silva-han-hecho-partido-soberbio_346964_102.html','Fernando Morientes, exfutbolista: "Bellingham es el mejor centrocampista del mundo y tanto Güler como Bernardo Silva han hecho un partido soberbio"','2026-11-25T06:02:45');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/25/es-un-tiron-de-orejas-a-los-de-arriba-las-palabras-de-mourinho-sobre-bellingham-que-senalan-directamente-a-vinicius-y-mbappe-cadena-ser/','"Es un tirón de orejas a los de arriba": las palabras de Mourinho sobre Bellingham que señalan directamente a Vinicius y Mbappé','2026-11-25T06:21:39');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bellingham-vond-psv-sterk-in-eerste-helft-mourinho-was-een-beetje-boos','Bellingham onder indruk van eerste helft PSV: ''Mourinho was een beetje boos''','2026-11-25T06:31:09');
 COMMIT;
