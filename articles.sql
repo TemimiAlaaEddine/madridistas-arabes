@@ -12376,4 +12376,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/ramon-mon-analis
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/maldini-la-uefa-ha-elegido-mbappe-como-mejor-partido-pero-yo-no-estoy-acuerdo-porque-bellingham-ha-dado-recital_346972_102.html','Maldini: "La UEFA ha elegido a Mbappé como el mejor del partido, pero yo no estoy de acuerdo porque Bellingham ha dado un recital"','2026-11-25T05:22:12');
 INSERT INTO "vus" VALUES('https://as.com/futbol/champions/bellingham-mi-mejoria-mourinho-y-punto-f202611-n/','“¿Mi mejoría? Mourinho, punto"','2026-11-25T05:31:35');
 INSERT INTO "vus" VALUES('https://as.com/futbol/primera/cual-es-el-techo-de-bellingham-hasta-donde-puede-llegar-en-el-madrid-y-en-el-futbol-debate-en-as-f202611-n/','¿Cuál es el techo de Bellingham? ¿Hasta dónde puede llegar en el Madrid y en el fútbol? Debate en AS','2026-11-25T05:41:04');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/spaanse-pers-onder-de-indruk-van-psv-bosz-is-een-overtuigd-idealist','Spaanse pers onder de indruk van PSV: ''Bosz is een overtuigd idealist''','2026-11-25T05:51:04');
 COMMIT;
