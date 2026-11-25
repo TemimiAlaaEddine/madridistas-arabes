@@ -12738,4 +12738,5 @@ INSERT INTO "vus" VALUES('https://www.lagalerna.com/un-hallazgo-oftalmologico/',
 INSERT INTO "vus" VALUES('https://www.vi.nl/video/til-had-maling-aan-doelsaldo-wilde-juist-alles-of-niets-spelen','Til had maling aan doelsaldo: ''Wilde juist alles of niets spelen''','2026-11-25T08:46:37');
 INSERT INTO "vus" VALUES('https://as.com/futbol/champions/pleno-al-15-y-23-m-a-la-vista-f202611-n/','Pleno al 15 y 23 M€ a la vista','2026-11-25T08:51:38');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/marcos-benito-periodista-tebas-senalo-mbappe-en-asamblea-laliga-por-china-jose-angel-sanchez-acuso-ser-mal-gestor_346982_102.html','Marcos Benito, periodista: "Tebas señaló a Mbappé en la Asamblea de LaLiga por lo de China y José Ángel Sánchez le acusó de ser un mal gestor"','2026-11-25T09:02:00');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a4174391360833542379-le-barca-lance-un-ultimatum-a-florentino-perez','Le Barça lance un ultimatum à Florentino Pérez','2026-11-25T09:05:54');
 COMMIT;
