@@ -9481,6 +9481,7 @@ INSERT INTO "liens_x" VALUES('12181084','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12181087','https://x.com/ElMadridistAlaa/status/2125502990354354312','2026-11-25T08:12:57.855Z');
 INSERT INTO "liens_x" VALUES('12181192','https://x.com/ElMadridistAlaa/status/2125506026904695031','2026-11-25T08:25:04.878Z');
 INSERT INTO "liens_x" VALUES('12181336','https://x.com/ElMadridistAlaa/status/2125507801460232358','2026-11-25T08:32:05.142Z');
+INSERT INTO "liens_x" VALUES('12181449','https://x.com/ElMadridistAlaa/status/2125511061462020487','2026-11-25T08:45:04.901Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12698,4 +12699,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/thierr
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8359948914512007029-thierry-henry-il-se-passe-quelque-chose-au-real-madrid-attention','Thierry Henry : « il se passe quelque chose au Real Madrid, attention »','2026-11-25T08:31:17');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/noticia/2026/11/25/idolo-do-real-exalta-vini-jr-e-crava-sera-decisivo-na-temporada.ghtml','Ídolo do Real exalta Vini Jr. e crava: “Será decisivo na temporada”','2026-11-25T08:31:54');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/un-hallazgo-oftalmologico/','Un hallazgo oftalmológico','2026-11-25T08:41:37');
+INSERT INTO "vus" VALUES('https://www.vi.nl/video/til-had-maling-aan-doelsaldo-wilde-juist-alles-of-niets-spelen','Til had maling aan doelsaldo: ''Wilde juist alles of niets spelen''','2026-11-25T08:46:37');
 COMMIT;
