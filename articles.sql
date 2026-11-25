@@ -13722,4 +13722,6 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/real-madrid-pedr
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2468433388829431249-ligue-des-champions-psg-la-reaction-de-joao-neves','Ligue des Champions, PSG : la réaction de João Neves','2026-11-25T22:11:08');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2425427791978430331-ligue-des-champions-le-classement-apres-la-5e-journee','Ligue des Champions : le classement après la 5e journée','2026-11-25T22:11:13');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-barcelona-al-vroeg-op-de-avond-ook-psg-bayern-en-liverpool-spelen','VI Live: Real Madrid al zeker van volgende ronde CL, PSV en Feyenoord zakken weg','2026-11-25T22:21:03');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Freine-par-l-as-rome-le-psg-laisse-filer-le-real-en-tete-du-classement-de-la-phase-de-ligue/1746208#at_medium=RSS_feeds','Freiné par l''AS Rome, le PSG laisse filer le Real Madrid en tête du classement de la phase de ligue de Ligue des champions','2026-11-25T22:41:07');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/champions-league/2026/11/25/6b075b4821efa0132b8b45a4.html','El empate de la Roma ante el PSG (2-2) deja al Real Madrid como líder en solitario','2026-11-25T22:41:11');
 COMMIT;
