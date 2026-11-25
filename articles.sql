@@ -9207,6 +9207,8 @@ INSERT INTO "liens_x" VALUES('12175017','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12175592','https://x.com/ElMadridistAlaa/status/2125455696137470458','2026-11-25T05:05:04.790Z');
 INSERT INTO "liens_x" VALUES('12177230','https://x.com/ElMadridistAlaa/status/2125456953703035288','2026-11-25T05:10:04.680Z');
 INSERT INTO "liens_x" VALUES('12178256','https://x.com/ElMadridistAlaa/status/2125458211927204096','2026-11-25T05:15:04.583Z');
+INSERT INTO "liens_x" VALUES('12178387','https://x.com/ElMadridistAlaa/status/2125460728929005634','2026-11-25T05:25:04.787Z');
+INSERT INTO "liens_x" VALUES('12178388','https://x.com/ElMadridistAlaa/status/2125461991225700437','2026-11-25T05:30:05.747Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12372,4 +12374,5 @@ INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/not
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115799/top-10-players-real-madrid-5-1-psv','TOP 10 PLAYERS: Real Madrid 5–1 PSV','2026-11-25T05:11:47');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/ramon-mon-analista-deportivo-bellingham-arda-guler-bernardo-silva-han-bordado-futbol-en-segunda-parte-con-ellos-en-centro-campo-ha-sido-vendaval_346975_102.html','Ramón de Mon, analista deportivo: "Bellingham, Arda Güler y Bernardo Silva han bordado el fútbol en la segunda parte, con ellos en el centro del campo ha sido un vendaval"','2026-11-25T05:22:12');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/maldini-la-uefa-ha-elegido-mbappe-como-mejor-partido-pero-yo-no-estoy-acuerdo-porque-bellingham-ha-dado-recital_346972_102.html','Maldini: "La UEFA ha elegido a Mbappé como el mejor del partido, pero yo no estoy de acuerdo porque Bellingham ha dado un recital"','2026-11-25T05:22:12');
+INSERT INTO "vus" VALUES('https://as.com/futbol/champions/bellingham-mi-mejoria-mourinho-y-punto-f202611-n/','“¿Mi mejoría? Mourinho, punto"','2026-11-25T05:31:35');
 COMMIT;
