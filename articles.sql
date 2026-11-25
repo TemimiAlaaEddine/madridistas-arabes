@@ -9718,6 +9718,7 @@ INSERT INTO "liens_x" VALUES('12182954','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12183117','https://x.com/ElMadridistAlaa/status/2125532812665348294','2026-11-25T10:11:28.030Z');
 INSERT INTO "liens_x" VALUES('12183417','https://x.com/ElMadridistAlaa/status/2125536226984030364','2026-11-25T10:25:04.920Z');
 INSERT INTO "liens_x" VALUES('12183419','https://x.com/ElMadridistAlaa/status/2125537496457150771','2026-11-25T10:30:07.649Z');
+INSERT INTO "liens_x" VALUES('12183600','https://x.com/ElMadridistAlaa/status/2125538742220058802','2026-11-25T10:35:04.490Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12983,4 +12984,5 @@ INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/25/sin-acuerdo-
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/apuesta-mourinho-por-juego-interior-madrid-genero-ocasiones-por-dentro-sin-abusar-centros-laterales_346985_102.html','La apuesta de Mourinho por el juego interior: el Madrid generó ocasiones por dentro sin abusar de los centros laterales','2026-11-25T10:22:49');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/alfredo-relano-reflexiona-sobre-vinicius-al-entrar-en-equipo-se-ha-creado-especie-desconexion-madrid-faltaba-bellingham-porque-es-percha-cuelga-todo_346991_102.html','Alfredo Relaño reflexiona sobre Vinicius: "Al entrar en el equipo se ha creado una especie de desconexión, al Madrid le faltaba Bellingham porque es la percha de la que cuelga todo"','2026-11-25T10:22:49');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/champions/2026-11-25/real-madrid-psv-eindhoven-mourinho-bellingham-huijsen-konate_4472097/','Y Mourinho lo entendió: la estrella de este Real Madrid es Bellingham, pero la clave de todo son los centrales','2026-11-25T10:32:14');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champions-real-madrid-jose-mourinho-apres-real-madrid-psv-eindhoven-bellingham-est-le-meilleur-milieu-de-terrain-du-monde/20246285#at_medium=RSS_feeds','Mourinho : «Bellingham est le meilleur milieu de terrain du monde»','2026-11-25T10:36:10');
 COMMIT;
