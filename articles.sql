@@ -13288,4 +13288,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/pedro-martinez-s
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/poli-rincon-exfutbolista-madrid-rudiger-militao-no-tienen-culpa-tiene-mourinho-por-sacar-inicio-equipo-descompensado_347000_102.html','Poli Rincón, exfutbolista del Madrid: "Rudiger y Militao no tienen la culpa, la tiene Mourinho por sacar de inicio un equipo descompensado"','2026-11-25T14:02:38');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/via-antimadridismo-espana-exporta-envidia/','Vía antimadridismo, España exporta envidia','2026-11-25T14:06:36');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Video/Ligue-des-champions-real-madrid-jude-bellingham-apres-son-but-magnifique-contre-le-psv-eindhoven-zidane-est-bien-meilleur-que-moi/20246305#at_medium=RSS_feeds','Bellingham : «Zidane est bien meilleur que moi»','2026-11-25T14:26:44');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115825/valverde-real-madrid-psv-quotes-2026','Valverde: “Our second half was incredible”','2026-11-25T14:41:07');
 COMMIT;
