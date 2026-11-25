@@ -13112,4 +13112,5 @@ INSERT INTO "vus" VALUES('https://www.vi.nl/video/bellingham-moet-lachen-om-zida
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/bellingham-indiscutible-jugador-momento-mejor-centrocampista-mundo-20261125130342-nt.html','Bellingham, el indiscutible jugador del momento: «Es el mejor centrocampista del mundo»','2026-11-25T12:17:00');
 INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/liga/2026-11-25/barca-florentino-perez-sin-acuerdo-conciliacion-negreira_4472252/','El caso Negreira encalla en los juzgados tras no llegar a un acuerdo y Laporta vuelve a atizar al Real Madrid','2026-11-25T12:20:58');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/laportismo-sistemico/','Laportismo sistémico','2026-11-25T12:21:03');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a1780865592275165638-real-madrid-mourinho-compare-son-discours-de-la-mi-temps-a-las-vegas','Real Madrid : Mourinho compare son discours de la mi-temps à Las Vegas','2026-11-25T12:31:23');
 COMMIT;
