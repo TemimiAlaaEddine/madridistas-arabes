@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 38
+Dernier fait relu : 49
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -33,6 +33,8 @@ Dernier fait relu : 38
 - 2026-11-19 : Jude Bellingham a remporté le prix Mahou Five-Star Player d'octobre 2026, mois où le Real Madrid a gagné ses cinq matchs. Source : Managing Madrid (Kiyan Sobhani).
 - Avant la J13 (Celta, 2026-11-21) : Arda Güler est 2e de la Liga aux grosses occasions créées (14). Source : Opta (« أوبتا », fait d'avant-match lu sur FotMob) ; validé par l'utilisateur le 2026-11-22.
 - 2026-11-24 : Endrick est blessé et sera absent environ 2 à 3 semaines (novembre 2026). Source : Defensa Central (Borja Díaz).
+- 2026-11-24 : Kylian Mbappé atteint 105 buts avec le Real Madrid après son doublé contre le PSV, dépassant les 104 de Ronaldo Nazário. Source : Marca (JOEL DEL RÍO).
+- 2026-11-24 : Jude Bellingham dépasse David Beckham (16) avec 17 buts en Ligue des champions : 11 avec le Real Madrid et 6 avec Dortmund. Source : Defensa Central (Diego Vargas).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
@@ -57,6 +59,7 @@ Dernier fait relu : 38
   - Güler 2025-26, 2160 min : 70,8 ; 30,8 ; 84,2 ; 76,4 ; 86,6 ; 96,7 ; 82,6.
   - Attention : Güler est mesuré sur la saison passée et sur la fiche « Winger ».
 - 2026-11-08 : l'attaque tourne très bien, mais la défense encaisse beaucoup en Europe (7 buts en 4 matchs de LDC). Les deux seules défaites sont venues à l'extérieur (Betis, Atlético). Source : validé par l'utilisateur.
+- 2026-11-24 : contre le PSV en Ligue des champions, Mourinho a remplacé ses deux défenseurs centraux à la mi-temps, une première dans l'histoire de la compétition. Source : Managing Madrid (Sam Leveridge).
 
 ## Matchs de la saison (score, buteurs, faits marquants)
 Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 31 buts marqués, 10 encaissés, 30 points, à égalité avec le Barça (Barça-Atlético à jouer le 9 novembre). LDC : 4 sur 4, 13 buts marqués, 7 encaissés. 8 victoires de suite depuis Villarreal. Sources : ESPN (résultats, classement), UEFA ; validé par l'utilisateur.
@@ -80,13 +83,15 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 | 4 nov. | LDC | AEK Athènes (ext.) | 3-2 | Bellingham 32', Mbappé 78', Valverde 90'+2 |
 | 7 nov. | Liga | Valence (ext.) | 3-0 | Valverde 28', Güler 36', Mbappé 75' |
 | 21 nov. | Liga | Celta Vigo | 2-1 | Bellingham 66', Espí 85' |
+| 24 nov. | LDC | PSV | 5-1 | Valverde 50', Bellingham 60', Mbappé 64', 84', Vinícius 87' |
 
 - Points douteux : les minutes varient de 1 à 2 min selon les sources (Real Sociedad : LaLiga suivi, un autre site donne 40', 60', 68', 80'). Elche 25' : crédité à Güler, mais le compte rendu officiel du Real le donne en c.s.c. du gardien Dituro. Málaga 26' : c.s.c. de Herrero provoqué par Bellingham, parfois attribué à Bellingham. Leipzig 52' : majorité pour Güler, une source dit Mbappé.
-- Buteurs toutes compétitions au 21 novembre (but d'Elche compté pour Güler) : Mbappé 17 (dont 13 en Liga), Bellingham 6, Güler 5, Diomande 4, Espí 4, Valverde 3, Rüdiger 2, Carreras, Vinícius, Endrick et B. Silva 1 chacun, plus 1 c.s.c. (Herrero).
+- Buteurs toutes compétitions au 24 novembre (but d'Elche compté pour Güler) : Mbappé 19 (dont 13 en Liga), Bellingham 7, Güler 5, Diomande 4, Espí 4, Valverde 4, Rüdiger 2, Vinícius 2, Carreras, Endrick et B. Silva 1 chacun, plus 1 c.s.c. (Herrero).
 - 2026-11-07, J12 : Valence 0-3 Real Madrid à Mestalla. Valverde (28e), Güler (36e), Mbappé (75e, 13e but en Liga) ; Gayà expulsé (79e). Source : Foot Mercato (Jordan Pardon).
 - 2026-11-07, J12 : Güler meilleure note du match (9,2 : 1 but, 1 passe décisive, 3 passes clés) ; tirs 19 contre 4 (11 cadrés contre 2). Source : WhoScored.
-- 2026-11-21, J13 : après Real Madrid 2-1 Celta, le Real a gagné ses 9 derniers matchs toutes compétitions (Villarreal, Roma, Séville, Leipzig, Barcelone, Racing, AEK, Valence, Celta), depuis la défaite contre l'Atlético le 20 septembre. Source : résultats de cette page, confirmés par le calendrier FotMob ; vérifié le 2026-11-22.
+- 2026-11-24 : avec le 5-1 contre le PSV, le Real a gagné ses 10 derniers matchs toutes compétitions (Villarreal, Roma, Séville, Leipzig, Barcelone, Racing, AEK, Valence, Celta, PSV), depuis la défaite contre l'Atlético le 20 septembre. Sources : résultats de cette page, confirmés par le calendrier FotMob (vérifié le 2026-11-22 pour les 9 premiers) ; Cadena SER (Jon Barco, Pedja Mijatovic) pour la dixième victoire.
 - 2026-11-21, J13 : Real Madrid 2-1 Celta Vigo au Bernabéu, en revenant de 0-1. Pablo Durán ouvre le score pour le Celta (6e), Bellingham égalise (66e, sur une passe de Mbappé), Carlos Espí, entré en jeu, marque le but de la victoire (85e pour la plupart des sources, 86e selon Managing Madrid, Kiyan Sobhani). Mbappé a manqué un penalty en fin de première période (Foot Mercato, Aurélien Macedo ; AS, Luis Nieto). Sources : ESPN (Alex Kirkland), Marca (Miguel Ángel García, Joel del Río), Foot Mercato (Allan Brevi, Aurélien Macedo), Managing Madrid (Kiyan Sobhani ; passe de Mbappé, entrée en jeu d'Espí), AS (Luis Nieto, penalty manqué).
+- 2026-11-24 : Real Madrid 5-1 PSV en Ligue des champions au Bernabéu. Perisic ouvre le score pour le PSV sur penalty ; Valverde (50e), Bellingham (60e), Mbappé (64e, 84e) et Vinicius (87e, sur une passe de Bellingham) marquent pour le Real. Sources : Marca (MANUEL NOVIK), Defensa Central (David Jorquera, Alexis Rodríguez), ABC (Rubén Cañizares), Cadena SER (Jon Barco), Managing Madrid.
 
 ## Journalistes et médias (qui pense quoi)
 Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après les titres et chapeaux de la base (n° = article) ; validé par l'utilisateur le 2026-11-20. Sert à relativiser une opinion selon la ligne habituelle de son auteur, pas à la disqualifier.
