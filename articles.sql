@@ -13721,4 +13721,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8789080327122827212-ligue
 INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/real-madrid-pedro-martinez-vuelve-grande-en-euroliga-vence-sin-problemas-zalgiris-kaunas-108-93-en-movistar-arena_347026_102.html','El Real Madrid de Pedro Martínez vuelve a lo grande en la Euroliga y vence sin problemas al Zalgiris Kaunas (108-93) en el Movistar Arena','2026-11-25T22:01:29');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2468433388829431249-ligue-des-champions-psg-la-reaction-de-joao-neves','Ligue des Champions, PSG : la réaction de João Neves','2026-11-25T22:11:08');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2425427791978430331-ligue-des-champions-le-classement-apres-la-5e-journee','Ligue des Champions : le classement après la 5e journée','2026-11-25T22:11:13');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/vi-live-barcelona-al-vroeg-op-de-avond-ook-psg-bayern-en-liverpool-spelen','VI Live: Real Madrid al zeker van volgende ronde CL, PSV en Feyenoord zakken weg','2026-11-25T22:21:03');
 COMMIT;
