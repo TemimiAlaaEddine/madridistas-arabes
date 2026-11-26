@@ -11129,6 +11129,7 @@ INSERT INTO "liens_x" VALUES('12215797','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12216043','https://x.com/ElMadridistAlaa/status/2125992158398497096','2026-11-26T16:36:44.567Z');
 INSERT INTO "liens_x" VALUES('12216199','https://x.com/ElMadridistAlaa/status/2125995502567305426','2026-11-26T16:50:04.677Z');
 INSERT INTO "liens_x" VALUES('12216714','https://x.com/ElMadridistAlaa/status/2126001249682428059','2026-11-26T17:12:52.108Z');
+INSERT INTO "liens_x" VALUES('12217554','https://x.com/ElMadridistAlaa/status/2126014377505800251','2026-11-26T18:05:04.841Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -14668,4 +14669,5 @@ INSERT INTO "vus" VALUES('https://as.com/futbol/champions/donde-kylian-es-killer
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115880/mbappe-bellingham-make-champions-leagues-team-of-the-week','Mbappé, Bellingham make Champions League’s Team of the Week','2026-11-26T17:11:29');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/mourinho-hace-madrid-mas-peligroso-entre-minutos-76-90-lleva-16-goles-en-tramo-final-partidos_347049_102.html','Mourinho hace al Madrid más peligroso entre los minutos 76 y 90: lleva 16 goles en el tramo final de los partidos','2026-11-26T18:03:03');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/cambios-tacticos-mourinho-han-lanzado-madrid-valverde-bernardo-silva-diomande-factores-clave_347047_102.html','Los cambios tácticos de Mourinho han lanzado al Madrid: Valverde, Bernardo Silva y Diomande, factores clave','2026-11-26T18:03:03');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a7620430965559370440-chine-songyuan-zhao-le-lyceen-compare-a-zlatan-ibrahimovic-qui-enflamme-la-coupe-du-monde-u17','Chine : Songyuan Zhao, le lycéen comparé à Zlatan Ibrahimovic qui enflamme la Coupe du Monde U17','2026-11-26T18:05:49');
 COMMIT;
