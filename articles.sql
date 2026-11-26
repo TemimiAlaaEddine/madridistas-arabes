@@ -14395,4 +14395,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/wesley-futbolist
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/madrid-ya-ha-ganado-105-millones-por-sus-cinco-victorias-en-champions-presente-temporada_347038_102.html','El Madrid ya ha ganado 10,5 millones por sus cinco victorias en la Champions de la presente temporada','2026-11-26T13:02:40');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/jogo/06-12-2026/Athleticbilbao-realmadrid.ghtml','Athletic Bilbao x Real Madrid - Campeonato Espanhol 2026/27 - globoesporte.com','2026-11-26T13:11:14');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7464014303610372657-le-real-madrid-commence-a-avoir-un-petit-probleme-avec-son-trio-mbappe-vinicius-bellingham','Le Real Madrid commence à avoir un petit problème avec son trio Mbappé-Vinicius-Bellingham','2026-11-26T13:16:40');
+INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/jogo/02-12-2026/Realsociedad-realmadrid.ghtml','Real Sociedad x Real Madrid - Campeonato Espanhol 2026/27 - globoesporte.com','2026-11-26T13:26:02');
 COMMIT;
