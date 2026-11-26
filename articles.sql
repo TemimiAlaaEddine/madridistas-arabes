@@ -14430,4 +14430,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a7464014303610372657-le-re
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-espanhol/jogo/02-12-2026/Realsociedad-realmadrid.ghtml','Real Sociedad x Real Madrid - Campeonato Espanhol 2026/27 - globoesporte.com','2026-11-26T13:26:02');
 INSERT INTO "vus" VALUES('https://as.com/futbol/merella-los-otros-ojos-de-mou-f202611-n/','Merella, los otros ojos de Mou','2026-11-26T13:56:28');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/comparativa-entre-nico-paz-arda-guler-concluye-argentino-marca-mas-turco-da-mas-asistencias_347045_102.html','La comparativa entre Nico Paz y Arda Güler concluye que el argentino marca más y el turco da más asistencias','2026-11-26T14:02:09');
+INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/sergio-vegas-experto-en-baloncesto-gabe-vincent-habia-sonado-madrid-pero-acaba-firmar-con-sacramento-kings_347046_102.html','Sergio Vegas, experto en baloncesto: "Gabe Vincent había sonado para el Madrid, pero acaba de firmar con los Sacramento Kings"','2026-11-26T14:11:21');
 COMMIT;
