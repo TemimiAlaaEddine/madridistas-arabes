@@ -14200,4 +14200,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/fernando-evangel
 INSERT INTO "vus" VALUES('https://www.marca.com/coches-y-motos/coches/2026/11/26/jugadores-real-madrid-estrenan-nuevos-bmw-coche-han-elegido-vini-mbappe-diomande.html','Los jugadores del Real Madrid estrenan nuevos BMW: qué coche han elegido Vini, Mbappé, Diomande...','2026-11-26T09:06:22');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6851857230210236632-real-madrid-jose-mourinho-sest-lance-un-immense-defi-avec-vinicius','Real Madrid : José Mourinho s’est lancé un immense défi avec Vinicius','2026-11-26T09:26:22');
 INSERT INTO "vus" VALUES('https://ge.globo.com/futebol/futebol-internacional/futebol-italiano/noticia/2026/11/26/wesley-diz-que-chamou-endrick-para-jogar-na-roma-venha-venha.ghtml','Wesley diz que chamou Endrick para jogar na Roma: "Venha, venha"','2026-11-26T09:31:35');
+INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115875/florentino-perez-laporta-real-madrid-barcelona-quotes-case-2026','Barcelona to file complaint about Florentino Pérez’s quotes over Negreira case','2026-11-26T09:56:06');
 COMMIT;
