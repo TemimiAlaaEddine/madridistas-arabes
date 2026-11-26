@@ -10964,6 +10964,7 @@ INSERT INTO "liens_x" VALUES('12211641','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12212010','https://x.com/ElMadridistAlaa/status/2125942654903181484','2026-11-26T13:20:04.844Z');
 INSERT INTO "liens_x" VALUES('12212920','https://x.com/ElMadridistAlaa/status/2125951864638415328','2026-11-26T13:56:37.842Z');
 INSERT INTO "liens_x" VALUES('12213076','https://x.com/ElMadridistAlaa/status/2125953982325776770','2026-11-26T14:05:05.634Z');
+INSERT INTO "liens_x" VALUES('12214434','https://x.com/ElMadridistAlaa/status/2125969079119097964','2026-11-26T15:05:05.046Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12403,7 +12404,7 @@ INSERT INTO "unes" VALUES('2026-11-25','as','[{"es": "AHÍ QUEDA ESO — Real Ma
 INSERT INTO "unes" VALUES('2026-11-26','marca','[{"es": "¡PLENO! El fútbol español se luce con las victorias de Barcelona, Atlético, Villarreal, Real Madrid y Betis. Los cinco equipos pasarían de fase ahora mismo, con los blancos líderes de la clasificación", "ar": "العلامة الكاملة! كرة القدم الإسبانية تتألق بانتصارات برشلونة وأتلتيكو وفياريال وريال مدريد وبيتيس. الفرق الخمسة كانت ستتأهل الآن، والمدريديون في صدارة الترتيب", "fr": "PLEIN ! Le football espagnol brille avec les victoires de Barcelone, de l''Atlético, de Villarreal, du Real Madrid et du Betis. Les cinq équipes se qualifieraient dès maintenant, avec les Merengues en tête du classement", "en": "FULL HOUSE! Spanish football shines with wins for Barcelona, Atlético, Villarreal, Real Madrid and Betis. All five teams would go through right now, with the whites leading the standings"}, {"es": "Jude reina en el Real Madrid. Mourinho ve a Bellingham como un líder dentro y fuera del terreno de juego", "ar": "جود يتربع على عرش ريال مدريد. مورينيو يرى بيلينغهام قائداً داخل أرض الملعب وخارجها", "fr": "Jude règne au Real Madrid. Mourinho voit en Bellingham un leader sur et en dehors du terrain", "en": "Jude reigns at Real Madrid. Mourinho sees Bellingham as a leader on and off the pitch"}]','12199482','122114445795544862');
 INSERT INTO "unes" VALUES('2026-11-26','as','[]','sans','sans');
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-26T14:51:06');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-26T15:06:00');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
