@@ -2,7 +2,7 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 49
+Dernier fait relu : 60
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
@@ -19,7 +19,7 @@ Dernier fait relu : 49
 - 2025-26, seconde moitié de saison : Endrick prêté à Lyon, 8 buts et 8 passes décisives en 21 matchs (1 631 minutes, 77 par match). Source : Trivela (Matheus Cristianini).
 - Novembre 2026 : Mourinho refuse publiquement un départ d'Endrick en janvier (« qu'ils oublient », « qui le veut devra se battre avec moi », TNT Sports). Sources : Trivela (Pedro Ramos), Marca (Joel del Río).
 - 2026-11-13 : Rodrygo, blessé le 2 mars 2026 contre Getafe (rupture des ligaments croisés : ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars. Sources : Marca (JOEL DEL RÍO), Foot Mercato (Jordan Pardon).
-- 2026-11-13 : Asencio, atteint d'une fracture de stress au tibia droit, a été opéré le 1er octobre. Source : Marca (JOEL DEL RÍO).
+- 2026-11-13 : Asencio, atteint d'une fracture de stress au tibia droit, a été opéré le 1er octobre selon Marca (JOEL DEL RÍO) ; Defensa Central (Carlos Higueras Carrasco, 2026-11-25) date l'opération de septembre 2026 et précise qu'il n'a pas encore joué cette saison. Sources : Marca (JOEL DEL RÍO), Defensa Central (Carlos Higueras Carrasco).
 - 2026-11-13 : Thiago Pitarch a fait ses débuts avec l'Espagne U21 lors de la victoire 2-0 contre le Japon, avec Espi également entré en jeu. Source : Managing Madrid (Hridyam Arora).
 - 2026-11-15 : Latif Issman, milieu de l'UD Logroñés, a signé avec le Real Madrid en novembre 2026 et rejoindra le Castilla l'été prochain. Source : Marca (NACHO LABARGA).
 - 2026-11-15 : Jude Bellingham a été élu joueur de l'année de la sélection anglaise 2025-2026, pour la deuxième fois consécutive. Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (ALBERTO RUBIO).
@@ -34,7 +34,12 @@ Dernier fait relu : 49
 - Avant la J13 (Celta, 2026-11-21) : Arda Güler est 2e de la Liga aux grosses occasions créées (14). Source : Opta (« أوبتا », fait d'avant-match lu sur FotMob) ; validé par l'utilisateur le 2026-11-22.
 - 2026-11-24 : Endrick est blessé et sera absent environ 2 à 3 semaines (novembre 2026). Source : Defensa Central (Borja Díaz).
 - 2026-11-24 : Kylian Mbappé atteint 105 buts avec le Real Madrid après son doublé contre le PSV, dépassant les 104 de Ronaldo Nazário. Source : Marca (JOEL DEL RÍO).
-- 2026-11-24 : Jude Bellingham dépasse David Beckham (16) avec 17 buts en Ligue des champions : 11 avec le Real Madrid et 6 avec Dortmund. Source : Defensa Central (Diego Vargas).
+- 2026-11-24 : Jude Bellingham dépasse David Beckham (16) avec 17 buts en Ligue des champions : 11 avec le Real Madrid (plus que Beckham, McManaman, Owen et Woodgate réunis) et 6 avec Dortmund. Sources : Defensa Central (Diego Vargas, Carlos Higueras Carrasco).
+- 2026-11-25 : Vinicius a mis fin à une série sans but en marquant contre le PSV : à la 87e minute après 98 jours sans but selon COPE (Roberto Morales) ; à la 86e minute après 91 jours sans marquer avec le Real Madrid selon AS (Fernando S. Tavero), qui en fait son premier but de la saison en Ligue des champions. Sources : COPE (Roberto Morales), AS (Fernando S. Tavero).
+- 2026-11-26 : Vinicius a marqué son 35e but en Coupe d'Europe avec le Real Madrid lors du 5-1 contre le PSV, égalant Puskás (5e meilleur buteur du club dans la compétition). Source : Defensa Central (Carlos Higueras Carrasco).
+- 2026-11-26 : Mbappé a atteint 76 buts en Ligue des champions après son doublé contre le PSV (novembre 2026), devenant le cinquième meilleur buteur de l'histoire de la compétition. Source : AS (Sergio López).
+- 2026-11-26 : Mbappé a marqué lors de sept matchs européens consécutifs, un seul joueur du Real Madrid, Cristiano Ronaldo (11 matchs en 2017-18), ayant fait mieux. Source : AS (Sergio López).
+- 2026-11-26 : Mbappé et Bellingham figurent dans l'équipe de la semaine de la Ligue des champions après le match contre le PSV. Source : Managing Madrid (Lucas Navarrete).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
@@ -91,7 +96,7 @@ Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 
 - 2026-11-07, J12 : Güler meilleure note du match (9,2 : 1 but, 1 passe décisive, 3 passes clés) ; tirs 19 contre 4 (11 cadrés contre 2). Source : WhoScored.
 - 2026-11-24 : avec le 5-1 contre le PSV, le Real a gagné ses 10 derniers matchs toutes compétitions (Villarreal, Roma, Séville, Leipzig, Barcelone, Racing, AEK, Valence, Celta, PSV), depuis la défaite contre l'Atlético le 20 septembre. Sources : résultats de cette page, confirmés par le calendrier FotMob (vérifié le 2026-11-22 pour les 9 premiers) ; Cadena SER (Jon Barco, Pedja Mijatovic) pour la dixième victoire.
 - 2026-11-21, J13 : Real Madrid 2-1 Celta Vigo au Bernabéu, en revenant de 0-1. Pablo Durán ouvre le score pour le Celta (6e), Bellingham égalise (66e, sur une passe de Mbappé), Carlos Espí, entré en jeu, marque le but de la victoire (85e pour la plupart des sources, 86e selon Managing Madrid, Kiyan Sobhani). Mbappé a manqué un penalty en fin de première période (Foot Mercato, Aurélien Macedo ; AS, Luis Nieto). Sources : ESPN (Alex Kirkland), Marca (Miguel Ángel García, Joel del Río), Foot Mercato (Allan Brevi, Aurélien Macedo), Managing Madrid (Kiyan Sobhani ; passe de Mbappé, entrée en jeu d'Espí), AS (Luis Nieto, penalty manqué).
-- 2026-11-24 : Real Madrid 5-1 PSV en Ligue des champions au Bernabéu. Perisic ouvre le score pour le PSV sur penalty ; Valverde (50e), Bellingham (60e), Mbappé (64e, 84e) et Vinicius (87e, sur une passe de Bellingham) marquent pour le Real. Sources : Marca (MANUEL NOVIK), Defensa Central (David Jorquera, Alexis Rodríguez), ABC (Rubén Cañizares), Cadena SER (Jon Barco), Managing Madrid.
+- 2026-11-24 : Real Madrid 5-1 PSV en Ligue des champions (5e journée) au Bernabéu. Perisic ouvre le score pour le PSV sur penalty ; Valverde (50e), Bellingham (60e), Mbappé (64e, 84e) et Vinicius (87e, sur une passe de Bellingham) marquent pour le Real. Sources : Marca (MANUEL NOVIK), Defensa Central (David Jorquera, Alexis Rodríguez, Carlos Higueras Carrasco), ABC (Rubén Cañizares), Cadena SER (Jon Barco), Managing Madrid, ge.globo.
 
 ## Journalistes et médias (qui pense quoi)
 Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après les titres et chapeaux de la base (n° = article) ; validé par l'utilisateur le 2026-11-20. Sert à relativiser une opinion selon la ligne habituelle de son auteur, pas à la disqualifier.
@@ -119,7 +124,7 @@ Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après le
 ## Sujets récurrents (débats, mercato, club)
 - Le milieu de terrain, question ouverte depuis l'échec du dossier Rodri (été 2026). Source : The Hard Tackle.
 - Juin 2026, élections : Florentino Pérez réélu avec 65 % des voix face à Enrique Riquelme (37 ans, 620 M€ de fortune selon Forbes, groupe Cox), dont la campagne visait la « vente du club ». Sources : Marca (Sergio Rodríguez C., Enrique Corbella).
-- 2026-11-04 : Rafa Nadal proposé au conseil d'administration (socio d'honneur n° 67778) ; ratification à l'assemblée extraordinaire du 21 novembre, seul point de son ordre du jour. Rôle de conseiller, non exécutif, au départ. Sources : ABC, Managing Madrid (Lucas Navarrete), Foot Mercato (d'après DAZN).
+- 2026-11-04 : Rafa Nadal proposé au conseil d'administration (socio d'honneur n° 67778) ; ratification à l'assemblée extraordinaire du 21 novembre, seul point de son ordre du jour. Rôle de conseiller, non exécutif, au départ. Il a été ratifié membre de la direction du Real Madrid par l'Assemblée des compromisaires avec plus de 99 % des voix (novembre 2026). Sources : ABC, Managing Madrid (Lucas Navarrete), Foot Mercato (d'après DAZN), Defensa Central (Alexis Rodríguez).
 - Statuts, article 40 : 20 ans d'ancienneté de socio pour se présenter à la présidence (15 pour vice-président, 10 pour le conseil), et une garantie bancaire d'au moins 15 % du budget de dépenses. Nadal est socio d'honneur depuis 2011, donc éligible en 2031 si l'ancienneté compte depuis cette date. Si la présidence devient vacante, le conseil choisit l'un de ses membres et l'assemblée le ratifie. Source : Marca (Juan Ignacio García-Ochoa).
 - 2026-11-14 : Ballon d'Or 2026 : Harry Kane gagne, Kylian Mbappé termine deuxième à 28 points. Source : Foot Mercato (Jordan Pardon).
 - 2026-11-24 : En 1988, le Real Madrid a été éliminé par le PSV en demi-finale de la Coupe d'Europe (1-1 à Madrid, 0-0 à Eindhoven) à cause de la règle des buts à l'extérieur. Source : ABC (Rubén Cañizares).
