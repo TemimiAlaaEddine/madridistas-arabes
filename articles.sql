@@ -14277,4 +14277,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a3804661346621816050-jai-d
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-equipo-se-esta-entrenando-26-11-2026','El equipo se está entrenando','2026-11-26T10:56:08');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a1565404759731241800-real-madrid-un-journaliste-espagnol-preconise-de-vendre-kylian-mbappe-pour-erling-haaland','Real Madrid : un journaliste espagnol préconise de vendre Kylian Mbappé pour Erling Haaland','2026-11-26T11:25:53');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/club/comunicados/comunicado-oficial-fallecimiento-de-rafael-candel-26-11-2026','Comunicado Oficial: fallecimiento de Rafael Candel','2026-11-26T11:26:10');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/mensaje-de-luis-enrique-al-real-madrid-f202611-v/','Mensaje de Luis Enrique al Real Madrid','2026-11-26T11:46:20');
 COMMIT;
