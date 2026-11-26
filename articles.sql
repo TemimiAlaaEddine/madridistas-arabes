@@ -11130,6 +11130,7 @@ INSERT INTO "liens_x" VALUES('12216043','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12216199','https://x.com/ElMadridistAlaa/status/2125995502567305426','2026-11-26T16:50:04.677Z');
 INSERT INTO "liens_x" VALUES('12216714','https://x.com/ElMadridistAlaa/status/2126001249682428059','2026-11-26T17:12:52.108Z');
 INSERT INTO "liens_x" VALUES('12217554','https://x.com/ElMadridistAlaa/status/2126014377505800251','2026-11-26T18:05:04.841Z');
+INSERT INTO "liens_x" VALUES('12217558','https://x.com/ElMadridistAlaa/status/2126015635562057771','2026-11-26T18:10:04.780Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12585,7 +12586,7 @@ INSERT INTO "unes" VALUES('2026-11-25','as','[{"es": "AHÍ QUEDA ESO — Real Ma
 INSERT INTO "unes" VALUES('2026-11-26','marca','[{"es": "¡PLENO! El fútbol español se luce con las victorias de Barcelona, Atlético, Villarreal, Real Madrid y Betis. Los cinco equipos pasarían de fase ahora mismo, con los blancos líderes de la clasificación", "ar": "العلامة الكاملة! كرة القدم الإسبانية تتألق بانتصارات برشلونة وأتلتيكو وفياريال وريال مدريد وبيتيس. الفرق الخمسة كانت ستتأهل الآن، والمدريديون في صدارة الترتيب", "fr": "PLEIN ! Le football espagnol brille avec les victoires de Barcelone, de l''Atlético, de Villarreal, du Real Madrid et du Betis. Les cinq équipes se qualifieraient dès maintenant, avec les Merengues en tête du classement", "en": "FULL HOUSE! Spanish football shines with wins for Barcelona, Atlético, Villarreal, Real Madrid and Betis. All five teams would go through right now, with the whites leading the standings"}, {"es": "Jude reina en el Real Madrid. Mourinho ve a Bellingham como un líder dentro y fuera del terreno de juego", "ar": "جود يتربع على عرش ريال مدريد. مورينيو يرى بيلينغهام قائداً داخل أرض الملعب وخارجها", "fr": "Jude règne au Real Madrid. Mourinho voit en Bellingham un leader sur et en dehors du terrain", "en": "Jude reigns at Real Madrid. Mourinho sees Bellingham as a leader on and off the pitch"}]','12199482','122114445795544862');
 INSERT INTO "unes" VALUES('2026-11-26','as','[]','sans','sans');
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-26T17:55:52');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-26T18:10:59');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
@@ -14670,4 +14671,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115880/mbappe-bellingha
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/mourinho-hace-madrid-mas-peligroso-entre-minutos-76-90-lleva-16-goles-en-tramo-final-partidos_347049_102.html','Mourinho hace al Madrid más peligroso entre los minutos 76 y 90: lleva 16 goles en el tramo final de los partidos','2026-11-26T18:03:03');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/cambios-tacticos-mourinho-han-lanzado-madrid-valverde-bernardo-silva-diomande-factores-clave_347047_102.html','Los cambios tácticos de Mourinho han lanzado al Madrid: Valverde, Bernardo Silva y Diomande, factores clave','2026-11-26T18:03:03');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7620430965559370440-chine-songyuan-zhao-le-lyceen-compare-a-zlatan-ibrahimovic-qui-enflamme-la-coupe-du-monde-u17','Chine : Songyuan Zhao, le lycéen comparé à Zlatan Ibrahimovic qui enflamme la Coupe du Monde U17','2026-11-26T18:05:49');
+INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/okeke-aporta-movilidad-fisico-real-madrid-puede-tener-papel-clave-en-equipo-cuando-vuelvan-deck-jantunen_347053_102.html','Okeke aporta movilidad y físico al Real Madrid y puede tener un papel clave en el equipo cuando vuelvan Deck y Jantunen','2026-11-26T18:10:58');
 COMMIT;
