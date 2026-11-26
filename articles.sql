@@ -12703,7 +12703,7 @@ INSERT INTO "unes" VALUES('2026-11-26','as','[]','sans','sans');
 INSERT INTO "unes" VALUES('2026-11-27','marca',NULL,NULL,NULL);
 INSERT INTO "unes" VALUES('2026-11-27','as',NULL,NULL,NULL);
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-26T22:10:54');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-26T22:31:17');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
