@@ -12349,6 +12349,7 @@ INSERT INTO "liens_x" VALUES('12240761','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12240763','https://x.com/ElMadridistAlaa/status/2126378023301857305','2026-11-27T18:10:04.859Z');
 INSERT INTO "liens_x" VALUES('12240764','https://x.com/ElMadridistAlaa/status/2126379285724438653','2026-11-27T18:15:05.896Z');
 INSERT INTO "liens_x" VALUES('12241170','https://x.com/ElMadridistAlaa/status/2126384670531330385','2026-11-27T18:36:26.772Z');
+INSERT INTO "liens_x" VALUES('12241626','https://x.com/ElMadridistAlaa/status/2126392324125278638','2026-11-27T19:06:51.530Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -16103,4 +16104,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/celia-
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/bellingham-ha-cambiado-su-forma-jugar-quitarse-450-gramos-hombrera-varios-kilos-ser-operado-hombro_347087_102.html','Bellingham ha cambiado su forma de jugar al quitarse los 450 gramos de la hombrera y varios kilos tras ser operado del hombro','2026-11-27T18:04:12');
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/27/problema-madrid-nico-paz-deseo-choca-realidad-premier-preguntado.html','El problema del Madrid con Nico Paz: "Su deseo choca con la realidad, la Premier ha preguntado por él"','2026-11-27T18:36:19');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/primera-division/2026/11/27/real-madrid-alaves-alineaciones-probables.html','Real Madrid - Alavés: alineaciones probables','2026-11-27T19:06:41');
+INSERT INTO "vus" VALUES('https://as.com/futbol/videos/una-mujer-estadounidense-alucina-al-descubrir-la-dimension-del-real-madrid-y-su-video-es-viral-en-usa-f202611-v/','Una mujer estadounidense alucina al descubrir la dimensión del Real Madrid y su vídeo es viral en USA','2026-11-27T19:11:04');
 COMMIT;
