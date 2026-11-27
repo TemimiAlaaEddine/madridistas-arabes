@@ -15496,4 +15496,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/mireia-roig-conc
 INSERT INTO "vus" VALUES('https://www.elespanol.com/deportes/futbol/20261127/respuesta-mourinho-predicciones-madrid-champions-superordenador-ia-mierda/1003744474554_0.html','La respuesta de Mourinho a las predicciones con el Madrid en Champions: "El superordenador de la IA es una mierda"','2026-11-27T10:11:11');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/entrenamientos/el-equipo-se-esta-entrenando-27-11-2026','El equipo se está entrenando','2026-11-27T10:11:32');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a8669760006999088314-real-madrid-jose-mourinho-fait-le-point-sur-le-retour-de-rodrygo','- Real Madrid : José Mourinho fait le point sur le retour de Rodrygo','2026-11-27T10:11:32');
+INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/mourinho-mbappe-bellingham-escala-20261127105836-nt.html','Mourinho: «Mbappé y Bellingham están en la misma escala que todos»','2026-11-27T10:16:08');
 COMMIT;
