@@ -16228,4 +16228,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/mario-cortegana-
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/nivel-militao-obliga-mourinho-replantearse-su-posible-titularidad-en-2027-jugar-solo-140-minutos_347090_102.html','El nivel de Militao obliga a Mourinho a replantearse su posible titularidad en 2027 tras jugar solo 140 minutos','2026-11-27T20:03:03');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/27/filtros-lesiones.html','Más filtros, menos lesiones','2026-11-27T20:16:43');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Ethan-mbappe-prolonge-de-deux-ans-a-lille-jusqu-en-2029/1746771#at_medium=RSS_feeds','Ethan Mbappé prolonge de deux ans à Lille, jusqu''en 2029','2026-11-27T20:35:54');
+INSERT INTO "vus" VALUES('https://fr.hespress.com/498153-liga-brahim-diaz-prolonge-son-contrat-avec-le-real-madrid-jusquen-2031.html','Liga : Brahim Diaz "heureux de poursuivre le rêve" au Real Madrid','2026-11-27T22:31:22');
 COMMIT;
