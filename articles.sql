@@ -12073,6 +12073,7 @@ INSERT INTO "liens_x" VALUES('12234082','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12234562','https://x.com/ElMadridistAlaa/status/2126300855750308350','2026-11-27T13:03:23.821Z');
 INSERT INTO "liens_x" VALUES('12234564','https://x.com/ElMadridistAlaa/status/2126301268205584692','2026-11-27T13:05:04.912Z');
 INSERT INTO "liens_x" VALUES('12234814','https://x.com/ElMadridistAlaa/status/2126304202867822654','2026-11-27T13:16:41.813Z');
+INSERT INTO "liens_x" VALUES('12235986','https://x.com/ElMadridistAlaa/status/2126316367746158836','2026-11-27T14:05:05.035Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -15779,4 +15780,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Brahim-diaz
 INSERT INTO "vus" VALUES('https://cadenaser.com/galicia/2026/11/27/leyendas-del-depor-y-del-real-madrid-celebraran-el-120-aniversario-blanquiazul-radio-coruna/','Leyendas del Depor y del Real Madrid celebrarán el 120 aniversario blanquiazul','2026-11-27T13:36:02');
 INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/ni-nick-smith-ni-sarr-ni-shulga-tres-fichajes-ilusionantes-no-encuentran-su-sitio-en-real-madrid_347098_102.html','Ni Nick Smith, ni Sarr, ni Shulga: los tres fichajes ilusionantes que no encuentran su sitio en el Real Madrid','2026-11-27T14:02:07');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/marcos-lopez-experto-en-futbol-madrid-es-favorito-numero-1-en-champions-porque-tiene-mbappe-bellingham-vinicius-no-necesita-jugar-bien-ganar_347085_102.html','Marcos López, experto en fútbol: "El Madrid es el favorito número 1 en la Champions porque tiene a Mbappé, Bellingham y Vinicius y no necesita jugar bien para ganar"','2026-11-27T14:02:07');
+INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/mourinho-banco-real-madrid-nao-gostarem-problema-deles/','Mourinho: ‘Se um dia forem para o banco do Real Madrid e não gostarem, é problema deles’','2026-11-27T14:06:00');
 COMMIT;
