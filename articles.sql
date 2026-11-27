@@ -15806,4 +15806,6 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115908/real-madrid-anno
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115911/mendy-returns-to-real-madrids-squad-list','Mendy returns to Real Madrid’s squad list','2026-11-27T14:21:02');
 INSERT INTO "vus" VALUES('https://as.com/futbol/la-epica-vuelve-a-vestir-de-blanco-f202611-n/','La épica vuelve a vestir de blanco','2026-11-27T14:51:47');
 INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Ronan-evain-directeur-de-football-supporters-europe-apres-les-incidents-lors-d-om-levski-il-y-a-une-perte-d-experience-et-d-expertise/1746645#at_medium=RSS_feeds','Ronan Evain, directeur de Football Supporters Europe, après les incidents lors d''OM-Levski : « Il y a une perte d''expérience et d''expertise »','2026-11-27T15:31:23');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6780708126640381264-jt-foot-mercato-manchester-city-pousse-ses-gardiens-vers-la-sortie','JT Foot Mercato : Manchester City pousse ses gardiens vers la sortie','2026-11-27T15:41:12');
+INSERT INTO "vus" VALUES('https://trivela.com.br/espanha/neville-acho-vinicius-junior-vai-sair-ele-novo-atacante-real-madrid/','Neville: ‘Acho que Vinícius Junior vai sair e ele será o novo atacante do Real Madrid’','2026-11-27T15:41:12');
 COMMIT;
