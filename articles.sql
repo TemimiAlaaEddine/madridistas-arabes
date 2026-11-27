@@ -13499,7 +13499,7 @@ INSERT INTO "unes" VALUES('2026-11-26','as','[]','sans','sans');
 INSERT INTO "unes" VALUES('2026-11-27','marca','[{"es": "KONATÉ: HAY UN NUEVO JEFE. El francés coge galones en la defensa de Mourinho, después de llegar con la carta de libertad y de superar el periodo de adaptación. Se consolida su dúo con Huijsen. Sólo se ha perdido un partido de Liga", "ar": "كوناتي: هناك زعيم جديد. الفرنسي يكتسب مكانة بارزة في دفاع مورينيو، بعد وصوله بعقد حر وتجاوزه فترة التأقلم. ثنائيته مع هاوسن تترسخ. لم يخسر سوى مباراة واحدة في الدوري", "fr": "Konaté : il y a un nouveau patron. Le Français prend du galon dans la défense de Mourinho, après être arrivé libre de tout contrat et avoir surmonté la période d''adaptation. Son duo avec Huijsen se consolide. Une seule défaite en Liga", "en": "Konaté: there is a new boss. The Frenchman is stepping up in Mourinho''s defence, after arriving on a free transfer and getting through the adaptation period. His partnership with Huijsen is consolidating. Only one league match has been lost"}]','12221298','122115091935544862');
 INSERT INTO "unes" VALUES('2026-11-27','as','[{"es": "UN ATAQUE DE ORO. El equipo no alcanzaba los 50 goles tan rápido desde la 2016-17", "ar": "هجوم ذهبي. الفريق لم يصل إلى 50 هدفًا بهذه السرعة منذ موسم 2016-17", "fr": "Une attaque en or. L''équipe n''avait pas atteint les 50 buts aussi vite depuis 2016-17", "en": "A golden attack. The team had not reached 50 goals this quickly since 2016-17"}]','12221723','122115099999544862');
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-27T12:21:38');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-27T12:35:58');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
@@ -15662,4 +15662,5 @@ INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/primera-divisio
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/es-oficial-madrid-anuncia-renovacion-brahim-hasta-ano-2031_347093_102.html','Es oficial: el Madrid anuncia la renovación de Brahim hasta el año 2031','2026-11-27T12:10:59');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/brahim-renueva-real-madrid-2031-plena-temporada-20261127130916-nt.html','Brahim renueva con el Real Madrid hasta 2031 en plena temporada en el ostracismo','2026-11-27T12:16:12');
 INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/bosz-ziet-structureel-probleem-beste-spelers-worden-altijd-weggekocht','Bosz ziet structureel probleem: ''Beste spelers worden altijd weggekocht''','2026-11-27T12:31:33');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/oficial-brahim-2031-f202611-n/','Oficial: Brahim, 2031','2026-11-27T12:35:57');
 COMMIT;
