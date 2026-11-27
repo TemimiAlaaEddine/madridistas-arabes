@@ -15660,4 +15660,5 @@ INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115905/brahim-real-madr
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/desmontando-las-grandes-mentiras-de-tebas/','Desmontando las grandes mentiras de Tebas','2026-11-27T12:06:46');
 INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/primera-division/2026/11/27/6b09725dfc6c83ac588b4583.html','Brahim renueva con el Real Madrid hasta 2031','2026-11-27T12:10:59');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/es-oficial-madrid-anuncia-renovacion-brahim-hasta-ano-2031_347093_102.html','Es oficial: el Madrid anuncia la renovación de Brahim hasta el año 2031','2026-11-27T12:10:59');
+INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/brahim-renueva-real-madrid-2031-plena-temporada-20261127130916-nt.html','Brahim renueva con el Real Madrid hasta 2031 en plena temporada en el ostracismo','2026-11-27T12:16:12');
 COMMIT;
