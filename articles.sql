@@ -11162,6 +11162,34 @@ INSERT INTO "articles" VALUES(924,'2026-11-27T09:30:30','debats','وزير ال�
 وحين وصف الوزير أتلتيكو بأنه نادي الشعب، ردّ المقال بأن خيل وسيريسو استحوذا على النادي بلا وجه حق وباعاه لصندوق استثماري. أما ريال مدريد، الذي يُصوَّر مستبدًا، فيملكه أعضاؤه: سيدات أعمال وسائقون وموظفات وأثرياء وغير أثرياء ومهندسات وسبّاكون. وكل عضو يصوّت لاختيار رئيسه.
 
 وتأتي الخاتمة قاسية: عضو أتلتيكو لا يستطيع حتى أن يمنع سرقة ناديه.','','','La Galerna','es','https://www.lagalerna.com/el-ministerio-de-negreira/','El Ministerio de Negreira','resume','[]','','','','عضو ريال مدريد يصوّت لاختيار رئيسه، أما عضو أتلتيكو فلا يستطيع حتى منع بيع ناديه.','[{"valeur": "21-12", "libelle": "ألقاب محلية: برشلونة مقابل الريال"}, {"valeur": "20-10", "libelle": "ألقاب دولية: الريال مقابل برشلونة"}, {"valeur": "+8 م€", "libelle": "مدفوعات برشلونة لنيغريرا"}]','{"fr": "Le ministre de la Culture accuse le Real de dominer le sport espagnol : un « on dit » suffit-il ?", "en": "Spain''s culture minister accuses Real Madrid of dominance: is \"they say\" enough?", "es": "El ministro de Cultura acusa al Madrid de dominar el deporte: ¿basta con el «se dice»?"}','https://www.lagalerna.com/wp-content/uploads/2026/11/Portanalisis-viernes-Portillo.jpg','[]');
+INSERT INTO "articles" VALUES(925,'2026-11-27T09:31:28','actus','مورينيو قبل ألافيس: «الحاسوب العملاق للذكاء الاصطناعي هراء»','تحدث مورينيو عن فينيسيوس والمجموعة وأبطال أوروبا، ووجّه كلمة لاذعة لتوقعات الحاسوب العملاق. وانتهى المؤتمر بمزحة مع ابن عمه الصحفي الحاضر في القاعة.','تحدث البرتغالي خوسيه مورينيو إلى الصحافة عشية مباراة ألافيس على ملعب برنابيو، وتناول فينيسيوس ومكانة مبابي وبيلينغهام، ثم وجّه تحية لابن عمه الصحفي الحاضر في القاعة.
+
+مباراة ألافيس
+مورينيو: «أقول دائمًا إن يومين بين مباراتين وقت قصير، وثلاثة أيام وقت جيد... لذلك لن نجد أي مشكلة في إعادة اللاعبين إلى جاهزيتهم بعد المباراة الأخيرة. ألافيس يقدم عملًا كبيرًا، وهذا العام، مع الهدوء في ترتيبه، ينتظرنا مباراة صعبة أخرى. علينا أن نلعب ونحصد النقاط الثلاث.»
+
+هاوسن
+مورينيو: «الدفاع الجيد يعني أيضًا مساعدة الفريق على أن يكون أفضل في الهجوم. إذا كان لديك أمان في الخلف وخط أعلى، وتكسب الصراعات الفردية... فهذا جزء من العمل الدفاعي. كل شيء له تبعات على العمل الهجومي. دين حين كان معي في روما كان طفلًا وما زال أمامه طريق طويل. صعوبة الدوري الإنجليزي حسّنته في أشياء كثيرة... الموسم الماضي لم يكن جيدًا بالنسبة له، لكن الفترة التي قضيناها معًا ساعدته على تسريع نموه. ما زال طفلًا، لكنه أكثر نضجًا بكثير. روديغر لاعب مهم بالنسبة له، ساعده الموسم الماضي ويساعده هذا الموسم أيضًا، وكذلك كوناتي. تجاوز إحباط عدم الذهاب إلى كأس العالم واستخرج منه الجانب الإيجابي. لا مبالغة في المديح، فقد يضره ذلك لاحقًا.»
+
+بيلينغهام وزيدان
+مورينيو: «لا أحب المقارنة بين لاعبين من أجيال مختلفة. زيدان كان من أفضل لاعبي جيله، وجود أصبح بالفعل من أفضل لاعبي جيله.»
+
+فينيسيوس
+مورينيو: «أجد صعوبة في الإجابة عن بعض أسئلتكم... لأنني لا أبحث عن التشكيلة المثالية، فهي غير موجودة. قبل أسابيع كان عليه أن يرحل، ثم قيل إنه لا ينسجم مع ديوماندي... والآن العكس تمامًا. الأمور ليست خطية إلى هذا الحد. فيني تحسّن... والأهم أن تجد مجموعة تحبك بغض النظر عن مستواك. هذا كان أساس فينيسيوس، وهذه البنية صنعها زملاؤه. هو الآن في المستوى الذي يساعدنا... وكل ما عدا ذلك ثانوي.»
+
+احتفال ديوماندي مع فينيسيوس
+مورينيو: «هما ليسا منافسين، نحن جميعًا معًا ونريد الشيء نفسه. هدفنا واحد، والمنافسة بينهما غير موجودة. هذا شيء كلّفنا الكثير لبنائه، وهو من أقل الأشياء تقديرًا... لكنه من أهمها. أن يعمل الفريق كمجموعة. نحن نحقق استقرارًا، ويبدو أن هدفكم هو خلق هذا الشك. لا أحد في الفريق يهتم به.»
+
+هل الفريق سليم من الداخل؟
+مورينيو: «دائمًا تجد وجوهًا متذمّرة، لكن حتى الآن لم تكن لدي أي مشكلة مع غرفة الملابس. جاء ذلك تدريجيًا، ففي فترة الإعداد تمر بهذه المواقف. نحن معًا منذ خمسة أشهر ولم نواجه أي مشكلة. إذا وصلتني مشكلة فنحن هنا للمساعدة... لكنني لا أعتقد ذلك. أرى الجميع بهدف واحد. اللاعبون يريدون اللعب، ولا أحد يحب أن يكون خارج القائمة أو بلا دقائق. الهدف الجماعي سيتغلب على وجوه الأنانية الفردية.»
+
+الصدارة بعد عامين صعبين
+مورينيو: «يسعدني أن نفوز على ألافيس. أتمنى أن نفوز غدًا... بالنسبة لأبطال أوروبا فالوقت مبكر جدًا، لا نعرف كيف سنصل جميعًا إلى الأدوار الإقصائية. لا أريد أن ألعب الملحق، فأمامنا مباريات كثيرة. ثم هناك السوبر الإسباني، مباراتان في الأساس، وكأس الملك أيضًا. نحن قريبون، وبثلاث أو أربع نقاط نضمن الأمر. أبطال أوروبا تفاصيل. انظروا إلى بايرن الذي فقد كين، وانظروا إلى باريس سان جيرمان... يمكنك أن تصل إلى المباريات الحاسمة دون لاعبين مهمين. هناك من يقول إننا مرشحون، ثم هناك الحاسوب العملاق للذكاء الاصطناعي... وهو هراء.»
+
+الانتخابات في إسبانيا
+مورينيو: «لا يوجد تدريب يوم الأحد. ليس لدينا لاعبون إسبان (ضحك)... لدينا ثلاثة أو أربعة فقط.»
+
+ابن العم الصحفي
+أنهى مورينيو المؤتمر بتحية ابن عمه الصحفي الموجود في القاعة، وقال إنه لا يستطيع التحدث معه لأنه «انتقل إلى مجموعة تعاملني معاملة سيئة جدًا».','JOEL DEL RÍO','خويل ديل ريو','Marca','es','https://www.marca.com/futbol/real-madrid/2026/11/27/mourinho-superordenador-ia-mierda.html','Mourinho: "El superordenador de la IA es una mierda"','info','["mourinho", "vinicius", "huijsen", "bellingham", "diomande", "mbappe", "rudiger", "konate"]','','','mourinho','مورينيو قبل مواجهة ألافيس: فينيسيوس وصل إلى المستوى الذي يساعد الفريق، وكل ما عدا ذلك ثانوي','[]','{"fr": "Mourinho avant Alavés : « Le super-ordinateur de l''IA, c''est de la merde »", "en": "Mourinho before Alavés: \"The AI supercomputer is rubbish\"", "es": "Mourinho antes del Alavés: \"El superordenador de la IA es una mierda\""}','https://objetos-xlk.estaticos-marca.com/files/article_main_microformat/uploads/2026/11/27/6b09453d10609.jpeg','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
@@ -11782,6 +11810,7 @@ INSERT INTO "liens_x" VALUES('12229082','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12229021','https://x.com/ElMadridistAlaa/status/2126242128850505804','2026-11-27T09:10:05.083Z');
 INSERT INTO "liens_x" VALUES('12229179','https://x.com/ElMadridistAlaa/status/2126243390270648642','2026-11-27T09:15:05.902Z');
 INSERT INTO "liens_x" VALUES('12229634','https://x.com/ElMadridistAlaa/status/2126248418846892053','2026-11-27T09:35:04.629Z');
+INSERT INTO "liens_x" VALUES('12229757','https://x.com/ElMadridistAlaa/status/2126250144010285477','2026-11-27T09:41:53.135Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12461,6 +12490,7 @@ INSERT INTO "page_facebook" VALUES(917,'2026-11-27T08:06:30','1443899325477551_1
 INSERT INTO "page_facebook" VALUES(918,'2026-11-27T08:11:54','1443899325477551_122115324291544862');
 INSERT INTO "page_facebook" VALUES(920,'2026-11-27T09:03:34','1443899325477551_122115359859544862');
 INSERT INTO "page_facebook" VALUES(922,'2026-11-27T09:06:38','1443899325477551_122115361485544862');
+INSERT INTO "page_facebook" VALUES(925,'2026-11-27T09:41:55','1443899325477551_122115378291544862');
 CREATE TABLE resumes (jour TEXT PRIMARY KEY, typefully TEXT);
 INSERT INTO "resumes" VALUES('2026-11-17','12003066');
 INSERT INTO "resumes" VALUES('2026-11-18','12028389');
@@ -13258,6 +13288,7 @@ INSERT INTO "threads" VALUES(921,'["🧠 قراءة | ديوماندي قد يك
 INSERT INTO "threads" VALUES(922,'["🗣️ فالفيردي | «كأن لديه عينين في مؤخرة رأسه» عن أردا غولر\n\nبعد الفوز 5-1 على آيندهوفن، أشاد فالفيردي بتمريرة غولر العمياء التي صنعت له الهدف.\n\n(تركيش فوتبول)\n\nمرّر غولر الكرة من لمسة واحدة دون أن يتركها تستقر. فكسر تنظيم دفاع آيندهوفن في حركة واحدة، وأنهاها فالفيردي بنظافة.\n\nقال فالفيردي مازحًا إنه لا يظن أن غولر سمعه أصلًا، وإن موهبته تجعله قادرًا على صنع شيء في أي لحظة، حتى لو لم يرك.\n\nغولر عمره 21 عامًا، وعقده مع ريال مدريد يمتد حتى 2032.\n\n#غولر #ريال_مدريد", "✍️ إمري ساريغول | Turkish Football\n🔗 المصدر: https://turkish-football.com/federico-valverde-praises-arda-gulers-blind-assist-after-real-madrid-thrash-psv-5-1/"]','immédiat','2026-11-27T09:06:27','12229082','2026-11-27T09:06:34');
 INSERT INTO "threads" VALUES(923,'["🧠 قراءة | مورينيو جمع غولر وبيلينغهام في وسط واحد\n\nكان التركي بديلًا للإنجليزي في حسابات المدرب، فصار شريكًا له. والفريق يحقق عشرة انتصارات متتالية.\n\n(أليكسيس رودريغيز - ديفينسا سنترال)\n\nفي البداية رأى مورينيو غولر لاعب ارتكاز هجومي، أي في مكان بيلينغهام نفسه. لذلك بدا الجمع بينهما صعبًا.\n\nغيّر الموسم هذه الفكرة. بيلينغهام سجّل سبعة أهداف وصنع ثلاثة، وغولر سجّل أربعة.\n\nيتراجع غولر نحو بداية الهجمة، ويظهر بيلينغهام أمامه قرب منطقة الجزاء، دون أن يحتلا المساحة نفسها باستمرار.\n\nفي الشوط الثاني أمام آيندهوفن دخل بيلينغهام من دكة البدلاء. تراجع غولر ليشارك في البناء، فازدادت سلاسة الفريق وصار يهاجم بتواصل.\n\nيستطيع مورينيو أيضًا أن يغيّر مواقعهما بحسب ضغط الخصم، دون أن يختار كل مرة بين أحدهما والآخر.\n\nريال مدريد سجّل 51 هدفًا في 18 مباراة، وفاز 16 مرة وخسر مرتين. وغدًا يبحث عن الفوز الحادي عشر على التوالي أمام ألافيس.", "✍️ أليكسيس رودريغيز | Defensa Central\n🔗 المصدر: https://defensacentral.com/real-madrid-noticias/arda-guler-bellingham-ser-incompatibles-mourinho-hacer-volar-madrid_347077_102.html"]','file','2026-11-27T09:11:46','12229179','2026-11-27T09:11:54');
 INSERT INTO "threads" VALUES(924,'["🔥 نقاش | هل يكفي «يُقال» لاتهام ريال مدريد بالهيمنة؟\n\nوزير الثقافة أورتاسون وصف هيمنة الريال بـ«المخزية» وقال عن قضية نيغريرا «نيغريرا وما إلى ذلك». مقال ساخر يردّ عليه بالأرقام.\n\n(لا غالرنا)\n\nفي نظر المقال، «يُقال» مصدر يثبت أي شيء، بخلاف الفواتير وإفادات مصلحة الضرائب. لو اعتمده القضاة والمفتشون لانخفضت كلفة الإدارة كثيرًا.\n\nمنذ 2001 فاز برشلونة بـ21 لقبًا بين الدوري والكأس، والريال بـ12 فقط.\n\nوفي الألقاب الدولية: 20 للريال مقابل 10 لبرشلونة.\n\nيذكّر المقال بمقصورة كامب نو: ففي 1990 كتبت «إل باييس» عن حكم نشط يتردد عليها. وبعد تعيينه نائبًا لرئيس لجنة الحكّام ظلّ يحضر إليها.\n\nيتهكم المقال على وصف أتلتيكو بنادي الشعب: خيل وسيريسو استحوذا على النادي وباعاه لصندوق استثماري.\n\nأما الريال فيملكه أعضاؤه، وكل عضو يصوّت لاختيار الرئيس. أما عضو أتلتيكو فلا يستطيع حتى منع سرقة ناديه.\n\nما رأيكم؟ 👇", "📰 La Galerna\n🔗 المصدر: https://www.lagalerna.com/el-ministerio-de-negreira/"]','file','2026-11-27T09:32:04','12229634','2026-11-27T09:32:12');
+INSERT INTO "threads" VALUES(925,'["🎙️ مؤتمر مورينيو | «لا أبحث عن التشكيلة المثالية، فهي غير موجودة»\n\nسُئل مورينيو عن فينيسيوس قبل مواجهة ألافيس، فقال: «فيني تحسّن... والأهم أن تجد مجموعة تحبك بغض النظر عن مستواك. هذا كان أساس فينيسيوس، وهذه البنية صنعها زملاؤه. هو الآن في المستوى الذي يساعدنا... وكل ما عدا ذلك ثانوي.»\n\n#ريال_مدريد_ألافيس #الليغا"]','immédiat','2026-11-27T09:41:45','12229757','2026-11-27T09:41:51');
 CREATE TABLE tweets_match (debut TEXT, cle TEXT, typefully TEXT, PRIMARY KEY (debut, cle));
 CREATE TABLE unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT, PRIMARY KEY (jour, journal));
 INSERT INTO "unes" VALUES('2026-11-17','marca','[{"es": "«Es muy, muy, muy bueno». Hasta Zidane se rinde a Güler", "ar": "«إنه جيد جدًا جدًا جدًا». حتى زيدان يستسلم أمام غولر", "fr": "« Il est très, très, très bon ». Même Zidane s''incline devant Güler", "en": "\"He''s very, very, very good\". Even Zidane bows to Güler"}, {"es": "El genio turco suma cuatro goles y cinco asistencias en sus ocho últimos duelos con el Real Madrid y su selección", "ar": "العبقري التركي يسجل أربعة أهداف ويقدم خمس تمريرات حاسمة في مبارياته الثماني الأخيرة مع ريال مدريد ومنتخب بلاده", "fr": "Le génie turc cumule quatre buts et cinq passes décisives lors de ses huit derniers matchs avec le Real Madrid et sa sélection", "en": "The Turkish genius has four goals and five assists in his last eight games with Real Madrid and his national team"}]','11987719','122107181601544862');
@@ -15412,4 +15443,5 @@ INSERT INTO "vus" VALUES('https://turkish-football.com/federico-valverde-praises
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/arda-guler-bellingham-ser-incompatibles-mourinho-hacer-volar-madrid_347077_102.html','Arda Güler y Bellingham: de ser incompatibles para Mourinho a hacer volar al Madrid','2026-11-27T09:11:46');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/mourinho-vinicius-diomande-no-son-competencia-en-real-madrid-estamos-todos-juntos-vamos-por-mismo-objetivo_347079_102.html','Mourinho: "Vinicius y Diomande no son competencia, en el Real Madrid estamos todos juntos y vamos por el mismo objetivo"','2026-11-27T09:31:21');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/el-ministerio-de-negreira/','El Ministerio de Negreira','2026-11-27T09:32:04');
+INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/27/mourinho-superordenador-ia-mierda.html','Mourinho: "El superordenador de la IA es una mierda"','2026-11-27T09:41:45');
 COMMIT;
