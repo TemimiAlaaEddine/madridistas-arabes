@@ -15985,4 +15985,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a762644023338464960-come-n
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115917/scouting-alaves-few-passes-plenty-of-shots','SCOUTING ALAVÉS: Few passes, plenty of shots','2026-11-27T16:32:22');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a6788149458151569193-leverkusen-ibrahim-maza-a-decide-de-poursuivre-sa-carriere-en-allemagne','Leverkusen : Ibrahim Maza a décidé de poursuivre sa carrière en Allemagne','2026-11-27T17:06:32');
 INSERT INTO "vus" VALUES('https://as.com/futbol/mourinho-se-salta-la-teoria-moderna-con-bernardo-f202611-n/','Mourinho se salta la teoría moderna con Bernardo','2026-11-27T17:11:51');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Etincelant-avec-come-nico-paz-ne-souhaiterait-pas-retourner-au-real-madrid-malgre-la-clause-de-rachat-des-merengues/1746700#at_medium=RSS_feeds','Étincelant avec Côme, Nico Paz ne souhaiterait pas retourner au Real Madrid malgré la clause de rachat des Merengues','2026-11-27T17:31:42');
 COMMIT;
