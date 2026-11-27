@@ -15751,4 +15751,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/endric
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a2135846684051445980-real-madrid-mourinho-refuse-la-comparaison-entre-bellingham-et-zidane','Real Madrid : Mourinho refuse la comparaison entre Bellingham et Zidane','2026-11-27T13:11:06');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a7907860960106431732-real-madrid-ferland-mendy-convoque-pour-la-premiere-fois-de-la-saison','Real Madrid : Ferland Mendy convoqué pour la première fois de la saison','2026-11-27T13:11:10');
 INSERT INTO "vus" VALUES('https://www.elespanol.com/quincemil/deporte/deportivo/20261127/depor-celebrara-aniversario-partido-leyendas-real-madrid/1003744475091_0.html','El Dépor celebrará su 120 aniversario con un partido de leyendas contra el Real Madrid','2026-11-27T13:16:33');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Brahim-diaz-prolonge-jusqu-en-2031-avec-le-real-madrid/1746605#at_medium=RSS_feeds','Brahim Diaz prolonge jusqu''en 2031 avec le Real Madrid','2026-11-27T13:31:22');
 COMMIT;
