@@ -11981,6 +11981,7 @@ INSERT INTO "liens_x" VALUES('12231612','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12232412','https://x.com/ElMadridistAlaa/status/2126280235469635584','2026-11-27T11:41:27.508Z');
 INSERT INTO "liens_x" VALUES('12232763','https://x.com/ElMadridistAlaa/status/2126282935905247638','2026-11-27T11:52:11.336Z');
 INSERT INTO "liens_x" VALUES('12233050','https://x.com/ElMadridistAlaa/status/2126286167910076785','2026-11-27T12:05:04.793Z');
+INSERT INTO "liens_x" VALUES('12233222','https://x.com/ElMadridistAlaa/status/2126287427891495330','2026-11-27T12:10:05.215Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -15657,4 +15658,6 @@ INSERT INTO "vus" VALUES('https://www.lagalerna.com/las-mentiras-de-tebas/','Las
 INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/gerard-sole-afirma-real-madrid-va-fichar-nick-smith-tiene-talento-pero-esta-muy-verde-exigencia-club_347089_102.html','Gerard Solé afirma que el Real Madrid va a fichar: "Nick Smith tiene talento pero está muy verde para la exigencia del club"','2026-11-27T12:02:21');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/115905/brahim-real-madrid-contract-extension-2031','OFFICIAL: Brahim Díaz signs Real Madrid contract extension','2026-11-27T12:06:07');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/desmontando-las-grandes-mentiras-de-tebas/','Desmontando las grandes mentiras de Tebas','2026-11-27T12:06:46');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/primera-division/2026/11/27/6b09725dfc6c83ac588b4583.html','Brahim renueva con el Real Madrid hasta 2031','2026-11-27T12:10:59');
+INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/es-oficial-madrid-anuncia-renovacion-brahim-hasta-ano-2031_347093_102.html','Es oficial: el Madrid anuncia la renovación de Brahim hasta el año 2031','2026-11-27T12:10:59');
 COMMIT;
