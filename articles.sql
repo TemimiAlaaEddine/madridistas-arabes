@@ -15547,4 +15547,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a8669760006999088314-real-
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/mourinho-mbappe-bellingham-escala-20261127105836-nt.html','Mourinho: «Mbappé y Bellingham están en la misma escala que todos»','2026-11-27T10:16:08');
 INSERT INTO "vus" VALUES('https://www.realmadrid.com/es-ES/noticias/futbol/primer-equipo/ruedas-de-prensa/mourinho-27-11-2026','Mourinho: “Cada punto que no se gana puede ser decisivo"','2026-11-27T10:26:54');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/27/mourinho-habla-primo-periodista-cambiado-grupo-me-trata-mal.html','Mourinho no habla con su primo periodista: “Se ha cambiado a un grupo que me trata muy mal...”','2026-11-27T10:41:12');
+INSERT INTO "vus" VALUES('https://www.vi.nl/nieuws/voormalig-feyenoorder-osman-grijpt-zijn-kans-en-oogst-lof-bij-brighton','Voormalig Feyenoorder Osman grijpt zijn kans en oogst lof bij Brighton','2026-11-27T10:46:08');
+INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/27/mourinho-cierra-la-puerta-al-mercado-de-fichajes-no-quiero-a-nadie-ni-para-entrar-ni-para-salir-cadena-ser/','Mourinho cierra la puerta al mercado de fichajes: "No quiero a nadie, ni para entrar ni para salir"','2026-11-27T10:46:08');
 COMMIT;
