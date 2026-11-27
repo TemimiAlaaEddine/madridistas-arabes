@@ -12476,6 +12476,9 @@ INSERT INTO "liens_x" VALUES('12242259','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12242262','https://x.com/ElMadridistAlaa/status/2126408222659711004','2026-11-27T20:10:05.149Z');
 INSERT INTO "liens_x" VALUES('12242501','https://x.com/ElMadridistAlaa/status/2126410740240400402','2026-11-27T20:20:05.176Z');
 INSERT INTO "liens_x" VALUES('12244672','https://x.com/ElMadridistAlaa/status/2126446482861719707','2026-11-27T22:42:03.984Z');
+INSERT INTO "liens_x" VALUES('12245009','https://x.com/ElMadridistAlaa/status/2126451588520915142','2026-11-27T23:02:21.222Z');
+INSERT INTO "liens_x" VALUES('12245024','https://x.com/ElMadridistAlaa/status/2126451715105022374','2026-11-27T23:02:51.445Z');
+INSERT INTO "liens_x" VALUES('12245017','https://x.com/ElMadridistAlaa/status/2126451644561039585','2026-11-27T23:02:34.620Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -13181,6 +13184,7 @@ INSERT INTO "resumes" VALUES('2026-11-23','12145976');
 INSERT INTO "resumes" VALUES('2026-11-24','12173575');
 INSERT INTO "resumes" VALUES('2026-11-25','12199183');
 INSERT INTO "resumes" VALUES('2026-11-26','12221453');
+INSERT INTO "resumes" VALUES('2026-11-27','12245009');
 CREATE TABLE suivi_match (debut TEXT, vu TEXT, statut TEXT, score TEXT, typefully TEXT);
 INSERT INTO "suivi_match" VALUES('2026-11-21T20:00:00','2026-11-21T20:01:32','live','0-0',NULL);
 INSERT INTO "suivi_match" VALUES('2026-11-24T20:00:00','2026-11-24T21:57:41','Ended','5-1',NULL);
@@ -14029,8 +14033,8 @@ INSERT INTO "unes" VALUES('2026-11-26','marca','[{"es": "¡PLENO! El fútbol esp
 INSERT INTO "unes" VALUES('2026-11-26','as','[]','sans','sans');
 INSERT INTO "unes" VALUES('2026-11-27','marca','[{"es": "KONATÉ: HAY UN NUEVO JEFE. El francés coge galones en la defensa de Mourinho, después de llegar con la carta de libertad y de superar el periodo de adaptación. Se consolida su dúo con Huijsen. Sólo se ha perdido un partido de Liga", "ar": "كوناتي: هناك زعيم جديد. الفرنسي يكتسب مكانة بارزة في دفاع مورينيو، بعد وصوله بعقد حر وتجاوزه فترة التأقلم. ثنائيته مع هاوسن تترسخ. لم يخسر سوى مباراة واحدة في الدوري", "fr": "Konaté : il y a un nouveau patron. Le Français prend du galon dans la défense de Mourinho, après être arrivé libre de tout contrat et avoir surmonté la période d''adaptation. Son duo avec Huijsen se consolide. Une seule défaite en Liga", "en": "Konaté: there is a new boss. The Frenchman is stepping up in Mourinho''s defence, after arriving on a free transfer and getting through the adaptation period. His partnership with Huijsen is consolidating. Only one league match has been lost"}]','12221298','122115091935544862');
 INSERT INTO "unes" VALUES('2026-11-27','as','[{"es": "UN ATAQUE DE ORO. El equipo no alcanzaba los 50 goles tan rápido desde la 2016-17", "ar": "هجوم ذهبي. الفريق لم يصل إلى 50 هدفًا بهذه السرعة منذ موسم 2016-17", "fr": "Une attaque en or. L''équipe n''avait pas atteint les 50 buts aussi vite depuis 2016-17", "en": "A golden attack. The team had not reached 50 goals this quickly since 2016-17"}]','12221723','122115099999544862');
-INSERT INTO "unes" VALUES('2026-11-28','marca',NULL,NULL,NULL);
-INSERT INTO "unes" VALUES('2026-11-28','as',NULL,NULL,NULL);
+INSERT INTO "unes" VALUES('2026-11-28','marca','[{"es": "Real Madrid-Alavés, 21.00 (LaLiga)", "ar": "ريال مدريد – ألافيس، الساعة 21:00 (الدوري الإسباني)", "fr": "Real Madrid-Alavés, 21h00 (LaLiga)", "en": "Real Madrid-Alavés, 21:00 (LaLiga)"}]','12245017','122115770427544862');
+INSERT INTO "unes" VALUES('2026-11-28','as','[{"es": "R. Madrid-Alavés 21:00 M+ (J. 14ª LaLiga)", "ar": "ريال مدريد - ألافيس 21:00 على M+ (الجولة 14 من الدوري الإسباني)", "fr": "Real Madrid-Alavés à 21h00 sur M+ (14e journée de LaLiga)", "en": "Real Madrid-Alavés at 21:00 on M+ (LaLiga matchday 14)"}]','12245024','122115770583544862');
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
 INSERT INTO "verif_convocation" VALUES('visuel','2026-11-27T12:51:06');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
