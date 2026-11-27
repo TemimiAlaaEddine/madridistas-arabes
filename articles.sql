@@ -16105,4 +16105,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/bellin
 INSERT INTO "vus" VALUES('https://www.marca.com/radio/2026/11/27/problema-madrid-nico-paz-deseo-choca-realidad-premier-preguntado.html','El problema del Madrid con Nico Paz: "Su deseo choca con la realidad, la Premier ha preguntado por él"','2026-11-27T18:36:19');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/primera-division/2026/11/27/real-madrid-alaves-alineaciones-probables.html','Real Madrid - Alavés: alineaciones probables','2026-11-27T19:06:41');
 INSERT INTO "vus" VALUES('https://as.com/futbol/videos/una-mujer-estadounidense-alucina-al-descubrir-la-dimension-del-real-madrid-y-su-video-es-viral-en-usa-f202611-v/','Una mujer estadounidense alucina al descubrir la dimensión del Real Madrid y su vídeo es viral en USA','2026-11-27T19:11:04');
+INSERT INTO "vus" VALUES('https://www.elmundo.es/deportes/futbol/2026/11/27/6b097ebce85ecebb7e8b4589.html','De Argelia a Vitoria con 12 años, el viaje del niño Abde Rebbach: "Estaba solo con mi tío, al principio lloraba y quería volver a Argelia con mi familia"','2026-11-27T19:26:00');
 COMMIT;
