@@ -11410,6 +11410,8 @@ INSERT INTO "liens_x" VALUES('12221721','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12222422','https://x.com/ElMadridistAlaa/status/2126179227880055098','2026-11-27T05:00:08.249Z');
 INSERT INTO "liens_x" VALUES('12223114','https://x.com/ElMadridistAlaa/status/2126180471721845040','2026-11-27T05:05:04.801Z');
 INSERT INTO "liens_x" VALUES('12224760','https://x.com/ElMadridistAlaa/status/2126181729165844647','2026-11-27T05:10:04.508Z');
+INSERT INTO "liens_x" VALUES('12225767','https://x.com/ElMadridistAlaa/status/2126185504546992489','2026-11-27T05:25:04.783Z');
+INSERT INTO "liens_x" VALUES('12225768','https://x.com/ElMadridistAlaa/status/2126186768584372447','2026-11-27T05:30:06.110Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -12884,7 +12886,7 @@ INSERT INTO "unes" VALUES('2026-11-26','as','[]','sans','sans');
 INSERT INTO "unes" VALUES('2026-11-27','marca','[{"es": "KONATÉ: HAY UN NUEVO JEFE. El francés coge galones en la defensa de Mourinho, después de llegar con la carta de libertad y de superar el periodo de adaptación. Se consolida su dúo con Huijsen. Sólo se ha perdido un partido de Liga", "ar": "كوناتي: هناك زعيم جديد. الفرنسي يكتسب مكانة بارزة في دفاع مورينيو، بعد وصوله بعقد حر وتجاوزه فترة التأقلم. ثنائيته مع هاوسن تترسخ. لم يخسر سوى مباراة واحدة في الدوري", "fr": "Konaté : il y a un nouveau patron. Le Français prend du galon dans la défense de Mourinho, après être arrivé libre de tout contrat et avoir surmonté la période d''adaptation. Son duo avec Huijsen se consolide. Une seule défaite en Liga", "en": "Konaté: there is a new boss. The Frenchman is stepping up in Mourinho''s defence, after arriving on a free transfer and getting through the adaptation period. His partnership with Huijsen is consolidating. Only one league match has been lost"}]','12221298','122115091935544862');
 INSERT INTO "unes" VALUES('2026-11-27','as','[{"es": "UN ATAQUE DE ORO. El equipo no alcanzaba los 50 goles tan rápido desde la 2016-17", "ar": "هجوم ذهبي. الفريق لم يصل إلى 50 هدفًا بهذه السرعة منذ موسم 2016-17", "fr": "Une attaque en or. L''équipe n''avait pas atteint les 50 buts aussi vite depuis 2016-17", "en": "A golden attack. The team had not reached 50 goals this quickly since 2016-17"}]','12221723','122115099999544862');
 CREATE TABLE verif_convocation (cle TEXT PRIMARY KEY, dernier TEXT);
-INSERT INTO "verif_convocation" VALUES('visuel','2026-11-27T05:11:04');
+INSERT INTO "verif_convocation" VALUES('visuel','2026-11-27T05:31:15');
 CREATE TABLE visuels_convocation (tweet_id TEXT PRIMARY KEY, typefully TEXT, envoye TEXT);
 INSERT INTO "visuels_convocation" VALUES('2124869841651954089','avant','2026-11-23T14:17:03');
 CREATE TABLE vus (cle TEXT PRIMARY KEY, titre TEXT, date TEXT);
