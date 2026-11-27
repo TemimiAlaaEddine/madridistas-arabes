@@ -15960,4 +15960,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/real-sociedad-at
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/ser-indiscutible-con-xabi-alonso-suplente-con-mourinho-alvaro-carreras-solo-ha-jugado-26-minutos-esta-temporada_347086_102.html','De ser indiscutible con Xabi Alonso a suplente con Mourinho: Álvaro Carreras solo ha jugado el 26% de los minutos esta temporada','2026-11-27T16:03:25');
 INSERT INTO "vus" VALUES('https://www.footmercato.net/a762644023338464960-come-nico-paz-a-pose-ses-conditions-pour-revenir-au-real-madrid','Côme : Nico Paz a posé ses conditions pour revenir au Real Madrid !','2026-11-27T16:11:35');
 INSERT INTO "vus" VALUES('https://www.managingmadrid.com/real-madrid-cf-data-analysis/115917/scouting-alaves-few-passes-plenty-of-shots','SCOUTING ALAVÉS: Few passes, plenty of shots','2026-11-27T16:32:22');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a6788149458151569193-leverkusen-ibrahim-maza-a-decide-de-poursuivre-sa-carriere-en-allemagne','Leverkusen : Ibrahim Maza a décidé de poursuivre sa carrière en Allemagne','2026-11-27T17:06:32');
 COMMIT;
