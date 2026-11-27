@@ -16225,4 +16225,5 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a1836047451125030268-psg-i
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/mario-cortegana-afirma-mourinho-no-veia-fede-valverde-como-lateral-preferia-como-centrocampista-por-delante-tchouameni_347096_102.html','Mario Cortegana afirma que Mourinho no veía a Fede Valverde como lateral y le prefería como centrocampista por delante de Tchouameni','2026-11-27T20:03:03');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/nivel-militao-obliga-mourinho-replantearse-su-posible-titularidad-en-2027-jugar-solo-140-minutos_347090_102.html','El nivel de Militao obliga a Mourinho a replantearse su posible titularidad en 2027 tras jugar solo 140 minutos','2026-11-27T20:03:03');
 INSERT INTO "vus" VALUES('https://www.marca.com/futbol/real-madrid/2026/11/27/filtros-lesiones.html','Más filtros, menos lesiones','2026-11-27T20:16:43');
+INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Actualites/Ethan-mbappe-prolonge-de-deux-ans-a-lille-jusqu-en-2029/1746771#at_medium=RSS_feeds','Ethan Mbappé prolonge de deux ans à Lille, jusqu''en 2029','2026-11-27T20:35:54');
 COMMIT;
