@@ -12807,6 +12807,7 @@ INSERT INTO "liens_x" VALUES('12251004','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12251005','https://x.com/ElMadridistAlaa/status/2126575575557185731','2026-11-28T07:15:04.851Z');
 INSERT INTO "liens_x" VALUES('12251415','https://x.com/ElMadridistAlaa/status/2126582353489485894','2026-11-28T07:41:58.064Z');
 INSERT INTO "liens_x" VALUES('12251756','https://x.com/ElMadridistAlaa/status/2126587663444746501','2026-11-28T08:03:04.077Z');
+INSERT INTO "liens_x" VALUES('12251762','https://x.com/ElMadridistAlaa/status/2126588157437309436','2026-11-28T08:05:04.615Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -16626,4 +16627,5 @@ INSERT INTO "vus" VALUES('https://www.lequipe.fr/Football/Article/Jude-bellingha
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/vinicius-mbappe-10-jugadores-madrid-ya-han-superado-1000-minutos-esta-temporada_347123_102.html','De Vinicius a Mbappé: 10 jugadores del Madrid ya han superado los 1.000 minutos esta temporada','2026-11-28T08:02:56');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/mourinho-da-paso-meritocracia-se-olvida-nombres_347121_102.html','Mourinho da paso a la meritocracia y se olvida de los nombres','2026-11-28T08:02:56');
 INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/madrid-quiere-aplazar-verano-decision-sobre-futuro-endrick-por-peticion-mourinho_347118_102.html','El Madrid quiere aplazar al verano la decisión sobre el futuro de Endrick por petición de Mourinho','2026-11-28T08:02:56');
+INSERT INTO "vus" VALUES('https://turkish-football.com/jose-mourinho-addresses-arda-guler-selection-debate-ahead-of-real-madrid-vs-alaves/','Jose Mourinho Addresses Arda Güler Selection Debate Ahead of Real Madrid vs. Alavés','2026-11-28T08:05:49');
 COMMIT;
