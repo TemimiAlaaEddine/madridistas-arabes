@@ -12698,7 +12698,7 @@ INSERT INTO "articles" VALUES(1010,'2026-11-28T19:08:29','club','عشب برنا
 
 وبعدما بدا أن الملف طُوي، أعادت صور ما قبل المباراة أمام ألافيس الأسئلة حول أرضية برنابيو.','DANIEL G. VINUESA','دانيال ج. فينويسا','Marca','es','https://www.marca.com/radio/2026/11/28/nuevo-quebradero-cabeza-bernabeu-cesped-vuelve-punto-mira.html','Nuevo quebradero de cabeza en el Bernabéu: el césped vuelve a estar en el punto de mira','info','[]','','','','عاد عشب برنابيو إلى دائرة الانتقاد قبل أقل من ساعة على مباراة ألافيس، رغم أن الريال لعب عليه قبل أربعة أيام','[]','{"fr": "La pelouse du Bernabéu revient dans le viseur avant Real Madrid-Alavés", "en": "The Bernabéu pitch is back under scrutiny before the Alavés game", "es": "El césped del Bernabéu vuelve a estar en el punto de mira antes del Alavés"}','https://objetos-xlk.estaticos-marca.com/files/article_main_microformat/uploads/2026/11/28/6b0b22f06778d.jpeg','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
-INSERT INTO "echecs" VALUES('Page Facebook',33,'2026-11-28T16:36:22','HTTP Error 400: Bad Request {"error":{"message":"Missing or invalid image file","type":"OAuthException","code":324,"error_subcode":2069019,"is_transient":true,"error_user_title":"Image requise","error_user_msg":"Assurez-vous que votre publication sur la Page comporte une image pouvant \u00eatre util',1);
+INSERT INTO "echecs" VALUES('Page Facebook',34,'2026-11-28T16:36:22','HTTP Error 400: Bad Request {"error":{"message":"Missing or invalid image file","type":"OAuthException","code":324,"error_subcode":2069019,"is_transient":true,"error_user_title":"Image requise","error_user_msg":"Assurez-vous que votre publication sur la Page comporte une image pouvant \u00eatre util',1);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
 INSERT INTO "faits" VALUES(2,350,'2026-11-13T05:41:10','Asencio, atteint d''une fracture de stress au tibia droit, a été opéré le 1er octobre.');
@@ -13410,6 +13410,7 @@ INSERT INTO "liens_x" VALUES('12259806','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12261440','https://x.com/ElMadridistAlaa/status/2126741670511378546','2026-11-28T18:15:05.045Z');
 INSERT INTO "liens_x" VALUES('12262097','https://x.com/ElMadridistAlaa/status/2126753580770345377','2026-11-28T19:02:21.791Z');
 INSERT INTO "liens_x" VALUES('12262099','https://x.com/ElMadridistAlaa/status/2126753600181555440','2026-11-28T19:02:26.455Z');
+INSERT INTO "liens_x" VALUES('12262234','https://x.com/ElMadridistAlaa/status/2126757230926250311','2026-11-28T19:16:52.128Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
