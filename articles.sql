@@ -12691,7 +12691,7 @@ INSERT INTO "articles" VALUES(1009,'2026-11-28T18:58:34','actus','تشكيلة �
 
 أما تشكيلة ألافيس التي نشرها «مانيجينغ مدريد» فهي غير مؤكدة بعد: سيفيرا؛ أنخل، تيناغليا، فيلي كوسكي، جوني، ريباش؛ إيبانييز، بلانكو، دينيس سواريز؛ توني مارتينيز، بوييه.','Lucas Navarrete','لوكاس نافاريتي','Managing Madrid','us','https://www.managingmadrid.com/115942/real-madrid-vs-alaves-2026-la-liga-live-online-stream','CONFIRMED lineups: Real Madrid vs Alavés, 2026 La Liga','info','["courtois", "valverde", "konate", "huijsen", "cucurella", "tchouameni", "guler", "brahim", "bellingham", "vinicius", "mbappe", "bernardo", "diomande", "mourinho"]','','','','ريال مدريد يبدأ أمام ألافيس بفينيسيوس وإبراهيم دياز، وبرناردو سيلفا وديوماندي خارج التشكيلة الأساسية','[]','{"fr": "Real Madrid – Alavés : Vinicius titulaire, Brahim à droite, Diomande remplaçant", "en": "Real Madrid vs Alavés: Vinicius starts, Brahim on the right, Diomande on the bench", "es": "Real Madrid – Alavés: Vinicius titular, Brahim por la derecha y Diomande al banquillo"}','https://platform.managingmadrid.com/wp-content/uploads/sites/103/2026/11/gettyimages-2306344620.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
-INSERT INTO "echecs" VALUES('Page Facebook',30,'2026-11-28T16:36:22','HTTP Error 400: Bad Request {"error":{"message":"Missing or invalid image file","type":"OAuthException","code":324,"error_subcode":2069019,"is_transient":true,"error_user_title":"Image requise","error_user_msg":"Assurez-vous que votre publication sur la Page comporte une image pouvant \u00eatre util',1);
+INSERT INTO "echecs" VALUES('Page Facebook',31,'2026-11-28T16:36:22','HTTP Error 400: Bad Request {"error":{"message":"Missing or invalid image file","type":"OAuthException","code":324,"error_subcode":2069019,"is_transient":true,"error_user_title":"Image requise","error_user_msg":"Assurez-vous que votre publication sur la Page comporte une image pouvant \u00eatre util',1);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
 INSERT INTO "faits" VALUES(2,350,'2026-11-13T05:41:10','Asencio, atteint d''une fracture de stress au tibia droit, a été opéré le 1er octobre.');
@@ -13402,6 +13402,7 @@ INSERT INTO "liens_x" VALUES('12259405','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12259806','https://x.com/ElMadridistAlaa/status/2126716845143322753','2026-11-28T16:36:23.331Z');
 INSERT INTO "liens_x" VALUES('12261440','https://x.com/ElMadridistAlaa/status/2126741670511378546','2026-11-28T18:15:05.045Z');
 INSERT INTO "liens_x" VALUES('12262097','https://x.com/ElMadridistAlaa/status/2126753580770345377','2026-11-28T19:02:21.791Z');
+INSERT INTO "liens_x" VALUES('12262099','https://x.com/ElMadridistAlaa/status/2126753600181555440','2026-11-28T19:02:26.455Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
