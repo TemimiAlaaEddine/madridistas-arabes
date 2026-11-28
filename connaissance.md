@@ -2,13 +2,13 @@
 
 Mémoire durable que nous construisons ensemble pour les scripts (commande `/script`). Une ligne par fait, avec sa date et sa source. Seulement ce qui est vérifié ou validé par toi : pas de rumeur sans le dire.
 
-Dernier fait relu : 60
+Dernier fait relu : 66
 (Les faits notés automatiquement à chaque passage, table `faits` de la base, dont le numéro dépasse celui-ci sont en attente de validation. `/script` les présente et met ce numéro à jour.)
 
 ## Effectif et staff
 - Saison 2025-26 : aucun titre, avec Xabi Alonso puis Álvaro Arbeloa (promu de la Castilla en cours de saison ; validé par l'utilisateur le 2026-11-20). Ensuite : José Mourinho nommé entraîneur, Florentino Pérez réélu. Source : validé par l'utilisateur (2026-11-08).
 - Été 2026, arrivées (6, environ 225 M€, plus grosse dépense sur un mercato depuis 2019) : Yan Diomande (ailier, RB Leipzig, 125 M€ hors bonus selon SI et Foot Mercato, environ 107 M£ selon TEAMtalk ; recrue la plus chère de l'histoire du Real Madrid), Marc Cucurella (arrière gauche, Chelsea, 55 M€), Carlos Espí (attaquant, Levante, 25 M€), Denzel Dumfries (arrière droit, Inter, 20 M€), Ibrahima Konaté (défenseur central, Liverpool, libre), Bernardo Silva (milieu, Manchester City, libre). Sources : Sports Illustrated ; Foot Mercato (Allan Brevi) pour le record et les 125 M€ hors bonus de Diomandé ; validé par l'utilisateur le 2026-11-21.
-- Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Source : TEAMtalk.
+- Été 2026, départs : fins de contrat de Carvajal (libre), Alaba (Udinese) et Ceballos (Betis) ; ventes de Gonzalo García (Fulham, environ 40 M€, avec option de rachat selon Marca), César Palacios (Fulham), Fran García (Betis), Víctor Valdepeñas (Fiorentina) ; Mastantuono prêté à la Fiorentina. Sources : TEAMtalk ; Marca (ALBERTO RUBIO) pour l'option de rachat.
 - Été 2026 : Nico Paz passe la saison à Côme, avec une option de rachat pour le Real. Source : Les Nouvelles du Foot.
 - Nico Paz : le Real a vendu 100 % de ses droits à Côme pour environ 60 M€ et garde une option de rachat de 80 M€, activable seulement du 1er au 15 juillet 2027. Le directeur sportif de Côme, Lodi, confirme l'option. Sources : Defensa Central (Diego Vargas, 2026-10-21), OneFootball, Marca (Alberto Rubio, 2026-11-11), ABC (Rubén Cañizares, 2026-11-20) ; validé par l'utilisateur le 2026-11-18.
 - Nico Paz, Serie A 2026-27 (début novembre) : environ 3 buts et 3 passes décisives en 824 minutes, 10 titularisations. Source : FotMob ; validé par l'utilisateur le 2026-11-18.
@@ -23,7 +23,7 @@ Dernier fait relu : 60
 - 2026-11-13 : Thiago Pitarch a fait ses débuts avec l'Espagne U21 lors de la victoire 2-0 contre le Japon, avec Espi également entré en jeu. Source : Managing Madrid (Hridyam Arora).
 - 2026-11-15 : Latif Issman, milieu de l'UD Logroñés, a signé avec le Real Madrid en novembre 2026 et rejoindra le Castilla l'été prochain. Source : Marca (NACHO LABARGA).
 - 2026-11-15 : Jude Bellingham a été élu joueur de l'année de la sélection anglaise 2025-2026, pour la deuxième fois consécutive. Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (ALBERTO RUBIO).
-- 2026-11-17 : Bellingham, Coupe du monde 2026 : 7 buts (seuls Mbappé, 10, et Messi, 8, ont fait mieux), Soulier de bronze, Angleterre 3e. Saison 2025-26 : 111 jours d'absence pour blessures, après avoir joué de novembre 2023 (chute contre le Rayo, labrum de l'épaule gauche) jusqu'à l'opération de l'été 2025 sans se faire opérer (« j'ai décidé de continuer sans me faire opérer, et c'était une erreur »). Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (J. L. Calderón, José María Rodríguez).
+- 2026-11-17 : Bellingham, Coupe du monde 2026 : 7 buts (seuls Mbappé, 10, et Messi, 8, ont fait mieux), Soulier de bronze, Angleterre 3e. Saison 2025-26 : 111 jours d'absence pour blessures, après avoir joué de novembre 2023 (chute contre le Rayo, labrum de l'épaule gauche) jusqu'à l'opération sans se faire opérer plus tôt (« j'ai décidé de continuer sans me faire opérer, et c'était une erreur »). Il a été opéré de l'épaule gauche le 16 juillet 2025 pour une luxation récidivante. Sources : AS (Pablo Montaño, Fernando S. Tavero), Marca (J. L. Calderón, José María Rodríguez), Defensa Central (Alexis Rodríguez) pour la date et le motif de l'opération.
 - 2026-11-17 : Le 17 novembre 2026, Vinicius a signé son premier triplé avec le Brésil, contre Singapour (amical), en 12 minutes. Source : Relevo (Antonio Cervera).
 - 2026-11-17 : Vinicius termine 2026 avec 11 buts sous le maillot du Brésil, un record annuel pour un Brésilien depuis Neymar en 2014. Source : Marca (ALBERTO RUBIO).
 - 2026-11-17 : Endrick a marqué et débuté titulaire lors de la victoire 7-0 du Brésil face à Singapour en match amical. Source : Cadena SER.
@@ -40,6 +40,8 @@ Dernier fait relu : 60
 - 2026-11-26 : Mbappé a atteint 76 buts en Ligue des champions après son doublé contre le PSV (novembre 2026), devenant le cinquième meilleur buteur de l'histoire de la compétition. Source : AS (Sergio López).
 - 2026-11-26 : Mbappé a marqué lors de sept matchs européens consécutifs, un seul joueur du Real Madrid, Cristiano Ronaldo (11 matchs en 2017-18), ayant fait mieux. Source : AS (Sergio López).
 - 2026-11-26 : Mbappé et Bellingham figurent dans l'équipe de la semaine de la Ligue des champions après le match contre le PSV. Source : Managing Madrid (Lucas Navarrete).
+- 2026-11-27 : Brahim Díaz a officiellement prolongé son contrat avec le Real Madrid jusqu'au 30 juin 2031. Source : Real Madrid CF (site officiel).
+- 2026-11-28 : Thibaut Courtois a disputé son 350e match avec le Real Madrid contre le PSV, devenant le troisième gardien le plus utilisé de l'histoire du club. Source : HLN (Stephan Keygnaert).
 
 ## Système de jeu et tendances
 Évolution des compos de Mourinho en 2026-27 (validé par l'utilisateur le 2026-11-08). Mourinho explique rarement ses choix : FAIT = sourcé, LECTURE = interprétation, HYPOTHÈSE = non confirmé. Fil rouge, trois phases : la construction (qui forme le double pivot ?), l'attaque placée (encombrement à gauche entre Mbappé et Vinícius) et la transition défensive (qui protège les couloirs ?).
@@ -65,6 +67,7 @@ Dernier fait relu : 60
   - Attention : Güler est mesuré sur la saison passée et sur la fiche « Winger ».
 - 2026-11-08 : l'attaque tourne très bien, mais la défense encaisse beaucoup en Europe (7 buts en 4 matchs de LDC). Les deux seules défaites sont venues à l'extérieur (Betis, Atlético). Source : validé par l'utilisateur.
 - 2026-11-24 : contre le PSV en Ligue des champions, Mourinho a remplacé ses deux défenseurs centraux à la mi-temps, une première dans l'histoire de la compétition. Source : Managing Madrid (Sam Leveridge).
+- 2026-11-27 : Mourinho a reconverti Valverde en latéral et associé Bernardo Silva à Tchouaméni dans le double pivot. Source : Defensa Central (Carlos Higueras Carrasco).
 
 ## Matchs de la saison (score, buteurs, faits marquants)
 Bilan au 8 novembre 2026 : 16 matchs, 14 victoires, 2 défaites. Liga : 10V 2D, 31 buts marqués, 10 encaissés, 30 points, à égalité avec le Barça (Barça-Atlético à jouer le 9 novembre). LDC : 4 sur 4, 13 buts marqués, 7 encaissés. 8 victoires de suite depuis Villarreal. Sources : ESPN (résultats, classement), UEFA ; validé par l'utilisateur.
@@ -128,6 +131,7 @@ Tendances relevées sur un mois d'articles (25 oct. - 20 nov. 2026), d'après le
 - Statuts, article 40 : 20 ans d'ancienneté de socio pour se présenter à la présidence (15 pour vice-président, 10 pour le conseil), et une garantie bancaire d'au moins 15 % du budget de dépenses. Nadal est socio d'honneur depuis 2011, donc éligible en 2031 si l'ancienneté compte depuis cette date. Si la présidence devient vacante, le conseil choisit l'un de ses membres et l'assemblée le ratifie. Source : Marca (Juan Ignacio García-Ochoa).
 - 2026-11-14 : Ballon d'Or 2026 : Harry Kane gagne, Kylian Mbappé termine deuxième à 28 points. Source : Foot Mercato (Jordan Pardon).
 - 2026-11-24 : En 1988, le Real Madrid a été éliminé par le PSV en demi-finale de la Coupe d'Europe (1-1 à Madrid, 0-0 à Eindhoven) à cause de la règle des buts à l'extérieur. Source : ABC (Rubén Cañizares).
+- 2026-11-28 : Le 28 novembre 2020, l'Alavés a battu le Real Madrid 2-1 au Di Stéfano (Lucas Pérez sur penalty et Joselu ; Casemiro pour Madrid). Source : Defensa Central (Carlos Higueras Carrasco).
 
 ## Préférences pour les scripts
 - 2026-11-08 : utiliser les stats WhoScored (notes, passes clés, dribbles, système de jeu) pour l'analyse des matchs. Source à citer : Opta (« أوبتا »), le fournisseur des données de WhoScored et de FotMob, jamais WhoScored ni FotMob (2026-11-22).
