@@ -18,5 +18,11 @@
    "fin"
   ],
   "fini": true
+ },
+ "2026-11-28T20:00:00": {
+  "cles": [
+   "début"
+  ],
+  "fini": false
  }
 }
