@@ -12,6 +12,7 @@ import sys
 import urllib.request
 from datetime import datetime, time, timedelta
 
+from calendrier import LIVE, POST, PRE, phase_et_match
 from commun import BASE, DB_PATH, e, maintenant, restaurer_base
 from threads import ENVOYES, heure_madrid
 
@@ -466,7 +467,19 @@ def donnees(con, utc, passages=(), revue=None, scripts=BASE / "scripts", videos=
     return {"genere": iso(utc) + "Z", "genere_txt": hm(utc), "dernier_passage": dernier,
             "dernier_txt": hm(datetime.fromisoformat(dernier.rstrip("Z"))) if dernier else "donnée indisponible",
             "rythme": rythme, "kpi": kpi, "agents": agents, "graphes": graphes, "faits": a_valider, "revues": list(revues),
-            "alertes": alertes, "bloques": bloques, "indispo": [masquer(i) for i in indispo]}
+            "alertes": alertes, "bloques": bloques, "indispo": [masquer(i) for i in indispo], "phase": phase_et_match(utc)}
+
+
+# phase éditoriale (calendrier.phase_et_match) : libellé affiché, préposition devant le match
+PHASES = {LIVE: ("match en cours", ""), POST: ("après-match (24 h)", "après "), PRE: ("avant-match (24 h)", "avant ")}
+
+
+def phase_html(ph):
+    """Badge de la phase du moment, dans le bandeau du haut."""
+    nom, match = ph or ("WEEK_MODE", None)
+    libelle, prep = PHASES.get(nom, ("semaine normale", ""))
+    detail = f" · {e(prep)}<bdi>{e(match)}</bdi>" if match else ""
+    return f'<p class="phase ph-{nom.lower()}">Phase {q("g-phase", "phase")} : <b>{e(nom)}</b> <small>({e(libelle)}{detail})</small></p>'
 
 
 ETATS = {"ok": "Actif", "attente": "T'attend", "bloque": "Bloqué", "repos": "Au repos", "demande": "Sur demande"}
@@ -629,6 +642,7 @@ PROBLEME = """<section class="carte" id="probleme"><h2>En cas de problème</h2>
 <li>Cette page : régénérée après chaque passage. Si elle a plus de 30 min, elle passe d'elle-même en alerte « Données périmées ».</li></ol></section>"""
 
 GLOSSAIRE = [
+    ("g-phase", "Phase", "Le moment du calendrier qui règle les priorités éditoriales, une seule à la fois : LIVE_MATCH (du coup d'envoi à 2 h 30 après), POST_MATCH_24H (les 24 h qui suivent), PRE_MATCH_24H (les 24 h avant un match), sinon WEEK_MODE. Les conférences et les compositions se superposent à la phase. Calculée d'après le calendrier du club (matchs.json) ; en observation, elle sert à noter les décisions de selection.py sans encore agir sur la publication."),
     ("g-passage", "Passage", "Un tour complet du pipeline : lire les journaux, rédiger, contrôler, publier. Lancé automatiquement par cron-job.org sur GitHub Actions, toutes les quelques minutes (le rythme mesuré est affiché dans l'organigramme)."),
     ("g-quota", "Quota Typefully", "Nombre de publications que l'offre Typefully autorise par mois (lu dans l'API Typefully). La projection prolonge le rythme du mois jusqu'au dernier jour. Au-delà du quota, plus aucune publication n'est acceptée avant le 1er du mois suivant."),
     ("g-rss", "Flux RSS", "La liste des derniers articles qu'un journal publie dans un format lisible par une machine. Le Collecteur la lit à chaque passage."),
@@ -693,6 +707,7 @@ def page(d):
 <p class="liens-haut"><a href="{ARCHITECTURE}" target="_blank" rel="noopener">Architecture du système →</a> · <a href="#glossaire">Aide</a> · <a href="#probleme">En cas de problème</a></p></div>
 <div class="etat-global e-{humeur[0]}" id="bandeau" data-genere="{d['genere']}" role="status">
 <p class="humeur"><i class="point"></i><a href="#traiter" id="humeur">{e(humeur[1])}</a></p>
+{phase_html(d.get("phase"))}
 <p class="horaires">Dernier passage {q('g-passage', 'passage')} : <b>{e(d['dernier_txt'])}</b> <span data-age="{d['dernier_passage'] or ''}"></span><br>
 Page mise à jour : <b>{e(d['genere_txt'])}</b> <span data-age="{d['genere']}"></span> <small>heure de Madrid</small></p>
 <noscript><p class="horaires">Sans JavaScript, la page ne calcule pas son ancienneté : si la mise à jour a plus de 30 min, le pipeline s'est peut-être arrêté.</p></noscript></div></header>
@@ -736,6 +751,8 @@ background:linear-gradient(135deg,#14213d,#1f3a7a);color:#fff}.haut h1{font-size
 .etat-global{background:rgba(255,255,255,.1);padding:12px 16px;border-radius:12px;border-inline-start:5px solid var(--c);max-width:100%}
 .etat-global p{margin:0}.humeur{display:flex;align-items:center;gap:8px;font-weight:700;font-size:17px}
 .humeur a{color:#fff;text-decoration:underline;text-underline-offset:3px}.horaires{font-size:13px;opacity:.9;margin-top:6px!important}
+.phase{display:inline-block;font-size:13px;margin-top:8px!important;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.14);opacity:1!important}
+.phase b{letter-spacing:.02em}.ph-live_match{background:#c0392b}.ph-pre_match_24h{background:#8a5a12}.ph-post_match_24h{background:#2f6f4f}
 .etat-global .q{color:#fff}
 main{max-width:1200px;margin:0 auto;padding:20px 16px 40px;display:grid;gap:20px}
 .carte,.fiche,.kpi{background:var(--carte);border:1px solid var(--bord);border-radius:14px;box-shadow:var(--ombre)}.carte{padding:18px;min-width:0}

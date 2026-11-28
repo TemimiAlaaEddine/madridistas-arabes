@@ -42,6 +42,36 @@ def conferences(page, apres):
                    if re.search(r"Rueda de prensa:(?:&nbsp;|\s)*s[íi]", tv) and datetime.fromisoformat(d[:19]) >= apres})
 
 
+PRE, LIVE, POST, SEMAINE = "PRE_MATCH_24H", "LIVE_MATCH", "POST_MATCH_24H", "WEEK_MODE"
+
+
+def phase(utc=None):
+    """Phase éditoriale, une seule à la fois (P2 de l'audit du 28 nov.) : LIVE_MATCH du coup d'envoi à 2 h 30 après (heure
+    fixée seulement), puis POST_MATCH_24H pendant 24 h, PRE_MATCH_24H dans les 24 h avant un match, sinon WEEK_MODE. Les
+    modules prioritaires (conférence, compositions, liste) se superposent à la phase, ils ne la remplacent pas."""
+    return phase_et_match(utc)[0]
+
+
+def phase_et_match(utc=None):
+    """(phase, match concerné « Real Madrid vs Alavés » ou None). Matchs de matchs.json et de direct.json (matchs suivis : un
+    match du dimanche reste connu après le calendrier du lundi, sans son nom)."""
+    utc = utc or maintenant()
+    try:
+        matchs = {m["debut"]: (m.get("heure_fixee", True), m.get("match")) for m in json.loads(FICHIER.read_text(encoding="utf-8"))}
+    except (OSError, ValueError):
+        matchs = {}
+    for debut in lire_direct():
+        matchs.setdefault(debut, (True, None))
+    ecarts = sorted((utc - datetime.fromisoformat(d), fixee, nom) for d, (fixee, nom) in matchs.items())
+    for phase_, dans in ((LIVE, lambda e, fixee: fixee and timedelta(0) <= e < DUREE),
+                         (POST, lambda e, fixee: (DUREE if fixee else timedelta(0)) <= e < DUREE + timedelta(hours=24)),  # sans heure : jamais LIVE
+                         (PRE, lambda e, fixee: timedelta(hours=-24) <= e < timedelta(0))):
+        m = next((nom for e, fixee, nom in ecarts if dans(e, fixee)), False)
+        if m is not False:
+            return phase_, m
+    return SEMAINE, None
+
+
 def match_courant(utc):
     """Le match de matchs.json en cours (du coup d'envoi à 2 h 30 après, heure fixée seulement), sinon None."""
     try:

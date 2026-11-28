@@ -420,6 +420,11 @@
   "typefully_publish_at_actus": "now",
   "max_publications_heure": 8,
   "typefully_reserve": 150,
+  "niveaux_sources": {
+    "_": "fiabilité par journal : 1 = site du club (automatique), 2 = grande presse, 3 = par défaut, 4 = relais de seconde main",
+    "2": ["Marca", "AS", "Mundo Deportivo", "ABC", "The Guardian", "L'Equipe", "El País", "El Mundo", "El Confidencial", "Cadena SER", "COPE", "Relevo"],
+    "4": ["Defensa Central"]
+  },
   "seuil_doublon": 0.6,
   "facebook_lien_en_commentaire": true,
   "modele_tri": "sonnet",

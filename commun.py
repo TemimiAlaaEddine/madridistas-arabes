@@ -292,4 +292,25 @@ def extraire_json(texte):
     debut, fin = texte.find("["), texte.rfind("]")
     if debut == -1 or fin == -1:
         raise ValueError("Aucun tableau JSON trouvé dans la réponse de Claude.")
-    return json.loads(texte[debut:fin + 1])
+    sortie = json.loads(texte[debut:fin + 1])
+    if not isinstance(sortie, list):
+        raise ValueError("La réponse n'est pas un tableau JSON.")
+    return sortie
+
+
+def appeler_json(prompt, modele=None, effort=None, appel=None):
+    """Tableau JSON demandé à Claude, avec UNE relance qui lui donne l'erreur (audit du 28 nov. : une réponse illisible
+    renvoyait le lot à Claude à chaque passage). (tableau, réponse brute) ; ValueError si la relance échoue aussi.
+    appel : l'appeler_claude du module appelant (les tests le remplacent là)."""
+    appel = appel or appeler_claude
+    reponse = appel(prompt, modele, effort)
+    try:
+        return extraire_json(reponse), reponse
+    except ValueError as err:  # JSONDecodeError en est un
+        print(f"  ! réponse illisible ({err}), une relance")
+        reponse = appel(f"{prompt}\n\nTA RÉPONSE PRÉCÉDENTE ÉTAIT ILLISIBLE ({err}). Réponds UNIQUEMENT avec le tableau "
+                        "JSON demandé, valide, sans texte avant ni après, sans bloc de code.", modele, effort)
+        try:
+            return extraire_json(reponse), reponse
+        except ValueError as err2:
+            raise ValueError(f"{err2} (après relance) ; réponse : {reponse[:300]}") from err2

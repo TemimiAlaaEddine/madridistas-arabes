@@ -29,8 +29,8 @@ from difflib import SequenceMatcher
 from html.parser import HTMLParser
 
 import threads
-from calendrier import match_en_cours, suivre_match
-from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClaude, appeler_claude, collecter, dedoublonner, e,
+from calendrier import match_en_cours, phase, suivre_match
+from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClaude, appeler_claude, appeler_json, collecter, dedoublonner, e,
                     extraire_json, lire_page, maintenant, marquer_vus, nettoyer, normaliser_titre, plat, restaurer_base)
 from couvertures import generer_couvertures, vignette
 
@@ -259,7 +259,14 @@ Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, 
 Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
 
-Réponds UNIQUEMENT avec le tableau JSON des articles gardés, sans texte autour : [{{"id": 3, "type": "opinion"}}, {{"id": 5, "type": "conference"}}, {{"id": 7, "type": "info"}}]
+Pour chaque article gardé, note de 0 à 3, sans complaisance (la plupart des articles valent 1 ou 2) :
+- "importance" : poids de l'information ou du sujet pour le Real Madrid (0 anecdote, 3 blessure grave, transfert conclu, décision majeure) ;
+- "originalite" : ce que l'article apporte face à « DÉJÀ PUBLIÉ » et aux autres articles de la liste (0 redite, 3 exclusivité ou analyse que personne d'autre ne fait) ;
+- "interet" : envie d'un supporter arabe du Real de le lire (0 aucune, 3 sujet dont tout le monde parle) ;
+- "urgence" : perd-il sa valeur s'il attend quelques heures ? (0 non, 3 oui, ex. composition officielle, résultat) ;
+et "confirme" : false si l'information n'est qu'une rumeur ou au conditionnel, sinon true.
+
+Réponds UNIQUEMENT avec le tableau JSON des articles gardés, sans texte autour : [{{"id": 3, "type": "opinion", "importance": 1, "originalite": 2, "interet": 2, "urgence": 0, "confirme": true}}]
 
 DÉJÀ PUBLIÉ
 {deja}
@@ -344,12 +351,15 @@ def trier(items, deja=()):
     Retourne (gardés, avec it["type"] = opinion|conference|info ; écartés), ou None si la réponse est illisible."""
     blocs = [f"[{i}] {journal(it)}{' (rubrique opinion)' if it.get('opinion') else ''} : {it['titre']}\n{it['resume'][:300]}"
              for i, it in enumerate(items, 1)]
-    reponse = appeler_claude(PROMPT_TRI.format(deja="\n".join(f"- {t}" for t in deja) or "(aucun)",
-                                               articles="\n\n".join(blocs), match=match_en_cours()), CONFIG.get("modele_tri", "haiku"), "low")
     try:
-        choix = {r.get("id"): r.get("type") for r in extraire_json(reponse) if isinstance(r, dict)}
-    except (ValueError, json.JSONDecodeError):
+        reponse, _ = appeler_json(PROMPT_TRI.format(deja="\n".join(f"- {t}" for t in deja) or "(aucun)",
+                                                    articles="\n\n".join(blocs), match=match_en_cours()), CONFIG.get("modele_tri", "haiku"), "low",
+                                    appel=appeler_claude)
+    except ValueError as err:
+        print(f"  ! tri illisible ({err})")
         return None
+    notes = {r.get("id"): r for r in reponse if isinstance(r, dict)}
+    choix = {i: r.get("type") for i, r in notes.items()}
     gardes, ecartes = [], []
     for i, it in enumerate(items, 1):
         if it.get("opinion"):  # rubriques d'opinion : gardées d'office
@@ -366,6 +376,7 @@ def trier(items, deja=()):
                 del choix[i]
         if i in choix:
             it["type"] = choix[i] if choix[i] in ("opinion", "conference") else "info"
+            it["_tri"] = notes.get(i) or {}  # notes de la politique éditoriale (selection.py)
             gardes.append(it)
         else:
             ecartes.append(it)
@@ -471,8 +482,8 @@ def enregistrer(reponses, items, chemin=DB):
             noter_faits(con, cur.lastrowid, r.get("faits"), now)
         tweets = cur.rowcount and threads.assembler(
             {"auteur_ar": auteur_ar, "auteur": auteur, "journal": journal(it), "lien": it["lien"]},
-            r.get("tweets") or [])
-        if tweets:  # sinon (absent ou trop long) : threads.decouper le réécrira
+            r["tweets"] if isinstance(r.get("tweets"), list) else [])  # une chaîne serait découpée lettre par lettre
+        if tweets:  # sinon (absent, mal formé ou trop long) : threads.decouper le réécrira
             threads.connexion_threads(con)
             con.execute("INSERT OR IGNORE INTO threads (article_id, tweets, statut, date) VALUES (?,?,?,?)",
                         (cur.lastrowid, json.dumps(tweets, ensure_ascii=False), "a_envoyer", now))
@@ -1022,12 +1033,16 @@ def traiter_lot(lot):
     con = connexion()
     noms = noms_arabes(con)
     con.close()
-    reponse = appeler_claude(construire_prompt(lot, deja_publies(), noms), CONFIG.get("modele_redaction", "sonnet"))
     try:
-        reponses = extraire_json(reponse)
-    except (ValueError, json.JSONDecodeError) as err:
-        (BASE / "sortie" / "derniere_reponse_site.txt").write_text(reponse, encoding="utf-8")
-        print(f"  ! réponse illisible ({err}), sauvegardée dans sortie/derniere_reponse_site.txt ; lot repris au prochain passage")
+        reponses, _ = appeler_json(construire_prompt(lot, deja_publies(), noms), CONFIG.get("modele_redaction", "sonnet"),
+                                   appel=appeler_claude)
+    except ValueError as err:
+        # abandonné après une relance : avant, le lot revenait à Claude à chaque passage pendant 24 h (audit du 28 nov.)
+        (BASE / "sortie" / "derniere_reponse_site.txt").write_text(str(err), encoding="utf-8")
+        print(f"  ! réponse illisible après relance ({str(err)[:120]}) : lot abandonné, détail dans sortie/derniere_reponse_site.txt")
+        for it in lot:
+            print(f"    - abandonné : {journal(it)} | {it['titre'][:90]}")
+        marquer_vus(lot, DB)
         return None
     n = enregistrer(reponses, lot)
     marquer_vus(lot, DB)
@@ -1071,8 +1086,18 @@ def main():
             except ErreurClaude as err:  # rien n'est marqué comme vu : tout est repris au prochain passage
                 print(f"  ! Claude indisponible ({err}) : pas de rédaction cette fois")
                 panne, tri, items = True, None, []
-            if tri:  # sinon (réponse illisible) : tout est rédigé comme avant
+            if tri is None and items:  # illisible même après relance : rien n'est rédigé (avant : tout l'était, le plus cher)
+                print("  ! tri illisible : pas de rédaction cette fois, articles repris au prochain passage")
+                items = []
+            if tri:
                 gardes, ecartes = tri
+                try:  # politique éditoriale (selection.py) : observée, n'agit qu'une fois activée
+                    import selection
+                    con = connexion()
+                    selection.noter(con, gardes, ecartes, phase())
+                    con.close()
+                except (sqlite3.Error, ValueError, KeyError) as err:  # la trace ne doit jamais bloquer la publication
+                    print(f"  ! décisions non enregistrées ({err})")
                 marquer_vus(ecartes, DB)
                 print(f"  {len(gardes)} gardé(s), {len(ecartes)} écarté(s) :")
                 for it in ecartes:  # pour contrôler la qualité du tri dans le journal du passage

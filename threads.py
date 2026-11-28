@@ -21,7 +21,7 @@ from datetime import datetime, timedelta, timezone
 
 from difflib import SequenceMatcher
 
-from commun import BASE, CONFIG, ErreurClaude, appeler_claude, extraire_json, lire_page, maintenant, normaliser_titre
+from commun import BASE, CONFIG, ErreurClaude, appeler_claude, appeler_json, extraire_json, lire_page, maintenant, normaliser_titre
 
 LIMITE = 280
 LIMITE_LONG = 25_000  # tweet long (X Premium, depuis le 22 nov. 2026) : chaque thread devient un seul tweet
@@ -265,8 +265,8 @@ def decouper(con, heures=24):
     blocs = [f"[id {a['id']}] Section : {a['section']}\nAuteur : {a['auteur_ar'] or a['auteur'] or 'inconnu'}\n"
              f"Média : {a['journal']}\nTitre : {a['titre']}\nTexte :\n{a['texte']}" for a in arts]
     try:
-        reponses = extraire_json(appeler_claude(PROMPT.format(regles=REGLES, articles="\n\n".join(blocs)),
-                                                CONFIG.get("modele_redaction", "sonnet")))
+        reponses, _ = appeler_json(PROMPT.format(regles=REGLES, articles="\n\n".join(blocs)), CONFIG.get("modele_redaction", "sonnet"),
+                                   appel=appeler_claude)
     except (ValueError, ErreurClaude) as err:  # JSONDecodeError est un ValueError
         print(f"  ! threads : pas de réponse utilisable ({err}), repris au prochain passage")
         return 0
@@ -274,7 +274,7 @@ def decouper(con, heures=24):
     n = 0
     for r in reponses:
         a = par_id.get(r.get("id")) if isinstance(r, dict) else None
-        tweets = assembler(a, r.get("tweets") or []) if a else None
+        tweets = assembler(a, r["tweets"]) if a and isinstance(r.get("tweets"), list) else None  # une chaîne : lettre par lettre
         if tweets:  # sinon (tweet trop long) : réécrit au prochain passage
             con.execute("INSERT OR IGNORE INTO threads (article_id, tweets, statut, date) VALUES (?,?,?,?)", (a["id"], json.dumps(tweets, ensure_ascii=False),
                         "a_envoyer", maintenant().isoformat(timespec="seconds")))
