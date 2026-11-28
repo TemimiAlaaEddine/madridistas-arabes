@@ -16300,4 +16300,5 @@ INSERT INTO "vus" VALUES('https://fr.hespress.com/498153-liga-brahim-diaz-prolon
 INSERT INTO "vus" VALUES('https://as.com/futbol/alineacion-posible-del-real-madrid-contra-el-alaves-en-laliga-ea-sports-f202611-n/','Alineación posible del Real Madrid contra el Alavés en LaLiga EA Sports','2026-11-27T22:41:55');
 INSERT INTO "vus" VALUES('https://as.com/opinion/el-poderio-de-jude-f202611-n/','El poderío de Jude','2026-11-27T23:51:53');
 INSERT INTO "vus" VALUES('https://www.abc.es/deportes/real-madrid/mourinho-punto-20261127021459-nt.html','Mourinho. Punto','2026-11-28T01:42:09');
+INSERT INTO "vus" VALUES('https://www.elconfidencial.com/deportes/futbol/internacional/2026-11-28/deportista-seguir-rio-ngumoha-liverpool-regates-lamine-yamal-yan-diomande_4474314/','El deportista a seguir | La nueva joya del Liverpool es el regateador que desnuda a Lamine Yamal y Diomande','2026-11-28T04:01:23');
 COMMIT;
