@@ -452,15 +452,58 @@ print("OK image principale")
 assert "K_Mbappe_Striker_stats" in g.liens_stats("mbappe") and "Real_Madrid_Team_stats" in g.liens_stats("mbappe")
 assert "Real_Madrid_Team_stats" in g.liens_stats("lunin") and "إحصاءات اللاعب" not in g.liens_stats("lunin")
 print("OK liens DataMB")
-# gardés d'office même si le tri les oublie : rubrique d'opinion, composition probable Marca/AS
+# gardés d'office même si le tri les oublie : rubrique d'opinion, site du club (les compositions probables de Marca et AS
+# ne passent plus par le tri : publiées à part, sans Claude)
 g.appeler_claude = lambda prompt, *a: "[]"
 office = [{"titre": "Alineaciones probables del Valencia - Real Madrid", "resume": "", "source": "Marca - Real Madrid", "lien": "a"},
           {"titre": "Viejos rockeros", "resume": "", "source": "AS - Opinion", "lien": "b", "opinion": True},
           {"titre": "Predicted lineups", "resume": "", "source": "Managing Madrid", "lien": "c"},
           {"titre": "Comunicado Oficial renovación de Tchouameni", "resume": "", "source": "Real Madrid CF", "lien": "d", "officiel": True}]
 gardes, ecartes = g.trier(office)
-assert [it["type"] for it in gardes] == ["info", "opinion", "info"] and ecartes == [office[2]]
+assert [it["type"] for it in gardes] == ["opinion", "info"] and ecartes == [office[0], office[2]]
 print("OK gardés d'office")
+# compositions probables (28 nov.) : Marca et AS seulement, du Real ; image de la composition ; une ligne, sans Claude
+assert g.est_compo_probable({"titre": "Real Madrid - Alavés: alineaciones probables", "source": "Marca - Real Madrid", "lien": "x"})
+assert g.est_compo_probable({"titre": "Posible alineación del Real Madrid contra el Alavés", "source": "AS", "lien": "x"})
+assert not g.est_compo_probable({"titre": "Alineaciones probables del Betis - Sevilla", "source": "Marca", "lien": "x"})
+assert not g.est_compo_probable({"titre": "Predicted lineups Real Madrid", "source": "Managing Madrid", "lien": "x"})
+assert g.image_compo({"source": "AS", "image": "https://img.asmedia.epimg.net/resizer/v2/X.jpg?auth=abc&width=1472&height=828&smart=true"})     == "https://img.asmedia.epimg.net/resizer/v2/X.jpg?auth=abc", "AS : sans le recadrage qui coupait le gardien"
+page_marca = ('<meta data-ue-u="og:image" property="og:image" content="https://objetos-xlk.estaticos-marca.com/files/article_main_microformat/uploads/2026/11/27/affiche1.jpeg">'
+              '<img src="https://objetos-xlk.estaticos-marca.com/uploads/2026/11/27/affiche1.jpeg">'
+              '<img src="https://objetos-xlk.estaticos-marca.com/uploads/2026/11/27/onze2.jpeg">')
+assert g.image_compo({"source": "Marca", "lien": "x"}, page_marca) == "https://objetos-xlk.estaticos-marca.com/uploads/2026/11/27/onze2.jpeg"
+assert g.image_compo({"source": "Marca", "lien": "x"}, "<html></html>") == "", "introuvable : brouillon"
+import calendrier
+with tempfile.TemporaryDirectory() as tmp:
+    vrai_cal = (calendrier.FICHIER, calendrier.nom_arabe_claude, g.image_compo)
+    calendrier.FICHIER = Path(tmp) / "matchs.json"
+    calendrier.FICHIER.write_text(json.dumps([{"match": "Real Madrid vs Alavés", "debut": "2099-11-28T20:00:00", "heure_fixee": True}]), encoding="utf-8")
+    calendrier.nom_arabe_claude = lambda nom: "ألافيس"
+    g.image_compo = lambda it, page=None: "https://img/onze.jpg" if it["source"] == "AS" else ""
+    try:
+        compos = [{"titre": "Real Madrid - Alavés: alineaciones probables", "source": "Marca", "lien": "https://marca.com/alaves-probables", "pays": "es"},
+                  {"titre": "Posible alineación del Real Madrid contra el Alavés", "source": "AS", "lien": "https://as.com/alaves-posible", "pays": "es"}]
+        db = Path(tmp) / "a.db"
+        assert g.enregistrer_compos(compos, db) == 2 and g.enregistrer_compos(compos, db) == 0, "une par média, une seule fois"
+        con = g.connexion(db)
+        lignes = con.execute("SELECT a.titre, a.image, t.tweets FROM articles a JOIN threads t ON t.article_id = a.id ORDER BY a.id").fetchall()
+        assert lignes[0][0] == "التشكيلة المتوقعة لريال مدريد أمام ألافيس حسب صحيفة «ماركا»" and lignes[1][0].endswith("«آس»")
+        assert lignes[1][1] == "https://img/onze.jpg" and json.loads(lignes[1][2])[0] == lignes[1][0]
+        # contrôles : ni « source absente », ni doublon de l'autre journal ; jamais l'étiquette de la composition officielle
+        t.connexion_threads(con)
+        assert t.controler_thread(con, 2, json.loads(lignes[1][2])) == [] and not lignes[0][0].startswith("📋")
+        con.close()
+        assert g.adversaire({"titre": "Alineación del Real Madrid contra el Betis", "lien": ""}, g.maintenant()) == "", "autre match : sans adversaire"
+    finally:
+        calendrier.FICHIER, calendrier.nom_arabe_claude, g.image_compo = vrai_cal
+print("OK compositions probables")
+# Defensa Central (28 nov.) : propos de plateaux télé écartés par le titre, analyses et chiffres gardés
+import commun
+dc = next(f for f in g.CONFIG["flux"] if f["nom"] == "Defensa Central")
+assert not commun.garde(dc, "Roberto Morales reflexiona sobre Valverde: \"Decía que...\"", "", "", ["madrid"])
+assert not commun.garde(dc, "Gary Neville: \"Haaland va a ser jugador del Madrid\"", "", "", ["madrid"])
+assert commun.garde(dc, "Bellingham lleva 11 goles en la Liga de Campeones con el Madrid", "", "", ["madrid"])
+print("OK filtre Defensa Central")
 # conférences de presse : type gardé par le tri, texte lu en entier, mode « conférence » dans le prompt et la base
 g.appeler_claude = lambda prompt, *a: '[{"id": 1, "type": "conference"}]'
 conf = [{"titre": "Rueda de prensa de Mourinho", "resume": "", "source": "AS - Futbol", "lien": "https://as.com/c", "auteur": ""}]
@@ -727,29 +770,26 @@ assert t.controler_thread(con, 23, ["🚨 عاجل | غولر يمدد عقده 
 con.close()
 print("OK contrôles avant envoi")
 
-# conférence : un seul thread par personne sur 6 h (X interdit les réponses par l API)
+# conférence : chaque déclaration est un tweet à part (choix du 28 nov., plus de « un seul thread par conférence »), une seule
+# fois : l'anti-doublon voit aussi les tweets du direct, absents de la base
 assert t.orateur("🎙️ مؤتمر مورينيو | «نص»") == t.orateur("🗣️ مورينيو | «نص آخر»") == "مورينيو" and t.orateur("بلا تسمية") == ""
 con = sqlite3.connect(":memory:")
-con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, mode TEXT, lien TEXT)")
-con.execute("CREATE TABLE liens_x (typefully TEXT PRIMARY KEY, url TEXT, date TEXT)")
 t.connexion_threads(con)
-from datetime import timedelta
-_m = lambda h: (t.maintenant() - timedelta(hours=h)).isoformat(timespec="seconds")
-for i, mode, tw, st, h in ((1, "conference", "🎙️ مؤتمر مورينيو | «أ»", "immédiat", 1), (2, "conference", "🗣️ مورينيو | «ب»", "immédiat", 0.5),
-                           (3, "conference", "🗣️ روديغر | «ج»", "immédiat", 1), (4, "conference", "🗣️ فالفيردي | «د»", "immédiat", 8),
-                           (5, "conference", "🗣️ كورتوا | «هـ»", "bloqué : test", 1)):
-    con.execute("INSERT INTO articles VALUES (?, ?, 'https://www.marca.com/x')", (i, mode))
-    con.execute("INSERT INTO threads (article_id, tweets, statut, date, typefully, envoye) VALUES (?, ?, ?, ?, ?, ?)",
-                (i, json.dumps([tw]), st, _m(h), str(100 + i), _m(h)))
-assert t.conference_publiee(con, 9, "🗣️ مورينيو | «جديد»") and t.conference_publiee(con, 9, "🎙️ مؤتمر روديغر | «جديد»")
-assert not t.conference_publiee(con, 9, "🗣️ فالفيردي | «جديد»")  # il y a 8 h : nouveau thread
-assert not t.conference_publiee(con, 9, "🗣️ كورتوا | «جديد»")  # thread bloqué : ne compte pas
-assert not t.conference_publiee(con, 9, "📰 خبر | بلا متحدث")
-# récapitulatif du club : le direct de Marca/AS ne l'empêche pas, un autre récapitulatif du club oui
-assert not t.conference_publiee(con, 9, "🎙️ مؤتمر مورينيو | «كل شيء»", club=True)
-con.execute("UPDATE articles SET lien = 'https://www.realmadrid.com/es-ES/noticias/ruedas-de-prensa/x' WHERE id = 2")
-assert t.conference_publiee(con, 9, "🎙️ مؤتمر مورينيو | «كل شيء»", club=True)
+assert not hasattr(t, "conference_publiee")
+direct = ["🎙️ مؤتمر مورينيو | «لا أريد أحدًا، لا للدخول ولا للخروج»\n\nعن سوق الانتقالات"]
+t.meme_nouvelle = lambda ancien, nouveau: True
+assert t.controler_thread(con, 1, ["🎙️ مؤتمر مورينيو | «لا أريد أحدًا، لا للدخول ولا للخروج»"], direct=direct) == ["doublon du tweet du direct"]
+assert t.controler_thread(con, 1, ["🎙️ مؤتمر مورينيو | «رودريغو لن يلعب أمام أرسنال»"], direct=direct) == [], "autre déclaration : elle part"
+t.meme_nouvelle = meme_nouvelle
 con.close()
+# ✅ réservé au site du club : sinon brouillon (23 nov. : deux listes de la presse « ✅ رسميًا »)
+con = sqlite3.connect(":memory:")
+con.execute("CREATE TABLE articles (id INTEGER PRIMARY KEY, mode TEXT, lien TEXT)")
+t.connexion_threads(con)
+assert "✅ رسميًا hors site du club" in t.controler_thread(con, 1, ["✅ رسميًا | قائمة ريال مدريد (فوت ميركاتو)"])
+assert t.controler_thread(con, 1, ["✅ رسميًا | تجديد عقد كورتوا (ريال مدريد)"], officiel=True) == []
+con.close()
+print("OK conférences : une déclaration par tweet, et ✅")
 # conférence de l'entraîneur au tri : Marca/AS gardés d'office, les autres journaux écartés
 _vrai = g.appeler_claude
 g.appeler_claude = lambda *a: '[{"id": 2, "type": "conference"}, {"id": 3, "type": "conference"}, {"id": 4, "type": "info"}]'

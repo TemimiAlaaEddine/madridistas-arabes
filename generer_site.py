@@ -31,7 +31,7 @@ from html.parser import HTMLParser
 import threads
 from calendrier import match_en_cours, suivre_match
 from commun import (BASE, CONFIG, GABARITS, NOM_SITE, PAYS, SECTIONS, ErreurClaude, appeler_claude, collecter, dedoublonner, e,
-                    extraire_json, maintenant, marquer_vus, nettoyer, normaliser_titre, plat, restaurer_base)
+                    extraire_json, lire_page, maintenant, marquer_vus, nettoyer, normaliser_titre, plat, restaurer_base)
 from couvertures import generer_couvertures, vignette
 
 DB = BASE / "articles.db"
@@ -134,21 +134,19 @@ Pour chaque article ci-dessous :
 1. Décide de sa nature :
    - Opinion : article d'opinion, chronique, analyse ou éditorial centré sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (uno a uno, aprobados y suspensos).
    - Information importante sur le Real Madrid : blessure ou retour, transfert ou contrat, déclaration marquante, décision du club ou d'une instance, distinction, résultat de la mi-temps ou final d'un match du Real Madrid (score et buteurs), déclarations d'avant ou d'après-match, composition officielle d'un match du Real Madrid (le onze titulaire annoncé avant le coup d'envoi), et aussi les anecdotes et coulisses (vie des joueurs, vestiaire, réseaux sociaux, curiosités, histoire du club).
-   - À ignorer : pronostics et paris, horaires TV, compositions probables (sauf celles de Marca et AS, à garder ; garde aussi la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).{match}
+   - À ignorer : pronostics et paris, horaires TV, compositions probables (celles de Marca et AS sont publiées à part, sans rédaction ; garde la composition officielle), directs et faits de jeu pendant un match, autres clubs ou autres sports (y compris le basket du Real Madrid).{match}
    - Information sur le Bernabéu, à garder : travaux, recettes, et les événements organisés dans le stade (ex. le match de NFL au Bernabéu, un concert). Seulement au Bernabéu : un match de NFL dans un autre stade reste à ignorer.
    - Doublons : si plusieurs articles de cette liste rapportent le même fait ou les mêmes propos d'une même personne (même dans des médias ou des langues différents, et même si leurs titres mettent en avant des angles différents, ex. deux articles sur la même conférence de presse), fusionne-les en un seul article : réponds avec l'id du plus complet, et complète son texte avec les éléments nouveaux des autres en citant leur média. Si ce fait ou ces propos sont déjà dans la liste « DÉJÀ PUBLIÉ » plus bas, ignore-les.
    - Source officielle prioritaire : si l'un des doublons vient du site officiel du Real Madrid, réponds avec son id et présente le fait comme annoncé officiellement par le club (أعلن ريال مدريد رسميًا...), sauf pour une séance d'entraînement : c'est un compte rendu, pas une annonce, donc ni « رسميًا » ni « أعلن ». Un communiqué officiel du club (« Comunicado oficial ») se publie même si la presse a déjà rapporté le fait dans « DÉJÀ PUBLIÉ » : c'est la confirmation officielle, que tu présentes comme telle.
 2. Classe-le dans une section : actus pour toute information, sauf celles sur le Bernabéu, qui vont dans club ; pour une opinion : tactique (jeu, système, rendement des joueurs), mercato (transferts, contrats, recrutement), club (finances, présidence, stade, institutions, droits TV), debats (polémiques et actualité commentée).
 3. Rédige en arabe standard moderne, dans la langue vivante de la bonne presse sportive arabe : celle d'un journaliste qui raconte à des supporters, pas celle d'un compte rendu ni d'une traduction.
 {style}
-   - Information (actus, ou club pour le Bernabéu) : 120 à 200 mots, uniquement les faits. La première phrase donne le fait lui-même (qui, quoi, quand) ; le média est cité dans cette phrase ou la suivante (...بحسب «ماركا»، كما كشفت «آس»...), jamais en tête : ne commence pas par « وفقًا لـ ». Ensuite le contexte utile tiré du texte, du plus important au moins important. Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle ou probable (Marca, AS) : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots, en précisant si elle est officielle ou probable.
+   - Information (actus, ou club pour le Bernabéu) : 120 à 200 mots, uniquement les faits. La première phrase donne le fait lui-même (qui, quoi, quand) ; le média est cité dans cette phrase ou la suivante (...بحسب «ماركا»، كما كشفت «آس»...), jamais en tête : ne commence pas par « وفقًا لـ ». Ensuite le contexte utile tiré du texte, du plus important au moins important. Si l'information n'est pas confirmée, utilise une formule de prudence (حسب ما ذكرت...). Pas de citation de plus de 15 mots. Pour une composition officielle : les 11 titulaires (noms arabes usuels) et l'adversaire, sans limite de mots.
    - Opinion, selon le « Mode » indiqué :
-     - Mode résumé : un article de 400 à 600 mots qui porte la thèse, chacun des arguments et la conclusion de l'auteur avec tes propres mots, construit comme un article et non comme un compte rendu. Ne traduis pas l'article phrase par phrase.
-       - Attaque : commence par ce que l'article a de plus fort (son constat, un chiffre, une scène, la question qu'il pose), jamais par « يرى الكاتب... » ni par le nom du journal. L'auteur et son journal sont nommés dans les deux premières phrases, à l'intérieur de la phrase, sous une forme qui change d'un article à l'autre.
-       - Développement : les arguments dans l'ordre le plus clair, une idée par paragraphe de 2 à 4 phrases. L'avis reste toujours visiblement celui de l'auteur, mais une seule attribution par paragraphe suffit, par son nom ou par une tournure variée (بحسبه، في نظره، يذهب أبعد من ذلك، يعترف، يحذّر، حجّته الثانية...). Ne commence pas deux paragraphes de suite par un verbe d'attribution (ويرى، ويضيف، ويوضح، ويذكّر).
-       - Intertitres : au-delà de 350 mots, 2 ou 3 intertitres de 2 à 5 mots, chacun seul sur sa ligne, précédé de « ## » et séparé du reste par une ligne vide.
-       - Chute : la conclusion de l'auteur ou sa phrase la plus marquante, sans « ويختم الكاتب بأن... » ni résumé de ce qui précède.
-       - Au maximum 4 citations courtes traduites (moins de 25 mots chacune) entre guillemets «».
+     - Mode résumé : un résumé de 120 à 200 mots (le site n'est plus lu : seul le thread X est publié, ce résumé sert de mémoire), en 2 ou 3 paragraphes, qui porte la thèse, les arguments principaux et la conclusion de l'auteur avec tes propres mots. Ne traduis pas l'article phrase par phrase.
+       - Attaque : commence par ce que l'article a de plus fort (son constat, un chiffre, une scène, la question qu'il pose), jamais par « يرى الكاتب... » ni par le nom du journal. L'auteur et son journal sont nommés dans les deux premières phrases, à l'intérieur de la phrase.
+       - L'avis reste toujours visiblement celui de l'auteur (بحسبه، في نظره، يذهب أبعد من ذلك...). Pas d'intertitres.
+       - Au maximum 2 citations courtes traduites (moins de 25 mots chacune) entre guillemets «».
      - Mode traduction : traduction intégrale et fidèle du texte fourni, dans un arabe qui se lit comme un texte écrit en arabe.
    - Liste des convoqués du Real Madrid pour un match : si le texte donne la liste, recopie TOUS les noms, sans en omettre un, rangés par poste (الحراس، الدفاع، الوسط، الهجوم), chaque poste sur sa ligne commençant par « ▪️ ».
    - Mode conférence (conférence de presse d'un entraîneur, d'un sélectionneur ou d'un joueur du Real Madrid, section actus) : traduis fidèlement et intégralement toutes les déclarations présentes dans le texte de la personne qui tient la conférence, et celles d'un joueur du Real Madrid qui la partage avec elle, chacune sous le nom de qui parle (la limite de 15 mots ne s'applique pas), sans reprendre les phrases du journaliste. Présente-les par sujet : chaque sujet commence par la question ou le thème résumé en une ligne, suivi de ses réponses entre guillemets «» ; une réponse qui enchaîne plusieurs idées reste sous son sujet, sans être découpée en sujets inventés. Une phrase d'introduction : qui parle, quand, avant ou après quel match, avec au plus une phrase de contexte factuel tirée du texte (score, enjeu du match). Jamais de rumeur ni d'interprétation du journaliste (« aurait », « selon nos informations », tensions supposées) : ce que la source met au conditionnel n'entre pas dans un texte de conférence.
@@ -160,7 +158,7 @@ Pour chaque article ci-dessous :
    "sujet" : la clé de la personne dont l'article parle principalement, seulement si elle est dans cette liste ; sinon "" (ex. : article centré sur un joueur absent de la liste, ou sur le club en général).
 7. "citation" : la phrase la plus forte de ton texte arabe (idée centrale ou formule marquante), 8 à 20 mots, sans guillemets. Pour une information : le fait principal en une phrase.
 8. "chiffres" : seulement si l'article repose sur des chiffres marquants (statistiques, montants, records), jusqu'à 3 objets {{"valeur": "100", "libelle": "هدف بقميص ريال مدريد"}} : valeur courte (ex. "61,3%", "180 م€"), libellé arabe de 2 à 6 mots, tirés du texte. Sinon [].
-9. "tweets" : le thread X (Twitter) tiré de ton texte arabe, pour le compte « المدريديستا علاء » :
+9. "tweets" : le thread X (Twitter) tiré de l'article (ton texte arabe et, pour une opinion, le texte source, plus complet), pour le compte « المدريديستا علاء » :
 {regles_tweets}
 10. "titres_fb" : ton titre arabe traduit pour un groupe Facebook de supporters à Montréal, une phrase courte et naturelle en français, en anglais et en espagnol, noms propres dans leur graphie latine usuelle. Pour une conférence de presse publiée par le site officiel du Real Madrid, ajoute dans "titres_fb" les clés "conf_fr" et "conf_en" : la conférence pour la Page Facebook, en français et en anglais, ses 5 à 8 déclarations principales dans l'ordre, une par ligne commençant par « ▪️ », chacune avec le thème en quelques mots puis la déclaration entre guillemets, fidèle au texte, 1 500 caractères au plus.
 11. "faits" : au plus 2 faits durables établis par le texte, utiles à une mémoire de la saison, en français, une phrase courte chacun avec la date quand elle est connue. Seulement : score final et buteurs d'un match du Real Madrid, blessure ou absence de plus de deux semaines, transfert ou prolongation officiels, changement de système ou de poste d'un joueur, record ou distinction. Jamais de rumeur, d'avis ni de déclaration. Sinon [].
@@ -255,8 +253,8 @@ PROMPT_TRI = """Tu tries des articles de presse pour un site arabophone sur le R
 Garde :
 - opinion : chronique, analyse, éditorial ou tribune centrés sur le Real Madrid, y compris chronique d'après-match et notes des joueurs (« uno a uno », « aprobados y suspensos », « player ratings », « notes ») ;
 - conference : conférence de presse d'un entraîneur du Real Madrid, d'un joueur du Real Madrid (avec le club ou en sélection), d'un entraîneur adverse qui parle du Real Madrid, ou d'un sélectionneur national qui parle d'un joueur du Real Madrid (ex. Zidane sur Mbappé, Ancelotti sur Vinícius), en salle de presse seulement ; une interview télé au bord du terrain ou en zone mixte (Movistar, DAZN, Real Madrid TV, beIN), avant ou juste après le match, n'est pas une conférence : classe-la « info » (choix de l'utilisateur, 2026-11-23) ;
-- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat de la mi-temps ou final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, événements organisés dans le stade comme le match de NFL ou un concert) ; compositions probables seulement si le journal est Marca ou AS.
-Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (dont le basket du Real Madrid et la NFL hors du Bernabéu), autres compositions probables.{match}
+- info : information importante sur le Real Madrid (blessure, transfert, contrat, déclaration marquante, décision du club, distinction, résultat de la mi-temps ou final, composition officielle), anecdotes et coulisses, et tout ce qui touche au Bernabéu (travaux, recettes, événements organisés dans le stade comme le match de NFL ou un concert).
+Écarte : horaires TV, pronostics et paris, directs et faits de jeu pendant un match, autres clubs ou autres sports (dont le basket du Real Madrid et la NFL hors du Bernabéu), compositions probables.{match}
 Doublons : si plusieurs articles rapportent le même fait ou les mêmes propos, garde seulement le plus complet ; écarte aussi ce qui figure dans « DÉJÀ PUBLIÉ ».
 Les chroniques ont souvent un titre court, imagé ou ironique (ex. « Aguirre-Mourinho, viejos rockeros », « La paradoja de... ») : s'il peut s'agir d'un regard sur le Real Madrid, garde-le comme opinion.
 En cas de doute, garde.
@@ -272,6 +270,72 @@ ARTICLES
 
 
 PROBABLE = threads.PROBABLE
+
+
+# ---------- compositions probables (choix de l'utilisateur, 28 nov.) : une image et une ligne, sans rédaction ----------
+def est_compo_probable(it):
+    """Composition probable du Real Madrid par Marca ou AS : publiée telle quelle, une par média."""
+    return journal(it) in ("Marca", "AS") and bool(PROBABLE.search(it["titre"])) and "real-madrid" in slug(it["titre"] + " " + it["lien"])
+
+
+def image_compo(it, page=None):
+    """Image de la composition, "" si introuvable (le tweet part alors en brouillon). AS : son image principale, sans le
+    recadrage de son serveur d'images, qui coupait le gardien (27 nov.) ; Marca : son image principale est l'affiche du
+    match, la composition est l'autre image de l'article."""
+    if journal(it) == "AS":
+        u = urllib.parse.urlsplit(it.get("image") or "")
+        auth = urllib.parse.parse_qs(u.query).get("auth")
+        return urllib.parse.urlunsplit(u._replace(query=urllib.parse.urlencode({"auth": auth[0]}))) if auth else it.get("image") or ""
+    page = page if page is not None else lire_page(it["lien"])
+    affiche = re.search(r'property="og:image" content="[^"]*/(\w+)\.jpe?g', page)  # Marca : <meta data-ue-u="og:image" property=…
+    autres = [i for i in dict.fromkeys(re.findall(r"https://objetos-xlk\.estaticos-marca\.com/uploads/(\d{4}/\d{2}/\d{2}/\w+\.jpe?g)", page))
+              if not affiche or affiche[1] not in i]
+    return f"https://objetos-xlk.estaticos-marca.com/uploads/{autres[0]}" if autres else ""
+
+
+def adversaire(it, utc):
+    """Nom arabe de l'adversaire du prochain match de matchs.json, si le titre ou le lien le nomme ; sinon ""."""
+    from calendrier import FICHIER, nom_arabe_claude
+    try:
+        matchs = sorted(json.loads(FICHIER.read_text(encoding="utf-8")), key=lambda m: m["debut"])
+    except (OSError, ValueError):
+        return ""
+    m = next((m for m in matchs if datetime.fromisoformat(m["debut"]) > utc), None)
+    autre = [e.strip() for e in m["match"].split(" vs ") if e.strip() != "Real Madrid"] if m else []
+    if not autre or slug(autre[0]).split("-")[-1] not in slug(it["titre"] + " " + it["lien"]):  # composition d'un autre match
+        return ""
+    return nom_arabe_claude(autre[0])
+
+
+def enregistrer_compos(compos, chemin=DB):
+    """Article et tweet de chaque composition probable : « التشكيلة المتوقعة لريال مدريد أمام ... حسب صحيفة «ماركا» » et son
+    image, jamais présentée comme officielle (pas d'étiquette 📋, réservée à la composition officielle). Retourne le nombre ajouté."""
+    con = connexion(chemin)
+    threads.connexion_threads(con)
+    now = maintenant().isoformat(timespec="seconds")
+    n = 0
+    for it in compos:
+        try:
+            image = image_compo(it)
+        except (OSError, ValueError) as err:  # page refusée : brouillon, image à choisir à la main
+            print(f"  ! composition probable : image illisible ({err}) : {it['lien'][:70]}")
+            image = ""
+        contre = adversaire(it, maintenant())
+        texte = (f"التشكيلة المتوقعة لريال مدريد{f' أمام {contre}' if contre else ''} حسب صحيفة "
+                 f"«{CONFIG.get('noms_ar', {}).get(journal(it), journal(it))}»")
+        cur = con.execute(
+            "INSERT OR IGNORE INTO articles (date, section, titre, chapeau, texte, auteur, auteur_ar, journal, pays, lien,"
+            " titre_original, mode, personnes, via, rapporteur, sujet, citation, chiffres, titres_fb, image, galerie)"
+            " VALUES (?,?,?,'',?,'','',?,?,?,?,'info','[]','','','',?,'[]','',?,'[]')",
+            (it.get("publie") or now, "actus", texte, texte, journal(it), it.get("pays"), it["lien"], it["titre"], texte, image))
+        if cur.rowcount:
+            tweets = threads.assembler({"auteur_ar": "", "auteur": "", "journal": journal(it), "lien": it["lien"]}, [texte])
+            con.execute("INSERT OR IGNORE INTO threads (article_id, tweets, statut, date) VALUES (?,?,?,?)",
+                        (cur.lastrowid, json.dumps(tweets, ensure_ascii=False), "a_envoyer", now))
+            n += 1
+    con.commit()
+    con.close()
+    return n
 ENTRAINEUR = CONFIG.get("entraineur", "mourinho")
 
 
@@ -288,12 +352,10 @@ def trier(items, deja=()):
         return None
     gardes, ecartes = [], []
     for i, it in enumerate(items, 1):
-        if it.get("opinion"):  # rubriques d'opinion et compositions probables Marca/AS : gardées d'office
+        if it.get("opinion"):  # rubriques d'opinion : gardées d'office
             choix[i] = "opinion"
         elif it.get("officiel"):  # site du club, déjà filtré par rubrique : le tri a écarté le communiqué Tchouaméni (19 nov.)
             choix[i] = choix.get(i) or "info"
-        elif journal(it) in ("Marca", "AS") and PROBABLE.search(it["titre"]):
-            choix[i] = "info"
         # conférence de l'entraîneur : un seul thread, tiré de Marca ou AS (choix du 20 nov.) ; gardés d'office pour ne pas
         # être écartés en doublon d'un autre journal, les autres journaux écartés (sinon « déjà publié » bloquerait Marca/AS)
         # shortcut: repérée au nom de l'entraîneur dans le titre, à revoir si un titre Marca/AS ne le nomme pas
@@ -996,6 +1058,11 @@ def main():
             it["auteur"] = auteur_reel(it["auteur"], journal(it))  # ni "info@vi.nl", ni "Redacción", ni le journal
         items, doublons = dedoublonner(items)
         items = ordonner(items)
+        compos = [it for it in items if est_compo_probable(it)]  # image + une ligne, sans tri ni rédaction par Claude
+        items = [it for it in items if it not in compos]
+        if compos and not args.test:
+            print(f"Compositions probables : {enregistrer_compos(compos)} ajoutée(s)")
+            marquer_vus(compos, DB)
         if items and not args.test:
             candidats = items[:60]  # au-delà : triés au prochain passage
             print(f"Tri de {len(candidats)} article(s) sur titre et chapeau...")

@@ -109,6 +109,12 @@ def est_conference(tweet):
     return tweet.lstrip().startswith("🎙")  # étiquette « 🎙️ مؤتمر [nom] | » mise par Claude (REGLES)
 
 
+def est_compo(tweet):
+    """Composition probable (generer_site.enregistrer_compos) : sa source est dans la phrase (« حسب صحيفة «ماركا» »), et
+    Marca et AS ont chacune la leur pour le même match (une par média, choix de l'utilisateur, 28 nov.)."""
+    return tweet.lstrip().startswith("التشكيلة المتوقعة")
+
+
 def est_liste(tweet):
     return tweet.lstrip().startswith("📝")  # « 📝 القائمة | » : liste des convoqués, sans source (choix de l'utilisateur, 2026-11-23)
 
@@ -213,14 +219,17 @@ def meme_nouvelle(ancien, nouveau):
         return True
 
 
-def controler_thread(con, article_id, tweets, officiel=False):
+def controler_thread(con, article_id, tweets, officiel=False, direct=()):
     """Motifs de blocage d'un thread avant envoi ([] : il peut partir). officiel : article du site du club, jamais un doublon
-    (la confirmation officielle part même si la presse a donné la nouvelle avant, ex. Tchouaméni le 19 nov.)."""
+    (la confirmation officielle part même si la presse a donné la nouvelle avant, ex. Tchouaméni le 19 nov.). direct : tweets
+    du direct de conférence, absents de la base : chaque déclaration est un tweet à part, une seule fois (choix du 28 nov.)."""
     motifs = []
     if longueur(tweets[0]) > LIMITE_LONG or any(longueur(x) > LIMITE for x in tweets[1:]):
         motifs.append("tweet trop long")
-    if not SOURCE.search(tweets[0]) and not est_conference(tweets[0]) and not est_liste(tweets[0]):
+    if not SOURCE.search(tweets[0]) and not est_conference(tweets[0]) and not est_liste(tweets[0]) and not est_compo(tweets[0]):
         motifs.append("source absente du 1er tweet")
+    if tweets[0].lstrip().startswith("✅") and not officiel:  # 23 nov. : deux listes de la presse publiées « ✅ رسميًا »
+        motifs.append("✅ رسميًا hors site du club")
     if any(APPATS.search(x) for x in tweets):
         motifs.append("appel à l'engagement")
     if est_liste(tweets[0]):  # une seule liste par match, la première COMPLÈTE (publiée deux fois le 23 nov.), même celle du club
@@ -232,12 +241,15 @@ def controler_thread(con, article_id, tweets, officiel=False):
             if est_liste(json.loads(r[1])[0])), None)
         if deja:
             return motifs + [f"doublon de la liste de l'article {deja}"]
+    if est_compo(tweets[0]):  # une par média : jamais doublon de l'autre journal
+        return motifs
     nouvelle = accroche(tweets[0])
-    for r in con.execute(f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
-                         " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-48 hours')", (article_id,)):
-        ancien = json.loads(r[1])[0]
+    anciens = [(f"thread de l'article {r[0]}", json.loads(r[1])[0]) for r in con.execute(
+        f"SELECT article_id, tweets FROM threads WHERE {ENVOYES} AND article_id != ?"
+        " AND date >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-48 hours')", (article_id,))]
+    for quoi, ancien in anciens + [("tweet du direct", x) for x in direct]:
         if not officiel and proche(nouvelle, accroche(ancien)) and meme_nouvelle(ancien, tweets[0]):
-            motifs.append(f"doublon du thread de l'article {r[0]}")
+            motifs.append(f"doublon du {quoi}")
             break
     return motifs
 
@@ -740,17 +752,6 @@ def orateur(tweet):
     return re.sub(r"[^\w\s]", "", m[0]).replace("مؤتمر", "").strip() if m else ""
 
 
-def conference_publiee(con, article_id, tweet, heures=6, club=False):
-    """Un thread des dernières heures où la même personne parle (même conférence ou interview) est déjà parti : un seul
-    thread par conférence. X interdit de publier des réponses par l'API (403, 20 nov.) : les suivantes ne partent plus.
-    club : récapitulatif du site du club, que seul un autre récapitulatif du club empêche (le direct de Marca/AS ne compte pas)."""
-    qui = orateur(tweet)
-    return bool(qui) and any(orateur(json.loads(tw)[0]) == qui for (tw,) in con.execute(
-        f"SELECT t.tweets FROM threads t JOIN articles a ON a.id = t.article_id WHERE {ENVOYES}"
-        " AND a.mode = 'conference' AND t.article_id != ? AND t.envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', ?)"
-        + (" AND a.lien LIKE '%://www.realmadrid.com/%'" if club else ""), (article_id, f"-{heures} hours")))
-
-
 DIRECT = ("Marca", "AS")  # conférence en direct : chaque article de ces journaux (une déclaration forte) devient un tweet
 
 
@@ -801,11 +802,13 @@ def vers_typefully(con, couvertures, dossier_couv):
     direct = conference.en_direct()
     hors = set(session.get("vus", [])) - set(session.get("liens", [])) if session else set()  # jugés hors conférence par le direct
     quota_bas = quota_typefully_bas()
+    deja_direct = (session.get("tweets") or []) if session else []  # déclarations déjà tweetées par le direct
     for t in con.execute("SELECT t.article_id, t.tweets, t.date AS cree, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
+        conf = t["mode"] == "conference" or est_conference(tweets[0])  # l'étiquette compte aussi : le tri a pu dire « info »
         # conférence suivie en direct (conference.py) : ses articles sont tweetés par le direct, l'autre journal est ignoré
-        if (suivie or direct or attente) and t["mode"] == "conference" and t["journal"] in DIRECT and t["lien"] not in hors:
+        if (suivie or direct or attente) and conf and t["journal"] in DIRECT and t["lien"] not in hors:
             if (direct or attente) and (not suivie or (t["journal"] == suivie["journal"] and t["lien"] not in suivie["liens"])):
                 continue  # le direct va le tweeter ; repris après le direct s'il l'a manqué
             if t["lien"] in suivie["liens"] or t["journal"] != suivie["journal"]:
@@ -817,18 +820,15 @@ def vers_typefully(con, couvertures, dossier_couv):
             # la conférence d'abord : la file Typefully publie toutes les 5 min, une nouvelle y sortirait au milieu du direct ;
             # retenue, elle part au premier passage après le direct (le récapitulatif du club attend, lui, sa page complète)
             continue
-        if t["mode"] == "conference" and t["journal"] not in DIRECT and conference_publiee(
-                con, t["article_id"], tweets[0], club=est_officiel(t)):
-            print(f"  Typefully : article {t['article_id']} écarté, conférence déjà publiée")
-            ecarter(con, t["article_id"], "conférence déjà publiée")
-            continue
         # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
         nouvelle = t["section"] == "actus" or t["mode"] == "info"
         if quota_bas and not nouvelle:  # la réserve du mois va aux nouvelles, au direct et aux conférences
             if maintenant() - datetime.fromisoformat(t["cree"]) > timedelta(hours=24):  # pas de vieilles opinions au retour du quota
                 ecarter(con, t["article_id"], "quota Typefully")
             continue
-        motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
+        motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t), deja_direct if conf else ())
+        if est_compo(tweets[0]) and not t["image"]:  # brouillon : l'image de la composition est à choisir à la main
+            motifs.append("image de la composition introuvable")
         doublon = next((m for m in motifs if m.startswith("doublon")), None)
         if doublon:  # confirmé par Claude : pas de brouillon à supprimer à la main
             print(f"  Typefully : article {t['article_id']} écarté ({doublon})")

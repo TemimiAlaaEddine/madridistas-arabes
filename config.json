@@ -173,7 +173,8 @@
     {
       "nom": "Defensa Central",
       "url": "https://defensacentral.com/uploads/feeds/feed_defensa-central_es.xml",
-      "pays": "es"
+      "pays": "es",
+      "exclure_titre": "reflexiona|afirma|concluye|asegura|señala|sentencia|opina|explica|analiza|cree que|considera|periodista|comentarista|tertuliano|exjugador|:\\s*[\"“«]"
     }
   ],
   "mots_cles": [

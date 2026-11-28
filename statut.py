@@ -636,7 +636,7 @@ GLOSSAIRE = [
     ("g-actions", "GitHub Actions", "Les machines de GitHub qui exécutent le pipeline. L'onglet « Actions » du dépôt montre chaque lancement : vert = réussi, rouge = échec."),
     ("g-issue", "Issue", "Une fiche de discussion sur GitHub. Le système en ouvre une chaque lundi (revue des sources) et en cas de panne qui dure (3 échecs de suite)."),
     ("g-faits", "Table des faits", "Les faits durables (blessures, contrats, records) que la Mémoire relève dans les articles. Une fois validés par toi, ils vont dans connaissance.md, que les agents relisent pour ne pas se tromper."),
-    ("g-controle", "Contrôle qualité", "Les règles vérifiées avant chaque thread : longueur, source citée, pas d'appel à l'engagement, pas de doublon d'un thread des 48 h, pas de 2e thread sur une conférence déjà publiée en direct."),
+    ("g-controle", "Contrôle qualité", "Les règles vérifiées avant chaque thread : longueur, source citée, pas d'appel à l'engagement, pas de doublon d'un thread des 48 h ni d'une déclaration déjà tweetée en direct, ✅ réservé au site du club."),
     ("g-sujets", "/sujets", "Dans Claude Code (ouvert dans le dossier du projet) : les 3 sujets du jour qui méritent ta prise de position, plus les doublons et écarts de ton repérés."),
     ("g-moderation", "/moderation", "Dans Claude Code : lit les commentaires Facebook sans réponse et propose pour chacun une action et une réponse."),
     ("g-angles", "/angles", "Dans Claude Code : 3 angles d'analyse tactique sourcés sur un sujet, à développer ensuite."),

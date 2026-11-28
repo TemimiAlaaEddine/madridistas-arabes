@@ -186,7 +186,10 @@ def lire_flux(flux):
 
 def garde(flux, titre, resume, lien, mots):
     """Article qui parle du Real : rubriques voulues d'un site (filtre_lien), tout pour un site consacré au Real
-    (que_le_real), sinon un mot-clé dans le titre ou le chapeau. Sert à la collecte et à la revue des sources."""
+    (que_le_real), sinon un mot-clé dans le titre ou le chapeau ; jamais un titre visé par "exclure_titre" (expression
+    régulière du flux). Sert à la collecte et à la revue des sources."""
+    if flux.get("exclure_titre") and re.search(flux["exclure_titre"], titre, re.I):
+        return False
     if flux.get("filtre_lien"):  # site du club : tout parle du Real, on ne garde que les rubriques voulues
         return any(f in lien for f in flux["filtre_lien"])
     return bool(flux.get("que_le_real") or any(m in (titre + " " + resume).lower() for m in mots))
