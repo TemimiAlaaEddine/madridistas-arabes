@@ -12336,6 +12336,31 @@ INSERT INTO "articles" VALUES(989,'2026-11-28T11:11:15','club','«برنابيو
 لا يخفي الكاتب أنه مقتنع بأن الملعب سيبقى «سانتياغو برنابيو» إلى الأبد، وأن الواجهة ستحمل «برنابيو» وحده. وإن جاءت علامة تجارية بعد وقت، فهو لا يعرف إن كان ذلك سيحدث، ولن يضحكه الأمر أبدًا. لكنه يعلم أن الرئيس التاريخي كان سيكون أول من يعطي الضوء الأخضر لو أفاد ذلك النادي. ويقدّر ثقته بذلك بنحو 99 في المئة، ويقرّ بأنه قد يخطئ.
 
 دعوته في الختام متواضعة: بدل أن نعطّل كل تقدم باسم الرجل ونخترع إهانات لا وجود لها، فلندرس حياة سانتياغو برنابيو. فمن فعل الثانية توقف عن الأولى.','','','La Galerna','es','https://www.lagalerna.com/sobre-nombre-estadio/','Sobre el nombre de nuestro estadio','resume','["florentino"]','','','','لا يُكرَّم برنابيو بكتابة اسمه كاملًا على الواجهة، بل بدراسة عمله ودعم ريال مدريد في طليعة عصره','[]','{"fr": "Seulement « Bernabéu » sur la façade : le nom du patriarche est-il vraiment menacé ?", "en": "Only “Bernabéu” on the facade: is the patriarch''s name really being insulted?", "es": "Solo «Bernabéu» en la fachada: ¿se ofende de verdad al patriarca?"}','https://www.lagalerna.com/wp-content/uploads/2026/11/bernabeu-escudo.jpeg','[]');
+INSERT INTO "articles" VALUES(990,'2026-11-28T09:35:29','actus','«لا أريد أحدًا، لا للدخول ولا للخروج»: مورينيو يغلق باب يناير','قبل مواجهة ألافيس، قطع المدرب البرتغالي الطريق على أخبار سوق الانتقالات الشتوية. وتحدث عن أجواء غرفة الملابس وعن لاعبين قد لا يرضيهم مكانهم على دكة البدلاء.','تحدث البرتغالي جوزيه مورينيو في المؤتمر الصحفي قبل مباراة ريال مدريد أمام ألافيس، وريال مدريد يخوض سلسلة من تسعة انتصارات متتالية، بحسب «آس».
+
+**سوق الانتقالات الشتوية**
+
+مورينيو: «ليس عندي لاعب أقول عنه: لا يعجبني، لا أريده هنا، لنفتح له الباب في يناير. ولكي أساعدكم، وقبل شهرين من الضجة الكبرى، أقولها الآن: لا أريد أحدًا، لا للدخول ولا للخروج. الباب مغلق من الجهتين. لا تصنعوا أخبار انتقالات، لأنني لا أريد شيئًا».
+
+**أجواء الفريق والتشكيلة المثالية**
+
+مورينيو: «إذا بحثنا عن التشكيلة المثالية، فهي غير موجودة بالنسبة لي. لا توجد منافسة هنا، كلنا نريد الشيء نفسه ولنا الهدف نفسه. المجموعة تعمل كمجموعة. إذا سجّل أحدهم فهو هدف لريال مدريد. ستجد دائمًا من يعبس، لكنني لم أواجه أي مشكلة حتى الآن. قد تأتي المشكلة، وهذا طبيعي، لكن غرفة الملابس نفسها ستمتصها. أرى غرفة ملابس موحّدة، والجميع يسعى إلى هدف مشترك. الهدف الجماعي سيتغلب على عبوس الأنانية الطبيعية التي يحملها كل لاعب. إنه فريق مذهل بلاعبين استثنائيين تمامًا».
+
+**من يغضب من مقعد البدلاء**
+
+مورينيو: «إذا غضب فهذه مشكلته لا مشكلتي. كل اللاعبين على سلّم واحد. إذا ذهب أحدهم يومًا إلى دكة البدلاء ولم يعجبه الأمر، ماذا تريدون مني أن أفعل له؟ مبابي وجود يلعبان دقائق كثيرة، لكن ليس بسبب الاسم أو المكانة، بل بسبب المردود الذي لا يمكن مقارنته بما يقدمه غيرهما. هذا ما يصنع الفارق. أنا من يحدد الأولويات. هذه هي قوة المجموعة».
+
+**هل يرى ريال مدريد منافسًا في دوري الأبطال**
+
+مورينيو: «أرى ريال مدريد يفوز على ألافيس. لا شيء أكثر. كل نقطة لا تُكسب هي نقاط تضيع وقد تكون حاسمة. علينا أن نحاول جمع النقاط الثلاث».
+
+**الملحق في دوري الأبطال**
+
+مورينيو: «الهدف هو ألا نلعب الملحق في دوري الأبطال، وأنا سعيد لأن هذا الهدف قريب».
+
+**الاستمرارية في الأداء**
+
+مورينيو: «إنها عملية. هذا الكمال في أن نبدأ جيدًا ونلعب جيدًا وننهي جيدًا. لم نقضِ سوى خمسة أشهر، وإن بدت سنتين. ما زال ينقصنا هذا الثبات. سألت لاعبَين لأفهم، فأجاباني إجابة طريفة: يا مدرب، إذا بدأنا جيدًا فستشعر بالملل على الدكة. نبدأ بشكل سيئ فنصنع لك الأدرينالين لتفعل شيئًا. نحن نساعدك».','Manu de Juan','مانو دي خوان','AS','es','https://as.com/futbol/primera/mourinho-pasa-del-mercado-puerta-cerrada-para-entrar-y-para-salir-f202611-n/','Mourinho pasa del mercado: “Puerta cerrada; para entrar y para salir”','conference','["mourinho", "vinicius", "mbappe", "bellingham"]','','','mourinho','مورينيو يعلن أن الباب مغلق في يناير: لا يريد لاعبين جددًا ولا رحيل أي لاعب','[]','{"fr": "Mourinho ferme la porte du mercato d''hiver : « Ni pour entrer, ni pour sortir »", "en": "Mourinho shuts the January window: \"Nobody in, nobody out\"", "es": "Mourinho cierra el mercado de invierno: \"Puerta cerrada, para entrar y para salir\""}','https://img.asmedia.epimg.net/resizer/v2/BF5IE4O2EFD2XP4GF73XPBQJIQ.JPG?auth=500e698cbb324f92efcf92bdd1e97d87c17c197b16039643152d5f8c16ed3c43&width=1472&height=828&focal=929%2C451','[]');
 CREATE TABLE echecs (envoi TEXT PRIMARY KEY, n INTEGER, depuis TEXT, message TEXT, alerte INTEGER);
 CREATE TABLE faits (id INTEGER PRIMARY KEY, article_id INTEGER, date TEXT, fait TEXT);
 INSERT INTO "faits" VALUES(1,350,'2026-11-13T05:41:10','Rodrygo, blessé le 2 mars 2026 contre Getafe (ligament croisé antérieur et ménisque externe du genou droit), a été opéré le 10 mars.');
@@ -13026,6 +13051,7 @@ INSERT INTO "liens_x" VALUES('12252561','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12253431','https://x.com/ElMadridistAlaa/status/2126619615900103162','2026-11-28T10:10:04.918Z');
 INSERT INTO "liens_x" VALUES('12254132','https://x.com/ElMadridistAlaa/status/2126632892101239149','2026-11-28T11:02:47.448Z');
 INSERT INTO "liens_x" VALUES('12254245','https://x.com/ElMadridistAlaa/status/2126635975069896923','2026-11-28T11:15:05.366Z');
+INSERT INTO "liens_x" VALUES('12254319','https://x.com/ElMadridistAlaa/status/2126637232689983704','2026-11-28T11:20:05.142Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
@@ -13729,6 +13755,7 @@ INSERT INTO "page_facebook" VALUES(983,'2026-11-28T09:03:31','1443899325477551_1
 INSERT INTO "page_facebook" VALUES(984,'2026-11-28T09:03:38','1443899325477551_122116043949544862');
 INSERT INTO "page_facebook" VALUES(985,'2026-11-28T09:03:44','1443899325477551_122116044063544862');
 INSERT INTO "page_facebook" VALUES(987,'2026-11-28T11:02:48','1443899325477551_122116098009544862');
+INSERT INTO "page_facebook" VALUES(990,'2026-11-28T11:21:33','sans : conférence publiée depuis le site du club');
 CREATE TABLE resumes (jour TEXT PRIMARY KEY, typefully TEXT);
 INSERT INTO "resumes" VALUES('2026-11-17','12003066');
 INSERT INTO "resumes" VALUES('2026-11-18','12028389');
@@ -14592,6 +14619,7 @@ INSERT INTO "threads" VALUES(986,'["🧠 قراءة | أربعة أهداف في
 INSERT INTO "threads" VALUES(987,'["🔥 نقاش | هل تجاوز خوتا خوردي الحدّ مع والد هاوسن؟\n\nرمز مهرّج واحد من والد هاوسن أشعل ردًّا قاسيًا، وانتهى السجال بالسخرية من هدف بيلينغهام.\n\n(نانو أنطون - ديفينسا سنترال)\n\nكتب خوتا خوردي على «إكس»: «لقد بقي وجه المهرّج لك أنت، وأنت تشاهد إسبانيا تفوز بكأس العالم من على الأريكة مع ابنك».\n\nجاء الرد تعليقًا على منشور لـ«سولو بارا كولس» في إنستغرام. ولم يكتب والد هاوسن سوى رمز مهرّج، فُهم منه أن البرنامج أقرب إلى السيرك.\n\nفي المقطع نفسه قال خوتا خوردي إن هدف بيلينغهام «عادي جدًا». واعتبر لويس كاراسكو أنه تلميذ مجتهد لفيرمين لوبيز.\n\nيتساءل أنطون ماذا ينتظر هؤلاء أن يجيب به من يملك ذرة عقل. وفي نظره، هذا استفزاز لكل مشجع لا يضع وشاح فريقه.\n\nبيلينغهام هو اللاعب الوحيد في الدوريات الخمسة الكبرى ضمن أفضل 15% في افتكاك الكرة وصناعة اللعب والوصول إلى المنطقة.\n\nمع الريال وإنجلترا: 8 أهداف و9 تمريرات حاسمة لبيلينغهام. وفيرمين لوبيز مع برشلونة: 9 أهداف و7 تمريرات حاسمة.\n\nلاعب جيد، لكن تأثيره في اللعب أقل.\n\nما رأيكم؟ 👇", "✍️ نانو أنطون | Defensa Central\n🔗 المصدر: https://defensacentral.com/actualidad/jota-jordi-menosprecia-padre-huijsen-a-usted-se-quedo-cara-payaso_347134_102.html"]','immédiat','2026-11-28T11:02:36','12254132','2026-11-28T11:02:45');
 INSERT INTO "threads" VALUES(988,'["🔥 نقاش | هل بدأ ديوماندي يحجز مكان فينيسيوس في تشكيلة مورينيو؟\n\nمحللو «إل لارغيرو» يرون أن مورينيو يعامل البرازيلي بمسافة، وأن الظروف كلها في صالحه.\n\n(كادينا سير)\n\nيلاحظ بوليدو أن مورينيو بعث أكثر من رسالة تحذير إلى فينيسيوس. في رأيه، البرازيلي في مرتبة ثانية رياضيًا حتى يثبت العكس.\n\nيعدّ غابيلوندو أن مورينيو أرسل ثلاث أو أربع «رسائل صغيرة». ويذكّر بأن ديوماندي، صفقة الصيف، بدأ يزعج فينيسيوس فعلًا.\n\nيرى مارتن تالافيرا أن فينيسيوس سهّل مهمة مورينيو بمستواه وبتصريحاته التي أقرّ فيها بأنه لم يكن محترفًا. نصيحته: خفض الصوت وتحمل العاصفة.\n\nيعتقد بوليدو أن وسط الميدان ينقصه لاعب. أما مورينيو فقال إنه لا يريد أحدًا، لا للدخول ولا للخروج.\n\nيستغرب غابيلوندو التحليلات الحاسمة في نوفمبر، فالفريق ثانٍ في الدوري ومتصدر في الأبطال، لكنه لم يواجه بعدُ فرقًا كبرى.\n\nويتساءل: إذا أنهى ريال مدريد الموسم بلا ألقاب للعام الثالث على التوالي، فهل يستحق اللاعبون الخمسة الذين جدّدوا عقودهم ذلك؟\n\nما رأيكم؟ 👇", "📰 Cadena SER\n🔗 المصدر: https://cadenaser.com/nacional/2026/11/28/mourinho-le-marca-el-terreno-a-vinicius-se-lo-ha-puesto-muy-facil-y-mas-cuando-tiene-a-otros-companeros-que-refuerzan-su-decision-cadena-ser/"]','file','2026-11-28T11:11:41','12254245','2026-11-28T11:11:51');
 INSERT INTO "threads" VALUES(989,'["🏟️ برنابيو | هل يُهان اسم الرجل لأن الواجهة تحمل «برنابيو» فقط؟\n\nيرى كاتب المقال أن غضب بعض المدريديين من غياب «سانتياغو» مصطنع ويتجاهل أثره على الإيرادات.\n\n(لا غالرنا)\n\nبدأت القصة بغضب لأن حروف «برنابيو» رُكّبت دون الشعار. وبعد أيام قليلة وُضع الشعار.\n\nالدرس في نظره: عدّ حتى عشرة قبل أن تغضب، خصوصًا حين تنقصك المعلومة.\n\nيذهب الكاتب أبعد من ذلك: برنابيو نفسه تردد في أن يحمل الملعب اسمه حياءً.\n\nولا يتخيله يطالب بكتابة اسمه كاملًا على الواجهة لو أضرّ ذلك بالإيرادات.\n\nحجته أن «برنابيو» هو الاسم التجاري، وهو أيضًا الاسم الذي يقوله الناس.\n\nلا أحد يقول «ذاهب إلى سانتياغو برنابيو».\n\nفي نظره، فلورنتينو بيريز هو من يجسّد اليوم الريال الطليعي الذي بناه برنابيو.\n\nويتحدى: من يعرف رئيسًا يبقي كل شيء كما في 1977 ويضاعف الإيرادات ويفوز بدوري الأبطال؟\n\nالكاتب مقتنع بأن الملعب سيبقى «سانتياغو برنابيو» للأبد. وإن جاءت علامة تجارية، فلن يضحكه ذلك، لكنه يرجّح أن الرجل كان سيوافق لو أفاد النادي.\n\nوالحل عنده: ندرس برنابيو بدل أن نتمسك بحروف اسمه.\n\n#ريال_مدريد", "📰 La Galerna\n🔗 المصدر: https://www.lagalerna.com/sobre-nombre-estadio/"]','file','2026-11-28T11:16:40','12254319','2026-11-28T11:16:50');
+INSERT INTO "threads" VALUES(990,'["🎙️ مؤتمر مورينيو | «لا أريد أحدًا، لا للدخول ولا للخروج»\n\nقبل مباراة ألافيس، تحدث مورينيو عن سوق يناير: «لا تصنعوا أخبار انتقالات، لأنني لا أريد شيئًا. الباب مغلق من الجهتين».\n\n#ريال_مدريد_ألافيس #الليغا"]','bloqué : publiée en direct','2026-11-28T11:21:32','sans','2026-11-28T11:21:33');
 CREATE TABLE tweets_match (debut TEXT, cle TEXT, typefully TEXT, PRIMARY KEY (debut, cle));
 CREATE TABLE unes (jour TEXT, journal TEXT, titres TEXT, x TEXT, facebook TEXT, PRIMARY KEY (jour, journal));
 INSERT INTO "unes" VALUES('2026-11-17','marca','[{"es": "«Es muy, muy, muy bueno». Hasta Zidane se rinde a Güler", "ar": "«إنه جيد جدًا جدًا جدًا». حتى زيدان يستسلم أمام غولر", "fr": "« Il est très, très, très bon ». Même Zidane s''incline devant Güler", "en": "\"He''s very, very, very good\". Even Zidane bows to Güler"}, {"es": "El genio turco suma cuatro goles y cinco asistencias en sus ocho últimos duelos con el Real Madrid y su selección", "ar": "العبقري التركي يسجل أربعة أهداف ويقدم خمس تمريرات حاسمة في مبارياته الثماني الأخيرة مع ريال مدريد ومنتخب بلاده", "fr": "Le génie turc cumule quatre buts et cinq passes décisives lors de ses huit derniers matchs avec le Real Madrid et sa sélection", "en": "The Turkish genius has four goals and five assists in his last eight games with Real Madrid and his national team"}]','11987719','122107181601544862');
@@ -16875,4 +16903,6 @@ INSERT INTO "vus" VALUES('https://www.footmercato.net/a6301986868320600177-bayer
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/jota-jordi-menosprecia-padre-huijsen-a-usted-se-quedo-cara-payaso_347134_102.html','Jota Jordi menosprecia al padre de Huijsen: "A usted se le quedó cara de payaso"','2026-11-28T11:02:36');
 INSERT INTO "vus" VALUES('https://cadenaser.com/nacional/2026/11/28/mourinho-le-marca-el-terreno-a-vinicius-se-lo-ha-puesto-muy-facil-y-mas-cuando-tiene-a-otros-companeros-que-refuerzan-su-decision-cadena-ser/','Mourinho le marca el terreno a Vinicius: "Se lo ha puesto muy fácil y más cuando tiene a otros compañeros que refuerzan su decisión"','2026-11-28T11:11:41');
 INSERT INTO "vus" VALUES('https://www.lagalerna.com/sobre-nombre-estadio/','Sobre el nombre de nuestro estadio','2026-11-28T11:16:40');
+INSERT INTO "vus" VALUES('https://as.com/futbol/internacional/hay-mbappe-para-rato-f202611-n/','Locura con Ethan Mbappé','2026-11-28T11:21:04');
+INSERT INTO "vus" VALUES('https://as.com/futbol/primera/mourinho-pasa-del-mercado-puerta-cerrada-para-entrar-y-para-salir-f202611-n/','Mourinho pasa del mercado: “Puerta cerrada; para entrar y para salir”','2026-11-28T11:21:32');
 COMMIT;
