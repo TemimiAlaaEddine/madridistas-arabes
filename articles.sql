@@ -16774,4 +16774,5 @@ INSERT INTO "vus" VALUES('https://defensacentral.com/real-madrid-noticias/asenci
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/nacho-pena-reflexiona-sobre-fichaje-nico-paz-encaja-en-real-madrid-si-pones-arda-guler-en-base_347122_102.html','Nacho Peña reflexiona sobre el fichaje de Nico Paz: "Encaja en el Real Madrid si pones a Arda Güler en la base"','2026-11-28T09:03:14');
 INSERT INTO "vus" VALUES('https://defensacentral.com/actualidad/vuelta-mendy-abre-dos-opciones-en-madrid-competencia-cucurella-venta-en-julio_347124_102.html','La vuelta de Mendy abre dos opciones en el Madrid: competencia para Cucurella o venta en julio','2026-11-28T09:03:14');
 INSERT INTO "vus" VALUES('https://defensacentral.com/baloncesto/lester-quinones-anuncia-madrid-ya-ha-intentado-ficharle-ofrecen-mucho-dinero_347120_102.html','Lester Quiñones anuncia que el Madrid ya ha intentado ficharle: "Ofrecen mucho dinero"','2026-11-28T09:03:14');
+INSERT INTO "vus" VALUES('https://www.footmercato.net/a995740618117878540-le-real-madrid-se-retrouve-dans-limpasse-pour-nico-paz','Le Real Madrid se retrouve dans l’impasse pour Nico Paz','2026-11-28T09:11:33');
 COMMIT;
