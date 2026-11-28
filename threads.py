@@ -634,6 +634,24 @@ def typefully_api(chemin, corps=None):
         return json.load(rep)
 
 
+def quota_typefully_bas():
+    """Publications Typefully restantes du mois au plus à "typefully_reserve" (config.json) : les opinions attendent alors le
+    mois suivant (28 nov. 2026 : 152 restantes à 3 jours de la remise à zéro, pour 45 à 90 posts par jour). Compteur
+    illisible : rien n'est retenu (l'envoi échouerait de toute façon si Typefully était en panne)."""
+    reserve = CONFIG.get("typefully_reserve", 0)
+    if not reserve:
+        return False
+    try:
+        reste = (typefully_api("").get("publishing_quota") or {}).get("remaining")
+    except (OSError, ValueError) as err:
+        print(f"  ! Typefully : quota illisible ({err})")
+        return False
+    if reste is not None and reste <= reserve:
+        print(f"  Typefully : {reste} publications restantes ce mois (réserve {reserve}), opinions retenues")
+        return True
+    return False
+
+
 TYPES_IMAGE = {"image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/gif": "gif"}
 
 
@@ -782,6 +800,7 @@ def vers_typefully(con, couvertures, dossier_couv):
         (session is None or session.get("fini")) and direct_actif("conference_direct.yml"))
     direct = conference.en_direct()
     hors = set(session.get("vus", [])) - set(session.get("liens", [])) if session else set()  # jugés hors conférence par le direct
+    quota_bas = quota_typefully_bas()
     for t in con.execute("SELECT t.article_id, t.tweets, t.date AS cree, a.* FROM threads t JOIN articles a ON a.id = t.article_id"
                          " WHERE t.typefully IS NULL ORDER BY (a.section = 'actus' OR a.mode = 'info') DESC, t.article_id LIMIT ?", (CONFIG.get("max_threads", 10),)).fetchall():
         tweets = json.loads(t["tweets"])
@@ -803,14 +822,18 @@ def vers_typefully(con, couvertures, dossier_couv):
             print(f"  Typefully : article {t['article_id']} écarté, conférence déjà publiée")
             ecarter(con, t["article_id"], "conférence déjà publiée")
             continue
+        # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
+        nouvelle = t["section"] == "actus" or t["mode"] == "info"
+        if quota_bas and not nouvelle:  # la réserve du mois va aux nouvelles, au direct et aux conférences
+            if maintenant() - datetime.fromisoformat(t["cree"]) > timedelta(hours=24):  # pas de vieilles opinions au retour du quota
+                ecarter(con, t["article_id"], "quota Typefully")
+            continue
         motifs = controler_thread(con, t["article_id"], tweets, est_officiel(t))
         doublon = next((m for m in motifs if m.startswith("doublon")), None)
         if doublon:  # confirmé par Claude : pas de brouillon à supprimer à la main
             print(f"  Typefully : article {t['article_id']} écarté ({doublon})")
             ecarter(con, t["article_id"], doublon)
             continue
-        # une nouvelle part tout de suite ; une opinion attend le prochain créneau de la file (toutes les 5 min, 24 h sur 24)
-        nouvelle = t["section"] == "actus" or t["mode"] == "info"
         quand = CONFIG.get("typefully_publish_at_actus") if nouvelle else None
         if quand == "now" and not motifs and not est_liste(tweets[0]) and con.execute(  # la liste n'attend jamais
                 "SELECT count(*) FROM threads WHERE statut = 'immédiat' AND envoye >= strftime('%Y-%m-%dT%H:%M:%S', 'now', '-1 hour')"

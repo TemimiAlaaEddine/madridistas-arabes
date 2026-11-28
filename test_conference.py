@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 import conference as c
 import generer_site
 import threads as t
+t.CONFIG["typefully_reserve"] = 0  # pas de lecture du quota Typefully dans les tests
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -30,6 +31,8 @@ vrai_fin = c.tweet_de_fin
 c.tweet_de_fin = lambda utc, noms=None: "🎙️ نهاية"  # sans appel à Claude (nom arabe de l'adversaire)
 vrai_trouver = c.trouver_direct_as
 c.trouver_direct_as = lambda utc, vus: None  # pas de direct écrit d'AS : articles de Marca et d'AS
+vrai_recente = c.conference_recente
+c.conference_recente = lambda utc: False  # aucune conférence publiée depuis 30 h (testé plus bas)
 import calendrier
 vrai_actif = calendrier.direct_actif
 calendrier.direct_actif = lambda w="": False
@@ -49,10 +52,10 @@ try:
     c.declarations = lambda j, depuis: {"Marca": [(T0 - timedelta(minutes=3), "Mourinho: «a»", "m1", "")],
                                         "AS": [(T0 - timedelta(minutes=8), "Mourinho: «b»", "a1", "")]}[j]
     assert c.a_lancer(T0, page="") == "auto", "une déclaration : direct lancé, journal choisi à la première vraie déclaration"
-    # avant-match : lancé jusqu'à 45 min avant l'entraînement (le calendrier le retire dès qu'il commence)
-    assert c.a_lancer(datetime(2026, 11, 23, 9, 20), page=CAL) == "auto 2026-11-23T10:00:00"
+    # avant-match : lancé jusqu'à 1 h 30 avant l'entraînement (la conférence peut le précéder : 27 nov.)
+    assert c.a_lancer(datetime(2026, 11, 23, 8, 40), page=CAL) == "auto 2026-11-23T10:00:00"
     c.declarations = lambda j, depuis: []
-    assert c.a_lancer(datetime(2026, 11, 23, 9, 10), page=CAL) == "", "plus de 45 min avant : trop tôt"
+    assert c.a_lancer(datetime(2026, 11, 23, 8, 20), page=CAL) == "", "plus de 1 h 30 avant : trop tôt"
     assert c.a_lancer(T0, page="") == ""
     # après-match programmé : lancé de 45 min avant la fin du match (coup d'envoi + 1 h 45) à 1 h 30 après, avec l'heure de fin
     c.declarations = lambda j, depuis: []
@@ -99,6 +102,13 @@ try:
     assert not c.en_direct(T0), "attente de la conférence : pas encore en direct"
     c.lire_etat = lambda: [{"journal": "AS", "debut": (T0 - timedelta(hours=7)).isoformat(), "liens": [], "fini": True}]
     assert c.a_lancer(T0, page="") == "auto" and c.session_recente(T0) is None
+    # 28 nov. : article tiré de la conférence de la veille, déjà tweetée : pas de direct (sauf après un match)
+    c.conference_recente = lambda utc: True
+    assert c.a_lancer(T0, page="") == ""
+    c.conference_recente = lambda utc: False
+    T9 = datetime(2030, 1, 1)  # date sans aucun thread dans la base locale
+    c.lire_etat = lambda: [{"journal": "AS", "debut": (T9 - timedelta(hours=20)).isoformat(), "liens": [], "tweets": ["x"], "fini": True}]
+    assert vrai_recente(T9) and not vrai_recente(T9 + timedelta(hours=11)), "conférence tweetée il y a moins de 30 h"
     print("OK lancement")
 
     # boucle : chaque nouvelle déclaration une fois, doublon écarté, déjà publiée par le passage ignorée, fin après 15 min de silence
@@ -155,7 +165,7 @@ try:
     horloge[0] = T0 - timedelta(minutes=40)
     c.declarations = lambda j, depuis: []
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=T0)
-    assert s["debut"] == T0.isoformat(), "attend l'heure de l'entraînement avant de commencer"
+    assert s["debut"] == (T0 - timedelta(minutes=40)).isoformat(), "surveille dès le lancement, sans attendre l'entraînement"
     assert not s["tweets"] and (horloge[0] - T0) == c.ATTENTE and s["journal"] is None, "pas de conférence : fin de l'attente"
     horloge[0] = T0  # lancé sur un article (vidéo d'entraînement du 23 nov.) : 30 min d'attente d'une vraie déclaration, pas 10
     c.declarations = lambda j, depuis: [(T0, "“Dean, estás dormido”", "a-video", "Mourinho")] if j == "AS" else []
@@ -170,7 +180,7 @@ try:
     horloge[0] = FIN - timedelta(minutes=10)
     c.declarations = lambda j, depuis: []
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None, heure=FIN)
-    assert s["debut"] == FIN.isoformat() and (horloge[0] - FIN) == c.ATTENTE_APRES and not s["tweets"]
+    assert s["debut"] == (FIN - timedelta(minutes=10)).isoformat() and (horloge[0] - FIN) == c.ATTENTE_APRES and not s["tweets"]
     calendrier.FICHIER.write_text("[]", encoding="utf-8")
     print("OK attente après-match")
 
@@ -232,7 +242,8 @@ try:
         fils.append([x[2] for x in fil])
         return "HORS" if entree[2].startswith("¡") else f"🎙️ مؤتمر {'مورينيو' if entree[2] == '¿El PSV?' else 'كورتوا'} | {entree[2]}"
     c.tweet_direct = faux_direct
-    c.declarations = lambda j, depuis: (_ for _ in ()).throw(AssertionError("articles lus malgré le direct écrit"))
+    lectures_flux = []  # repli : articles lus tant que le direct écrit n'a rien tweeté, plus ensuite
+    c.declarations = lambda j, depuis: lectures_flux.append(horloge[0]) or []
     noms_fin = []
     c.tweet_de_fin = lambda utc, noms=None: (noms_fin.append(noms), "🎙️ نهاية")[1]
     s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
@@ -240,10 +251,24 @@ try:
     assert s["journal"] == "AS" and noms_fin == [["كورتوا", "مورينيو"]] and fils[-1][-1] == "¡AHORA, MOURINHO!"
     assert 18 <= (horloge[0] - T0).total_seconds() / 60 <= 20, "une réponse par minute (min 0 à 3), puis 15 min de silence"
     assert c.orateurs(["🎙️ مؤتمر كورتوا | a", "x", "🎙️ مؤتمر كورتوا | b"]) == ["كورتوا"]
+    assert lectures_flux and max(lectures_flux) <= T0 + timedelta(minutes=1), "articles lus jusqu'au premier tweet du direct"
+    assert not s.get("alerte")
+    # 27 nov. : réponses « Thème : “…” » sans question ; commentaires inchangés
+    page27 = (unite(20, 0, "", "Ya está aquí. Empezamos.") + unite(21, 1, "", "Lesionados : “Mendy mañana va al banquillo”") +
+              unite(22, 2, "", "Y hasta aquí la rueda de prensa."))
+    e = c.entrees_direct(page27)
+    assert [x[2] for x in e] == ["", "Thème : Lesionados", ""] and e[1][3] == "“Mendy mañana va al banquillo”", e
+    # direct qui avance sans aucune déclaration reconnue (format changé) : alerte, le workflow finira en rouge
+    horloge[0] = T0
+    page_vide = unite(30, 0, "", "Empezamos") + unite(31, 1, "", "Mourinho habla") + unite(32, 2, "", "Hasta aquí")
+    c.lire_direct = lambda url: [x for x in c.entrees_direct(page_vide) if x[1] <= horloge[0]]
+    s = c.suivre("auto", publier=False, dormir=dormir, horloge=lambda: horloge[0], sauvegarder=lambda etat, m: None)
+    assert not s["tweets"] and s["alerte"].startswith("! ALERTE"), s
     print("OK direct écrit d'AS")
 finally:
     c.declarations, c.lire_etat, c.deja_publies, c.tweet, generer_site.texte_complet, c.tweet_de_fin = vrai
     c.trouver_direct_as = vrai_trouver
+    c.conference_recente = vrai_recente
     calendrier.direct_actif = vrai_actif
     calendrier.FICHIER = vrai_fichier
 

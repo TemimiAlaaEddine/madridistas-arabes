@@ -8,6 +8,8 @@ from pathlib import Path
 
 import couvertures
 import generer_site as g
+import threads as _t
+_t.CONFIG["typefully_reserve"] = 0  # pas de lecture du quota Typefully dans les tests (testé à part)
 
 sys.stdout.reconfigure(encoding="utf-8")
 
@@ -589,6 +591,25 @@ with tempfile.TemporaryDirectory() as tmp:
     assert "publish_at" not in appels[0] and appels[0]["draft_title"].startswith("⛔ appel à l'engagement")
     assert appels[0]["platforms"]["x"]["posts"][0]["text"] == "إصابة جديدة في التدريب! (آس)"  # « ! » accepté depuis le 21 nov.
     assert con.execute("SELECT statut FROM threads WHERE article_id = ?", (aid,)).fetchone()[0].startswith("bloqué")
+    # quota Typefully sous la réserve : l'opinion attend le mois suivant (écartée après 24 h, pas de vieux arriéré), sans envoi
+    con.commit()
+    g.enregistrer([{"id": 1, "section": "debats", "titre": "رأي", "texte": "ن", "tweets": ["ماذا ينقص الفريق هذا الموسم؟ (آس)"]}],
+                  [{"lien": "https://as.com/12", "titre": "T12", "auteur": "", "source": "AS", "pays": "es"}], db)
+    aid = con.execute("SELECT id FROM articles WHERE lien = 'https://as.com/12'").fetchone()[0]
+    t.CONFIG["typefully_reserve"] = 150
+    avant = t.typefully_api
+    t.typefully_api, appels[:] = (lambda chemin, corps=None: {"publishing_quota": {"remaining": 100}} if chemin == ""
+                                  else appels.append(corps) or {"id": 5}), []
+    try:
+        t.vers_typefully(con, {aid: "c.png"}, Path(tmp))
+        assert not appels and con.execute("SELECT typefully FROM threads WHERE article_id = ?", (aid,)).fetchone()[0] is None
+        con.execute("UPDATE threads SET date = '2026-01-01T00:00:00' WHERE article_id = ?", (aid,))
+        t.vers_typefully(con, {aid: "c.png"}, Path(tmp))
+        assert not appels and con.execute("SELECT statut FROM threads WHERE article_id = ?", (aid,)).fetchone()[0] == "bloqué : quota Typefully"
+        t.typefully_api = lambda chemin, corps=None: {"publishing_quota": {"remaining": 400}}
+        assert not t.quota_typefully_bas()
+    finally:
+        t.CONFIG["typefully_reserve"], t.typefully_api = 0, avant
     # liste des convoqués : 2 posts, la liste en texte seul tout de suite, puis le visuel du club dès qu'il sort
     noms = "▪️ الحراس: " + "، ".join(f"لاعب{i}" for i in range(23))
     con.commit()
