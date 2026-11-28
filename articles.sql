@@ -12562,6 +12562,7 @@ INSERT INTO "liens_x" VALUES('12245009','https://x.com/ElMadridistAlaa/status/21
 INSERT INTO "liens_x" VALUES('12245024','https://x.com/ElMadridistAlaa/status/2126451715105022374','2026-11-27T23:02:51.445Z');
 INSERT INTO "liens_x" VALUES('12245017','https://x.com/ElMadridistAlaa/status/2126451644561039585','2026-11-27T23:02:34.620Z');
 INSERT INTO "liens_x" VALUES('12245883','https://x.com/ElMadridistAlaa/status/2126464844740395301','2026-11-27T23:55:04.590Z');
+INSERT INTO "liens_x" VALUES('12247349','https://x.com/ElMadridistAlaa/status/2126541611425575395','2026-11-28T05:00:07.146Z');
 CREATE TABLE page_facebook (article_id INTEGER PRIMARY KEY, date TEXT, post TEXT);
 INSERT INTO "page_facebook" VALUES(1,'avant',NULL);
 INSERT INTO "page_facebook" VALUES(2,'avant',NULL);
